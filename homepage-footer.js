@@ -1077,6 +1077,17 @@
         nextScenes.forEach(function (b) { b.classList.add('jj-next-scene-hidden'); });
         enterLinks.forEach(function (el) {
           el.style.setProperty('pointer-events', 'none', 'important');
+          // Cancel any Webflow/CSS reveal animation still controlling this button,
+          // otherwise it overrides our opacity and the button never fades.
+          if (el.getAnimations) el.getAnimations().forEach(function (a) { try { a.cancel(); } catch (e) {} });
+          if (getComputedStyle(el).position === 'static') el.style.setProperty('position', 'relative', 'important');
+          el.style.setProperty('overflow', 'hidden', 'important');
+          // Pressed-state pink: pure CSS so it never depends on GSAP/rAF timing.
+          var pink = document.createElement('div');
+          pink.style.cssText = 'position:absolute;left:50%;top:50%;width:300%;height:300%;border-radius:50%;background:#FF00F5;z-index:1;pointer-events:none;transform:translate(-50%,-50%) scale(0);transition:transform 0.45s cubic-bezier(0.2,0.7,0.3,1);';
+          el.appendChild(pink);
+          setTimeout(function () { pink.style.transform = 'translate(-50%,-50%) scale(1)'; }, 30);
+          // Hold the pink ~1s, then fade the whole button out.
           el.style.setProperty('transition', 'opacity 0.6s ease', 'important');
           setTimeout(function () { el.style.setProperty('opacity', '0', 'important'); }, 1000);
           setTimeout(function () { el.style.setProperty('display', 'none', 'important'); }, 1650);

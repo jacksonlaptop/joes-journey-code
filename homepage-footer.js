@@ -1053,12 +1053,12 @@
   var PHIL_BASE     = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a200195245a88910104f066_Sprite%20philios.svg';                    // shocked face, no bubble
   var PHIL_THINKING = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a2001955bebd2a24a80cc47_sprite%20philosopher%20-%20thinking.svg'; // thinking, bubble up-right
   var BB = {
-    PHIL_IN:      5000,   // philosopher (thinking, bubble) fades in on the left
+    PHIL_IN:      4000,   // philosopher (thinking, bubble) fades in on the left
     PHIL_RESOLVE: 11500,  // dissolves to the shocked base face
     PHIL_OUT:     15000,  // philosopher fades out
-    STARS_AT:     8000,   // blink stars fade in...
+    STARS_AT:     7000,   // blink stars fade in...
     STARS_HOLD:   3000,   // ...visible ~3s then fade out
-    ALIENS_AT:    10000,  // 3 top aliens peek in fast...
+    ALIENS_AT:    11500,  // 3 top aliens peek in fast...
     ALIENS_HOLD:  2500,   // ...hold then retreat
     HSTARS_AT:    16000   // horizontal-scroll star field appears (stays)
   };
@@ -1076,7 +1076,7 @@
 
     if (PHIL_BASE && PHIL_THINKING) {
       // Both sprites share the same left/top anchor so he stays put across the swap.
-      var philCSS = 'position:absolute;left:5vw;top:47%;transform:translateY(-50%);height:42vh;width:auto;opacity:0;transition:opacity 0.5s ease;filter:drop-shadow(0 0 26px rgba(150,180,255,0.28));';
+      var philCSS = 'position:absolute;left:3vw;top:56%;transform:translateY(-50%);height:25vh;width:auto;opacity:0;transition:opacity 0.5s ease;filter:drop-shadow(0 0 26px rgba(150,180,255,0.28));';
       var imgThink = document.createElement('img');   // thinking, bubble up-right
       imgThink.src = PHIL_THINKING;
       imgThink.style.cssText = philCSS;

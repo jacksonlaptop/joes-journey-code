@@ -961,6 +961,7 @@
           trigger: el,
           containerAnimation: horizTween,
           start: 'left right',
+          end: 'right left',
           onLeave: function () {
             if (el._jjDisintegrated) return;
             el._jjDisintegrated = true;

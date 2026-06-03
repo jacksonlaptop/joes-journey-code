@@ -373,7 +373,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
 
 (function () {
   var STATES = {
-     def: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="5" fill="white"/></svg>',
+     def: '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="5" fill="white" stroke="#000000" stroke-opacity="0.5" stroke-width="1"/></svg>',
     hover: '<svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="51" height="51" rx="25.5" stroke="#4F4F4F"/><circle cx="26" cy="26" r="2" fill="white"/></svg>',
     external: '<svg width="62" height="62" viewBox="0 0 62 62" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="61" height="61" rx="30.5" stroke="white" stroke-opacity="0.3"/><path fill-rule="evenodd" clip-rule="evenodd" d="M30.9671 37.4243C31.1233 37.5805 31.3766 37.5805 31.5328 37.4243L37.6742 31.2829C37.8304 31.1267 37.8304 30.8734 37.6742 30.7172L31.5328 24.5758C31.3766 24.4196 31.1233 24.4196 30.9671 24.5758L30.1186 25.4243C29.9623 25.5805 29.9623 25.8338 30.1186 25.99L33.1043 28.9758C33.4823 29.3538 33.2146 30.0001 32.6801 30.0001L24.443 30.0001C24.2221 30.0001 24.043 30.1791 24.043 30.4001V31.6001C24.043 31.821 24.2221 32.0001 24.443 32.0001L32.6801 32.0001C33.2146 32.0001 33.4823 32.6463 33.1044 33.0243L30.1186 36.0101C29.9623 36.1663 29.9623 36.4196 30.1186 36.5758L30.9671 37.4243Z" fill="white"/></svg>',
     caseStudy: '<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="99" height="99" rx="49.5" stroke="white"/><path d="M40.5684 48.11L37.6084 41.5H39.0584L40.6984 45.54C40.7184 45.59 40.7484 45.59 40.7684 45.54L42.2784 41.5H43.6484L40.8884 48.11H40.5684ZM44.3214 48V41.5H45.6214V48H44.3214ZM46.88 48V41.5H51.13V42.74H48.13V43.99H50.88V45.21H48.13V46.78H51.13V48H46.88ZM57.4625 48.11L55.9625 43.4L54.4825 48.11H54.1425L51.6625 41.5H53.1025L54.2825 45.28C54.3025 45.33 54.3325 45.33 54.3525 45.28L55.3325 41.5H56.6625L57.6825 45.28C57.7025 45.33 57.7325 45.33 57.7525 45.28L58.8925 41.5H60.2825L57.8025 48.11H57.4625ZM31.8165 58V51.5H33.9465C35.3665 51.5 36.2165 52.31 36.2165 53.55C36.2165 54.79 35.3665 55.64 33.9465 55.64H33.0965V58H31.8165ZM33.0965 54.47H33.9465C34.5765 54.47 34.9165 54.08 34.9165 53.55C34.5765 53.06 34.5765 52.69 33.9465 52.69H33.0965V54.47ZM36.9142 58V51.5H39.1442C40.5642 51.5 41.4142 52.26 41.4142 53.5C41.4142 54.38 40.9842 55.03 40.2342 55.34L41.7742 58H40.3442L38.9342 55.54H38.1942V58H36.9142ZM38.1942 54.37H39.1442C39.7742 54.37 40.1142 54.03 40.1142 53.5C39.7742 53.01 39.7742 52.69 39.1442 52.69H38.1942V54.37ZM49.7577 58.15C49.2677 58.15 48.7977 57.97 48.5577 57.72L48.9577 56.64C49.1277 56.79 49.3777 56.91 49.6777 56.91C50.1177 56.91 50.4577 56.65 50.4577 56.04V51.5H51.7577V56.02C51.7577 57.49 50.8277 58.15 49.7577 58.15ZM52.9493 58V51.5H57.1993V52.74H54.1993V53.99H56.9493V55.21H54.1993V56.78H57.1993V58H52.9493ZM61.0337 58.1C59.2037 58.1 57.8537 56.64 57.8537 54.75C57.8537 52.81 59.2037 51.4 61.0537 51.4C61.9237 51.4 62.6837 51.71 63.1437 52.15L62.5937 53.24C62.2637 52.96 61.7037 52.72 61.1137 52.72C59.9737 52.72 59.1937 53.59 59.1937 54.75C59.9437 55.87 59.9437 56.8 61.1137 56.8C61.7137 56.8 62.3037 56.55 62.6437 56.2L63.1837 57.3C62.7337 57.76 61.9237 58.1 61.0337 58.1ZM65.425 58V52.66H63.525V51.5H68.625V52.66H66.725V58H65.425Z" fill="white"/><path d="M45.3325 58.1C43.4625 58.1 42.0725 56.64 42.0725 54.75C42.0725 52.81 43.4725 51.4 45.3325 51.4C47.1925 51.4 48.5925 52.81 48.5925 54.75C48.5925 56.64 47.2025 58.1 45.3325 58.1ZM43.3725 54.75C43.3725 55.88 44.1425 56.82 45.3325 56.82C46.5225 56.82 47.2925 55.88 47.2925 54.75C47.2925 53.58 46.4925 52.7 45.3325 52.7C44.1725 52.7 43.3725 53.58 43.3725 54.75Z" fill="#FF00F5"/></svg>'
@@ -417,6 +417,21 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     if (typeof window.Howler === 'undefined') return;
     try { Howler.volume(jjUserMuted ? 0 : jjMasterVolume()); } catch (e) {}
   }
+  // Site-wide: keep "Come Fly With Me" at a reduced level wherever it plays.
+  (function jjSinatraVolumePolicy() {
+    var SINATRA_MULT = 0.108;
+    setInterval(function () {
+      if (!window.jjAudio || !window.jjAudio.sounds) return;
+      window.jjAudio.sounds.forEach(function (sound) {
+        try {
+          var src = sound && sound._src && sound._src[0];
+          if (typeof src === 'string' && src.toLowerCase().indexOf('comeflywithme') !== -1) {
+            if (Math.abs(sound.volume() - SINATRA_MULT) > 0.02) sound.volume(SINATRA_MULT);
+          }
+        } catch (e) {}
+      });
+    }, 500);
+  })();
   function jjStartAudioBars(btn) {
     var bars = btn.querySelectorAll('.jj-bar');
     var mistBars = document.querySelectorAll('#jj-sound-mist .jj-mist-bar');

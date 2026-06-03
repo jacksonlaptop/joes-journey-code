@@ -13,7 +13,7 @@
   var SITTING_ALIEN_SAD   = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a1020606c5b65a83f63a171_sassy%20boy%201.svg';
   var SITTING_ALIEN_HAPPY = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a102060d6130fe4145e128e_happy%20boy.svg';
 
-  var SINATRA_MULTIPLIER = 0.18;
+  var SINATRA_MULTIPLIER = 0.108;
   var LANDING_ALIEN_AT = 9000;
   var LANDING_SPEECH_AT = 13000;
   var SPEECH_POST_TYPE_PAUSE = 1000;
@@ -1046,6 +1046,121 @@
     setTimeout(next, 10000 + Math.random() * 10000);
   }
 
+  // ===== Big Bang sequence (after Click to Begin) =====
+  // Philosopher sprites are 700KB+ each so they can't be inlined — upload the two SVGs to
+  // Webflow Assets and paste the URLs below. Until then the philosopher is skipped and the
+  // rest of the sequence (blink stars, aliens, star field) still runs.
+  var PHIL_BASE     = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a200195245a88910104f066_Sprite%20philios.svg';                    // shocked face, no bubble
+  var PHIL_THINKING = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a2001955bebd2a24a80cc47_sprite%20philosopher%20-%20thinking.svg'; // thinking, bubble up-right
+  var BB = {
+    PHIL_IN:      5000,   // philosopher (thinking, bubble) fades in on the left
+    PHIL_RESOLVE: 11500,  // dissolves to the shocked base face
+    PHIL_OUT:     15000,  // philosopher fades out
+    STARS_AT:     8000,   // blink stars fade in...
+    STARS_HOLD:   3000,   // ...visible ~3s then fade out
+    ALIENS_AT:    10000,  // 3 top aliens peek in fast...
+    ALIENS_HOLD:  2500,   // ...hold then retreat
+    HSTARS_AT:    16000   // horizontal-scroll star field appears (stays)
+  };
+  var BB_Z = 9990;
+  function bbTimer(fn, t) { return setTimeout(fn, t); }
+
+  var bigBangRan = false;
+  function runBigBang() {
+    if (bigBangRan) return;
+    bigBangRan = true;
+    var layer = document.createElement('div');
+    layer.id = 'jj-bigbang';
+    layer.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:' + BB_Z + ';overflow:hidden;';
+    document.body.appendChild(layer);
+
+    if (PHIL_BASE && PHIL_THINKING) {
+      // Both sprites share the same left/top anchor so he stays put across the swap.
+      var philCSS = 'position:absolute;left:5vw;top:47%;transform:translateY(-50%);height:42vh;width:auto;opacity:0;transition:opacity 0.5s ease;filter:drop-shadow(0 0 26px rgba(150,180,255,0.28));';
+      var imgThink = document.createElement('img');   // thinking, bubble up-right
+      imgThink.src = PHIL_THINKING;
+      imgThink.style.cssText = philCSS;
+      var imgBase = document.createElement('img');     // shocked, looking up-right
+      imgBase.src = PHIL_BASE;
+      imgBase.style.cssText = philCSS;
+      layer.appendChild(imgThink); layer.appendChild(imgBase);
+      // start already thinking
+      bbTimer(function () { imgThink.style.transition = 'opacity 0.8s ease'; imgThink.style.opacity = '1'; }, BB.PHIL_IN);
+      // dissolve thinking -> shocked base (no overlap, so the differing sprite sizes never look like a jump)
+      bbTimer(function () {
+        imgThink.style.transition = 'opacity 0.35s ease'; imgThink.style.opacity = '0';
+        bbTimer(function () { imgBase.style.transition = 'opacity 0.35s ease'; imgBase.style.opacity = '1'; }, 260);
+      }, BB.PHIL_RESOLVE);
+      bbTimer(function () { imgBase.style.transition = 'opacity 0.8s ease'; imgBase.style.opacity = '0'; }, BB.PHIL_OUT);
+      bbTimer(function () {
+        if (imgThink.parentNode) imgThink.parentNode.removeChild(imgThink);
+        if (imgBase.parentNode) imgBase.parentNode.removeChild(imgBase);
+      }, BB.PHIL_OUT + 1200);
+    }
+
+    bbTimer(function () { spawnBlinkStars(layer); }, BB.STARS_AT);
+    bbTimer(function () { bigBangAliens(); }, BB.ALIENS_AT);
+    bbTimer(function () {
+      if (animStarsWrap) {
+        animStarsWrap._jjForceVisible = true;
+        animStarsWrap.style.transition = 'opacity 1.5s ease';
+        animStarsWrap.style.opacity = '1';
+      }
+    }, BB.HSTARS_AT);
+  }
+
+  function spawnBlinkStars(layer) {
+    var i;
+    for (i = 0; i < 10; i++) {
+      (function () {
+        var pos = pickStarPosition();
+        var size = 6 + Math.random() * 10;
+        var d = document.createElement('div');
+        d.style.cssText = 'position:absolute;left:' + pos.left + 'vw;top:' + pos.top + 'vh;width:' + size + 'px;height:' + size + 'px;border-radius:50%;opacity:0;transform:scale(0.3);transition:opacity 0.6s ease,transform 0.6s cubic-bezier(0.34,1.56,0.64,1);background:radial-gradient(circle,rgba(255,255,255,0.95) 0%,rgba(255,255,255,0.55) 38%,rgba(255,255,255,0) 72%);filter:drop-shadow(0 0 6px rgba(200,225,255,0.9));';
+        layer.appendChild(d);
+        var delay = Math.random() * 900;
+        setTimeout(function () { d.style.opacity = '1'; d.style.transform = 'scale(1)'; }, delay);
+        setTimeout(function () { d.style.animation = 'jj-glow-subtle ' + (1.4 + Math.random()) + 's ease-in-out infinite'; }, delay + 600);
+        setTimeout(function () { d.style.animation = ''; d.style.transition = 'opacity 0.9s ease,transform 0.9s ease'; d.style.opacity = '0'; d.style.transform = 'scale(0.5)'; }, BB.STARS_HOLD + delay);
+        setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); }, BB.STARS_HOLD + delay + 1100);
+      })();
+    }
+    for (i = 0; i < 6; i++) {
+      (function () {
+        var pos = pickStarPosition();
+        var size = 26 + Math.random() * 26;
+        var rot = Math.floor(Math.random() * 360);
+        var img = document.createElement('img');
+        img.src = ASSET_STAR;
+        img.style.cssText = 'position:absolute;left:' + pos.left + 'vw;top:' + pos.top + 'vh;width:' + size + 'px;height:auto;opacity:0;transform-origin:center center;transform:rotate(' + rot + 'deg) scale(0.2);transition:opacity 0.7s ease,transform 0.7s cubic-bezier(0.34,1.56,0.64,1);filter:drop-shadow(0 0 8px rgba(200,225,255,0.85));';
+        layer.appendChild(img);
+        var delay = Math.random() * 1000;
+        setTimeout(function () { img.style.opacity = '1'; img.style.transform = 'rotate(' + rot + 'deg) scale(1)'; }, delay);
+        setTimeout(function () { img.style.transition = 'opacity 1s ease,transform 1s ease'; img.style.opacity = '0'; img.style.transform = 'rotate(' + (rot + 25) + 'deg) scale(0.6)'; }, BB.STARS_HOLD + delay);
+        setTimeout(function () { if (img.parentNode) img.parentNode.removeChild(img); }, BB.STARS_HOLD + delay + 1200);
+      })();
+    }
+  }
+
+  function bigBangAliens() {
+    var trio = [
+      { src: SPRITE_TL, anchor: { top: '80px', left: '0' },    hiddenT: 'translate(-100%, -100%)', peekT: 'translate(-22%, -22%)' },
+      { src: SPRITE_TM, anchor: { top: '0',    left: '50%' },   hiddenT: 'translate(-50%, -100%)',  peekT: 'translate(-50%, -32%)' },
+      { src: SPRITE_TR, anchor: { top: '0',    right: '90px' }, hiddenT: 'translate(0, -100%)',     peekT: 'translate(0, -22%)' }
+    ];
+    trio.forEach(function (cfg) {
+      var s = document.createElement('img');
+      s.src = cfg.src;
+      s.style.cssText = 'position:fixed;width:150px;height:auto;pointer-events:none;z-index:' + BB_Z + ';will-change:transform;transition:transform 0.5s cubic-bezier(0.34,1.5,0.64,1);';
+      Object.keys(cfg.anchor).forEach(function (k) { s.style[k] = cfg.anchor[k]; });
+      s.style.transform = cfg.hiddenT;
+      document.body.appendChild(s);
+      requestAnimationFrame(function () { requestAnimationFrame(function () { s.style.transform = cfg.peekT; }); });
+      setTimeout(function () { s.style.transition = 'transform 0.4s cubic-bezier(0.5,0,0.75,0)'; s.style.transform = cfg.hiddenT; }, BB.ALIENS_HOLD);
+      setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, BB.ALIENS_HOLD + 700);
+    });
+  }
+
   document.addEventListener('click', function (e) {
     if (triggered) return;
     var node = e.target;
@@ -1054,6 +1169,7 @@
       if (text === 'click to begin') {
         triggered = true;
         lockScroll();
+        runBigBang();
 
         landingTimers.forEach(clearTimeout);
         landingTimers = [];
@@ -1209,7 +1325,7 @@
       var op = bgEnabled ? '1' : '0';
       backWrap.style.opacity  = op;
       frontWrap.style.opacity = op;
-      if (animStarsWrap) animStarsWrap.style.opacity = op;
+      if (animStarsWrap) animStarsWrap.style.opacity = (bgEnabled || animStarsWrap._jjForceVisible) ? '1' : '0';
       if (!bgEnabled) return;
       var x     = getTranslateX(hsw);
       var viewH = window.innerHeight;

@@ -1077,7 +1077,9 @@
         nextScenes.forEach(function (b) { b.classList.add('jj-next-scene-hidden'); });
         enterLinks.forEach(function (el) {
           el.style.setProperty('pointer-events', 'none', 'important');
-          el.style.setProperty('display', 'none', 'important');
+          el.style.setProperty('transition', 'opacity 0.6s ease', 'important');
+          setTimeout(function () { el.style.setProperty('opacity', '0', 'important'); }, 1000);
+          setTimeout(function () { el.style.setProperty('display', 'none', 'important'); }, 1650);
         });
         document.querySelectorAll('.jj-intro-deco').forEach(function (el) {
           el.style.transition = 'opacity 1.2s ease';

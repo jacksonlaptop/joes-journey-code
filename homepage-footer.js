@@ -952,35 +952,45 @@
       var dustEls = horizWrap.querySelectorAll('h1, h2, h3, h4, h5, h6, p, [class*="heading"], [class*="text-"]');
       var firstSet = (firstTexts || []).reduce(function (s, el) { s.add(el); return s; }, new Set());
       startFloatLoop();
+      var managed = [];
       Array.prototype.forEach.call(dustEls, function (el) {
         var isFirst = firstSet.has(el);
         splitPanelText(el, isFirst);
         var chars = el._jjChars;
         if (!chars || !chars.length) return;
-        var triggerOpts = {
-          trigger: el,
-          containerAnimation: horizTween,
-          start: 'left right',
-          end: 'right left',
-          onLeave: function () {
-            if (el._jjDisintegrated) return;
-            el._jjDisintegrated = true;
-            customDisintegrate(chars);
-          },
-          onEnterBack: function () {
-            if (!el._jjDisintegrated) return;
-            reintegrate(chars, el);
-          }
-        };
+        managed.push(el);
         if (!isFirst) {
-          triggerOpts.onEnter = function () {
-            if (el._jjAlienRevealed) return;
-            el._jjAlienRevealed = true;
-            alienReveal(chars);
-          };
+          ScrollTrigger.create({
+            trigger: el,
+            containerAnimation: horizTween,
+            start: 'left right',
+            onEnter: function () {
+              if (el._jjAlienRevealed) return;
+              el._jjAlienRevealed = true;
+              alienReveal(chars);
+            }
+          });
         }
-        ScrollTrigger.create(triggerOpts);
       });
+      // Reversible hide/show driven by actual on-screen position, with a
+      // dead-zone (70px out -> hide, 170px in -> show) so it can't re-trigger
+      // while the text is on screen being read.
+      function syncTexts() {
+        if (bgEnabled) {
+          var vw = window.innerWidth;
+          for (var i = 0; i < managed.length; i++) {
+            var mel = managed[i];
+            var r = mel.getBoundingClientRect();
+            if (r.right < 70) {
+              if (!mel._jjDisintegrated) { mel._jjDisintegrated = true; customDisintegrate(mel._jjChars); }
+            } else if (r.right > 170 && r.left < vw) {
+              if (mel._jjDisintegrated) { mel._jjDisintegrated = false; reintegrate(mel._jjChars, mel); }
+            }
+          }
+        }
+        requestAnimationFrame(syncTexts);
+      }
+      requestAnimationFrame(syncTexts);
     }
     tryRun();
   }

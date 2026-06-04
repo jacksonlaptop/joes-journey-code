@@ -61,10 +61,14 @@
     } catch (e) {}
   }
 
-  // Restart the experience if the page is restored from the browser back/forward cache, so pressing
-  // Back from the project picker (or with the menu open) re-runs the intro instead of dumping you at the end.
+  // Back/forward navigation: clear the exit overlay and re-run the intro from the top instead of
+  // restoring the (black) end of the scroll.
   try { history.scrollRestoration = 'manual'; } catch (e) {}
-  window.addEventListener('pageshow', function (e) { if (e.persisted) window.location.reload(); });
+  window.addEventListener('pageshow', function (e) {
+    var ov = document.getElementById('jj-exit-overlay');
+    if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
+    if (e.persisted) window.location.reload();
+  });
 
 
   try {

@@ -232,12 +232,19 @@ document.addEventListener("DOMContentLoaded", function () {
     smoothTouch: true,
   });
 
-  // Ensure the page always loads at the top
+  // Ensure the page always loads at the top — re-assert after the browser's scroll restoration so a
+  // Back navigation can't leave us parked at the (now black) end of the scroll.
   if (window.location.pathname === "/") {
-    // Only perform these actions on the homepage
-    window.scrollTo(0, 0);
-    lenis.scrollTo(0, { immediate: true }); // Reset Lenis scroll position
+    const resetTop = () => {
+      try { history.scrollRestoration = "manual"; } catch (e) {}
+      window.scrollTo(0, 0);
+      lenis.scrollTo(0, { immediate: true });
+    };
+    resetTop();
     lenis.stop(); // Disable scroll on load
+    window.addEventListener("load", resetTop);
+    setTimeout(resetTop, 100);
+    setTimeout(resetTop, 400);
   }
 
   // Lenis animation loop
@@ -335,6 +342,7 @@ document.addEventListener("DOMContentLoaded", function () {
               var amb = window.jjAudio && window.jjAudio.ambient;
               if (amb) { try { amb.fade(amb.volume(), 0, 450); } catch (e) {} }
               const ov = document.createElement("div");
+              ov.id = "jj-exit-overlay";
               ov.style.cssText =
                 "position:fixed;inset:0;z-index:2147483646;pointer-events:none;opacity:0;" +
                 "background:radial-gradient(ellipse at center, #0a1024 0%, #04060e 100%);";

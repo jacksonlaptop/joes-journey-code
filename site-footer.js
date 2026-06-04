@@ -244,6 +244,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }, cue.time));
       });
 
+      // In the last ~5s of the speech (subtitles end ~23.5s), lift the ambient from 25% to 50%.
+      // The speech's onend then carries it from 50% up to 100% over 5s.
+      if (amb) subTimers.push(setTimeout(function () { amb.fade(amb.volume(), ambBack * 0.5, 5000); }, 18500));
+
       audioTrigger.removeEventListener('click', playAudio);
 
       if (audioController) {

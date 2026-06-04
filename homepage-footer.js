@@ -942,26 +942,21 @@
         '.jj-matrix-on .horizontal-content_wrapper, .jj-matrix-on .horizontal-content_wrapper * {' +
         ' color:#00ff41 !important; text-shadow:0 0 8px rgba(0,255,70,0.6), 0 0 20px rgba(0,255,70,0.3); }' +
         'body.jj-matrix-mode .fly-rive, body.jj-matrix-mode .jj-poke-sprite, body.jj-matrix-mode .jj-alien-sprite { z-index:6 !important; }' +
-        '@keyframes jj-matrix-glitch { 0%,100%{transform:translate(0,0) skewX(0);} 12%{transform:translate(-9px,0) skewX(-7deg);} 28%{transform:translate(8px,0) skewX(5deg);} 44%{transform:translate(-5px,0) skewX(-3deg);} 60%{transform:translate(6px,0);} 78%{transform:translate(-3px,0);} }';
+        '@keyframes jj-matrix-glitch { 0%,100%{transform:translate(0,0) skewX(0);filter:none;} 10%{transform:translate(-12px,0) skewX(-9deg);filter:hue-rotate(45deg) contrast(1.5);} 26%{transform:translate(11px,0) skewX(6deg);filter:none;} 42%{transform:translate(-7px,0) skewX(-3deg);filter:hue-rotate(-30deg);} 60%{transform:translate(8px,0);filter:contrast(1.3);} 78%{transform:translate(-4px,0);filter:none;} }';
       document.head.appendChild(st);
     }
 
-    // Isolated stacking context so the green sits in front of the blue bg but behind the text.
-    panel.style.position = 'relative';
-    panel.style.isolation = 'isolate';
-    var textWrap = panel.querySelector('.horizontal-content_wrapper');
-    if (textWrap) { textWrap.style.position = 'relative'; textWrap.style.zIndex = '1'; }
-
-    // fx wrapper: soft horizontal edges (no hard panel-edge break); opacity is driven by scroll progress.
-    var fx = document.createElement('div');
-    var maskCss = 'linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%)';
-    fx.style.cssText = 'position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;will-change:opacity,transform;-webkit-mask-image:' + maskCss + ';mask-image:' + maskCss + ';';
+    // Full-viewport layer sitting JUST above the blue bg but below the stars / code / sprites / text,
+    // so all of those read on top of the green. Inserted before the star field to stay under it.
+    var layer = document.createElement('div');
+    layer.style.cssText = 'position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity 0.35s ease;will-change:opacity,transform;';
     var overlay = document.createElement('div');
-    overlay.style.cssText = 'position:absolute;inset:0;opacity:0.85;background:radial-gradient(ellipse at center, rgba(0,45,10,0.26) 0%, rgba(0,18,4,0.55) 100%);';
+    overlay.style.cssText = 'position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(0,45,10,0.24) 0%, rgba(0,16,4,0.52) 100%);';
     var canvas = document.createElement('canvas');
     canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
-    fx.appendChild(overlay); fx.appendChild(canvas);
-    panel.insertBefore(fx, panel.firstChild);
+    layer.appendChild(overlay); layer.appendChild(canvas);
+    if (animStarsWrap && animStarsWrap.parentNode) animStarsWrap.parentNode.insertBefore(layer, animStarsWrap);
+    else document.body.appendChild(layer);
 
     var guy = document.createElement('img');
     guy.src = MATRIX_GUY;
@@ -972,7 +967,7 @@
     var GLYPHS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホ0123456789'.split('');
     var fontSize = 16, cols = 0, drops = [], W = 0, H = 0, running = false, rafId = null, frame = 0;
     function resize() {
-      W = panel.offsetWidth; H = panel.offsetHeight;
+      W = window.innerWidth; H = window.innerHeight;
       canvas.width = W; canvas.height = H;
       cols = Math.ceil(W / fontSize);
       drops = [];
@@ -1001,40 +996,45 @@
         if (head * fontSize > H && Math.random() > 0.97) drops[c] = 0;
       }
     }
-    function startScene() {
+    function glitch() {
+      layer.style.animation = 'none';
+      void layer.offsetWidth;
+      layer.style.animation = 'jj-matrix-glitch 0.5s steps(3) 1';
+    }
+    function show() {
       if (running) return; running = true;
+      layer.style.opacity = '1';
       panel.classList.add('jj-matrix-on');
       document.body.classList.add('jj-matrix-mode'); // lifts flying sprite + aliens above the green
-      fx.style.animation = 'jj-matrix-glitch 0.5s steps(3) 1';
-      setTimeout(function () { fx.style.animation = ''; }, 540);
+      glitch();
       loop();
       clearTimeout(guy._t);
       guy.style.opacity = '1';
       guy.style.transform = 'translate(-50%, 0%)';
       guy._t = setTimeout(function () { guy.style.opacity = '0'; guy.style.transform = 'translate(-50%, 115%)'; }, 4000);
     }
-    function stopScene() {
+    function hide() {
       if (!running) return; running = false;
-      if (rafId) cancelAnimationFrame(rafId);
+      glitch();
+      layer.style.opacity = '0';
       panel.classList.remove('jj-matrix-on');
       document.body.classList.remove('jj-matrix-mode');
       clearTimeout(guy._t);
       guy.style.opacity = '0';
       guy.style.transform = 'translate(-50%, 115%)';
+      setTimeout(function () { if (!running && rafId) { cancelAnimationFrame(rafId); rafId = null; } }, 450);
     }
-    // Opacity ramps with how centred the panel is, easing in/out on both sides for a smooth
-    // transition (plus masked edges) instead of a hard break.
+    // Full-viewport while you're on the panel; glitches IN as it takes over (~25%) and glitches
+    // OUT only near the next panel (~75%) — no hard vertical cut. Scrolling back re-arms it.
     ScrollTrigger.create({
       trigger: panel,
       containerAnimation: horizTween,
       start: 'left right',
       end: 'right left',
       onUpdate: function (self) {
-        var d = Math.abs(self.progress - 0.5);
-        var c = (0.42 - d) / 0.18; c = c < 0 ? 0 : (c > 1 ? 1 : c);
-        fx.style.opacity = (c * c * (3 - 2 * c)).toFixed(3);
-        if (c > 0.02 && !running) startScene();
-        else if (c <= 0.02 && running) stopScene();
+        var p = self.progress;
+        if (!running && p >= 0.25 && p <= 0.75) show();
+        else if (running && (p < 0.22 || p > 0.78)) hide();
       }
     });
   }

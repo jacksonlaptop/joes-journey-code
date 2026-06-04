@@ -940,7 +940,9 @@
       st.id = 'jj-matrix-style';
       st.textContent =
         '.jj-matrix-on .horizontal-content_wrapper, .jj-matrix-on .horizontal-content_wrapper * {' +
-        ' color:#00ff41 !important; text-shadow:0 0 8px rgba(0,255,70,0.6), 0 0 20px rgba(0,255,70,0.3); }';
+        ' color:#00ff41 !important; text-shadow:0 0 8px rgba(0,255,70,0.6), 0 0 20px rgba(0,255,70,0.3); }' +
+        'body.jj-matrix-mode .fly-rive, body.jj-matrix-mode .jj-poke-sprite, body.jj-matrix-mode .jj-alien-sprite { z-index:6 !important; }' +
+        '@keyframes jj-matrix-glitch { 0%,100%{transform:translate(0,0) skewX(0);} 12%{transform:translate(-9px,0) skewX(-7deg);} 28%{transform:translate(8px,0) skewX(5deg);} 44%{transform:translate(-5px,0) skewX(-3deg);} 60%{transform:translate(6px,0);} 78%{transform:translate(-3px,0);} }';
       document.head.appendChild(st);
     }
 
@@ -950,12 +952,16 @@
     var textWrap = panel.querySelector('.horizontal-content_wrapper');
     if (textWrap) { textWrap.style.position = 'relative'; textWrap.style.zIndex = '1'; }
 
+    // fx wrapper: soft horizontal edges (no hard panel-edge break); opacity is driven by scroll progress.
+    var fx = document.createElement('div');
+    var maskCss = 'linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%)';
+    fx.style.cssText = 'position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;will-change:opacity,transform;-webkit-mask-image:' + maskCss + ';mask-image:' + maskCss + ';';
     var overlay = document.createElement('div');
-    overlay.style.cssText = 'position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity 0.5s ease;background:radial-gradient(ellipse at center, rgba(0,45,10,0.30) 0%, rgba(0,18,4,0.62) 100%);';
+    overlay.style.cssText = 'position:absolute;inset:0;opacity:0.85;background:radial-gradient(ellipse at center, rgba(0,45,10,0.26) 0%, rgba(0,18,4,0.55) 100%);';
     var canvas = document.createElement('canvas');
-    canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:0;transition:opacity 0.45s ease;';
-    panel.insertBefore(overlay, panel.firstChild);
-    panel.insertBefore(canvas, overlay.nextSibling);
+    canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
+    fx.appendChild(overlay); fx.appendChild(canvas);
+    panel.insertBefore(fx, panel.firstChild);
 
     var guy = document.createElement('img');
     guy.src = MATRIX_GUY;
@@ -964,7 +970,7 @@
 
     var ctx = canvas.getContext('2d');
     var GLYPHS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホ0123456789'.split('');
-    var fontSize = 16, cols = 0, drops = [], W = 0, H = 0, active = false, rafId = null, frame = 0;
+    var fontSize = 16, cols = 0, drops = [], W = 0, H = 0, running = false, rafId = null, frame = 0;
     function resize() {
       W = panel.offsetWidth; H = panel.offsetHeight;
       canvas.width = W; canvas.height = H;
@@ -975,7 +981,7 @@
     resize();
     window.addEventListener('resize', resize);
     function loop() {
-      if (!active) return;
+      if (!running) return;
       rafId = requestAnimationFrame(loop);
       frame++;
       if (frame % 2) return; // ~30fps is plenty for rain
@@ -995,33 +1001,41 @@
         if (head * fontSize > H && Math.random() > 0.97) drops[c] = 0;
       }
     }
-    function activate() {
-      if (active) return; active = true;
-      overlay.style.opacity = '1';
-      canvas.style.opacity = '1';
+    function startScene() {
+      if (running) return; running = true;
       panel.classList.add('jj-matrix-on');
+      document.body.classList.add('jj-matrix-mode'); // lifts flying sprite + aliens above the green
+      fx.style.animation = 'jj-matrix-glitch 0.5s steps(3) 1';
+      setTimeout(function () { fx.style.animation = ''; }, 540);
       loop();
       clearTimeout(guy._t);
       guy.style.opacity = '1';
       guy.style.transform = 'translate(-50%, 0%)';
       guy._t = setTimeout(function () { guy.style.opacity = '0'; guy.style.transform = 'translate(-50%, 115%)'; }, 4000);
     }
-    function deactivate() {
-      if (!active) return; active = false;
+    function stopScene() {
+      if (!running) return; running = false;
       if (rafId) cancelAnimationFrame(rafId);
-      overlay.style.opacity = '0';
-      canvas.style.opacity = '0';
       panel.classList.remove('jj-matrix-on');
+      document.body.classList.remove('jj-matrix-mode');
       clearTimeout(guy._t);
       guy.style.opacity = '0';
       guy.style.transform = 'translate(-50%, 115%)';
     }
+    // Opacity ramps with how centred the panel is, easing in/out on both sides for a smooth
+    // transition (plus masked edges) instead of a hard break.
     ScrollTrigger.create({
       trigger: panel,
       containerAnimation: horizTween,
-      start: 'left center',
-      end: 'right center',
-      onToggle: function (self) { if (self.isActive) activate(); else deactivate(); }
+      start: 'left right',
+      end: 'right left',
+      onUpdate: function (self) {
+        var d = Math.abs(self.progress - 0.5);
+        var c = (0.42 - d) / 0.18; c = c < 0 ? 0 : (c > 1 ? 1 : c);
+        fx.style.opacity = (c * c * (3 - 2 * c)).toFixed(3);
+        if (c > 0.02 && !running) startScene();
+        else if (c <= 0.02 && running) stopScene();
+      }
     });
   }
 

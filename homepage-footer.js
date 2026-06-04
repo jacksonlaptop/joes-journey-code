@@ -61,6 +61,11 @@
     } catch (e) {}
   }
 
+  // Restart the experience if the page is restored from the browser back/forward cache, so pressing
+  // Back from the project picker (or with the menu open) re-runs the intro instead of dumping you at the end.
+  try { history.scrollRestoration = 'manual'; } catch (e) {}
+  window.addEventListener('pageshow', function (e) { if (e.persisted) window.location.reload(); });
+
 
   try {
     if (sessionStorage.getItem('jjUserMuted') === '1') jjUserMuted = true;
@@ -1017,8 +1022,8 @@
       end: 'right left',
       onUpdate: function (self) {
         var p = self.progress;
-        if (!running && p >= 0.25 && p <= 0.75) show();
-        else if (running && (p < 0.22 || p > 0.78)) hide();
+        if (!running && p >= 0.25 && p <= 0.58) show();
+        else if (running && (p < 0.22 || p > 0.60)) hide();
       }
     });
   }
@@ -1426,13 +1431,18 @@
       var op = bgEnabled ? '1' : '0';
       backWrap.style.opacity  = op;
       frontWrap.style.opacity = op;
-      if (animStarsWrap) animStarsWrap.style.opacity = (bgEnabled || animStarsWrap._jjForceVisible) ? '1' : '0';
-      if (!bgEnabled) return;
+      if (!bgEnabled) {
+        if (animStarsWrap) animStarsWrap.style.opacity = animStarsWrap._jjForceVisible ? '1' : '0';
+        return;
+      }
       var x     = getTranslateX(hsw);
       var viewH = window.innerHeight;
       var viewW = window.innerWidth;
       var maxTranslate = Math.max(1, hsw.scrollWidth - viewW);
       var progress     = Math.min(1, Math.abs(x) / maxTranslate);
+      // Fade the star field out over the last stretch so the scroll doesn't end on stars-on-black.
+      var endFade = progress > 0.78 ? Math.max(0, (0.93 - progress) / 0.15) : 1;
+      if (animStarsWrap) animStarsWrap.style.opacity = String(endFade);
       var backTravel  = Math.max(0, imgRenderedWidth(back,  viewH) - viewW);
       var frontTravel = Math.max(0, imgRenderedWidth(front, viewH) - viewW);
       back.style.transform  = 'translateX(' + (-progress * backTravel  * BACK_SPEED) + 'px)';

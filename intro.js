@@ -328,35 +328,38 @@ document.addEventListener("DOMContentLoaded", function () {
               lenis.start();
               gsap.to(".next-section-button", { opacity: 1, duration: 0.5, ease: "power2.out" });
             };
+            const goCaseStudies = () => {
+              cancelCaseRedirect();
+              const currentURL = window.location.href.replace(/\/$/, "");
+              const ov = document.createElement("div");
+              ov.style.cssText =
+                "position:fixed;inset:0;z-index:2147483646;pointer-events:none;opacity:0;" +
+                "background:radial-gradient(ellipse at center, #0a1024 0%, #04060e 100%);";
+              document.body.appendChild(ov);
+              gsap.to(ov, {
+                opacity: 1,
+                duration: 0.4,
+                ease: "power2.inOut",
+                onComplete: () => { window.location.href = `${currentURL}/case-studies`; },
+              });
+            };
             ScrollTrigger.create({
               trigger: trigger,
               start: "top center", // Arm when the last trigger is centered
               onEnter: () => {
                 lenis.stop(); // Disable scrolling
 
-                // Fade out elements
-                gsap.to(".next-section-button", {
-                  opacity: 0,
-                  duration: 0.7,
-                  ease: "power2.out",
-                });
-                gsap.to(".fly-rive", {
-                  opacity: 0,
-                  duration: 0.7,
-                  ease: "power2.out",
-                });
+                // Fade out the on-screen UI quickly
+                gsap.to(".next-section-button", { opacity: 0, duration: 0.3, ease: "power2.out" });
+                gsap.to(".fly-rive", { opacity: 0, duration: 0.3, ease: "power2.out" });
 
-                // Auto-advance to case studies after 5s, BUT scrolling/keying back up cancels it
-                // and re-enables scrolling (fixes the accidental jump on a quick scroll-back).
+                // Short beat (1s), then a smooth fade-to-deep-space into the case studies page.
+                // Scrolling / keying back up during the beat cancels it and re-enables scrolling.
                 clearTimeout(window.__jjCaseRedirect);
                 window.addEventListener("wheel", onBackScroll, { passive: true });
                 window.addEventListener("touchmove", onBackScroll, { passive: true });
                 window.addEventListener("keydown", onBackScroll);
-                window.__jjCaseRedirect = setTimeout(() => {
-                  cancelCaseRedirect();
-                  const currentURL = window.location.href.replace(/\/$/, "");
-                  window.location.href = `${currentURL}/case-studies`;
-                }, 5000);
+                window.__jjCaseRedirect = setTimeout(goCaseStudies, 400);
               },
             });
           }

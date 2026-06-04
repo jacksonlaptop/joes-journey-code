@@ -112,6 +112,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   window.jjAudio = window.jjAudio || { sounds: [], muted: false, volume: 1.0 };
   if (window.jjAudio.sounds.indexOf(ambient) === -1) window.jjAudio.sounds.push(ambient);
+  window.jjAudio.ambient = ambient;
+  window.jjAudio.ambientTarget = TARGET_VOLUME;
 
   var faded = false;
   function playWithFade() {
@@ -194,8 +196,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (audioTrigger) {
     audioTrigger.addEventListener('click', function playAudio() {
-      var fadeOut = activeSounds.splice(0);
-      fadeOut.forEach(function(s) { s.fade(s.volume(), 0, 1500); setTimeout(function(){ s.stop(); }, 1500); });
+      // Keep the intro ambient (Lotro) playing — duck it to 10% for the speech, then bring it back.
+      var amb = window.jjAudio.ambient;
+      var ambBack = window.jjAudio.ambientTarget || 0.6;
+      if (amb) {
+        if (!amb.playing()) amb.play();
+        amb.fade(amb.volume(), amb.volume() * 0.1, 1200);
+      }
+      // Fade out / stop any OTHER active sounds, but leave the ambient running.
+      activeSounds.slice().forEach(function (s) {
+        if (s === amb) return;
+        s.fade(s.volume(), 0, 1500);
+        setTimeout(function () { s.stop(); }, 1500);
+        var i = activeSounds.indexOf(s); if (i > -1) activeSounds.splice(i, 1);
+      });
 
       const speech = new Howl({
         src: ['https://cdn.prod.website-files.com/671911bb2d628244234f434e/69c2d642cdd2945eb0730842_stardust-speech.mp3'],
@@ -208,11 +222,8 @@ document.addEventListener("DOMContentLoaded", function () {
           }, 1500);
           hideSub();
           clearSubs();
-          const sound2 = new Howl({ src: ['https://raw.githubusercontent.com/shaunheath/watstudio/main/Comeflywithme-intro-fade.mp3'], volume: currentVolume });
-          const sound3 = new Howl({ src: ['https://raw.githubusercontent.com/shaunheath/watstudio/main/Comeflywithme_loop.mp3'], loop: true, volume: currentVolume });
-          activeSounds.push(sound2, sound3);
-          sound2.play();
-          sound2.on('end', function () { sound3.play(); });
+          // Bring the ambient back up over 5 seconds (Come Fly With Me removed).
+          if (amb) amb.fade(amb.volume(), ambBack, 5000);
         }
       });
 
@@ -417,21 +428,6 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     if (typeof window.Howler === 'undefined') return;
     try { Howler.volume(jjUserMuted ? 0 : jjMasterVolume()); } catch (e) {}
   }
-  // Site-wide: keep "Come Fly With Me" at a reduced level wherever it plays.
-  (function jjSinatraVolumePolicy() {
-    var SINATRA_MULT = 0.108;
-    setInterval(function () {
-      if (!window.jjAudio || !window.jjAudio.sounds) return;
-      window.jjAudio.sounds.forEach(function (sound) {
-        try {
-          var src = sound && sound._src && sound._src[0];
-          if (typeof src === 'string' && src.toLowerCase().indexOf('comeflywithme') !== -1) {
-            if (Math.abs(sound.volume() - SINATRA_MULT) > 0.02) sound.volume(SINATRA_MULT);
-          }
-        } catch (e) {}
-      });
-    }, 500);
-  })();
   function jjStartAudioBars(btn) {
     var bars = btn.querySelectorAll('.jj-bar');
     var mistBars = document.querySelectorAll('#jj-sound-mist .jj-mist-bar');

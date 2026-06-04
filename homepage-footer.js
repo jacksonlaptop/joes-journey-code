@@ -14,7 +14,6 @@
   var SITTING_ALIEN_HAPPY = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a102060d6130fe4145e128e_happy%20boy.svg';
   var MATRIX_GUY = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a218a72b3fe2da2dabfa4e5_Matrix.png';
 
-  var SINATRA_MULTIPLIER = 0.108;
   var LANDING_ALIEN_AT = 9000;
   var LANDING_SPEECH_AT = 13000;
   var SPEECH_POST_TYPE_PAUSE = 1000;
@@ -26,7 +25,7 @@
   var STICKY_REVEAL_AT = 17000;
   var NEXT_SCENE_AT = 20000;
   var TYPEWRITER_AT = 20500;
-  var UNLOCK_SCROLL_AT = 21500;
+  var UNLOCK_SCROLL_AT = 20500;
   var SPEECH_PART_1 = "Whenever you’re ready";
   var SPEECH_PART_2 = "No rush…";
 
@@ -62,21 +61,6 @@
     } catch (e) {}
   }
 
-  function startSinatraVolumePolicy() {
-    setInterval(function () {
-      if (!window.jjAudio || !window.jjAudio.sounds) return;
-      window.jjAudio.sounds.forEach(function (sound) {
-        try {
-          var src = sound && sound._src && sound._src[0];
-          if (typeof src === 'string' && src.toLowerCase().indexOf('comeflywithme') !== -1) {
-            if (Math.abs(sound.volume() - SINATRA_MULTIPLIER) > 0.02) sound.volume(SINATRA_MULTIPLIER);
-          }
-        } catch (e) {}
-      });
-    }, 500);
-  }
-  if (document.readyState === 'complete') startSinatraVolumePolicy();
-  else window.addEventListener('load', startSinatraVolumePolicy);
 
   try {
     if (sessionStorage.getItem('jjUserMuted') === '1') jjUserMuted = true;
@@ -1193,7 +1177,7 @@
 
     if (PHIL_BASE && PHIL_THINKING) {
       // Both sprites share the same left/top anchor so he stays put across the swap.
-      var philCSS = 'position:absolute;left:3vw;top:56%;transform:translateY(-50%);height:25vh;width:auto;opacity:0;transition:opacity 0.5s ease;filter:drop-shadow(0 0 26px rgba(150,180,255,0.28));';
+      var philCSS = 'position:absolute;left:2vw;top:70%;transform:translateY(-50%);height:25vh;width:auto;opacity:0;transition:opacity 0.5s ease;filter:drop-shadow(0 0 26px rgba(150,180,255,0.28));';
       var imgThink = document.createElement('img');   // thinking, bubble up-right
       imgThink.src = PHIL_THINKING;
       imgThink.style.cssText = philCSS;

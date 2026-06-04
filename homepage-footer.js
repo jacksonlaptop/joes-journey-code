@@ -61,13 +61,19 @@
     } catch (e) {}
   }
 
-  // Back/forward navigation: clear the exit overlay and re-run the intro from the top instead of
-  // restoring the (black) end of the scroll.
+  // Back/forward navigation: re-run the intro fresh. The bfcache-restored page would otherwise flash
+  // its black end-of-scroll state while the reload re-fetches scripts, so cover that with a clean
+  // loading splash, then reload.
   try { history.scrollRestoration = 'manual'; } catch (e) {}
   window.addEventListener('pageshow', function (e) {
     var ov = document.getElementById('jj-exit-overlay');
     if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
-    if (e.persisted) window.location.reload();
+    if (!e.persisted) return;
+    var splash = document.createElement('div');
+    splash.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:radial-gradient(ellipse at center,#10193a 0%,#070b16 100%);display:flex;align-items:center;justify-content:center;';
+    splash.innerHTML = '<div style="width:13px;height:13px;border-radius:50%;background:#dfe9ff;box-shadow:0 0 18px rgba(180,205,255,0.8);animation:jjSplashPulse 1.1s ease-in-out infinite"></div><style>@keyframes jjSplashPulse{0%,100%{transform:scale(0.5);opacity:0.35}50%{transform:scale(1);opacity:1}}</style>';
+    document.body.appendChild(splash);
+    window.location.reload();
   });
 
 

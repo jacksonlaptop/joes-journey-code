@@ -12,6 +12,7 @@
 
   var SITTING_ALIEN_SAD   = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a1020606c5b65a83f63a171_sassy%20boy%201.svg';
   var SITTING_ALIEN_HAPPY = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a102060d6130fe4145e128e_happy%20boy.svg';
+  var MATRIX_GUY = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a218a72b3fe2da2dabfa4e5_Matrix.png';
 
   var SINATRA_MULTIPLIER = 0.108;
   var LANDING_ALIEN_AT = 9000;
@@ -923,6 +924,107 @@
     return chars;
   }
 
+  // ===== Matrix scene for the "pixels and code" panel =====
+  function setupMatrixScene(horizTween) {
+    if (typeof ScrollTrigger === 'undefined') return;
+    var panels = document.querySelectorAll('.horizontal-scroll-content_wrapper');
+    var panel = null;
+    for (var i = 0; i < panels.length; i++) {
+      if ((panels[i].textContent || '').toLowerCase().indexOf('pixels and code') !== -1) { panel = panels[i]; break; }
+    }
+    if (!panel || panel._jjMatrix) return;
+    panel._jjMatrix = true;
+
+    if (!document.getElementById('jj-matrix-style')) {
+      var st = document.createElement('style');
+      st.id = 'jj-matrix-style';
+      st.textContent =
+        '.jj-matrix-on .horizontal-content_wrapper, .jj-matrix-on .horizontal-content_wrapper * {' +
+        ' color:#00ff41 !important; text-shadow:0 0 8px rgba(0,255,70,0.6), 0 0 20px rgba(0,255,70,0.3); }';
+      document.head.appendChild(st);
+    }
+
+    // Isolated stacking context so the green sits in front of the blue bg but behind the text.
+    panel.style.position = 'relative';
+    panel.style.isolation = 'isolate';
+    var textWrap = panel.querySelector('.horizontal-content_wrapper');
+    if (textWrap) { textWrap.style.position = 'relative'; textWrap.style.zIndex = '1'; }
+
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity 0.5s ease;background:radial-gradient(ellipse at center, rgba(0,45,10,0.30) 0%, rgba(0,18,4,0.62) 100%);';
+    var canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:0;transition:opacity 0.45s ease;';
+    panel.insertBefore(overlay, panel.firstChild);
+    panel.insertBefore(canvas, overlay.nextSibling);
+
+    var guy = document.createElement('img');
+    guy.src = MATRIX_GUY;
+    guy.style.cssText = 'position:fixed;left:50%;bottom:0;width:150px;height:auto;z-index:9990;pointer-events:none;opacity:0;transform:translate(-50%,115%);transition:transform 0.6s cubic-bezier(0.34,1.5,0.64,1), opacity 0.5s ease;';
+    document.body.appendChild(guy);
+
+    var ctx = canvas.getContext('2d');
+    var GLYPHS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホ0123456789'.split('');
+    var fontSize = 16, cols = 0, drops = [], W = 0, H = 0, active = false, rafId = null, frame = 0;
+    function resize() {
+      W = panel.offsetWidth; H = panel.offsetHeight;
+      canvas.width = W; canvas.height = H;
+      cols = Math.ceil(W / fontSize);
+      drops = [];
+      for (var c = 0; c < cols; c++) drops[c] = Math.random() * (H / fontSize);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    function loop() {
+      if (!active) return;
+      rafId = requestAnimationFrame(loop);
+      frame++;
+      if (frame % 2) return; // ~30fps is plenty for rain
+      ctx.clearRect(0, 0, W, H);
+      ctx.font = 'bold ' + fontSize + 'px monospace';
+      for (var c = 0; c < cols; c++) {
+        var x = c * fontSize, head = drops[c];
+        for (var t = 0; t < 12; t++) {
+          var row = head - t;
+          if (row < 0) break;
+          var y = row * fontSize;
+          if (y > H + fontSize) continue;
+          ctx.fillStyle = (t === 0) ? 'rgba(215,255,215,0.95)' : 'rgba(0,255,70,' + Math.max(0, 0.85 - t * 0.09) + ')';
+          ctx.fillText(GLYPHS[(Math.random() * GLYPHS.length) | 0], x, y);
+        }
+        drops[c] += 0.5 + Math.random() * 0.5;
+        if (head * fontSize > H && Math.random() > 0.97) drops[c] = 0;
+      }
+    }
+    function activate() {
+      if (active) return; active = true;
+      overlay.style.opacity = '1';
+      canvas.style.opacity = '1';
+      panel.classList.add('jj-matrix-on');
+      loop();
+      clearTimeout(guy._t);
+      guy.style.opacity = '1';
+      guy.style.transform = 'translate(-50%, 0%)';
+      guy._t = setTimeout(function () { guy.style.opacity = '0'; guy.style.transform = 'translate(-50%, 115%)'; }, 4000);
+    }
+    function deactivate() {
+      if (!active) return; active = false;
+      if (rafId) cancelAnimationFrame(rafId);
+      overlay.style.opacity = '0';
+      canvas.style.opacity = '0';
+      panel.classList.remove('jj-matrix-on');
+      clearTimeout(guy._t);
+      guy.style.opacity = '0';
+      guy.style.transform = 'translate(-50%, 115%)';
+    }
+    ScrollTrigger.create({
+      trigger: panel,
+      containerAnimation: horizTween,
+      start: 'left center',
+      end: 'right center',
+      onToggle: function (self) { if (self.isActive) activate(); else deactivate(); }
+    });
+  }
+
   function setupAllTextEffects(firstTexts) {
     function tryRun() {
       if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || typeof SplitType === 'undefined') return setTimeout(tryRun, 200);
@@ -991,6 +1093,7 @@
         requestAnimationFrame(syncTexts);
       }
       requestAnimationFrame(syncTexts);
+      try { setupMatrixScene(horizTween); } catch (e) {}
     }
     tryRun();
   }

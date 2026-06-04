@@ -331,6 +331,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const goCaseStudies = () => {
               cancelCaseRedirect();
               const currentURL = window.location.href.replace(/\/$/, "");
+              // Fade the ambient out with the visuals as we leave for the project picker.
+              var amb = window.jjAudio && window.jjAudio.ambient;
+              if (amb) { try { amb.fade(amb.volume(), 0, 450); } catch (e) {} }
               const ov = document.createElement("div");
               ov.style.cssText =
                 "position:fixed;inset:0;z-index:2147483646;pointer-events:none;opacity:0;" +
@@ -347,6 +350,9 @@ document.addEventListener("DOMContentLoaded", function () {
               trigger: trigger,
               start: "top center", // Arm when the last trigger is centered
               onEnter: () => {
+                // Ignore a spurious trigger from a restored scroll position right after a reload —
+                // a real visitor can't reach the end until well after the ~20s scroll-unlock.
+                if (performance.now() < 15000) return;
                 lenis.stop(); // Disable scrolling
 
                 // Fade out the on-screen UI quickly

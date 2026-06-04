@@ -196,16 +196,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (audioTrigger) {
     audioTrigger.addEventListener('click', function playAudio() {
-      // Keep the intro ambient (Lotro) playing — duck it to 10% for the speech, then bring it back.
+      // Keep the intro ambient (Lotro) playing — gently duck it to 25% for the speech, then bring it back.
       // Re-assert the duck after this click's other handlers run (the autoplay-fallback fade-in would
       // otherwise pull the ambient back up to full and it'd stay loud under the speech).
       var amb = window.jjAudio.ambient;
       var ambBack = window.jjAudio.ambientTarget || 0.6;
-      var ambDuck = ambBack * 0.1;
+      var ambDuck = ambBack * 0.25;
       if (amb) {
         if (!amb.playing()) amb.play();
-        amb.fade(amb.volume(), ambDuck, 1200);
-        setTimeout(function () { amb.fade(amb.volume(), ambDuck, 600); }, 150);
+        amb.fade(amb.volume(), ambDuck, 2500);
+        setTimeout(function () { amb.fade(amb.volume(), ambDuck, 2000); }, 150);
       }
       // Fade out / stop any OTHER active sounds, but leave the ambient running.
       activeSounds.slice().forEach(function (s) {

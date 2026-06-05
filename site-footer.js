@@ -207,6 +207,9 @@ document.addEventListener("DOMContentLoaded", function () {
       var ambDuck = ambBack * 0.25;
       if (amb) {
         if (!amb.playing()) amb.play();
+        // Seek so the track's 1:02 moment lands exactly when the scroll unlocks (~21.5s after click):
+        // 62s (1:02) - 21.5s = 40.5s. Jumps/restarts to here wherever the loop currently is.
+        try { amb.seek(40.5); } catch (e) {}
         amb.fade(amb.volume(), ambDuck, 2500);
         setTimeout(function () { amb.fade(amb.volume(), ambDuck, 2000); }, 150);
       }

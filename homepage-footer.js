@@ -28,6 +28,8 @@
   var UNLOCK_SCROLL_AT = 20500;
   var SPEECH_PART_1 = "It’d be great if you kept the sound on…";
   var SPEECH_PART_2 = "We spent a lot of time on that";
+  var SPEECH_PART_3 = "Whenever you’re ready";
+  var SPEECH_PART_4 = "Any day now";
 
   var backWrap  = document.getElementById('jj-bg-back-wrap');
   var frontWrap = document.getElementById('jj-bg-front-wrap');
@@ -458,7 +460,6 @@
       hideAlienSpeech(); makeAlienSad();
       sittingAlien.style.transition = 'transform 0.5s cubic-bezier(0.5, 0, 0.75, 0)';
       sittingAlien.style.transform = 'translateY(66%) scale(0.8)';
-      speechLockedWidth = null;
       typewriterChars('Do you mind…', alienFontRevealToCaptions);
       setTimeout(function () {
         if (!sittingAlien) return;
@@ -639,39 +640,39 @@
     });
   }
 
-  function runLandingSpeechSequence() {
+  function speakLine(text, mood, onDone) {
     if (triggered) return;
-    makeAlienHappy(); // switch to the new expression for the first sentence
-    typewriterChars(SPEECH_PART_1, function () {
-      var t1 = setTimeout(function () {
+    if (mood === 'happy') makeAlienHappy(); else makeAlienSad();
+    typewriterChars(text, function () {
+      var a = setTimeout(function () {
         if (triggered) return;
-        makeAlienHappy();
         alienFontRevealToCaptions();
-        var t2 = setTimeout(function () {
+        var b = setTimeout(function () {
           if (triggered) return;
           disintegrateSpeechChars();
-          var t3 = setTimeout(function () {
-            if (triggered) return;
-            makeAlienSad();
-            typewriterChars(SPEECH_PART_2, function () {
-              var t4 = setTimeout(function () {
-                if (triggered) return;
-                alienFontRevealToCaptions();
-                var t5 = setTimeout(function () {
-                  if (triggered) return;
-                  disintegrateSpeechChars();
-                }, SPEECH_PART2_HOLD);
-                landingTimers.push(t5);
-              }, SPEECH_POST_TYPE_PAUSE);
-              landingTimers.push(t4);
-            });
-          }, SPEECH_BETWEEN_PARTS);
-          landingTimers.push(t3);
+          if (onDone) {
+            var c = setTimeout(function () { if (!triggered) onDone(); }, SPEECH_BETWEEN_PARTS);
+            landingTimers.push(c);
+          }
         }, SPEECH_POST_REVEAL_PAUSE);
-        landingTimers.push(t2);
+        landingTimers.push(b);
       }, SPEECH_POST_TYPE_PAUSE);
-      landingTimers.push(t1);
+      landingTimers.push(a);
     });
+  }
+
+  function runLandingSpeechSequence() {
+    if (triggered) return;
+    var lines = [
+      { t: SPEECH_PART_1, m: 'happy' },   // the sound request (new expression)
+      { t: SPEECH_PART_2, m: 'happy' },
+      { t: SPEECH_PART_3, m: 'sad' },     // ...then the original nudges, a bit later
+      { t: SPEECH_PART_4, m: 'sad' }
+    ];
+    (function next(i) {
+      if (triggered || i >= lines.length) return;
+      speakLine(lines[i].t, lines[i].m, function () { next(i + 1); });
+    })(0);
   }
 
   function hideAlienSpeech() {
@@ -1169,7 +1170,15 @@
     HSTARS_AT:    16000   // horizontal-scroll star field appears (stays)
   };
   var BB_Z = 9990;
-  function bbTimer(fn, t) { return setTimeout(fn, t); }
+  var bigBangTimers = [];
+  function bbTimer(fn, t) { var id = setTimeout(fn, t); bigBangTimers.push(id); return id; }
+  function jjSkipBigBang() {
+    bigBangTimers.forEach(clearTimeout); bigBangTimers = [];
+    var l = document.getElementById('jj-bigbang'); if (l && l.parentNode) l.parentNode.removeChild(l);
+    var bbAliens = document.querySelectorAll('.jj-bb-alien');
+    for (var i = 0; i < bbAliens.length; i++) { if (bbAliens[i].parentNode) bbAliens[i].parentNode.removeChild(bbAliens[i]); }
+    if (animStarsWrap) { animStarsWrap._jjForceVisible = true; animStarsWrap.style.opacity = '1'; }
+  }
 
   var bigBangRan = false;
   function runBigBang() {
@@ -1257,6 +1266,7 @@
     trio.forEach(function (cfg) {
       var s = document.createElement('img');
       s.src = cfg.src;
+      s.className = 'jj-bb-alien';
       s.style.cssText = 'position:fixed;width:150px;height:auto;pointer-events:none;z-index:' + BB_Z + ';will-change:transform;transition:transform 0.5s cubic-bezier(0.34,1.5,0.64,1);';
       Object.keys(cfg.anchor).forEach(function (k) { s.style[k] = cfg.anchor[k]; });
       s.style.transform = cfg.hiddenT;
@@ -1282,16 +1292,16 @@
       var st = document.createElement('style');
       st.id = 'jj-hud-style';
       st.textContent =
-        '#jj-progress{position:fixed;top:0;left:0;height:4px;width:0;z-index:9996;background:linear-gradient(90deg,#7fc8ff,#ffffff);box-shadow:0 0 12px rgba(150,205,255,0.85);opacity:0;transition:opacity 0.5s ease;pointer-events:none;}' +
+        '#jj-progress{position:fixed;bottom:0;left:0;height:4px;width:0;z-index:9996;background:linear-gradient(90deg,#FF00F5,#ff7df4);box-shadow:0 0 12px rgba(255,0,245,0.7);opacity:0;transition:opacity 0.5s ease;pointer-events:none;}' +
         '.jj-skip{position:fixed;z-index:9990;display:flex;align-items:center;gap:11px;padding:14px 22px;background:#fff;border-radius:14px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,0.28);opacity:0;transition:opacity 0.45s ease;font-family:var(--jj-headline-font,Georgia,serif);overflow:hidden;}' +
         '.jj-skip.is-in{opacity:1;}' +
-        '.jj-skip::after{content:"";position:absolute;inset:0;background:#111;transform:scaleY(0);transform-origin:bottom center;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);z-index:0;}' +
+        '.jj-skip::after{content:"";position:absolute;inset:0;background:#111;transform:scaleY(0);transform-origin:bottom center;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);z-index:0;border-radius:inherit;}' +
         '.jj-skip:hover::after{transform:scaleY(1);}' +
-        '.jj-skip>*{position:relative;z-index:1;color:#111;transition:color 0.3s ease;}' +
-        '.jj-skip:hover>*{color:#fff;}' +
+        '.jj-skip>*{position:relative;z-index:1;color:inherit;transition:color 0.3s ease;}' +
+        '.jj-skip:hover,.jj-skip:hover>*{color:#fff;}' +
         '.jj-skip-ico{display:flex;}' +
-        '.jj-skip-label{font-size:15px;letter-spacing:0.1em;font-weight:700;white-space:nowrap;}' +
-        '.jj-odo{position:relative;width:1.5em;height:1.25em;overflow:hidden;font-weight:700;font-size:15px;}' +
+        '.jj-skip-label{letter-spacing:0.06em;white-space:nowrap;}' +
+        '.jj-odo{position:relative;width:1.5em;height:1.2em;overflow:hidden;text-align:center;}' +
         '.jj-odo span{position:absolute;left:0;right:0;text-align:center;transition:transform 0.32s cubic-bezier(0.5,0,0.2,1),opacity 0.32s ease;}';
       document.head.appendChild(st);
     }
@@ -1307,10 +1317,15 @@
     var odo = document.createElement('div'); odo.className = 'jj-odo';
     skip.appendChild(ico); skip.appendChild(lbl); skip.appendChild(odo);
     document.body.appendChild(skip);
+    // Match the real NEXT SCENE button's pill styling (Webflow-styled) so swapping to it is seamless.
+    if (nextBtn) {
+      var ncs = getComputedStyle(nextBtn);
+      ['backgroundColor','borderTopLeftRadius','borderTopRightRadius','borderBottomLeftRadius','borderBottomRightRadius','boxShadow','paddingTop','paddingRight','paddingBottom','paddingLeft','borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','borderStyle','borderColor','fontFamily','fontSize','fontWeight','letterSpacing','color'].forEach(function (p) { try { if (ncs[p]) skip.style[p] = ncs[p]; } catch (e) {} });
+    }
     function placeSkip() {
       var r = nextBtn && nextBtn.getBoundingClientRect();
-      if (r && r.width > 10) { skip.style.left = (r.left + r.width / 2 - skip.offsetWidth / 2) + 'px'; skip.style.top = (r.top + r.height / 2 - skip.offsetHeight / 2) + 'px'; skip.style.right = ''; skip.style.bottom = ''; }
-      else { skip.style.right = '110px'; skip.style.bottom = '34px'; skip.style.left = ''; skip.style.top = ''; }
+      if (r && r.width > 10) { skip.style.right = Math.max(0, window.innerWidth - r.right) + 'px'; skip.style.bottom = Math.max(0, window.innerHeight - r.bottom) + 'px'; skip.style.left = ''; skip.style.top = ''; }
+      else { skip.style.right = '34px'; skip.style.bottom = '34px'; skip.style.left = ''; skip.style.top = ''; }
     }
     placeSkip();
     window.addEventListener('resize', placeSkip);
@@ -1446,6 +1461,9 @@
               revealNextScenes: revealNextScenes,
               onSkip: function () {
                 pcTimers.forEach(clearTimeout);
+                jjSkipBigBang();      // collapse the whole big-bang sequence to its end state
+                landingTimers.forEach(clearTimeout); landingTimers = [];
+                hideAlienSpeech();
                 revealSticky();
                 revealTypewriter();
                 unlockScroll();

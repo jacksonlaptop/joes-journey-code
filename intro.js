@@ -408,20 +408,21 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Scroll down by the next 100vh increment on .next-section-button click
+  // Advance one 100vh "scene" per click. Track a target so rapid clicks — and Lenis landing a hair
+  // short of a multiple (e.g. 1499.98, which made the old calc return the current spot = no move) —
+  // each advance exactly one step. Re-sync to the real position after a gap (settled / manual scroll).
+  let nsTarget = 0, nsLast = 0;
   const nextSectionButtons = document.querySelectorAll(".next-section-button");
   nextSectionButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      const currentScroll = lenis.scroll; // Current scroll position
-      const currentMultiple =
-        Math.floor(currentScroll / window.innerHeight) * window.innerHeight;
-
-      // If already at a multiple of 100vh, add one more increment
-      const nextScroll =
-        currentScroll === currentMultiple
-          ? currentScroll + window.innerHeight
-          : Math.ceil(currentScroll / window.innerHeight) * window.innerHeight;
-
-      lenis.scrollTo(nextScroll); // Scroll to the calculated position
+      const vh = window.innerHeight;
+      const now = Date.now();
+      if (now - nsLast > 1200) {
+        nsTarget = Math.round(lenis.scroll / vh) * vh; // re-sync to where we actually are
+      }
+      nsLast = now;
+      nsTarget += vh;
+      lenis.scrollTo(nsTarget);
     });
   });
 });

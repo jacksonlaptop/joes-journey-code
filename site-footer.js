@@ -119,6 +119,9 @@ document.addEventListener("DOMContentLoaded", function () {
   function playWithFade() {
     if (!ambient.playing()) ambient.play();
     if (faded) return;
+    // If it's already audible (e.g. the load-time fade-in is mid-flight), don't yank it back to 0 —
+    // that's what caused the "fade out then back in" on the first click after the ambient had started.
+    if (ambient.volume() > 0.01) { faded = true; return; }
     faded = true;
     ambient.volume(0);
     ambient.fade(0, TARGET_VOLUME, FADE_MS);

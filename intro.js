@@ -247,6 +247,18 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(resetTop, 400);
   }
 
+  // Returned to the homepage via the back/forward cache: snap to the top first (so the brief reload
+  // window shows the blue first panel, not the black end-of-scroll), then reload for a clean restart.
+  window.addEventListener("pageshow", function (e) {
+    if (window.location.pathname !== "/") return;
+    var ov = document.getElementById("jj-exit-overlay");
+    if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
+    if (!e.persisted) return;
+    try { window.scrollTo(0, 0); } catch (err) {}
+    try { lenis.scrollTo(0, { immediate: true }); } catch (err) {}
+    setTimeout(function () { window.location.reload(); }, 60);
+  });
+
   // Lenis animation loop
   function raf(time) {
     lenis.raf(time);

@@ -210,8 +210,8 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!amb.playing()) amb.play();
         amb.fade(amb.volume(), 0, 5000);
         setTimeout(function () {
+          amb.volume(0);             // force silence FIRST so the seek (and any seek-pop) is inaudible
           try { amb.seek(45.5); } catch (e) {}
-          amb.volume(0);
           amb.fade(0, ambBack, 16500);
         }, 5000);
       }

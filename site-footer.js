@@ -117,6 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var faded = false;
   function playWithFade() {
+    if (window.jjAudio && window.jjAudio.takeover) return;
     if (!ambient.playing()) ambient.play();
     if (faded) return;
     // If it's already audible (e.g. the load-time fade-in is mid-flight), don't yank it back to 0 —
@@ -199,19 +200,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (audioTrigger) {
     audioTrigger.addEventListener('click', function playAudio() {
-      // Keep the intro ambient (Lotro) playing — gently duck it to 25% for the speech, then bring it back.
-      // Re-assert the duck after this click's other handlers run (the autoplay-fallback fade-in would
-      // otherwise pull the ambient back up to full and it'd stay loud under the speech).
+      // Cross the seek under a fade so there's no audible jump: fade the current loop out over 5s, then
+      // (silently) seek to 0:45.5 and fade back in over 16.5s — the track reaches 1:02 at full volume
+      // exactly when the scroll unlocks (~21.5s after click).  45.5 + 16.5 = 62s;  5 + 16.5 = 21.5s.
       var amb = window.jjAudio.ambient;
       var ambBack = window.jjAudio.ambientTarget || 0.6;
-      var ambDuck = ambBack * 0.25;
+      window.jjAudio.takeover = true; // we drive the ambient from here — stop the autoplay-fallback touching it
       if (amb) {
         if (!amb.playing()) amb.play();
-        // Seek so the track's 1:02 moment lands exactly when the scroll unlocks (~21.5s after click):
-        // 62s (1:02) - 21.5s = 40.5s. Jumps/restarts to here wherever the loop currently is.
-        try { amb.seek(40.5); } catch (e) {}
-        amb.fade(amb.volume(), ambDuck, 2500);
-        setTimeout(function () { amb.fade(amb.volume(), ambDuck, 2000); }, 150);
+        amb.fade(amb.volume(), 0, 5000);
+        setTimeout(function () {
+          try { amb.seek(45.5); } catch (e) {}
+          amb.volume(0);
+          amb.fade(0, ambBack, 16500);
+        }, 5000);
       }
       // Fade out / stop any OTHER active sounds, but leave the ambient running.
       activeSounds.slice().forEach(function (s) {
@@ -232,8 +234,6 @@ document.addEventListener("DOMContentLoaded", function () {
           }, 1500);
           hideSub();
           clearSubs();
-          // Bring the ambient back up over 5 seconds (Come Fly With Me removed).
-          if (amb) amb.fade(amb.volume(), ambBack, 5000);
         }
       });
 
@@ -249,10 +249,6 @@ document.addEventListener("DOMContentLoaded", function () {
           if (cue.text) { showSub(cue.text); } else { hideSub(); }
         }, cue.time));
       });
-
-      // In the last ~5s of the speech (subtitles end ~23.5s), lift the ambient from 25% to 50%.
-      // The speech's onend then carries it from 50% up to 100% over 5s.
-      if (amb) subTimers.push(setTimeout(function () { amb.fade(amb.volume(), ambBack * 0.5, 5000); }, 18500));
 
       audioTrigger.removeEventListener('click', playAudio);
 

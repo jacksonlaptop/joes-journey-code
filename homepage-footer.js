@@ -26,8 +26,8 @@
   var NEXT_SCENE_AT = 20000;
   var TYPEWRITER_AT = 20500;
   var UNLOCK_SCROLL_AT = 20500;
-  var SPEECH_PART_1 = "Whenever you’re ready";
-  var SPEECH_PART_2 = "No rush…";
+  var SPEECH_PART_1 = "It’d be great if you kept the sound on…";
+  var SPEECH_PART_2 = "We spent a lot of time on that";
 
   var backWrap  = document.getElementById('jj-bg-back-wrap');
   var frontWrap = document.getElementById('jj-bg-front-wrap');
@@ -641,6 +641,7 @@
 
   function runLandingSpeechSequence() {
     if (triggered) return;
+    makeAlienHappy(); // switch to the new expression for the first sentence
     typewriterChars(SPEECH_PART_1, function () {
       var t1 = setTimeout(function () {
         if (triggered) return;
@@ -1266,6 +1267,91 @@
     });
   }
 
+  // ===== Speech HUD: progress bar + a SKIP SPEECH button that counts down, then becomes NEXT SCENE =====
+  var NEXT_ICON_SVG = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.7115 12.661L6.17253 17.85C6.01785 17.9729 5.83221 18.0329 5.64847 18.0329C5.40003 18.0329 5.15347 17.9232 4.98659 17.7141C4.69691 17.3494 4.75783 16.8188 5.12347 16.5291L10.8291 12.0011L5.12347 7.4731C4.75879 7.18342 4.69785 6.65278 4.98659 6.2881C5.27627 5.92342 5.80691 5.86154 6.17159 6.15122L12.7106 11.3402C12.9122 11.5005 13.0294 11.7433 13.0294 12.0012C13.0294 12.259 12.9122 12.5018 12.7106 12.6621L12.7115 12.661ZM18.8767 11.3392L12.3377 6.15017C11.9731 5.86049 11.4424 5.92141 11.1527 6.28704C10.8631 6.65172 10.924 7.18236 11.2896 7.47204L16.9952 12L11.2896 16.528C10.9249 16.8177 10.864 17.3484 11.1527 17.713C11.3196 17.923 11.5652 18.0318 11.8146 18.0318C11.9984 18.0318 12.1831 17.9718 12.3387 17.849L18.8777 12.66C19.0792 12.4997 19.1964 12.2569 19.1964 11.9991C19.1964 11.7412 19.0792 11.4984 18.8777 11.3381L18.8767 11.3392Z" fill="currentColor"/></svg>';
+
+  function jjScrollProgress() {
+    var hsw = document.querySelector('.horizontal-scroll-wrapper');
+    if (!hsw) return 0;
+    var max = Math.max(1, hsw.scrollWidth - window.innerWidth);
+    return Math.min(1, Math.abs(getTranslateX(hsw)) / max);
+  }
+
+  function setupSpeechHUD(opts) {
+    if (!document.getElementById('jj-hud-style')) {
+      var st = document.createElement('style');
+      st.id = 'jj-hud-style';
+      st.textContent =
+        '#jj-progress{position:fixed;top:0;left:0;height:4px;width:0;z-index:9996;background:linear-gradient(90deg,#7fc8ff,#ffffff);box-shadow:0 0 12px rgba(150,205,255,0.85);opacity:0;transition:opacity 0.5s ease;pointer-events:none;}' +
+        '.jj-skip{position:fixed;z-index:9990;display:flex;align-items:center;gap:11px;padding:14px 22px;background:#fff;border-radius:14px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,0.28);opacity:0;transition:opacity 0.45s ease;font-family:var(--jj-headline-font,Georgia,serif);overflow:hidden;}' +
+        '.jj-skip.is-in{opacity:1;}' +
+        '.jj-skip::after{content:"";position:absolute;inset:0;background:#111;transform:scaleY(0);transform-origin:bottom center;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);z-index:0;}' +
+        '.jj-skip:hover::after{transform:scaleY(1);}' +
+        '.jj-skip>*{position:relative;z-index:1;color:#111;transition:color 0.3s ease;}' +
+        '.jj-skip:hover>*{color:#fff;}' +
+        '.jj-skip-ico{display:flex;}' +
+        '.jj-skip-label{font-size:15px;letter-spacing:0.1em;font-weight:700;white-space:nowrap;}' +
+        '.jj-odo{position:relative;width:1.5em;height:1.25em;overflow:hidden;font-weight:700;font-size:15px;}' +
+        '.jj-odo span{position:absolute;left:0;right:0;text-align:center;transition:transform 0.32s cubic-bezier(0.5,0,0.2,1),opacity 0.32s ease;}';
+      document.head.appendChild(st);
+    }
+
+    var bar = document.createElement('div'); bar.id = 'jj-progress';
+    document.body.appendChild(bar);
+    requestAnimationFrame(function () { bar.style.opacity = '1'; });
+
+    var nextBtn = document.querySelector('.next-section-button');
+    var skip = document.createElement('div'); skip.className = 'jj-skip';
+    var ico = document.createElement('div'); ico.className = 'jj-skip-ico'; ico.innerHTML = NEXT_ICON_SVG;
+    var lbl = document.createElement('div'); lbl.className = 'jj-skip-label'; lbl.textContent = 'SKIP SPEECH';
+    var odo = document.createElement('div'); odo.className = 'jj-odo';
+    skip.appendChild(ico); skip.appendChild(lbl); skip.appendChild(odo);
+    document.body.appendChild(skip);
+    function placeSkip() {
+      var r = nextBtn && nextBtn.getBoundingClientRect();
+      if (r && r.width > 10) { skip.style.left = (r.left + r.width / 2 - skip.offsetWidth / 2) + 'px'; skip.style.top = (r.top + r.height / 2 - skip.offsetHeight / 2) + 'px'; skip.style.right = ''; skip.style.bottom = ''; }
+      else { skip.style.right = '110px'; skip.style.bottom = '34px'; skip.style.left = ''; skip.style.top = ''; }
+    }
+    placeSkip();
+    window.addEventListener('resize', placeSkip);
+
+    var curN = null;
+    function setOdo(n) {
+      if (n === curN) return; curN = n;
+      var prev = odo.querySelector('span');
+      var el = document.createElement('span');
+      el.textContent = n; el.style.transform = 'translateY(-110%)'; el.style.opacity = '0';
+      odo.appendChild(el);
+      requestAnimationFrame(function () { el.style.transform = 'translateY(0)'; el.style.opacity = '1'; });
+      if (prev) { prev.style.transform = 'translateY(110%)'; prev.style.opacity = '0'; setTimeout(function () { if (prev.parentNode) prev.parentNode.removeChild(prev); }, 340); }
+    }
+
+    var hudStart = Date.now();
+    var HUD_END = UNLOCK_SCROLL_AT;   // ms from HUD start until the scroll unlocks (~20.5s)
+    var HUD_SHOW = 4000;              // show the skip button (~5s after click)
+    var HUD_SWAP = HUD_END - 3000;    // swap to NEXT SCENE ~3s before unlock
+    var shown = false, swapped = false;
+
+    function doSwap() {
+      if (swapped) return; swapped = true;
+      skip.classList.remove('is-in');
+      setTimeout(function () { if (skip.parentNode) skip.parentNode.removeChild(skip); }, 500);
+      if (opts.revealNextScenes) opts.revealNextScenes();
+    }
+    skip.addEventListener('click', function () { if (opts.onSkip) opts.onSkip(); doSwap(); });
+
+    function tick() {
+      var e = Date.now() - hudStart;
+      if (!swapped) bar.style.width = Math.min(100, (e / HUD_SWAP) * 100) + '%';
+      else bar.style.width = (jjScrollProgress() * 100) + '%';
+      if (!shown && e >= HUD_SHOW && !swapped) { shown = true; skip.classList.add('is-in'); placeSkip(); }
+      if (shown && !swapped) setOdo(Math.max(0, Math.ceil((HUD_SWAP - e) / 1000)));
+      if (!swapped && e >= HUD_SWAP) doSwap();
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
   document.addEventListener('click', function (e) {
     if (triggered) return;
     var node = e.target;
@@ -1324,19 +1410,19 @@
           scheduleHorizontalSprite();
           startSubtitleGrowth();
 
-          setTimeout(function () {
+          function revealSticky() {
             if (sticky) { sticky.classList.remove('jj-wait-hidden'); sticky.classList.add('jj-wait-revealing'); }
             bgEnabled = true; update();
-          }, STICKY_REVEAL_AT);
-
-          setTimeout(function () {
+          }
+          function revealNextScenes() {
             nextScenes.forEach(function (b) {
               b.classList.remove('jj-next-scene-hidden');
               b.classList.add('jj-next-scene-revealing');
             });
-          }, NEXT_SCENE_AT);
-
-          setTimeout(function () {
+          }
+          var typedFirst = false;
+          function revealTypewriter() {
+            if (typedFirst) return; typedFirst = true;
             fadeOutSubtitle();
             firstTexts.forEach(function (el) {
               el.classList.remove('jj-first-text-hidden');
@@ -1348,9 +1434,27 @@
                 else startFloatLoop();
               })();
             });
-          }, TYPEWRITER_AT);
+          }
 
-          setTimeout(unlockScroll, UNLOCK_SCROLL_AT);
+          var pcTimers = [];
+          pcTimers.push(setTimeout(revealSticky, STICKY_REVEAL_AT));
+          pcTimers.push(setTimeout(revealTypewriter, TYPEWRITER_AT));
+          pcTimers.push(setTimeout(unlockScroll, UNLOCK_SCROLL_AT));
+
+          try {
+            setupSpeechHUD({
+              revealNextScenes: revealNextScenes,
+              onSkip: function () {
+                pcTimers.forEach(clearTimeout);
+                revealSticky();
+                revealTypewriter();
+                unlockScroll();
+                document.dispatchEvent(new CustomEvent('jj:skip-speech'));
+              }
+            });
+          } catch (err) {
+            pcTimers.push(setTimeout(revealNextScenes, NEXT_SCENE_AT));
+          }
         }, POST_CLICK_DELAY);
 
         return;

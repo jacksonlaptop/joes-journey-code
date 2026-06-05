@@ -252,6 +252,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
       audioTrigger.removeEventListener('click', playAudio);
 
+      // SKIP SPEECH (fired by the homepage HUD): stop the stardust speech, clear captions, music up now.
+      document.addEventListener('jj:skip-speech', function jjSkip() {
+        document.removeEventListener('jj:skip-speech', jjSkip);
+        try { speech.fade(speech.volume(), 0, 350); } catch (e) {}
+        setTimeout(function () { try { speech.stop(); } catch (e) {} }, 350);
+        hideSub(); clearSubs();
+        var si = activeSounds.indexOf(speech); if (si > -1) activeSounds.splice(si, 1);
+        if (amb) amb.fade(amb.volume(), ambBack, 1500);
+      });
+
       if (audioController) {
         audioController.addEventListener('click', function () {
           activeSounds.forEach(function (s) {

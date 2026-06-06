@@ -14,8 +14,8 @@
   var SITTING_ALIEN_HAPPY = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a102060d6130fe4145e128e_happy%20boy.svg';
   var MATRIX_GUY = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a218a72b3fe2da2dabfa4e5_Matrix.png';
 
-  var LANDING_ALIEN_AT = 9000;
-  var LANDING_SPEECH_AT = 13000;
+  var LANDING_ALIEN_AT = 8000;
+  var LANDING_SPEECH_AT = 12000;
   var SPEECH_POST_TYPE_PAUSE = 1000;
   var SPEECH_POST_REVEAL_PAUSE = 4000;
   var SPEECH_BETWEEN_PARTS = 6000;
@@ -44,6 +44,7 @@
   var bgEnabled = false;
   var triggered = false;
   var alienShown = false;
+  var audioLineSaid = false;   // true once he's delivered the sound-on line (PART_1)
   var alienBaseExpression = 'sad';
   var speechLockedWidth = null;
   var landingTimers = [];
@@ -467,6 +468,13 @@
         sittingAlien.style.transition = 'transform 1s cubic-bezier(0.34, 1.56, 0.64, 1)';
         sittingAlien.style.transform = 'translateY(15%)';
         sittingAlien._sulking = false;
+        // "Do you mind" only paused things — if he never got to the sound-on line, pick the flow back up.
+        if (!triggered && !audioLineSaid) {
+          var rt = setTimeout(function () {
+            if (!triggered && !audioLineSaid && sittingAlien && !sittingAlien._sulking) runLandingSpeechSequence();
+          }, 700);
+          landingTimers.push(rt);
+        }
       }, 5000);
     });
 
@@ -640,10 +648,11 @@
     });
   }
 
-  function speakLine(text, mood, onDone) {
+  function speakLine(text, mood, onDone, isAudio) {
     if (triggered) return;
     if (mood === 'happy') makeAlienHappy(); else makeAlienSad();
     typewriterChars(text, function () {
+      if (isAudio) audioLineSaid = true;   // sound-on line is now on screen
       var a = setTimeout(function () {
         if (triggered) return;
         alienFontRevealToCaptions();
@@ -664,14 +673,14 @@
   function runLandingSpeechSequence() {
     if (triggered) return;
     var lines = [
-      { t: SPEECH_PART_1, m: 'happy' },   // the sound request (new expression)
+      { t: SPEECH_PART_1, m: 'happy', audio: true },   // the sound request (new expression)
       { t: SPEECH_PART_2, m: 'happy' },
       { t: SPEECH_PART_3, m: 'sad' },     // ...then the original nudges, a bit later
       { t: SPEECH_PART_4, m: 'sad' }
     ];
     (function next(i) {
       if (triggered || i >= lines.length) return;
-      speakLine(lines[i].t, lines[i].m, function () { next(i + 1); });
+      speakLine(lines[i].t, lines[i].m, function () { next(i + 1); }, lines[i].audio);
     })(0);
   }
 
@@ -1170,15 +1179,7 @@
     HSTARS_AT:    16000   // horizontal-scroll star field appears (stays)
   };
   var BB_Z = 9990;
-  var bigBangTimers = [];
-  function bbTimer(fn, t) { var id = setTimeout(fn, t); bigBangTimers.push(id); return id; }
-  function jjSkipBigBang() {
-    bigBangTimers.forEach(clearTimeout); bigBangTimers = [];
-    var l = document.getElementById('jj-bigbang'); if (l && l.parentNode) l.parentNode.removeChild(l);
-    var bbAliens = document.querySelectorAll('.jj-bb-alien');
-    for (var i = 0; i < bbAliens.length; i++) { if (bbAliens[i].parentNode) bbAliens[i].parentNode.removeChild(bbAliens[i]); }
-    if (animStarsWrap) { animStarsWrap._jjForceVisible = true; animStarsWrap.style.opacity = '1'; }
-  }
+  function bbTimer(fn, t) { return setTimeout(fn, t); }
 
   var bigBangRan = false;
   function runBigBang() {
@@ -1266,7 +1267,6 @@
     trio.forEach(function (cfg) {
       var s = document.createElement('img');
       s.src = cfg.src;
-      s.className = 'jj-bb-alien';
       s.style.cssText = 'position:fixed;width:150px;height:auto;pointer-events:none;z-index:' + BB_Z + ';will-change:transform;transition:transform 0.5s cubic-bezier(0.34,1.5,0.64,1);';
       Object.keys(cfg.anchor).forEach(function (k) { s.style[k] = cfg.anchor[k]; });
       s.style.transform = cfg.hiddenT;
@@ -1277,9 +1277,7 @@
     });
   }
 
-  // ===== Speech HUD: progress bar + a SKIP SPEECH button that counts down, then becomes NEXT SCENE =====
-  var NEXT_ICON_SVG = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.7115 12.661L6.17253 17.85C6.01785 17.9729 5.83221 18.0329 5.64847 18.0329C5.40003 18.0329 5.15347 17.9232 4.98659 17.7141C4.69691 17.3494 4.75783 16.8188 5.12347 16.5291L10.8291 12.0011L5.12347 7.4731C4.75879 7.18342 4.69785 6.65278 4.98659 6.2881C5.27627 5.92342 5.80691 5.86154 6.17159 6.15122L12.7106 11.3402C12.9122 11.5005 13.0294 11.7433 13.0294 12.0012C13.0294 12.259 12.9122 12.5018 12.7106 12.6621L12.7115 12.661ZM18.8767 11.3392L12.3377 6.15017C11.9731 5.86049 11.4424 5.92141 11.1527 6.28704C10.8631 6.65172 10.924 7.18236 11.2896 7.47204L16.9952 12L11.2896 16.528C10.9249 16.8177 10.864 17.3484 11.1527 17.713C11.3196 17.923 11.5652 18.0318 11.8146 18.0318C11.9984 18.0318 12.1831 17.9718 12.3387 17.849L18.8777 12.66C19.0792 12.4997 19.1964 12.2569 19.1964 11.9991C19.1964 11.7412 19.0792 11.4984 18.8777 11.3381L18.8767 11.3392Z" fill="currentColor"/></svg>';
-
+  // ===== Progress bar: fills during the speech, then tracks horizontal-scroll progress to the end =====
   function jjScrollProgress() {
     var hsw = document.querySelector('.horizontal-scroll-wrapper');
     if (!hsw) return 0;
@@ -1287,22 +1285,12 @@
     return Math.min(1, Math.abs(getTranslateX(hsw)) / max);
   }
 
-  function setupSpeechHUD(opts) {
+  function setupProgressBar() {
     if (!document.getElementById('jj-hud-style')) {
       var st = document.createElement('style');
       st.id = 'jj-hud-style';
       st.textContent =
-        '#jj-progress{position:fixed;bottom:0;left:0;height:4px;width:0;z-index:9996;background:linear-gradient(90deg,#FF00F5,#ff7df4);box-shadow:0 0 12px rgba(255,0,245,0.7);opacity:0;transition:opacity 0.5s ease;pointer-events:none;}' +
-        '.jj-skip{position:fixed;z-index:9990;display:flex;align-items:center;gap:11px;padding:14px 22px;background:#fff;border-radius:14px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,0.28);opacity:0;transition:opacity 0.45s ease;font-family:var(--jj-headline-font,Georgia,serif);overflow:hidden;}' +
-        '.jj-skip.is-in{opacity:1;}' +
-        '.jj-skip::after{content:"";position:absolute;inset:0;background:#111;transform:scaleY(0);transform-origin:bottom center;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);z-index:0;border-radius:inherit;}' +
-        '.jj-skip:hover::after{transform:scaleY(1);}' +
-        '.jj-skip>*{position:relative;z-index:1;color:inherit;transition:color 0.3s ease;}' +
-        '.jj-skip:hover,.jj-skip:hover>*{color:#fff;}' +
-        '.jj-skip-ico{display:flex;}' +
-        '.jj-skip-label{letter-spacing:0.06em;white-space:nowrap;}' +
-        '.jj-odo{position:relative;width:1.5em;height:1.2em;overflow:hidden;text-align:center;}' +
-        '.jj-odo span{position:absolute;left:0;right:0;text-align:center;transition:transform 0.32s cubic-bezier(0.5,0,0.2,1),opacity 0.32s ease;}';
+        '#jj-progress{position:fixed;bottom:0;left:0;height:4px;width:0;z-index:9996;background:linear-gradient(90deg,#FF00F5,#ff7df4);box-shadow:0 0 12px rgba(255,0,245,0.7);opacity:0;transition:opacity 0.5s ease;pointer-events:none;}';
       document.head.appendChild(st);
     }
 
@@ -1310,58 +1298,12 @@
     document.body.appendChild(bar);
     requestAnimationFrame(function () { bar.style.opacity = '1'; });
 
-    var nextBtn = document.querySelector('.next-section-button');
-    var skip = document.createElement('div'); skip.className = 'jj-skip';
-    var ico = document.createElement('div'); ico.className = 'jj-skip-ico'; ico.innerHTML = NEXT_ICON_SVG;
-    var lbl = document.createElement('div'); lbl.className = 'jj-skip-label'; lbl.textContent = 'SKIP SPEECH';
-    var odo = document.createElement('div'); odo.className = 'jj-odo';
-    skip.appendChild(ico); skip.appendChild(lbl); skip.appendChild(odo);
-    document.body.appendChild(skip);
-    // Match the real NEXT SCENE button's pill styling (Webflow-styled) so swapping to it is seamless.
-    if (nextBtn) {
-      var ncs = getComputedStyle(nextBtn);
-      ['backgroundColor','borderTopLeftRadius','borderTopRightRadius','borderBottomLeftRadius','borderBottomRightRadius','boxShadow','paddingTop','paddingRight','paddingBottom','paddingLeft','borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','borderStyle','borderColor','fontFamily','fontSize','fontWeight','letterSpacing','color'].forEach(function (p) { try { if (ncs[p]) skip.style[p] = ncs[p]; } catch (e) {} });
-    }
-    function placeSkip() {
-      var r = nextBtn && nextBtn.getBoundingClientRect();
-      if (r && r.width > 10) { skip.style.right = Math.max(0, window.innerWidth - r.right) + 'px'; skip.style.bottom = Math.max(0, window.innerHeight - r.bottom) + 'px'; skip.style.left = ''; skip.style.top = ''; }
-      else { skip.style.right = '34px'; skip.style.bottom = '34px'; skip.style.left = ''; skip.style.top = ''; }
-    }
-    placeSkip();
-    window.addEventListener('resize', placeSkip);
-
-    var curN = null;
-    function setOdo(n) {
-      if (n === curN) return; curN = n;
-      var prev = odo.querySelector('span');
-      var el = document.createElement('span');
-      el.textContent = n; el.style.transform = 'translateY(-110%)'; el.style.opacity = '0';
-      odo.appendChild(el);
-      requestAnimationFrame(function () { el.style.transform = 'translateY(0)'; el.style.opacity = '1'; });
-      if (prev) { prev.style.transform = 'translateY(110%)'; prev.style.opacity = '0'; setTimeout(function () { if (prev.parentNode) prev.parentNode.removeChild(prev); }, 340); }
-    }
-
-    var hudStart = Date.now();
-    var HUD_END = UNLOCK_SCROLL_AT;   // ms from HUD start until the scroll unlocks (~20.5s)
-    var HUD_SHOW = 4000;              // show the skip button (~5s after click)
-    var HUD_SWAP = HUD_END - 3000;    // swap to NEXT SCENE ~3s before unlock
-    var shown = false, swapped = false;
-
-    function doSwap() {
-      if (swapped) return; swapped = true;
-      skip.classList.remove('is-in');
-      setTimeout(function () { if (skip.parentNode) skip.parentNode.removeChild(skip); }, 500);
-      if (opts.revealNextScenes) opts.revealNextScenes();
-    }
-    skip.addEventListener('click', function () { if (opts.onSkip) opts.onSkip(); doSwap(); });
-
+    var start = Date.now();
+    var FILL_UNTIL = UNLOCK_SCROLL_AT;  // fill over the speech; once scroll unlocks, track scroll to the end
     function tick() {
-      var e = Date.now() - hudStart;
-      if (!swapped) bar.style.width = Math.min(100, (e / HUD_SWAP) * 100) + '%';
+      var e = Date.now() - start;
+      if (e < FILL_UNTIL) bar.style.width = Math.min(100, (e / FILL_UNTIL) * 100) + '%';
       else bar.style.width = (jjScrollProgress() * 100) + '%';
-      if (!shown && e >= HUD_SHOW && !swapped) { shown = true; skip.classList.add('is-in'); placeSkip(); }
-      if (shown && !swapped) setOdo(Math.max(0, Math.ceil((HUD_SWAP - e) / 1000)));
-      if (!swapped && e >= HUD_SWAP) doSwap();
       requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
@@ -1451,28 +1393,11 @@
             });
           }
 
-          var pcTimers = [];
-          pcTimers.push(setTimeout(revealSticky, STICKY_REVEAL_AT));
-          pcTimers.push(setTimeout(revealTypewriter, TYPEWRITER_AT));
-          pcTimers.push(setTimeout(unlockScroll, UNLOCK_SCROLL_AT));
-
-          try {
-            setupSpeechHUD({
-              revealNextScenes: revealNextScenes,
-              onSkip: function () {
-                pcTimers.forEach(clearTimeout);
-                jjSkipBigBang();      // collapse the whole big-bang sequence to its end state
-                landingTimers.forEach(clearTimeout); landingTimers = [];
-                hideAlienSpeech();
-                revealSticky();
-                revealTypewriter();
-                unlockScroll();
-                document.dispatchEvent(new CustomEvent('jj:skip-speech'));
-              }
-            });
-          } catch (err) {
-            pcTimers.push(setTimeout(revealNextScenes, NEXT_SCENE_AT));
-          }
+          setTimeout(revealSticky, STICKY_REVEAL_AT);
+          setTimeout(revealNextScenes, NEXT_SCENE_AT);
+          setTimeout(revealTypewriter, TYPEWRITER_AT);
+          setTimeout(unlockScroll, UNLOCK_SCROLL_AT);
+          setupProgressBar();
         }, POST_CLICK_DELAY);
 
         return;

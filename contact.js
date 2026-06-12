@@ -166,12 +166,15 @@
     };
   }
   // Positional float-out: left letters drift LEFT, middle go UP/DOWN, right drift RIGHT.
-  // Some grow, some shrink. ~20% switch to alien font, ~20% turn hot pink.
-  function floatOut(chars, headEl){
-    if (!chars || !chars.length) { gsap.to('.jj-copy', { opacity:0, scale:1.4, duration:1.6, ease:'power1.out' }); return; }
+  // Left→right stagger, slow drift, some grow/shrink, ~20% alien font, ~20% hot pink.
+  function floatOut(headEl){
+    var chars = headEl._jjChars || [];
+    (headEl._jjBobs || []).forEach(function (b) { b.kill(); });   // stop the continuous float
+    if (!chars.length) { gsap.to('.jj-copy', { opacity:0, duration:1.8, ease:'power1.out' }); return; }
     headEl.style.clipPath = 'none';
+    chars.forEach(function (c) { gsap.set(c, { y:0 }); });        // clear bob residual before measuring
     var hostRect = headEl.getBoundingClientRect();
-    var rects = chars.map(function (c) { return c.getBoundingClientRect(); }); // measure all first (no reflow surprises)
+    var rects = chars.map(function (c) { return c.getBoundingClientRect(); });
     var leftEdge = hostRect.left, width = hostRect.width || 1;
     chars.forEach(function (c, i) {
       var r = rects[i];
@@ -181,59 +184,81 @@
       c.style.margin = '0';
       var rel = ((r.left + r.width / 2) - leftEdge) / width;   // 0 = far left, 1 = far right
       var dx, dy;
-      if (rel < 0.34)       { dx = -(700 + Math.random() * 700); dy = (Math.random() - 0.5) * 120; }  // LEFT
-      else if (rel > 0.66)  { dx =  (700 + Math.random() * 700); dy = (Math.random() - 0.5) * 120; }  // RIGHT
-      else                  { dx = (Math.random() - 0.5) * 120; dy = (Math.random() < 0.5 ? -1 : 1) * (480 + Math.random() * 600); } // MIDDLE up/down
+      if (rel < 0.34)       { dx = -(700 + Math.random() * 700); dy = (Math.random() - 0.5) * 140; }  // LEFT
+      else if (rel > 0.66)  { dx =  (700 + Math.random() * 700); dy = (Math.random() - 0.5) * 140; }  // RIGHT
+      else                  { dx = (Math.random() - 0.5) * 140; dy = (Math.random() < 0.5 ? -1 : 1) * (520 + Math.random() * 640); } // MIDDLE up/down
       if (Math.random() < 0.2) c.style.fontFamily = "'Joes Journey Hieroglyphics', monospace"; // ~20% alien
       if (Math.random() < 0.2) c.style.color = '#FF00F5';                                       // ~20% hot pink
       var grow = Math.random() < 0.5;
-      var dur = 2.2 + Math.random() * 1.8, del = Math.random() * 0.25;
+      var dur = 3.6 + Math.random() * 2.4;           // SLOW (3.6–6.0s)
+      var del = rel * 1.5 + Math.random() * 0.15;    // LEFT → RIGHT, not all at once
       gsap.to(c, {
-        x: dx, y: dy, rotation: gsap.utils.random(-120, 120),
+        x: dx, y: dy, rotation: gsap.utils.random(-110, 110),
         scale: grow ? gsap.utils.random(1.6, 2.8) : gsap.utils.random(0.15, 0.5),
         duration: dur, ease: 'power1.out', delay: del
       });
-      gsap.to(c, { opacity: 0, duration: dur * 0.55, delay: del + dur * 0.45, ease: 'sine.in' });
+      gsap.to(c, { opacity: 0, duration: dur * 0.6, delay: del + dur * 0.4, ease: 'sine.in' });
     });
   }
 
   function init(){
     lockScroll();
-    var T = { bgIn:0.7, alienIn:0.6, flyAt:0.2, fly:2.8, holdReveal:0.4 };
+    var W = window.innerWidth;
+    var T = { bgIn:0.7, flyAt:0.2, fly:2.8, holdReveal:0.6 };
     var headEl = document.querySelector('.jj-head');
-    headEl.style.clipPath = 'none';                  // letters float in/out instead of a clip wipe
+    headEl.style.clipPath = 'none';
+    gsap.set('.jj-alien', { opacity:0 });            // headline letters now carry both states
 
-    // split the headline into letters up front
     var chars = [];
     if (typeof SplitType !== 'undefined') {
       var split = new SplitType('.jj-head .jj-inner', { types:'chars' });
       chars = split.chars;
-      chars.forEach(function (c) { c.classList.add('jj-char'); });
     }
 
+    // Each letter: fix its width (so the alien↔JJ font swap can't reflow the line),
+    // start in the ALIEN font dim + hidden, and bob continuously (already floating).
+    var bobs = [];
+    chars.forEach(function (c) {
+      var r = c.getBoundingClientRect();
+      c.classList.add('jj-char');
+      c.style.display = 'inline-block';
+      c.style.width = r.width + 'px';
+      c.style.textAlign = 'center';
+      c._jjCx = r.left + r.width / 2;                 // letter centre, for dragon-sync
+      c.style.fontFamily = "'Joes Journey Hieroglyphics', monospace";
+      c.style.color = 'rgba(255,255,255,0.32)';
+      gsap.set(c, { opacity:0, y:0 });
+      bobs.push(gsap.to(c, { y:'-=10', duration:1.2 + Math.random() * 0.9, repeat:-1, yoyo:true, ease:'sine.inOut', delay:Math.random() * 0.8 }));
+    });
+    headEl._jjChars = chars;
+    headEl._jjBobs = bobs;
+
     gsap.set('#jj-intro-bg', { opacity:0, scale:1.04 });
-    gsap.set('.jj-alien', { opacity:0 });
-    gsap.set(chars, { opacity:0, y:42, scale:0.85 });           // letters start hidden, below
     gsap.set('#jj-dragon', { opacity:0, x:-vw(.72), y:0, rotation:4 });
 
     var tl = gsap.timeline({ defaults:{ ease:'power2.out' } });
-    tl.to('#jj-intro-bg', { opacity:1, scale:1, duration:T.bgIn, ease:'power1.out' }, 0)
-      .to('.jj-alien', { opacity:1, duration:T.alienIn }, 0.1);
+    tl.to('#jj-intro-bg', { opacity:1, scale:1, duration:T.bgIn, ease:'power1.out' }, 0);
 
-    // dragon + reveal start ~0.2s (2s earlier than before)
+    // dragon flight — linear so the reveal can track its x
     tl.set('#jj-dragon', { opacity:1 }, T.flyAt)
       .to('#jj-dragon', { x:vw(.55), duration:T.fly, ease:'none' }, T.flyAt)
       .to('#jj-dragon', { keyframes:{ y:[0,-26,14,-18,0] }, duration:T.fly, ease:'sine.inOut' }, T.flyAt)
       .to('#jj-dragon', { x:vw(.8), opacity:0, duration:0.7, ease:'power1.in' }, T.flyAt + T.fly);
 
-    // letters FLOAT IN, staggered left→right, tracking the flyer
-    var revealStart = T.flyAt + 0.3, stagEach = 0.045, charDur = 0.6;
-    tl.to(chars, { opacity:1, y:0, scale:1, duration:charDur, ease:'back.out(1.5)', stagger:{ each:stagEach, from:'start' } }, revealStart)
-      .to('.jj-alien', { opacity:0, duration:0.7, ease:'none' }, revealStart + 0.2);
+    // dragon-synced reveal: as the dragon's x reaches each letter, convert it alien → Joe's Journey
+    var startX = -vw(.72), endX = vw(.55), span = (endX - startX) || 1;
+    var lastT = T.flyAt;
+    chars.forEach(function (c) {
+      var frac = Math.max(0, Math.min(1, (c._jjCx - W / 2 - startX) / span));
+      var revT = T.flyAt + frac * T.fly;
+      if (revT > lastT) lastT = revT;
+      tl.to(c, { opacity:1, duration:0.35, ease:'power1.out' }, Math.max(0, revT - 0.3));                     // comes in (alien, dim)
+      tl.call(function () { c.style.fontFamily = "'Joes Journey Headline', sans-serif"; c.style.color = '#fff'; }, null, revT); // → Joe's Journey
+      tl.fromTo(c, { scale:1 }, { scale:1.16, duration:0.13, yoyo:true, repeat:1, ease:'power2.out' }, revT);  // little pop
+    });
 
-    // then float out, shortly after the last letter lands
-    var revealEnd = revealStart + (chars.length ? (chars.length - 1) * stagEach : 0) + charDur;
-    tl.call(function () { floatOut(chars, headEl); }, null, revealEnd + T.holdReveal);
+    // after the last letter is converted, disperse left → right
+    tl.call(function () { floatOut(headEl); }, null, lastT + T.holdReveal);
   }
 
   /* ---- mount ---- */

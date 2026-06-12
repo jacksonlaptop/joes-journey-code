@@ -7,25 +7,21 @@
    TO UPDATE: edit this file → re-upload contact.js to the repo → purge jsDelivr:
      https://purge.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/contact.js
 
-   FONTS: self-hosted. Upload jj-headline.woff + jj-hieroglyphics.woff to the
-   repo root ONCE (they don't change). This file loads them via @font-face, so
-   the headline font no longer depends on Webflow serving it.
+   FONTS: uses the site's own Webflow brand fonts ('Joes Journey Headline 2'
+   and 'Joes Journey Hieroglyphics') — no font files needed in the repo.
+   The jj-headline.woff / jj-hieroglyphics.woff uploads are now unused.
    ============================================================================ */
 (function () {
-  var BASE = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
-
-  /* ---- 1. styles: self-hosted fonts + layout ---- */
+  /* ---- 1. styles: uses the site's OWN Webflow brand fonts (already served) ---- */
   var CSS = `
-@font-face{font-family:'JJ Headline';src:url('${BASE}jj-headline.woff') format('woff');font-display:swap;}
-@font-face{font-family:'JJ Hieroglyphics';src:url('${BASE}jj-hieroglyphics.woff') format('woff');font-display:swap;}
 #jj-intro{position:fixed;inset:0;overflow:hidden;z-index:50;background:#091725;}
 #jj-intro-bg{position:absolute;inset:0;}
 #jj-intro-bg svg{position:absolute;inset:0;width:100%;height:100%;display:block;}
 #jj-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
 .jj-copy{display:inline-grid;white-space:nowrap;text-align:center;}
 .jj-alien,.jj-head{grid-area:1/1;margin:0;font-size:clamp(20px,4vw,54px);line-height:1.2;letter-spacing:.01em;}
-.jj-alien{font-family:'JJ Hieroglyphics',monospace;color:#22384b;}
-.jj-head{position:relative;--r:100%;font-family:'JJ Headline',sans-serif;color:#fff;-webkit-text-stroke:1px rgba(0,0,0,.35);paint-order:stroke fill;text-shadow:0 2px 10px rgba(0,0,0,.5);clip-path:inset(0 var(--r) 0 0);}
+.jj-alien{font-family:'Joes Journey Hieroglyphics',monospace;color:#22384b;}
+.jj-head{position:relative;--r:100%;font-family:'Joes Journey Headline',sans-serif;color:#fff;-webkit-text-stroke:1px rgba(0,0,0,.35);paint-order:stroke fill;text-shadow:0 2px 10px rgba(0,0,0,.5);clip-path:inset(0 var(--r) 0 0);}
 .jj-head .jj-char{display:inline-block;will-change:transform,opacity;}
 #jj-dragon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:150px;pointer-events:none;}
 #jj-dragon svg{display:block;width:100%;height:auto;}`;
@@ -35,12 +31,13 @@
   style.textContent = CSS;
   document.head.appendChild(style);
 
-  /* Start loading the self-hosted fonts immediately, so the intro can wait for
-     them before revealing any text (prevents the fallback-font flash / FOUT). */
+  /* Start loading the brand fonts immediately so the intro can wait for them
+     before revealing any text (prevents the fallback-font flash / FOUT). */
   var fontsReady = (document.fonts && document.fonts.load)
     ? Promise.all([
-        document.fonts.load("1em 'JJ Headline'"),
-        document.fonts.load("1em 'JJ Hieroglyphics'")
+        document.fonts.load("1em 'Joes Journey Headline 2'"),
+        document.fonts.load("1em 'Joes Journey Headline'"),
+        document.fonts.load("1em 'Joes Journey Hieroglyphics'")
       ]).catch(function () {})
     : Promise.resolve();
 

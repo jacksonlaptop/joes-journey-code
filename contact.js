@@ -165,49 +165,75 @@
       try { if (window.lenis && window.lenis.start) window.lenis.start(); } catch (e) {}
     };
   }
-  function dust(){
-    var host = document.querySelector('.jj-head');
-    if (typeof SplitType === 'undefined') { gsap.to('.jj-copy', { scale:1.6, opacity:0, duration:2.4, ease:'power1.out' }); return; }
-    host.style.clipPath = 'none';
-    var split = new SplitType('.jj-head .jj-inner', { types:'chars' });
-    split.chars.forEach(function (c) {
-      c.classList.add('jj-char');
-      var ang = Math.random() * Math.PI * 2;
-      var dist = 650 + Math.random() * 1150;
+  // Positional float-out: left letters drift LEFT, middle go UP/DOWN, right drift RIGHT.
+  // Some grow, some shrink. ~20% switch to alien font, ~20% turn hot pink.
+  function floatOut(chars, headEl){
+    if (!chars || !chars.length) { gsap.to('.jj-copy', { opacity:0, scale:1.4, duration:1.6, ease:'power1.out' }); return; }
+    headEl.style.clipPath = 'none';
+    var hostRect = headEl.getBoundingClientRect();
+    var rects = chars.map(function (c) { return c.getBoundingClientRect(); }); // measure all first (no reflow surprises)
+    var leftEdge = hostRect.left, width = hostRect.width || 1;
+    chars.forEach(function (c, i) {
+      var r = rects[i];
+      c.style.position = 'absolute';                 // freeze so the alien-font swap can't reflow the line
+      c.style.left = (r.left - hostRect.left) + 'px';
+      c.style.top  = (r.top  - hostRect.top)  + 'px';
+      c.style.margin = '0';
+      var rel = ((r.left + r.width / 2) - leftEdge) / width;   // 0 = far left, 1 = far right
+      var dx, dy;
+      if (rel < 0.34)       { dx = -(700 + Math.random() * 700); dy = (Math.random() - 0.5) * 120; }  // LEFT
+      else if (rel > 0.66)  { dx =  (700 + Math.random() * 700); dy = (Math.random() - 0.5) * 120; }  // RIGHT
+      else                  { dx = (Math.random() - 0.5) * 120; dy = (Math.random() < 0.5 ? -1 : 1) * (480 + Math.random() * 600); } // MIDDLE up/down
+      if (Math.random() < 0.2) c.style.fontFamily = "'Joes Journey Hieroglyphics', monospace"; // ~20% alien
+      if (Math.random() < 0.2) c.style.color = '#FF00F5';                                       // ~20% hot pink
       var grow = Math.random() < 0.5;
-      var dur = 2.6 + Math.random() * 2.8;
-      var del = Math.random() * 0.7;
+      var dur = 2.2 + Math.random() * 1.8, del = Math.random() * 0.25;
       gsap.to(c, {
-        x: Math.cos(ang) * dist,
-        y: Math.sin(ang) * dist - (40 + Math.random() * 160),
-        rotation: gsap.utils.random(-180, 180),
-        scale: grow ? gsap.utils.random(1.6, 3.0) : gsap.utils.random(0.1, 0.45),
+        x: dx, y: dy, rotation: gsap.utils.random(-120, 120),
+        scale: grow ? gsap.utils.random(1.6, 2.8) : gsap.utils.random(0.15, 0.5),
         duration: dur, ease: 'power1.out', delay: del
       });
-      gsap.to(c, { opacity:0, duration: dur * 0.55, delay: del + dur * 0.45, ease:'sine.in' });
+      gsap.to(c, { opacity: 0, duration: dur * 0.55, delay: del + dur * 0.45, ease: 'sine.in' });
     });
   }
+
   function init(){
     lockScroll();
-    var T = { bgIn:1.0, alienIn:.9, hold:1.0, fly:2.8, reveal:2.2, holdReveal:2.2 };
+    var T = { bgIn:0.7, alienIn:0.6, flyAt:0.2, fly:2.8, holdReveal:0.4 };
+    var headEl = document.querySelector('.jj-head');
+    headEl.style.clipPath = 'none';                  // letters float in/out instead of a clip wipe
+
+    // split the headline into letters up front
+    var chars = [];
+    if (typeof SplitType !== 'undefined') {
+      var split = new SplitType('.jj-head .jj-inner', { types:'chars' });
+      chars = split.chars;
+      chars.forEach(function (c) { c.classList.add('jj-char'); });
+    }
+
     gsap.set('#jj-intro-bg', { opacity:0, scale:1.04 });
     gsap.set('.jj-alien', { opacity:0 });
-    gsap.set('.jj-head', { '--r':'100%' });
+    gsap.set(chars, { opacity:0, y:42, scale:0.85 });           // letters start hidden, below
     gsap.set('#jj-dragon', { opacity:0, x:-vw(.72), y:0, rotation:4 });
 
     var tl = gsap.timeline({ defaults:{ ease:'power2.out' } });
-    tl.to('#jj-intro-bg', { opacity:1, scale:1, duration:T.bgIn, ease:'power1.out' })
-      .to('.jj-alien', { opacity:1, duration:T.alienIn }, 0.3);
+    tl.to('#jj-intro-bg', { opacity:1, scale:1, duration:T.bgIn, ease:'power1.out' }, 0)
+      .to('.jj-alien', { opacity:1, duration:T.alienIn }, 0.1);
 
-    tl.addLabel('flight', '+=' + T.hold)
-      .set('#jj-dragon', { opacity:1 }, 'flight')
-      .to('#jj-dragon', { x:vw(.55), duration:T.fly, ease:'none' }, 'flight')
-      .to('#jj-dragon', { keyframes:{ y:[0,-26,14,-18,0] }, duration:T.fly, ease:'sine.inOut' }, 'flight')
-      .to('.jj-head', { '--r':'0%', duration:T.reveal, ease:'none' }, 'flight+=0.45')
-      .to('.jj-alien', { opacity:0, duration:T.reveal*0.7, ease:'none' }, 'flight+=0.7')
-      .to('#jj-dragon', { x:vw(.8), opacity:0, duration:0.7, ease:'power1.in' }, 'flight+=' + T.fly);
+    // dragon + reveal start ~0.2s (2s earlier than before)
+    tl.set('#jj-dragon', { opacity:1 }, T.flyAt)
+      .to('#jj-dragon', { x:vw(.55), duration:T.fly, ease:'none' }, T.flyAt)
+      .to('#jj-dragon', { keyframes:{ y:[0,-26,14,-18,0] }, duration:T.fly, ease:'sine.inOut' }, T.flyAt)
+      .to('#jj-dragon', { x:vw(.8), opacity:0, duration:0.7, ease:'power1.in' }, T.flyAt + T.fly);
 
-    tl.to({}, { duration:T.holdReveal }).add(dust);
+    // letters FLOAT IN, staggered left→right, tracking the flyer
+    var revealStart = T.flyAt + 0.3, stagEach = 0.045, charDur = 0.6;
+    tl.to(chars, { opacity:1, y:0, scale:1, duration:charDur, ease:'back.out(1.5)', stagger:{ each:stagEach, from:'start' } }, revealStart)
+      .to('.jj-alien', { opacity:0, duration:0.7, ease:'none' }, revealStart + 0.2);
+
+    // then float out, shortly after the last letter lands
+    var revealEnd = revealStart + (chars.length ? (chars.length - 1) * stagEach : 0) + charDur;
+    tl.call(function () { floatOut(chars, headEl); }, null, revealEnd + T.holdReveal);
   }
 
   /* ---- mount ---- */

@@ -172,7 +172,7 @@
     (headEl._jjBobs || []).forEach(function (b) { b.kill(); });   // stop the continuous float
     if (!chars.length) { gsap.to('.jj-copy', { opacity:0, duration:1.8, ease:'power1.out' }); return; }
     headEl.style.clipPath = 'none';
-    chars.forEach(function (c) { gsap.set(c, { y:0 }); });        // clear bob residual before measuring
+    // measure each letter at its CURRENT floating position (don't snap to a straight line first)
     var hostRect = headEl.getBoundingClientRect();
     var rects = chars.map(function (c) { return c.getBoundingClientRect(); });
     var leftEdge = hostRect.left, width = hostRect.width || 1;
@@ -182,11 +182,13 @@
       c.style.left = (r.left - hostRect.left) + 'px';
       c.style.top  = (r.top  - hostRect.top)  + 'px';
       c.style.margin = '0';
+      gsap.set(c, { x:0, y:0 });                     // left/top now hold the floating position → clear bob transform (no jump)
       var rel = ((r.left + r.width / 2) - leftEdge) / width;   // 0 = far left, 1 = far right
       var dx, dy;
-      if (rel < 0.34)       { dx = -(700 + Math.random() * 700); dy = (Math.random() - 0.5) * 140; }  // LEFT
-      else if (rel > 0.66)  { dx =  (700 + Math.random() * 700); dy = (Math.random() - 0.5) * 140; }  // RIGHT
-      else                  { dx = (Math.random() - 0.5) * 140; dy = (Math.random() < 0.5 ? -1 : 1) * (520 + Math.random() * 640); } // MIDDLE up/down
+      // primary bias (left→left, right→right, middle→up/down) + a big cross-axis component = diagonal & varied
+      if (rel < 0.34)       { dx = -(550 + Math.random() * 850); dy = (Math.random() - 0.5) * 900; }  // LEFT-ish, diagonal
+      else if (rel > 0.66)  { dx =  (550 + Math.random() * 850); dy = (Math.random() - 0.5) * 900; }  // RIGHT-ish, diagonal
+      else                  { dx = (Math.random() - 0.5) * 650; dy = (Math.random() < 0.5 ? -1 : 1) * (450 + Math.random() * 600); } // MIDDLE, up/down + spread
       if (Math.random() < 0.2) c.style.fontFamily = "'Joes Journey Hieroglyphics', monospace"; // ~20% alien
       if (Math.random() < 0.2) c.style.color = '#FF00F5';                                       // ~20% hot pink
       var grow = Math.random() < 0.5;

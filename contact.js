@@ -184,7 +184,7 @@
       if (rel < 0.34)       { dx = -(550 + Math.random() * 850); dy = (Math.random() - 0.5) * 900; }  // LEFT-ish, diagonal
       else if (rel > 0.66)  { dx =  (550 + Math.random() * 850); dy = (Math.random() - 0.5) * 900; }  // RIGHT-ish, diagonal
       else                  { dx = (Math.random() - 0.5) * 650; dy = (Math.random() < 0.5 ? -1 : 1) * (450 + Math.random() * 600); } // MIDDLE, up/down + spread
-      var goAlien = Math.random() < 0.2, goPink = Math.random() < 0.2;  // ~20% alien, ~20% hot pink
+      var goAlien = Math.random() < 0.5, goPink = Math.random() < 0.2;  // ~50% alien, ~20% hot pink
       var grow = Math.random() < 0.5;
       var dur = 3.6 + Math.random() * 2.4;           // SLOW (3.6–6.0s)
       var del = rel * 1.5 + Math.random() * 0.15;    // LEFT → RIGHT, not all at once
@@ -255,8 +255,9 @@
       tl.fromTo(c, { scale:1 }, { scale:1.16, duration:0.13, yoyo:true, repeat:1, ease:'power2.out' }, revT);  // little pop
     });
 
-    // after the last letter is converted, disperse left → right
-    tl.call(function () { floatOut(headEl); }, null, lastT + T.holdReveal);
+    // disperse starts 0.5s before the dragon leaves the screen (but never before the last letter lands)
+    var dragonLeaveT = T.flyAt + T.fly + 0.7;        // dragon's exit tween finishes = fully gone
+    tl.call(function () { floatOut(headEl); }, null, Math.max(lastT + 0.1, dragonLeaveT - 0.5));
   }
 
   /* ---- mount ---- */

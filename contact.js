@@ -169,8 +169,8 @@
   // Left→right stagger, slow drift, some grow/shrink, ~20% alien font, ~20% hot pink.
   function floatOut(headEl){
     var chars = headEl._jjChars || [];
-    (headEl._jjBobs || []).forEach(function (b) { b.kill(); });   // stop the continuous float
-    if (!chars.length) { gsap.to('.jj-copy', { opacity:0, duration:1.8, ease:'power1.out' }); return; }
+    var bobs = headEl._jjBobs || [];
+    if (!chars.length) { bobs.forEach(function (b) { b.kill(); }); gsap.to('.jj-copy', { opacity:0, duration:1.8, ease:'power1.out' }); return; }
     headEl.style.clipPath = 'none';
     // Letters stay in flow (their widths are fixed, so the font swap can't reflow). We just
     // animate each one's transform FROM wherever it's currently floating — no snap/jump.
@@ -184,15 +184,16 @@
       if (rel < 0.34)       { dx = -(550 + Math.random() * 850); dy = (Math.random() - 0.5) * 900; }  // LEFT-ish, diagonal
       else if (rel > 0.66)  { dx =  (550 + Math.random() * 850); dy = (Math.random() - 0.5) * 900; }  // RIGHT-ish, diagonal
       else                  { dx = (Math.random() - 0.5) * 650; dy = (Math.random() < 0.5 ? -1 : 1) * (450 + Math.random() * 600); } // MIDDLE, up/down + spread
-      if (Math.random() < 0.2) c.style.fontFamily = "'Joes Journey Hieroglyphics', monospace"; // ~20% alien
-      if (Math.random() < 0.2) c.style.color = '#FF00F5';                                       // ~20% hot pink
+      var goAlien = Math.random() < 0.2, goPink = Math.random() < 0.2;  // ~20% alien, ~20% hot pink
       var grow = Math.random() < 0.5;
       var dur = 3.6 + Math.random() * 2.4;           // SLOW (3.6–6.0s)
       var del = rel * 1.5 + Math.random() * 0.15;    // LEFT → RIGHT, not all at once
       gsap.to(c, {
         x: dx, y: dy, rotation: gsap.utils.random(-110, 110),
         scale: grow ? gsap.utils.random(1.6, 2.8) : gsap.utils.random(0.15, 0.5),
-        duration: dur, ease: 'power1.out', delay: del
+        duration: dur, ease: 'power1.out', delay: del,
+        overwrite: 'auto',   // takes over from this letter's float exactly when it starts — keeps bobbing until then
+        onStart: function () { if (goAlien) c.style.fontFamily = "'Joes Journey Hieroglyphics', monospace"; if (goPink) c.style.color = '#FF00F5'; }
       });
       gsap.to(c, { opacity: 0, duration: dur * 0.6, delay: del + dur * 0.4, ease: 'sine.in' });
     });

@@ -35,6 +35,15 @@
   style.textContent = CSS;
   document.head.appendChild(style);
 
+  /* Start loading the self-hosted fonts immediately, so the intro can wait for
+     them before revealing any text (prevents the fallback-font flash / FOUT). */
+  var fontsReady = (document.fonts && document.fonts.load)
+    ? Promise.all([
+        document.fonts.load("1em 'JJ Headline'"),
+        document.fonts.load("1em 'JJ Hieroglyphics'")
+      ]).catch(function () {})
+    : Promise.resolve();
+
   /* ---- 2. markup: swirl bg + copy + placeholder dragon (swap for Rive) ---- */
   var HTML = `<div id="jj-intro" aria-hidden="true">
   <div id="jj-intro-bg"><svg width="1627" height="982" viewBox="0 0 1627 982" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
@@ -210,7 +219,7 @@
     var wrap = document.createElement('div');
     wrap.innerHTML = HTML;
     document.body.appendChild(wrap.firstChild);
-    whenReady(init);
+    whenReady(function () { fontsReady.then(init); });   // wait for libs AND fonts before revealing text
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
   else mount();

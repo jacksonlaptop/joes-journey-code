@@ -172,17 +172,12 @@
     (headEl._jjBobs || []).forEach(function (b) { b.kill(); });   // stop the continuous float
     if (!chars.length) { gsap.to('.jj-copy', { opacity:0, duration:1.8, ease:'power1.out' }); return; }
     headEl.style.clipPath = 'none';
-    // measure each letter at its CURRENT floating position (don't snap to a straight line first)
+    // Letters stay in flow (their widths are fixed, so the font swap can't reflow). We just
+    // animate each one's transform FROM wherever it's currently floating — no snap/jump.
     var hostRect = headEl.getBoundingClientRect();
-    var rects = chars.map(function (c) { return c.getBoundingClientRect(); });
     var leftEdge = hostRect.left, width = hostRect.width || 1;
-    chars.forEach(function (c, i) {
-      var r = rects[i];
-      c.style.position = 'absolute';                 // freeze so the alien-font swap can't reflow the line
-      c.style.left = (r.left - hostRect.left) + 'px';
-      c.style.top  = (r.top  - hostRect.top)  + 'px';
-      c.style.margin = '0';
-      gsap.set(c, { x:0, y:0 });                     // left/top now hold the floating position → clear bob transform (no jump)
+    chars.forEach(function (c) {
+      var r = c.getBoundingClientRect();
       var rel = ((r.left + r.width / 2) - leftEdge) / width;   // 0 = far left, 1 = far right
       var dx, dy;
       // primary bias (left→left, right→right, middle→up/down) + a big cross-axis component = diagonal & varied

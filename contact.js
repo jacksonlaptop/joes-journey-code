@@ -17,14 +17,22 @@
 #jj-intro{position:fixed;inset:0;overflow:hidden;z-index:50;background:#091725;}
 #jj-intro-bg{position:absolute;inset:0;}
 #jj-intro-bg svg{position:absolute;inset:0;width:100%;height:100%;display:block;}
+#jj-stars{position:absolute;inset:0;pointer-events:none;}
+.jj-deco{position:absolute;pointer-events:none;height:auto;display:block;}
+@keyframes jj-flash{0%,100%{transform:scale(0.7);opacity:0.3;}50%{transform:scale(1.4);opacity:1;}}
+@keyframes jj-glow{0%,100%{filter:drop-shadow(0 0 8px rgba(255,255,255,0.7)) drop-shadow(0 0 24px rgba(255,255,255,0.4));}50%{filter:drop-shadow(0 0 45px rgba(255,255,255,1)) drop-shadow(0 0 90px rgba(255,255,255,0.75)) drop-shadow(0 0 160px rgba(180,200,255,0.5));}}
+@keyframes jj-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+@keyframes jj-spin-reverse{from{transform:rotate(360deg);}to{transform:rotate(0deg);}}
+#jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
+#jj-wipe-line{position:absolute;top:0;bottom:0;left:var(--wp,0%);width:2px;margin-left:-1px;background:linear-gradient(to bottom,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;z-index:61;pointer-events:none;}
 #jj-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
 .jj-copy{display:inline-grid;white-space:nowrap;text-align:center;}
 .jj-alien,.jj-head{grid-area:1/1;margin:0;font-size:clamp(20px,4vw,54px);line-height:1.2;letter-spacing:.01em;}
 .jj-alien{font-family:'Joes Journey Hieroglyphics',monospace;color:#22384b;}
 .jj-head{position:relative;--r:100%;font-family:'Joes Journey Headline',sans-serif;color:#fff;-webkit-text-stroke:1px rgba(0,0,0,.35);paint-order:stroke fill;text-shadow:0 2px 10px rgba(0,0,0,.5);clip-path:inset(0 var(--r) 0 0);}
 .jj-head .jj-char{display:inline-block;will-change:transform,opacity;}
-#jj-dragon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:150px;pointer-events:none;}
-#jj-dragon svg{display:block;width:100%;height:auto;}`;
+#jj-dragon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:155px;pointer-events:none;}
+#jj-dragon .jj-dragon-sprite{width:100%;height:100%;background-image:url('https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-sprite.png');background-repeat:no-repeat;background-size:900% 800%;}`;
 
   var style = document.createElement('style');
   style.id = 'jj-contact-style';
@@ -112,17 +120,13 @@
 </clipPath>
 </defs>
 </svg></div>
+  <div id="jj-stars"></div>
   <div id="jj-stage"><div class="jj-copy">
     <p class="jj-alien">How would you like to get in touch</p>
     <p class="jj-head"><span class="jj-inner">How would you like to get in touch</span></p>
   </div></div>
-  <div id="jj-dragon"><svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
-    <path d="M14 86 C2 96 6 70 28 70 C70 70 92 58 120 60 C150 62 168 60 180 66 C168 78 150 74 122 76 C96 78 70 96 40 92 C28 90 22 80 14 86Z" fill="#F2867F"/>
-    <path d="M120 60 C120 44 132 30 150 30 C172 30 186 44 186 64 C186 80 172 90 152 88 C150 70 138 62 120 60Z" fill="#F2867F"/>
-    <path d="M120 60 C108 40 112 24 124 16 C120 38 138 46 150 48 C140 56 130 60 120 60Z" fill="#F7B6B1"/>
-    <circle cx="160" cy="56" r="7" fill="#fff"/><circle cx="161" cy="56" r="4" fill="#1a0a2a"/>
-    <path d="M170 64 q6 5 12 1" stroke="#1a0a2a" stroke-width="2" fill="none" stroke-linecap="round"/>
-  </svg></div>
+  <div id="jj-dragon"><div class="jj-dragon-sprite"></div></div>
+  <div id="jj-wipe"></div><div id="jj-wipe-line"></div>
 </div>`;
 
   /* ---- 3. choreography ---- */
@@ -186,23 +190,23 @@
       else                  { dx = (Math.random() - 0.5) * 650; dy = (Math.random() < 0.5 ? -1 : 1) * (450 + Math.random() * 600); } // MIDDLE, up/down + spread
       var goAlien = Math.random() < 0.5, goPink = Math.random() < 0.2;  // ~50% alien, ~20% hot pink
       var grow = Math.random() < 0.5;
-      var dur = 3.6 + Math.random() * 2.4;           // SLOW (3.6–6.0s)
+      var dur = 6 + Math.random() * 3;               // SLOW drift (6–9s)
       var del = rel * 1.5 + Math.random() * 0.15;    // LEFT → RIGHT, not all at once
       gsap.to(c, {
         x: dx, y: dy, rotation: gsap.utils.random(-110, 110),
         scale: grow ? gsap.utils.random(1.6, 2.8) : gsap.utils.random(0.15, 0.5),
-        duration: dur, ease: 'power1.out', delay: del,
+        duration: dur, ease: 'sine.inOut', delay: del,   // very slow start, gentle throughout — no fast fly-off
         overwrite: 'auto',   // takes over from this letter's float exactly when it starts — keeps bobbing until then
         onStart: function () { if (goAlien) c.style.fontFamily = "'Joes Journey Hieroglyphics', monospace"; if (goPink) c.style.color = '#FF00F5'; }
       });
-      gsap.to(c, { opacity: 0, duration: dur * 0.6, delay: del + dur * 0.4, ease: 'sine.in' });
+      gsap.to(c, { opacity: 0, duration: dur * 0.5, delay: del + dur * 0.45, ease: 'power1.in' });  // fade out toward the edge instead of flying off
     });
   }
 
   function init(){
     lockScroll();
     var W = window.innerWidth;
-    var T = { bgIn:0.7, flyAt:0.2, fly:2.8, holdReveal:0.6 };
+    var T = { wipe:1.3, flyAt:1.8, fly:4.5 };   // wipe = Star Wars reveal time; flyAt = wipe end + 0.5s (dragon enters); fly = crossing time
     var headEl = document.querySelector('.jj-head');
     headEl.style.clipPath = 'none';
     gsap.set('.jj-alien', { opacity:0 });            // headline letters now carry both states
@@ -231,11 +235,18 @@
     headEl._jjChars = chars;
     headEl._jjBobs = bobs;
 
-    gsap.set('#jj-intro-bg', { opacity:0, scale:1.04 });
+    gsap.set('#jj-intro-bg', { opacity:1, scale:1 });           // revealed by the wipe, not a fade
     gsap.set('#jj-dragon', { opacity:0, x:-vw(.72), y:0, rotation:4 });
+    gsap.set('#jj-stars', { opacity:0 });                       // fades in after the wipe
+    gsap.set('#jj-intro', { '--wp':'0%' });
 
     var tl = gsap.timeline({ defaults:{ ease:'power2.out' } });
-    tl.to('#jj-intro-bg', { opacity:1, scale:1, duration:T.bgIn, ease:'power1.out' }, 0);
+    // Star Wars wipe — black recedes left→right revealing the scene, bright line at the edge
+    tl.to('#jj-intro', { '--wp':'100%', duration:T.wipe, ease:'power2.inOut' }, 0)
+      .fromTo('#jj-wipe-line', { opacity:0 }, { opacity:1, duration:0.18, ease:'power1.out' }, 0.05)
+      .to('#jj-wipe-line', { opacity:0, duration:0.3, ease:'power1.in' }, T.wipe - 0.25);
+    // stars fade in the instant the wipe finishes
+    tl.to('#jj-stars', { opacity:1, duration:1.0, ease:'power1.out' }, T.wipe);
 
     // dragon flight — linear so the reveal can track its x
     tl.set('#jj-dragon', { opacity:1 }, T.flyAt)
@@ -255,9 +266,71 @@
       tl.fromTo(c, { scale:1 }, { scale:1.16, duration:0.13, yoyo:true, repeat:1, ease:'power2.out' }, revT);  // little pop
     });
 
-    // disperse starts 0.5s before the dragon leaves the screen (but never before the last letter lands)
-    var dragonLeaveT = T.flyAt + T.fly + 0.7;        // dragon's exit tween finishes = fully gone
-    tl.call(function () { floatOut(headEl); }, null, Math.max(lastT + 0.1, dragonLeaveT - 0.5));
+    // disperse begins the instant the dragon flies over the last (rightmost) letter
+    tl.call(function () { floatOut(headEl); }, null, lastT);
+  }
+
+  /* The real landing-page decorations: Star 16.svg (flash), Moon.svg (glow) and
+     Galaxy 10.svg (slow spin) — the exact assets + animations from the homepage. */
+  var STAR_SVG   = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0d67bb5517ed8efe956552_Star%2016.svg';
+  var MOON_SVG   = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0d67bbb86603f359ae1311_289a8c92ed8a9b7dd3efdae788f3d0ae_Moon.svg';
+  var GALAXY_SVG = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0d67bbf7e371947907a091_Galaxy%2010.svg';
+  function startStars(){
+    var wrap = document.getElementById('jj-stars'); if (!wrap) return;
+    function rnd(a, b){ return a + Math.random() * (b - a); }
+    function place(el, cfg){ ['left','right','top','bottom'].forEach(function(k){ if (cfg[k] !== undefined) el.style[k] = cfg[k]; }); }
+    function starPos(){
+      var a = 0, l, t;
+      do { l = 5 + Math.random() * 85; t = 5 + Math.random() * 80; a++; }
+      while (a < 40 && ((l > 30 && l < 70 && t > 35 && t < 60) || (l > 80 && t > 70)));
+      return { left: l + '%', top: t + '%' };
+    }
+    // flashing 4-point stars (matches the landing's 8, scaled up for the full overlay)
+    for (var i = 0; i < 14; i++){
+      var s = document.createElement('img');
+      s.src = STAR_SVG; s.className = 'jj-deco';
+      s.style.width = (14 + Math.random() * 22) + 'px';
+      s.style.transformOrigin = 'center center';
+      place(s, starPos());
+      s.style.animation = 'jj-flash ' + (1.8 + Math.random() * 2.5) + 's ease-in-out ' + (Math.random() * 2.5) + 's infinite';
+      wrap.appendChild(s);
+    }
+    // glowing moons
+    [ { right:'8%', top:'12%', size:'95px' }, { left:'20%', top:'14%', size:'70px' }, { left:'38%', bottom:'15%', size:'80px' } ]
+      .forEach(function (cfg, idx){
+        var m = document.createElement('img');
+        m.src = MOON_SVG; m.className = 'jj-deco';
+        m.style.width = cfg.size; place(m, cfg);
+        m.style.animation = 'jj-glow ' + (3.5 + Math.random() * 1.5) + 's ease-in-out ' + (idx * 0.6) + 's infinite';
+        wrap.appendChild(m);
+      });
+    // slow-spinning small galaxies
+    [ { left:'8%', bottom:'12%', size:'55px' }, { left:'46%', top:'8%', size:'48px' } ]
+      .forEach(function (cfg, idx){
+        var g = document.createElement('img');
+        g.src = GALAXY_SVG; g.className = 'jj-deco';
+        g.style.width = cfg.size; g.style.opacity = '0.85';
+        g.style.transformOrigin = 'center center'; place(g, cfg);
+        g.style.animation = (idx % 2 ? 'jj-spin-reverse ' : 'jj-spin ') + (50 + Math.random() * 20) + 's linear infinite';
+        wrap.appendChild(g);
+      });
+  }
+
+  /* Drives the dragon sprite sheet (9x8 grid, 72 frames @ 12fps) via background-position. */
+  function playDragon(){
+    var sp = document.querySelector('#jj-dragon .jj-dragon-sprite');
+    if (!sp) return;
+    var FR = 72, COLS = 9, ROWS = 8, FPS = 12, f = 0, last = 0;
+    function tick(t){
+      if (!last) last = t;
+      if (t - last >= 1000 / FPS) {
+        last = t;
+        sp.style.backgroundPosition = ((f % COLS) / (COLS - 1) * 100) + '% ' + (Math.floor(f / COLS) / (ROWS - 1) * 100) + '%';
+        f = (f + 1) % FR;
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
   }
 
   /* ---- mount ---- */
@@ -266,6 +339,8 @@
     var wrap = document.createElement('div');
     wrap.innerHTML = HTML;
     document.body.appendChild(wrap.firstChild);
+    startStars();
+    playDragon();
     whenReady(function () { fontsReady.then(init); });   // wait for libs AND fonts before revealing text
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);

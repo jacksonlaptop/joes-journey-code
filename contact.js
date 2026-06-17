@@ -25,7 +25,7 @@
 @keyframes jj-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 @keyframes jj-spin-reverse{from{transform:rotate(360deg);}to{transform:rotate(0deg);}}
 #jj-dark{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;}
-#jj-story{position:absolute;left:0;top:0;margin-left:calc(min(100vw,1600px) * -0.5);margin-top:calc(min(100vw,1600px) * -0.5);width:min(100vw,1600px);aspect-ratio:1/1;opacity:0;pointer-events:none;}
+#jj-story{position:absolute;left:0;top:0;margin-left:calc(min(100vw,1600px) * -0.5);margin-top:calc(min(100vw,1600px) * -0.3);width:min(100vw,1600px);aspect-ratio:1/1;opacity:0;pointer-events:none;}
 #jj-story svg{display:block;width:100%!important;height:100%!important;}
 #jj-philosopher{position:absolute;left:calc(min(20vw,250px) * -0.2);bottom:calc(min(20vw,250px) * -0.1);width:min(20vw,250px);opacity:0;pointer-events:none;}
 #jj-rest-dragon{position:absolute;right:calc(min(34vw,554px) * -0.2);bottom:calc(min(34vw,554px) * -0.5);width:min(34vw,554px);opacity:0;pointer-events:none;will-change:transform;}

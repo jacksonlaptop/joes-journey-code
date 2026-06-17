@@ -20,7 +20,7 @@
 #jj-intro-bg svg{position:absolute;inset:0;width:100%;height:100%;display:block;}
 #jj-stars{position:absolute;inset:0;pointer-events:none;}
 .jj-deco{position:absolute;pointer-events:none;height:auto;display:block;}
-@keyframes jj-flash{0%,100%{transform:scale(0.7);opacity:0.3;}50%{transform:scale(1.4);opacity:1;}}
+@keyframes jj-flash{0%,100%{transform:scale(0.66);}50%{transform:scale(1.4);}}
 @keyframes jj-glow{0%,100%{filter:drop-shadow(0 0 8px rgba(255,255,255,0.7)) drop-shadow(0 0 24px rgba(255,255,255,0.4));}50%{filter:drop-shadow(0 0 45px rgba(255,255,255,1)) drop-shadow(0 0 90px rgba(255,255,255,0.75)) drop-shadow(0 0 160px rgba(180,200,255,0.5));}}
 @keyframes jj-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 @keyframes jj-spin-reverse{from{transform:rotate(360deg);}to{transform:rotate(0deg);}}
@@ -30,19 +30,22 @@
 #jj-philosopher{position:absolute;left:calc(min(20vw,250px) * -0.2);bottom:calc(min(20vw,250px) * -0.1);width:min(20vw,250px);opacity:0;pointer-events:none;}
 #jj-rest-dragon{position:absolute;right:calc(min(34vw,554px) * -0.2);bottom:calc(min(34vw,554px) * -0.5);width:min(34vw,554px);opacity:0;pointer-events:none;will-change:transform;}
 /* ---- contact buttons (story scene) ---- */
+#jj-spacefloat{position:absolute;inset:0;z-index:6;pointer-events:none;}
+.jj-spacefloater{position:absolute;width:clamp(20px,2vw,34px);height:auto;margin-left:-17px;margin-top:-17px;opacity:0;will-change:transform;}
 #jj-contacts{position:absolute;inset:0;opacity:0;z-index:7;pointer-events:none;}
-.jj-contact{position:absolute;transform:translate(-50%,-50%);width:min(11vw,150px);text-decoration:none;color:#fff;pointer-events:none;}
+.jj-contact{position:absolute;width:min(16.5vw,225px);text-decoration:none;color:#fff;pointer-events:none;}
 #jj-contacts.on .jj-contact{pointer-events:auto;cursor:pointer;}
-.jj-c-icon{position:relative;width:100%;height:min(11vw,150px);display:flex;align-items:center;justify-content:center;transition:transform .3s ease;will-change:transform;}
+.jj-c-icon{position:relative;width:100%;height:min(16.5vw,225px);display:flex;align-items:center;justify-content:center;transition:transform .3s ease;will-change:transform;}
 .jj-c-icon img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:contain;transition:opacity .3s ease;}
 .jj-c-fill{opacity:0;}
-.jj-c-glow{position:absolute;left:50%;top:50%;width:165%;height:165%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(150,190,255,.5),rgba(150,190,255,0) 64%);opacity:0;transition:opacity .35s ease;pointer-events:none;}
-.jj-c-label{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);white-space:nowrap;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(15px,1.55vw,26px);letter-spacing:.4px;}
-.jj-c-detail{position:absolute;left:50%;top:calc(100% + 12px);transform:translateX(-50%);white-space:nowrap;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(12px,1.05vw,18px);opacity:0;transition:opacity .3s ease;}
-.jj-c-floater{position:absolute;left:50%;top:50%;width:clamp(20px,2.1vw,32px);height:auto;margin-left:-16px;margin-top:-16px;pointer-events:none;}
+.jj-c-glow{position:absolute;left:50%;top:50%;width:150%;height:150%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(150,190,255,.32),rgba(150,190,255,0) 66%);opacity:0;transition:opacity .35s ease;pointer-events:none;}
+.jj-c-label{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(15px,1.55vw,26px);letter-spacing:.4px;}
+.jj-c-detail{position:absolute;left:50%;top:calc(100% + 2px);transform:translateX(-50%);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(12px,1.05vw,18px);opacity:0;transition:opacity .3s ease;}
+.jj-c-ico{flex:none;width:.92em;height:.92em;display:inline-flex;color:#fff;}
+.jj-c-ico svg{width:100%;height:100%;display:block;}
 .jj-contact:hover .jj-c-def{opacity:0;}
 .jj-contact:hover .jj-c-fill{opacity:1;}
-.jj-contact:hover .jj-c-icon{transform:scale(1.12);}
+.jj-contact:hover .jj-c-icon{transform:scale(1.2);}
 .jj-contact:hover .jj-c-glow{opacity:1;}
 .jj-contact:hover .jj-c-detail{opacity:1;}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
@@ -194,6 +197,7 @@
   <div id="jj-story"></div>
   <img id="jj-philosopher" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/philosopher.png" alt="" aria-hidden="true">
   <img id="jj-rest-dragon" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" aria-hidden="true">
+  <div id="jj-spacefloat"></div>
   <div id="jj-contacts"></div>
   <div id="jj-stage"><div class="jj-copy">
     <p class="jj-alien">How would you like to get in touch</p>
@@ -326,14 +330,34 @@
     });
   }
 
-  /* ---- contact buttons: 5 space icons, default→filled on hover + glow + floating space assets ---- */
+  /* Glitch "Contact" into the alien font (2 letters pink) just before it fades out. */
+  function glitchContact(headEl){
+    var picks = headEl._jjContact || []; if (!picks.length) return;
+    picks.forEach(function (c, i) {
+      gsap.killTweensOf(c);                                    // stop the gentle bob
+      var t = gsap.timeline();
+      for (var j = 0; j < 6; j++) {
+        t.to(c, { x: '+=' + gsap.utils.random(-7, 7), y: '+=' + gsap.utils.random(-7, 7), skewX: gsap.utils.random(-14, 14), duration: 0.05, ease: 'none',
+          onStart: (function (ch) { return function () { ch.style.fontFamily = (Math.random() < 0.5 ? "'Joes Journey Hieroglyphics', monospace" : "'Joes Journey Headline', sans-serif"); }; })(c) });
+      }
+      t.to(c, { skewX: 0, x: '+=' + gsap.utils.random(-3, 3), duration: 0.08,
+        onComplete: (function (ch, idx) { return function () { ch.style.fontFamily = "'Joes Journey Hieroglyphics', monospace"; if (idx === 1 || idx === 5) ch.style.color = '#FF00F5'; }; })(c, i) });
+    });
+  }
+
+  /* ---- contact buttons: 5 space icons, default→filled on hover + glow; click copies / downloads / views ---- */
   var IC = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/';
+  var ICO = {
+    copy:     '<svg class="jj-c-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+    download: '<svg class="jj-c-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+    arrow:    '<svg class="jj-c-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>'
+  };
   var CONTACTS = [
-    { key:'phone',    label:'Phone',    x:18.5, y:29.5, def:'6a326b671195e6aeb0fad6bd_Whatsapp.svg',  fill:'6a326b68ff1a7121507a3476_Whatsapp%20Filled.svg', detail:'07565040886',                          href:'tel:+447565040886' },
-    { key:'linkedin', label:'LinkedIn', x:49.5, y:23.0, def:'6a326b6702196efc291ab506_Linkedin.svg',  fill:'6a326b68ff1a7121507a3479_Linkedin%20Filled.svg', detail:'www.linkedin.com/in/joseph-jackson-ui/', href:'https://www.linkedin.com/in/joseph-jackson-ui/' },
-    { key:'credits',  label:'Credits',  x:79.0, y:34.5, def:'6a326b672510ef80bdc333a5_Credits.svg',   fill:'6a326b670c2c4374e37980fd_Credits%20filled.svg',  detail:'VIEW',                                  href:'#credits' },
-    { key:'mail',     label:'Mail',     x:34.5, y:64.0, def:'6a326b671e05c417a3694238_Mail.svg',      fill:'6a326b6751c667326423afe1_Mail%20-%20filled.svg', detail:'jackson.laptop95@gmail.com',            href:'mailto:jackson.laptop95@gmail.com' },
-    { key:'cv',       label:'CV',       x:61.5, y:64.0, def:'6a326b67ee3ceb7f9c962b7e_CV.svg',        fill:'6a326b671da70ae29008672b_CV%20-%20filled.svg',   detail:'DOWNLOAD',                              href:'#cv' }
+    { key:'phone',    label:'Phone',    x:18.5, y:29.5, def:'6a326b671195e6aeb0fad6bd_Whatsapp.svg',  fill:'6a326b68ff1a7121507a3476_Whatsapp%20Filled.svg', detail:'07565040886',                          act:'copy', copy:'07565040886' },
+    { key:'linkedin', label:'LinkedIn', x:49.5, y:23.0, def:'6a326b6702196efc291ab506_Linkedin.svg',  fill:'6a326b68ff1a7121507a3479_Linkedin%20Filled.svg', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'copy', copy:'https://www.linkedin.com/in/joseph-jackson-ui/' },
+    { key:'credits',  label:'Credits',  x:79.0, y:34.5, def:'6a326b672510ef80bdc333a5_Credits.svg',   fill:'6a326b670c2c4374e37980fd_Credits%20filled.svg',  detail:'VIEW',                                  act:'view',     href:'#credits' },
+    { key:'mail',     label:'Mail',     x:34.5, y:64.0, def:'6a326b671e05c417a3694238_Mail.svg',      fill:'6a326b6751c667326423afe1_Mail%20-%20filled.svg', detail:'jackson.laptop95@gmail.com',            act:'copy', copy:'jackson.laptop95@gmail.com' },
+    { key:'cv',       label:'CV',       x:61.5, y:64.0, def:'6a326b67ee3ceb7f9c962b7e_CV.svg',        fill:'6a326b671da70ae29008672b_CV%20-%20filled.svg',   detail:'DOWNLOAD',                              act:'download', href:'#cv' }
   ];
   var SPACE = [
     IC+'6a32a12291178c585287628f_small%20space%201.svg',
@@ -341,49 +365,76 @@
     IC+'6a32a12291178c5852876288_small%20space%204.svg',
     IC+'6a32a1229ef4aa4ea90a7922_small%20space%205.svg'
   ];
+  function copyToClipboard(text){
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text).catch(function(){ legacyCopy(text); });
+    legacyCopy(text); return Promise.resolve();
+  }
+  function legacyCopy(text){
+    var ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;left:-9999px;top:0;';
+    document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta);
+  }
+  function showCopied(a){
+    var d = a.querySelector('.jj-c-detail'); if (!d) return;
+    if (d._orig === undefined) d._orig = d.innerHTML;
+    d.innerHTML = 'Copied!'; d.style.opacity = '1';
+    clearTimeout(d._t); d._t = setTimeout(function () { d.innerHTML = d._orig; d.style.opacity = ''; }, 1300);
+  }
   function buildContacts(){
     var wrap = document.getElementById('jj-contacts'); if (!wrap || wrap.children.length) return;
     CONTACTS.forEach(function (c) {
       var a = document.createElement('a');
-      a.className = 'jj-contact'; a.href = c.href; a.setAttribute('data-key', c.key);
+      a.className = 'jj-contact'; a.href = c.href || '#'; a.setAttribute('data-key', c.key);
       a.style.left = c.x + '%'; a.style.top = c.y + '%';
-      if (c.href.indexOf('http') === 0) { a.target = '_blank'; a.rel = 'noopener'; }
+      var labelIco = c.act === 'copy' ? ICO.copy : '';
+      var detailIco = c.act === 'download' ? ICO.download : (c.act === 'view' ? ICO.arrow : '');
       a.innerHTML =
-        '<span class="jj-c-label">' + c.label + '</span>' +
+        '<span class="jj-c-label">' + c.label + labelIco + '</span>' +
         '<span class="jj-c-icon"><span class="jj-c-glow"></span>' +
           '<img class="jj-c-def"  src="' + IC + c.def  + '" alt="' + c.label + '">' +
           '<img class="jj-c-fill" src="' + IC + c.fill + '" alt="" aria-hidden="true">' +
         '</span>' +
-        '<span class="jj-c-detail">' + c.detail + '</span>';
-      a.addEventListener('mouseenter', function () { spawnFloaters(a); });
-      a.addEventListener('mouseleave', function () { clearFloaters(a); });
+        '<span class="jj-c-detail">' + c.detail + detailIco + '</span>';
+      a.addEventListener('click', function (e) {
+        if (c.act === 'copy') { e.preventDefault(); copyToClipboard(c.copy).then(function () { showCopied(a); }); }
+        else { e.preventDefault(); /* TODO: wire CV download + Credits view */ }
+      });
+      if (window.gsap) gsap.set(a, { xPercent:-50, yPercent:-50 });   // centre on its point (float/orbit add transforms on top)
       wrap.appendChild(a);
     });
   }
-  /* spawn the small space assets around a hovered button and let them drift slowly */
-  function spawnFloaters(btn){
-    if (!window.gsap || btn._floaters) return;
-    var arr = [];
-    for (var i = 0; i < SPACE.length; i++) {
+  /* 7 small space assets drifting + slowly circling in the background of the contact scene */
+  function startSpaceFloaters(){
+    var layer = document.getElementById('jj-spacefloat'); if (!layer || !window.gsap || layer.children.length) return;
+    var spots = [ {x:10,y:16,r:34,d:13}, {x:90,y:18,r:42,d:17}, {x:72,y:46,r:30,d:12}, {x:22,y:80,r:38,d:15}, {x:58,y:88,r:32,d:14}, {x:44,y:38,r:28,d:18}, {x:88,y:72,r:36,d:16} ];
+    spots.forEach(function (s, i) {
       var im = document.createElement('img');
-      im.className = 'jj-c-floater'; im.src = SPACE[i]; im.alt = '';
-      btn.appendChild(im);
-      var ang = (i / SPACE.length) * Math.PI * 2 + 0.5, rad = 80 + (i % 2) * 24;
-      gsap.set(im, { x: Math.cos(ang) * rad, y: Math.sin(ang) * rad, opacity: 0, scale: 0.5 + Math.random() * 0.4, rotation: gsap.utils.random(-20, 20) });
-      gsap.to(im, { opacity: 0.9, duration: 0.5, ease: 'power1.out' });
-      gsap.to(im, { x: '+=' + gsap.utils.random(-18, 18), y: '+=' + gsap.utils.random(-18, 18), duration: 3 + Math.random() * 2.5, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.1 });
-      gsap.to(im, { rotation: '+=' + gsap.utils.random(-45, 45), duration: 5 + Math.random() * 4, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-      arr.push(im);
-    }
-    btn._floaters = arr;
-  }
-  function clearFloaters(btn){
-    if (!btn._floaters) return;
-    btn._floaters.forEach(function (im) {
-      gsap.killTweensOf(im);
-      gsap.to(im, { opacity: 0, scale: 0.4, duration: 0.3, ease: 'power1.in', onComplete: function () { if (im.parentNode) im.parentNode.removeChild(im); } });
+      im.className = 'jj-spacefloater'; im.src = SPACE[i % SPACE.length]; im.alt = '';
+      im.style.left = s.x + '%'; im.style.top = s.y + '%';
+      layer.appendChild(im);
+      var ang = { v: i * 0.9 }, dir = (i % 2) ? 1 : -1;
+      gsap.to(ang, { v: ang.v + Math.PI * 2 * dir, duration: s.d, repeat: -1, ease: 'none',
+        onUpdate: (function (el, ss) { return function () { gsap.set(el, { x: Math.cos(ang.v) * ss.r, y: Math.sin(ang.v) * ss.r }); }; })(im, s) });
+      gsap.fromTo(im, { opacity: 0 }, { opacity: 0.5, duration: 1.4, ease: 'power1.out' });
     });
-    btn._floaters = null;
+  }
+  /* gentle bob + a verrry slow loop where the 5 buttons cycle through each other's spots (ccw) */
+  var contactOrbitOn = false;
+  function startContactOrbit(){
+    if (contactOrbitOn || !window.gsap) return;
+    var btns = document.querySelectorAll('#jj-contacts .jj-contact'); if (!btns.length) return;
+    contactOrbitOn = true;
+    var ring = [ {x:18.5,y:29.5}, {x:34.5,y:64}, {x:61.5,y:64}, {x:79,y:34.5}, {x:49.5,y:23} ];   // phone→mail→cv→credits→linkedin
+    var startIdx = { phone:0, mail:1, cv:2, credits:3, linkedin:4 };
+    var SEG = 16;   // seconds per hop — very slow
+    btns.forEach(function (btn) {
+      var si = startIdx[btn.getAttribute('data-key')] || 0;
+      gsap.to(btn, { y: '-=10', duration: 2.4 + Math.random() * 1.2, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: Math.random() * 1.5 });   // slight float
+      var t = gsap.timeline({ repeat: -1, defaults: { ease: 'none' } });
+      for (var step = 1; step <= ring.length; step++) {
+        var p = ring[(si + step) % ring.length];
+        t.to(btn, { left: p.x + '%', top: p.y + '%', duration: SEG });
+      }
+    });
   }
 
   function init(){
@@ -430,8 +481,9 @@
     tl.to('#jj-intro', { '--wp':'100%', duration:T.wipe, ease:'power2.inOut' }, 0)
       .fromTo('#jj-wipe-line', { opacity:0 }, { opacity:1, duration:0.18, ease:'power1.out' }, 0.05)
       .to('#jj-wipe-line', { opacity:0, duration:0.3, ease:'power1.in' }, T.wipe - 0.25);
-    // stars fade in the instant the wipe finishes
-    tl.to('#jj-stars', { opacity:1, duration:1.0, ease:'power1.out' }, T.wipe);
+    // stars fade in just after the wipe — staggered, not all at once
+    tl.set('#jj-stars', { opacity:1 }, T.wipe);
+    tl.to('#jj-stars .jj-deco', { opacity:1, duration:0.8, ease:'power1.out', stagger:{ each:0.07, from:'random' } }, T.wipe);
 
     // dragon flight — linear so the reveal can track its x
     tl.set('#jj-dragon', { opacity:1 }, T.flyAt)
@@ -464,7 +516,8 @@
     // once they've drifted out a moment, those 7 reverse-float back to centre as "Contact"
     // (normal spacing), keep bobbing, then float-fade out 2.5s after they land.
     tl.call(function () { reformContact(headEl); }, null, lastT + 2.6);
-    tl.call(function () { gsap.to(headEl._jjContact || [], { opacity:0, duration:2.2, ease:'power1.in' }); }, null, lastT + 6.7);
+    tl.call(function () { glitchContact(headEl); }, null, lastT + 6.5);                                                              // glitch → alien (2 letters pink)
+    tl.call(function () { gsap.to(headEl._jjContact || [], { opacity:0, duration:1.6, ease:'power1.in' }); }, null, lastT + 7.4);    // then fade out
 
     // ---- story scene: comes in as the letters disperse (darken bg, storybook + characters,
     //      stars wink out). "Contact" stays centred over it and only fades after the dragon lands ----
@@ -477,10 +530,12 @@
     tl.fromTo('#jj-rest-dragon', { opacity:0, y:34, rotation:18 }, { opacity:1, y:0, rotation:18, duration:1.4, ease:'power2.out' }, sStart + 1.2);  // bottom-right, tilted +18deg (head up, looking up)
     tl.call(function () { gsap.to('#jj-rest-dragon', { y:'-=24', duration:3.4, repeat:-1, yoyo:true, ease:'sine.inOut' }); }, null, sStart + 2.6); // slow float
 
-    // ---- contact buttons fade in once "Contact" has had its moment ----
-    tl.call(function () { buildContacts(); }, null, lastT + 6.0);
+    // ---- contact scene: bg space floaters + the 5 buttons fade in once "Contact" has gone,
+    //      then the buttons float and very slowly cycle through each other's positions ----
+    tl.call(function () { startSpaceFloaters(); }, null, lastT + 7.0);
+    tl.call(function () { buildContacts(); }, null, lastT + 7.2);
     tl.to('#jj-contacts', { opacity:1, duration:1.4, ease:'power1.out',
-      onComplete:function () { var el = document.getElementById('jj-contacts'); if (el) el.classList.add('on'); } }, lastT + 7.4);
+      onComplete:function () { var el = document.getElementById('jj-contacts'); if (el) el.classList.add('on'); startContactOrbit(); } }, lastT + 8.2);
   }
 
   /* Wink the stars out one-by-one over a few seconds (not all at once). */
@@ -513,6 +568,7 @@
     for (var i = 0; i < 14; i++){
       var s = document.createElement('img');
       s.src = STAR_SVG; s.className = 'jj-deco';
+      s.style.opacity = '0';                                   // hidden until staggered entrance
       s.style.width = (14 + Math.random() * 22) + 'px';
       s.style.transformOrigin = 'center center';
       place(s, starPos());
@@ -524,6 +580,7 @@
       .forEach(function (cfg, idx){
         var m = document.createElement('img');
         m.src = MOON_SVG; m.className = 'jj-deco';
+        m.style.opacity = '0';                                 // hidden until staggered entrance
         m.style.width = cfg.size; place(m, cfg);
         m.style.animation = 'jj-glow ' + (3.5 + Math.random() * 1.5) + 's ease-in-out ' + (idx * 0.6) + 's infinite';
         wrap.appendChild(m);
@@ -533,7 +590,7 @@
       .forEach(function (cfg, idx){
         var g = document.createElement('img');
         g.src = GALAXY_SVG; g.className = 'jj-deco';
-        g.style.width = cfg.size; g.style.opacity = '0.85';
+        g.style.width = cfg.size; g.style.opacity = '0';       // hidden until staggered entrance
         g.style.transformOrigin = 'center center'; place(g, cfg);
         g.style.animation = (idx % 2 ? 'jj-spin-reverse ' : 'jj-spin ') + (50 + Math.random() * 20) + 's linear infinite';
         wrap.appendChild(g);

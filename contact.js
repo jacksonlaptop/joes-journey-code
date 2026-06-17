@@ -29,6 +29,22 @@
 #jj-story svg{display:block;width:100%!important;height:100%!important;}
 #jj-philosopher{position:absolute;left:calc(min(20vw,250px) * -0.2);bottom:calc(min(20vw,250px) * -0.1);width:min(20vw,250px);opacity:0;pointer-events:none;}
 #jj-rest-dragon{position:absolute;right:calc(min(34vw,554px) * -0.2);bottom:calc(min(34vw,554px) * -0.5);width:min(34vw,554px);opacity:0;pointer-events:none;will-change:transform;}
+/* ---- contact buttons (story scene) ---- */
+#jj-contacts{position:absolute;inset:0;opacity:0;z-index:7;pointer-events:none;}
+.jj-contact{position:absolute;transform:translate(-50%,-50%);width:min(11vw,150px);text-decoration:none;color:#fff;pointer-events:none;}
+#jj-contacts.on .jj-contact{pointer-events:auto;cursor:pointer;}
+.jj-c-icon{position:relative;width:100%;height:min(11vw,150px);display:flex;align-items:center;justify-content:center;transition:transform .3s ease;will-change:transform;}
+.jj-c-icon img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:contain;transition:opacity .3s ease;}
+.jj-c-fill{opacity:0;}
+.jj-c-glow{position:absolute;left:50%;top:50%;width:165%;height:165%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(150,190,255,.5),rgba(150,190,255,0) 64%);opacity:0;transition:opacity .35s ease;pointer-events:none;}
+.jj-c-label{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);white-space:nowrap;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(15px,1.55vw,26px);letter-spacing:.4px;}
+.jj-c-detail{position:absolute;left:50%;top:calc(100% + 12px);transform:translateX(-50%);white-space:nowrap;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(12px,1.05vw,18px);opacity:0;transition:opacity .3s ease;}
+.jj-c-floater{position:absolute;left:50%;top:50%;width:clamp(20px,2.1vw,32px);height:auto;margin-left:-16px;margin-top:-16px;pointer-events:none;}
+.jj-contact:hover .jj-c-def{opacity:0;}
+.jj-contact:hover .jj-c-fill{opacity:1;}
+.jj-contact:hover .jj-c-icon{transform:scale(1.12);}
+.jj-contact:hover .jj-c-glow{opacity:1;}
+.jj-contact:hover .jj-c-detail{opacity:1;}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
 #jj-wipe-line{position:absolute;top:0;bottom:0;left:var(--wp,0%);width:2px;margin-left:-1px;background:linear-gradient(to bottom,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;z-index:61;pointer-events:none;}
 #jj-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
@@ -178,6 +194,7 @@
   <div id="jj-story"></div>
   <img id="jj-philosopher" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/philosopher.png" alt="" aria-hidden="true">
   <img id="jj-rest-dragon" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" aria-hidden="true">
+  <div id="jj-contacts"></div>
   <div id="jj-stage"><div class="jj-copy">
     <p class="jj-alien">How would you like to get in touch</p>
     <p class="jj-head"><span class="jj-inner">How would you like to get in touch</span></p>
@@ -309,6 +326,66 @@
     });
   }
 
+  /* ---- contact buttons: 5 space icons, default→filled on hover + glow + floating space assets ---- */
+  var IC = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/';
+  var CONTACTS = [
+    { key:'phone',    label:'Phone',    x:18.5, y:29.5, def:'6a326b671195e6aeb0fad6bd_Whatsapp.svg',  fill:'6a326b68ff1a7121507a3476_Whatsapp%20Filled.svg', detail:'07565040886',                          href:'tel:+447565040886' },
+    { key:'linkedin', label:'LinkedIn', x:49.5, y:23.0, def:'6a326b6702196efc291ab506_Linkedin.svg',  fill:'6a326b68ff1a7121507a3479_Linkedin%20Filled.svg', detail:'www.linkedin.com/in/joseph-jackson-ui/', href:'https://www.linkedin.com/in/joseph-jackson-ui/' },
+    { key:'credits',  label:'Credits',  x:79.0, y:34.5, def:'6a326b672510ef80bdc333a5_Credits.svg',   fill:'6a326b670c2c4374e37980fd_Credits%20filled.svg',  detail:'VIEW',                                  href:'#credits' },
+    { key:'mail',     label:'Mail',     x:34.5, y:64.0, def:'6a326b671e05c417a3694238_Mail.svg',      fill:'6a326b6751c667326423afe1_Mail%20-%20filled.svg', detail:'jackson.laptop95@gmail.com',            href:'mailto:jackson.laptop95@gmail.com' },
+    { key:'cv',       label:'CV',       x:61.5, y:64.0, def:'6a326b67ee3ceb7f9c962b7e_CV.svg',        fill:'6a326b671da70ae29008672b_CV%20-%20filled.svg',   detail:'DOWNLOAD',                              href:'#cv' }
+  ];
+  var SPACE = [
+    IC+'6a32a12291178c585287628f_small%20space%201.svg',
+    IC+'6a32a122e443340225816231_spall%20space%203.svg',
+    IC+'6a32a12291178c5852876288_small%20space%204.svg',
+    IC+'6a32a1229ef4aa4ea90a7922_small%20space%205.svg'
+  ];
+  function buildContacts(){
+    var wrap = document.getElementById('jj-contacts'); if (!wrap || wrap.children.length) return;
+    CONTACTS.forEach(function (c) {
+      var a = document.createElement('a');
+      a.className = 'jj-contact'; a.href = c.href; a.setAttribute('data-key', c.key);
+      a.style.left = c.x + '%'; a.style.top = c.y + '%';
+      if (c.href.indexOf('http') === 0) { a.target = '_blank'; a.rel = 'noopener'; }
+      a.innerHTML =
+        '<span class="jj-c-label">' + c.label + '</span>' +
+        '<span class="jj-c-icon"><span class="jj-c-glow"></span>' +
+          '<img class="jj-c-def"  src="' + IC + c.def  + '" alt="' + c.label + '">' +
+          '<img class="jj-c-fill" src="' + IC + c.fill + '" alt="" aria-hidden="true">' +
+        '</span>' +
+        '<span class="jj-c-detail">' + c.detail + '</span>';
+      a.addEventListener('mouseenter', function () { spawnFloaters(a); });
+      a.addEventListener('mouseleave', function () { clearFloaters(a); });
+      wrap.appendChild(a);
+    });
+  }
+  /* spawn the small space assets around a hovered button and let them drift slowly */
+  function spawnFloaters(btn){
+    if (!window.gsap || btn._floaters) return;
+    var arr = [];
+    for (var i = 0; i < SPACE.length; i++) {
+      var im = document.createElement('img');
+      im.className = 'jj-c-floater'; im.src = SPACE[i]; im.alt = '';
+      btn.appendChild(im);
+      var ang = (i / SPACE.length) * Math.PI * 2 + 0.5, rad = 80 + (i % 2) * 24;
+      gsap.set(im, { x: Math.cos(ang) * rad, y: Math.sin(ang) * rad, opacity: 0, scale: 0.5 + Math.random() * 0.4, rotation: gsap.utils.random(-20, 20) });
+      gsap.to(im, { opacity: 0.9, duration: 0.5, ease: 'power1.out' });
+      gsap.to(im, { x: '+=' + gsap.utils.random(-18, 18), y: '+=' + gsap.utils.random(-18, 18), duration: 3 + Math.random() * 2.5, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.1 });
+      gsap.to(im, { rotation: '+=' + gsap.utils.random(-45, 45), duration: 5 + Math.random() * 4, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+      arr.push(im);
+    }
+    btn._floaters = arr;
+  }
+  function clearFloaters(btn){
+    if (!btn._floaters) return;
+    btn._floaters.forEach(function (im) {
+      gsap.killTweensOf(im);
+      gsap.to(im, { opacity: 0, scale: 0.4, duration: 0.3, ease: 'power1.in', onComplete: function () { if (im.parentNode) im.parentNode.removeChild(im); } });
+    });
+    btn._floaters = null;
+  }
+
   function init(){
     lockScroll();
     startSong();
@@ -399,6 +476,11 @@
     tl.fromTo('#jj-philosopher', { opacity:0, y:46 }, { opacity:1, y:0, duration:1.4, ease:'power2.out' }, sStart + 0.9);        // bottom-left, peeks up
     tl.fromTo('#jj-rest-dragon', { opacity:0, y:34, rotation:18 }, { opacity:1, y:0, rotation:18, duration:1.4, ease:'power2.out' }, sStart + 1.2);  // bottom-right, tilted +18deg (head up, looking up)
     tl.call(function () { gsap.to('#jj-rest-dragon', { y:'-=24', duration:3.4, repeat:-1, yoyo:true, ease:'sine.inOut' }); }, null, sStart + 2.6); // slow float
+
+    // ---- contact buttons fade in once "Contact" has had its moment ----
+    tl.call(function () { buildContacts(); }, null, lastT + 6.0);
+    tl.to('#jj-contacts', { opacity:1, duration:1.4, ease:'power1.out',
+      onComplete:function () { var el = document.getElementById('jj-contacts'); if (el) el.classList.add('on'); } }, lastT + 7.4);
   }
 
   /* Wink the stars out one-by-one over a few seconds (not all at once). */

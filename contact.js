@@ -24,11 +24,10 @@
 @keyframes jj-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 @keyframes jj-spin-reverse{from{transform:rotate(360deg);}to{transform:rotate(0deg);}}
 #jj-dark{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;}
-#jj-story{position:absolute;left:50%;top:45%;width:min(44vw,520px);aspect-ratio:1/1;transform:translate(-50%,-50%);opacity:0;pointer-events:none;}
+#jj-story{position:absolute;left:1.5%;top:1.5%;width:min(38vw,480px);aspect-ratio:1/1;opacity:0;pointer-events:none;}
 #jj-story svg{display:block;width:100%!important;height:100%!important;}
 #jj-philosopher{position:absolute;left:1.5vw;bottom:-3vh;width:min(20vw,250px);opacity:0;pointer-events:none;}
-#jj-rest-dragon{position:absolute;right:2vw;bottom:4vh;width:min(30vw,360px);aspect-ratio:340/177;opacity:0;pointer-events:none;will-change:transform;}
-#jj-rest-dragon .jj-dragon-sprite{transform:scaleX(-1);}
+#jj-rest-dragon{position:absolute;right:1vw;bottom:-3vh;width:min(26vw,360px);opacity:0;pointer-events:none;will-change:transform;}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
 #jj-wipe-line{position:absolute;top:0;bottom:0;left:var(--wp,0%);width:2px;margin-left:-1px;background:linear-gradient(to bottom,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;z-index:61;pointer-events:none;}
 #jj-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
@@ -38,7 +37,7 @@
 .jj-head{position:relative;--r:100%;font-family:'Joes Journey Headline',sans-serif;color:#fff;-webkit-text-stroke:1px rgba(0,0,0,.35);paint-order:stroke fill;text-shadow:0 2px 10px rgba(0,0,0,.5);clip-path:inset(0 var(--r) 0 0);}
 .jj-head .jj-char{display:inline-block;will-change:transform,opacity;}
 #jj-dragon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:155px;pointer-events:none;}
-.jj-dragon-sprite{width:100%;height:100%;background-image:url('https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-sprite.png');background-repeat:no-repeat;background-size:900% 800%;}`;
+#jj-dragon .jj-dragon-sprite{width:100%;height:100%;background-image:url('https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-sprite.png');background-repeat:no-repeat;background-size:900% 800%;}`;
 
   var style = document.createElement('style');
   style.id = 'jj-contact-style';
@@ -176,7 +175,7 @@
   <div id="jj-stars"></div>
   <div id="jj-story"></div>
   <img id="jj-philosopher" src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/philosopher.png" alt="" aria-hidden="true">
-  <div id="jj-rest-dragon"><div class="jj-dragon-sprite"></div></div>
+  <img id="jj-rest-dragon" src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-rest.png" alt="" aria-hidden="true">
   <div id="jj-stage"><div class="jj-copy">
     <p class="jj-alien">How would you like to get in touch</p>
     <p class="jj-head"><span class="jj-inner">How would you like to get in touch</span></p>
@@ -285,7 +284,7 @@
       c.style.textAlign = 'center';
       c._jjCx = r.left + r.width / 2;                 // letter centre, for dragon-sync
       c.style.fontFamily = "'Joes Journey Hieroglyphics', monospace";
-      c.style.color = 'rgba(255,255,255,0.32)';
+      c.style.color = 'rgba(255,255,255,0.55)';
       gsap.set(c, { opacity:0, y:0 });
       bobs.push(gsap.to(c, { y:'-=10', duration:1.2 + Math.random() * 0.9, repeat:-1, yoyo:true, ease:'sine.inOut', delay:Math.random() * 0.8 }));
     });
@@ -313,9 +312,9 @@
       .to('#jj-dragon', { x:vw(.8), opacity:0, duration:0.7, ease:'power1.in' }, T.flyAt + T.fly);
 
     // dragon-synced reveal: as the dragon's x reaches each letter, convert it alien → Joe's Journey.
-    // Each letter fades in (dim alien) LEAD letters AHEAD of its own conversion, so a run of
-    // ~6 grey alien glyphs always sits to the right of the white reveal edge.
-    var LEAD = 6;
+    // Each letter fades in (alien) LEAD letters AHEAD of its own conversion, so a run of ~3 grey
+    // alien glyphs sits to the right of the white reveal edge — but NOT before the dragon arrives.
+    var LEAD = 3;
     var startX = -vw(.72), endX = vw(.55), span = (endX - startX) || 1;
     var seq = chars.map(function (c) {
       var frac = Math.max(0, Math.min(1, (c._jjCx - W / 2 - startX) / span));
@@ -323,10 +322,11 @@
     });
     seq.sort(function (a, b) { return a.revT - b.revT; });           // left → right
     var lastT = T.flyAt;
+    var firstAppear = Math.max(0, seq[0].revT - 0.3);                // first letters surface only as the dragon nears them
     seq.forEach(function (o, i) {
       if (o.revT > lastT) lastT = o.revT;
-      var appearT = i >= LEAD ? seq[i - LEAD].revT : 0;             // visible (alien) 6 letters early
-      tl.to(o.c, { opacity:1, duration:0.4, ease:'power1.out' }, Math.max(0, appearT));                       // comes in (alien, dim)
+      var appearT = i >= LEAD ? seq[i - LEAD].revT : firstAppear;   // alien ~3 letters early, never on initial load
+      tl.to(o.c, { opacity:1, duration:0.4, ease:'power1.out' }, appearT);                       // comes in (alien)
       tl.call(function () { o.c.style.fontFamily = "'Joes Journey Headline', sans-serif"; o.c.style.color = '#fff'; }, null, o.revT); // → Joe's Journey
       tl.fromTo(o.c, { scale:1 }, { scale:1.16, duration:0.13, yoyo:true, repeat:1, ease:'power2.out' }, o.revT);  // little pop
     });
@@ -405,15 +405,14 @@
 
   /* Drives the dragon sprite sheet (9x8 grid, 72 frames @ 12fps) via background-position. */
   function playDragon(){
-    var sprites = document.querySelectorAll('.jj-dragon-sprite');   // flythrough + bottom-right rest dragon
-    if (!sprites.length) return;
+    var sp = document.querySelector('#jj-dragon .jj-dragon-sprite');
+    if (!sp) return;
     var FR = 72, COLS = 9, ROWS = 8, FPS = 12, f = 0, last = 0;
     function tick(t){
       if (!last) last = t;
       if (t - last >= 1000 / FPS) {
         last = t;
-        var bp = ((f % COLS) / (COLS - 1) * 100) + '% ' + (Math.floor(f / COLS) / (ROWS - 1) * 100) + '%';
-        for (var i = 0; i < sprites.length; i++) sprites[i].style.backgroundPosition = bp;
+        sp.style.backgroundPosition = ((f % COLS) / (COLS - 1) * 100) + '% ' + (Math.floor(f / COLS) / (ROWS - 1) * 100) + '%';
         f = (f + 1) % FR;
       }
       requestAnimationFrame(tick);

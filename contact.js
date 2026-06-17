@@ -238,6 +238,7 @@
     var hostRect = headEl.getBoundingClientRect();
     var leftEdge = hostRect.left, width = hostRect.width || 1;
     chars.forEach(function (c) {
+      if (c._jjPicked) return;                                 // these regroup into "Contact" instead of dispersing
       var r = c.getBoundingClientRect();
       var rel = ((r.left + r.width / 2) - leftEdge) / width;   // 0 = far left, 1 = far right
       var dx, dy;
@@ -257,6 +258,38 @@
         onStart: function () { if (goAlien) c.style.fontFamily = "'Joes Journey Hieroglyphics', monospace"; if (goPink) c.style.color = '#FF00F5'; }
       });
       gsap.to(c, { opacity: 0, duration: dur * 0.5, delay: del + dur * 0.45, ease: 'power1.in' });  // fade out toward the edge instead of flying off
+    });
+  }
+
+  // 7 of the headline letters fly back to the centre and respell "Contact".
+  function formContact(headEl){
+    var all = (headEl._jjChars || []).filter(function (c) { return (c.textContent || '').trim().length; });
+    if (all.length < 7) { floatOut(headEl); return; }            // not enough letters — just disperse
+    var word = 'Contact', picks = [];
+    for (var i = 0; i < 7; i++) {
+      var idx = Math.round(i * (all.length - 1) / 6);
+      while (picks.indexOf(all[idx]) !== -1 && idx < all.length - 1) idx++;
+      picks.push(all[idx]);
+    }
+    picks.forEach(function (c) { c._jjPicked = true; });         // floatOut skips these
+    floatOut(headEl);                                            // everyone else drifts away
+    headEl._jjContact = picks;
+    var W = window.innerWidth, H = window.innerHeight;
+    var S = Math.min(70, W * 0.052), cy = H / 2;                 // glyph spacing + centre row
+    picks.forEach(function (c, i) {
+      c.textContent = word[i];
+      c.style.fontFamily = "'Joes Journey Headline', sans-serif";
+      c.style.color = '#fff';
+      c.style.zIndex = '5';
+      var r = c.getBoundingClientRect();
+      var curX = gsap.getProperty(c, 'x'), curY = gsap.getProperty(c, 'y');
+      var tx = W / 2 + (i - 3) * S;                              // centre the 7 glyphs around mid-screen
+      gsap.to(c, {
+        x: curX + (tx - (r.left + r.width / 2)),
+        y: curY + (cy - (r.top + r.height / 2)),
+        scale: 1.35, rotation: 0, opacity: 1,
+        duration: 1.5, ease: 'power3.inOut', overwrite: true
+      });
     });
   }
 
@@ -333,12 +366,14 @@
       tl.fromTo(o.c, { scale:1 }, { scale:1.16, duration:0.13, yoyo:true, repeat:1, ease:'power2.out' }, o.revT);  // little pop
     });
 
-    // disperse begins the instant the dragon flies over the last (rightmost) letter
-    tl.call(function () { floatOut(headEl); }, null, lastT);
+    // as the dragon clears the last letter: 7 letters regroup into "Contact" centre-screen,
+    // the rest disperse. Hold the word ~2s after it forms (~1.5s), then fade it out slowly.
+    tl.call(function () { formContact(headEl); }, null, lastT);
+    tl.call(function () { gsap.to(headEl._jjContact || [], { opacity:0, duration:2.0, ease:'power1.in' }); }, null, lastT + 3.5);
 
-    // ---- story scene: as the letters drift away, darken the bg and bring in the
-    //      storybook + characters; the stars wink out over a few seconds ----
-    var sStart = lastT + 1.5;
+    // ---- story scene: held back until "Contact" has had its moment, then darken the bg and
+    //      bring in the storybook + characters; the stars wink out over a few seconds ----
+    var sStart = lastT + 3.5;
     tl.to('#jj-dark', { opacity:0.5, duration:2.6, ease:'power1.inOut' }, sStart);          // 50% black over the swirl
     tl.call(function () { fadeStarsOut(); }, null, sStart);                                  // stars out, staggered
     tl.call(function () { mountBook(); }, null, sStart);                                     // start the page-turn Lottie

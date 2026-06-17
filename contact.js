@@ -25,10 +25,10 @@
 @keyframes jj-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 @keyframes jj-spin-reverse{from{transform:rotate(360deg);}to{transform:rotate(0deg);}}
 #jj-dark{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;}
-#jj-story{position:absolute;left:1.5%;top:1.5%;width:min(38vw,480px);aspect-ratio:1/1;opacity:0;pointer-events:none;}
+#jj-story{position:absolute;left:-22vw;top:-20vh;width:min(85vw,1200px);aspect-ratio:1/1;opacity:0;pointer-events:none;}
 #jj-story svg{display:block;width:100%!important;height:100%!important;}
 #jj-philosopher{position:absolute;left:1.5vw;bottom:-3vh;width:min(20vw,250px);opacity:0;pointer-events:none;}
-#jj-rest-dragon{position:absolute;right:1vw;bottom:-24vh;width:min(36vw,540px);opacity:0;pointer-events:none;will-change:transform;}
+#jj-rest-dragon{position:absolute;right:-3vw;bottom:-38vh;width:min(46vw,700px);opacity:0;pointer-events:none;will-change:transform;}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
 #jj-wipe-line{position:absolute;top:0;bottom:0;left:var(--wp,0%);width:2px;margin-left:-1px;background:linear-gradient(to bottom,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;z-index:61;pointer-events:none;}
 #jj-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
@@ -341,7 +341,7 @@
     tl.to('#jj-dark', { opacity:0.5, duration:2.6, ease:'power1.inOut' }, sStart);          // 50% black over the swirl
     tl.call(function () { fadeStarsOut(); }, null, sStart);                                  // stars out, staggered
     tl.call(function () { mountBook(); }, null, sStart);                                     // start the page-turn Lottie
-    tl.fromTo('#jj-story', { opacity:0, scale:0.94 }, { opacity:0.5, scale:1, duration:2.4, ease:'power2.out' }, sStart + 0.3);  // animated storybook backdrop @50%
+    tl.fromTo('#jj-story', { opacity:0, scale:0.94, rotation:-9 }, { opacity:0.5, scale:1, rotation:-9, duration:2.4, ease:'power2.out' }, sStart + 0.3);  // huge tilted storybook backdrop @50%, off top-left
     tl.fromTo('#jj-philosopher', { opacity:0, y:46 }, { opacity:1, y:0, duration:1.4, ease:'power2.out' }, sStart + 0.9);        // bottom-left, peeks up
     tl.fromTo('#jj-rest-dragon', { opacity:0, y:34 }, { opacity:1, y:0, duration:1.4, ease:'power2.out' }, sStart + 1.2);        // bottom-right
     tl.call(function () { gsap.to('#jj-rest-dragon', { y:'-=24', duration:3.4, repeat:-1, yoyo:true, ease:'sine.inOut' }); }, null, sStart + 2.6); // slow float

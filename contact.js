@@ -25,10 +25,10 @@
 @keyframes jj-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 @keyframes jj-spin-reverse{from{transform:rotate(360deg);}to{transform:rotate(0deg);}}
 #jj-dark{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;}
-#jj-story{position:absolute;left:-40vw;top:-60vh;width:min(95vw,1550px);aspect-ratio:1/1;opacity:0;pointer-events:none;}
+#jj-story{position:absolute;left:-30vw;top:-90vh;width:min(76vw,1240px);aspect-ratio:1/1;opacity:0;pointer-events:none;}
 #jj-story svg{display:block;width:100%!important;height:100%!important;}
-#jj-philosopher{position:absolute;left:-5vw;bottom:-3vh;width:min(20vw,250px);opacity:0;pointer-events:none;}
-#jj-rest-dragon{position:absolute;right:-15vw;bottom:-38vh;width:min(37vw,560px);opacity:0;pointer-events:none;will-change:transform;}
+#jj-philosopher{position:absolute;left:-11vw;bottom:-3vh;width:min(20vw,250px);opacity:0;pointer-events:none;}
+#jj-rest-dragon{position:absolute;right:-25vw;bottom:-38vh;width:min(30vw,450px);opacity:0;pointer-events:none;will-change:transform;}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
 #jj-wipe-line{position:absolute;top:0;bottom:0;left:var(--wp,0%);width:2px;margin-left:-1px;background:linear-gradient(to bottom,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;z-index:61;pointer-events:none;}
 #jj-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}

@@ -30,8 +30,6 @@
 #jj-philosopher{position:absolute;left:calc(min(20vw,250px) * -0.2);bottom:calc(min(20vw,250px) * -0.1);width:min(20vw,250px);opacity:0;pointer-events:none;}
 #jj-rest-dragon{position:absolute;right:calc(min(34vw,554px) * -0.2);bottom:calc(min(34vw,554px) * -0.5);width:min(34vw,554px);opacity:0;pointer-events:none;will-change:transform;}
 /* ---- contact buttons (story scene) ---- */
-#jj-spacefloat{position:absolute;inset:0;z-index:6;pointer-events:none;}
-.jj-spacefloater{position:absolute;width:clamp(20px,2vw,34px);height:auto;margin-left:-17px;margin-top:-17px;opacity:0;will-change:transform;}
 #jj-contacts{position:absolute;inset:0;opacity:0;z-index:7;pointer-events:none;}
 .jj-contact{position:absolute;width:min(16.5vw,225px);text-decoration:none;color:#fff;pointer-events:none;}
 #jj-contacts.on .jj-contact{pointer-events:auto;cursor:pointer;}
@@ -43,9 +41,11 @@
 .jj-c-detail{position:absolute;left:50%;top:calc(100% + 2px);transform:translateX(-50%);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(12px,1.05vw,18px);opacity:0;transition:opacity .3s ease;}
 .jj-c-ico{flex:none;width:.92em;height:.92em;display:inline-flex;color:#fff;}
 .jj-c-ico svg{width:100%;height:100%;display:block;}
+.jj-c-floater{position:absolute;left:50%;top:50%;width:clamp(22px,2.3vw,36px);height:auto;margin-left:-18px;margin-top:-18px;pointer-events:none;}
 .jj-contact:hover .jj-c-def{opacity:0;}
 .jj-contact:hover .jj-c-fill{opacity:1;}
 .jj-contact:hover .jj-c-icon{transform:scale(1.2);}
+.jj-contact[data-key="credits"]:hover .jj-c-icon{transform:scale(1.42);}  /* filled credits has a thick border → needs more to read as a grow */
 .jj-contact:hover .jj-c-glow{opacity:1;}
 .jj-contact:hover .jj-c-detail{opacity:1;}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
@@ -197,7 +197,6 @@
   <div id="jj-story"></div>
   <img id="jj-philosopher" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/philosopher.png" alt="" aria-hidden="true">
   <img id="jj-rest-dragon" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" aria-hidden="true">
-  <div id="jj-spacefloat"></div>
   <div id="jj-contacts"></div>
   <div id="jj-stage"><div class="jj-copy">
     <p class="jj-alien">How would you like to get in touch</p>
@@ -352,12 +351,17 @@
     download: '<svg class="jj-c-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
     arrow:    '<svg class="jj-c-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>'
   };
+  // home positions sit on a shared ellipse (even 72° apart) so the slow orbit never overlaps.
+  // ORBIT center/radii (percent of viewport) — keep in sync with startContactOrbit.
+  var ORB = { cx:48, cy:43, rx:33, ry:26 };
+  var ANG = { linkedin:270, credits:342, cv:54, mail:126, phone:198 };   // degrees, evenly spaced
+  function ellipsePos(deg){ var r = deg * Math.PI / 180; return { x: ORB.cx + ORB.rx * Math.cos(r), y: ORB.cy + ORB.ry * Math.sin(r) }; }
   var CONTACTS = [
-    { key:'phone',    label:'Phone',    x:18.5, y:29.5, def:'6a326b671195e6aeb0fad6bd_Whatsapp.svg',  fill:'6a326b68ff1a7121507a3476_Whatsapp%20Filled.svg', detail:'07565040886',                          act:'copy', copy:'07565040886' },
-    { key:'linkedin', label:'LinkedIn', x:49.5, y:23.0, def:'6a326b6702196efc291ab506_Linkedin.svg',  fill:'6a326b68ff1a7121507a3479_Linkedin%20Filled.svg', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'copy', copy:'https://www.linkedin.com/in/joseph-jackson-ui/' },
-    { key:'credits',  label:'Credits',  x:79.0, y:34.5, def:'6a326b672510ef80bdc333a5_Credits.svg',   fill:'6a326b670c2c4374e37980fd_Credits%20filled.svg',  detail:'VIEW',                                  act:'view',     href:'#credits' },
-    { key:'mail',     label:'Mail',     x:34.5, y:64.0, def:'6a326b671e05c417a3694238_Mail.svg',      fill:'6a326b6751c667326423afe1_Mail%20-%20filled.svg', detail:'jackson.laptop95@gmail.com',            act:'copy', copy:'jackson.laptop95@gmail.com' },
-    { key:'cv',       label:'CV',       x:61.5, y:64.0, def:'6a326b67ee3ceb7f9c962b7e_CV.svg',        fill:'6a326b671da70ae29008672b_CV%20-%20filled.svg',   detail:'DOWNLOAD',                              act:'download', href:'#cv' }
+    { key:'phone',    label:'Phone',    dgap:-18, def:'6a326b671195e6aeb0fad6bd_Whatsapp.svg',  fill:'6a326b68ff1a7121507a3476_Whatsapp%20Filled.svg', detail:'07565040886',                          act:'copy', copy:'07565040886' },
+    { key:'linkedin', label:'LinkedIn', dgap:-30, def:'6a326b6702196efc291ab506_Linkedin.svg',  fill:'6a326b68ff1a7121507a3479_Linkedin%20Filled.svg', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'copy', copy:'https://www.linkedin.com/in/joseph-jackson-ui/' },
+    { key:'credits',  label:'Credits',  dgap:-6,  def:'6a326b672510ef80bdc333a5_Credits.svg',   fill:'6a326b670c2c4374e37980fd_Credits%20filled.svg',  detail:'VIEW',                                  act:'view',     href:'#credits' },
+    { key:'mail',     label:'Mail',     dgap:-50, def:'6a326b671e05c417a3694238_Mail.svg',      fill:'6a326b6751c667326423afe1_Mail%20-%20filled.svg', detail:'jackson.laptop95@gmail.com',            act:'copy', copy:'jackson.laptop95@gmail.com' },
+    { key:'cv',       label:'CV',       dgap:0,   def:'6a326b67ee3ceb7f9c962b7e_CV.svg',        fill:'6a326b671da70ae29008672b_CV%20-%20filled.svg',   detail:'DOWNLOAD',                              act:'download', href:'#cv' }
   ];
   var SPACE = [
     IC+'6a32a12291178c585287628f_small%20space%201.svg',
@@ -384,7 +388,7 @@
     CONTACTS.forEach(function (c) {
       var a = document.createElement('a');
       a.className = 'jj-contact'; a.href = c.href || '#'; a.setAttribute('data-key', c.key);
-      a.style.left = c.x + '%'; a.style.top = c.y + '%';
+      var p = ellipsePos(ANG[c.key]); a.style.left = p.x + '%'; a.style.top = p.y + '%';
       var labelIco = c.act === 'copy' ? ICO.copy : '';
       var detailIco = c.act === 'download' ? ICO.download : (c.act === 'view' ? ICO.arrow : '');
       a.innerHTML =
@@ -394,46 +398,56 @@
           '<img class="jj-c-fill" src="' + IC + c.fill + '" alt="" aria-hidden="true">' +
         '</span>' +
         '<span class="jj-c-detail">' + c.detail + detailIco + '</span>';
+      a.querySelector('.jj-c-detail').style.top = 'calc(100% + ' + (2 + (c.dgap || 0)) + 'px)';   // pull the value up close to the art
       a.addEventListener('click', function (e) {
         if (c.act === 'copy') { e.preventDefault(); copyToClipboard(c.copy).then(function () { showCopied(a); }); }
         else { e.preventDefault(); /* TODO: wire CV download + Credits view */ }
       });
+      a.addEventListener('mouseenter', function () { spawnFloaters(a); });
+      a.addEventListener('mouseleave', function () { clearFloaters(a); });
       if (window.gsap) gsap.set(a, { xPercent:-50, yPercent:-50 });   // centre on its point (float/orbit add transforms on top)
       wrap.appendChild(a);
     });
   }
-  /* 7 small space assets drifting + slowly circling in the background of the contact scene */
-  function startSpaceFloaters(){
-    var layer = document.getElementById('jj-spacefloat'); if (!layer || !window.gsap || layer.children.length) return;
-    var spots = [ {x:10,y:16,r:34,d:13}, {x:90,y:18,r:42,d:17}, {x:72,y:46,r:30,d:12}, {x:22,y:80,r:38,d:15}, {x:58,y:88,r:32,d:14}, {x:44,y:38,r:28,d:18}, {x:88,y:72,r:36,d:16} ];
-    spots.forEach(function (s, i) {
+  /* small space assets circle the HOVERED button only — appear on hover, fade out on leave */
+  function spawnFloaters(btn){
+    if (!window.gsap || btn._floaters) return;
+    var arr = [], tws = [], n = 6;
+    for (var i = 0; i < n; i++) {
       var im = document.createElement('img');
-      im.className = 'jj-spacefloater'; im.src = SPACE[i % SPACE.length]; im.alt = '';
-      im.style.left = s.x + '%'; im.style.top = s.y + '%';
-      layer.appendChild(im);
-      var ang = { v: i * 0.9 }, dir = (i % 2) ? 1 : -1;
-      gsap.to(ang, { v: ang.v + Math.PI * 2 * dir, duration: s.d, repeat: -1, ease: 'none',
-        onUpdate: (function (el, ss) { return function () { gsap.set(el, { x: Math.cos(ang.v) * ss.r, y: Math.sin(ang.v) * ss.r }); }; })(im, s) });
-      gsap.fromTo(im, { opacity: 0 }, { opacity: 0.5, duration: 1.4, ease: 'power1.out' });
-    });
+      im.className = 'jj-c-floater'; im.src = SPACE[i % SPACE.length]; im.alt = '';
+      btn.appendChild(im);
+      var st = { a: (i / n) * Math.PI * 2 }, rad = 96 + (i % 2) * 26, dir = (i % 2) ? 1 : -1;
+      gsap.set(im, { opacity: 0, scale: 0.55 + Math.random() * 0.35 });
+      gsap.to(im, { opacity: 0.95, duration: 0.4, ease: 'power1.out' });
+      tws.push(gsap.to(st, { a: st.a + Math.PI * 2 * dir, duration: 6 + Math.random() * 3, repeat: -1, ease: 'none',
+        onUpdate: (function (el, s, r) { return function () { gsap.set(el, { x: Math.cos(s.a) * r, y: Math.sin(s.a) * r }); }; })(im, st, rad) }));
+      arr.push(im);
+    }
+    btn._floaters = arr; btn._floaterTweens = tws;
   }
-  /* gentle bob + a verrry slow loop where the 5 buttons cycle through each other's spots (ccw) */
+  function clearFloaters(btn){
+    if (!btn._floaters) return;
+    (btn._floaterTweens || []).forEach(function (t) { t.kill(); });
+    btn._floaters.forEach(function (im) {
+      gsap.killTweensOf(im);
+      gsap.to(im, { opacity: 0, scale: 0.4, duration: 0.3, ease: 'power1.in', onComplete: function () { if (im.parentNode) im.parentNode.removeChild(im); } });
+    });
+    btn._floaters = null; btn._floaterTweens = null;
+  }
+  /* gentle bob + a verrry slow EVEN orbit around a shared ellipse → they never overlap */
   var contactOrbitOn = false;
   function startContactOrbit(){
     if (contactOrbitOn || !window.gsap) return;
     var btns = document.querySelectorAll('#jj-contacts .jj-contact'); if (!btns.length) return;
     contactOrbitOn = true;
-    var ring = [ {x:18.5,y:29.5}, {x:34.5,y:64}, {x:61.5,y:64}, {x:79,y:34.5}, {x:49.5,y:23} ];   // phone→mail→cv→credits→linkedin
-    var startIdx = { phone:0, mail:1, cv:2, credits:3, linkedin:4 };
-    var SEG = 16;   // seconds per hop — very slow
+    var PERIOD = 90;   // seconds for a full lap — very slow
     btns.forEach(function (btn) {
-      var si = startIdx[btn.getAttribute('data-key')] || 0;
-      gsap.to(btn, { y: '-=10', duration: 2.4 + Math.random() * 1.2, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: Math.random() * 1.5 });   // slight float
-      var t = gsap.timeline({ repeat: -1, defaults: { ease: 'none' } });
-      for (var step = 1; step <= ring.length; step++) {
-        var p = ring[(si + step) % ring.length];
-        t.to(btn, { left: p.x + '%', top: p.y + '%', duration: SEG });
-      }
+      var a0 = (ANG[btn.getAttribute('data-key')] || 0) * Math.PI / 180;
+      var st = { a: a0 };
+      gsap.to(btn, { y: '-=8', duration: 2.6 + Math.random() * 1.2, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: Math.random() * 1.5 });   // slight float
+      gsap.to(st, { a: a0 - Math.PI * 2, duration: PERIOD, repeat: -1, ease: 'none',                                                              // ccw: linkedin→left, phone→down...
+        onUpdate: function () { btn.style.left = (ORB.cx + ORB.rx * Math.cos(st.a)) + '%'; btn.style.top = (ORB.cy + ORB.ry * Math.sin(st.a)) + '%'; } });
     });
   }
 
@@ -530,9 +544,8 @@
     tl.fromTo('#jj-rest-dragon', { opacity:0, y:34, rotation:18 }, { opacity:1, y:0, rotation:18, duration:1.4, ease:'power2.out' }, sStart + 1.2);  // bottom-right, tilted +18deg (head up, looking up)
     tl.call(function () { gsap.to('#jj-rest-dragon', { y:'-=24', duration:3.4, repeat:-1, yoyo:true, ease:'sine.inOut' }); }, null, sStart + 2.6); // slow float
 
-    // ---- contact scene: bg space floaters + the 5 buttons fade in once "Contact" has gone,
-    //      then the buttons float and very slowly cycle through each other's positions ----
-    tl.call(function () { startSpaceFloaters(); }, null, lastT + 7.0);
+    // ---- contact scene: the 5 buttons fade in once "Contact" has gone, then they float
+    //      and very slowly orbit a shared ellipse (never overlapping) ----
     tl.call(function () { buildContacts(); }, null, lastT + 7.2);
     tl.to('#jj-contacts', { opacity:1, duration:1.4, ease:'power1.out',
       onComplete:function () { var el = document.getElementById('jj-contacts'); if (el) el.classList.add('on'); startContactOrbit(); } }, lastT + 8.2);

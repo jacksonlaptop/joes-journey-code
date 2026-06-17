@@ -1,11 +1,12 @@
 /* ============================================================================
-   Joe's Journey — Contact page intro  (hosted via GitHub + jsDelivr)
+   Joe's Journey — Contact page intro  (hosted via GitHub + raw.githack.com,
+   same as the site's other scripts — githack refreshes without any purge step)
 
    IN WEBFLOW (Contact page → Page Settings → Before </body> tag) add ONLY:
-     <script src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/contact.js"></script>
+     <script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/contact.js"></script>
 
-   TO UPDATE: edit this file → re-upload contact.js to the repo → purge jsDelivr:
-     https://purge.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/contact.js
+   TO UPDATE: edit this file → re-upload contact.js (+ any changed assets) to the
+   repo. githack picks up the new commit within ~minutes — no purge needed.
 
    FONTS: uses the site's own Webflow brand fonts ('Joes Journey Headline 2'
    and 'Joes Journey Hieroglyphics') — no font files needed in the repo.
@@ -37,7 +38,7 @@
 .jj-head{position:relative;--r:100%;font-family:'Joes Journey Headline',sans-serif;color:#fff;-webkit-text-stroke:1px rgba(0,0,0,.35);paint-order:stroke fill;text-shadow:0 2px 10px rgba(0,0,0,.5);clip-path:inset(0 var(--r) 0 0);}
 .jj-head .jj-char{display:inline-block;will-change:transform,opacity;}
 #jj-dragon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:155px;pointer-events:none;}
-#jj-dragon .jj-dragon-sprite{width:100%;height:100%;background-image:url('https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-sprite.png');background-repeat:no-repeat;background-size:900% 800%;}`;
+#jj-dragon .jj-dragon-sprite{width:100%;height:100%;background-image:url('https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-sprite.png');background-repeat:no-repeat;background-size:900% 800%;}`;
 
   var style = document.createElement('style');
   style.id = 'jj-contact-style';
@@ -46,7 +47,7 @@
 
   /* Lottie player for the animated storybook (page-turn). Loaded up front so it's
      ready by the time the story scene fades in (~8s). */
-  var BOOK_URL = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/book.json';
+  var BOOK_URL = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/book.json';
   if (!window.lottie) {
     var ls = document.createElement('script');
     ls.src = 'https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js';
@@ -174,8 +175,8 @@
   <div id="jj-dark"></div>
   <div id="jj-stars"></div>
   <div id="jj-story"></div>
-  <img id="jj-philosopher" src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/philosopher.png" alt="" aria-hidden="true">
-  <img id="jj-rest-dragon" src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-rest.png" alt="" aria-hidden="true">
+  <img id="jj-philosopher" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/philosopher.png" alt="" aria-hidden="true">
+  <img id="jj-rest-dragon" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" aria-hidden="true">
   <div id="jj-stage"><div class="jj-copy">
     <p class="jj-alien">How would you like to get in touch</p>
     <p class="jj-head"><span class="jj-inner">How would you like to get in touch</span></p>

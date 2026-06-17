@@ -48,6 +48,7 @@
 .jj-contact[data-key="credits"]:hover .jj-c-icon{transform:scale(1.42);}  /* filled credits has a thick border → needs more to read as a grow */
 .jj-contact:hover .jj-c-glow{opacity:1;}
 .jj-contact:hover .jj-c-detail{opacity:1;}
+#jj-caption{position:absolute;left:50%;bottom:6vh;transform:translateX(-50%);width:min(72vw,900px);text-align:center;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(18px,2vw,30px);line-height:1.42;color:#fff;opacity:0;z-index:8;pointer-events:none;}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
 #jj-wipe-line{position:absolute;top:0;bottom:0;left:var(--wp,0%);width:2px;margin-left:-1px;background:linear-gradient(to bottom,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;z-index:61;pointer-events:none;}
 #jj-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
@@ -198,6 +199,7 @@
   <img id="jj-philosopher" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/philosopher.png" alt="" aria-hidden="true">
   <img id="jj-rest-dragon" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" aria-hidden="true">
   <div id="jj-contacts"></div>
+  <div id="jj-caption"></div>
   <div id="jj-stage"><div class="jj-copy">
     <p class="jj-alien">How would you like to get in touch</p>
     <p class="jj-head"><span class="jj-inner">How would you like to get in touch</span></p>
@@ -329,18 +331,13 @@
     });
   }
 
-  /* Glitch "Contact" into the alien font (2 letters pink) just before it fades out. */
-  function glitchContact(headEl){
+  /* Switch "Contact" into the alien font (2 letters pink) as it fades out — no glitch. */
+  function alienizeContact(headEl){
     var picks = headEl._jjContact || []; if (!picks.length) return;
     picks.forEach(function (c, i) {
       gsap.killTweensOf(c);                                    // stop the gentle bob
-      var t = gsap.timeline();
-      for (var j = 0; j < 6; j++) {
-        t.to(c, { x: '+=' + gsap.utils.random(-7, 7), y: '+=' + gsap.utils.random(-7, 7), skewX: gsap.utils.random(-14, 14), duration: 0.05, ease: 'none',
-          onStart: (function (ch) { return function () { ch.style.fontFamily = (Math.random() < 0.5 ? "'Joes Journey Hieroglyphics', monospace" : "'Joes Journey Headline', sans-serif"); }; })(c) });
-      }
-      t.to(c, { skewX: 0, x: '+=' + gsap.utils.random(-3, 3), duration: 0.08,
-        onComplete: (function (ch, idx) { return function () { ch.style.fontFamily = "'Joes Journey Hieroglyphics', monospace"; if (idx === 1 || idx === 5) ch.style.color = '#FF00F5'; }; })(c, i) });
+      c.style.fontFamily = "'Joes Journey Hieroglyphics', monospace";
+      if (i === 1 || i === 5) c.style.color = '#FF00F5';       // keep 2 pink
     });
   }
 
@@ -357,7 +354,7 @@
   var ANG = { linkedin:270, credits:342, cv:54, mail:126, phone:198 };   // degrees, evenly spaced
   function ellipsePos(deg){ var r = deg * Math.PI / 180; return { x: ORB.cx + ORB.rx * Math.cos(r), y: ORB.cy + ORB.ry * Math.sin(r) }; }
   var CONTACTS = [
-    { key:'phone',    label:'Phone',    dgap:-18, def:'6a326b671195e6aeb0fad6bd_Whatsapp.svg',  fill:'6a326b68ff1a7121507a3476_Whatsapp%20Filled.svg', detail:'07565040886',                          act:'copy', copy:'07565040886' },
+    { key:'phone',    label:'Phone',    dgap:-18, def:'6a326b671195e6aeb0fad6bd_Whatsapp.svg',  fill:'6a326b68ff1a7121507a3476_Whatsapp%20Filled.svg', detail:'+44 7565 040886',                       act:'copy', copy:'+447565040886' },
     { key:'linkedin', label:'LinkedIn', dgap:-30, def:'6a326b6702196efc291ab506_Linkedin.svg',  fill:'6a326b68ff1a7121507a3479_Linkedin%20Filled.svg', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'copy', copy:'https://www.linkedin.com/in/joseph-jackson-ui/' },
     { key:'credits',  label:'Credits',  dgap:-6,  def:'6a326b672510ef80bdc333a5_Credits.svg',   fill:'6a326b670c2c4374e37980fd_Credits%20filled.svg',  detail:'VIEW',                                  act:'view',     href:'#credits' },
     { key:'mail',     label:'Mail',     dgap:-50, def:'6a326b671e05c417a3694238_Mail.svg',      fill:'6a326b6751c667326423afe1_Mail%20-%20filled.svg', detail:'jackson.laptop95@gmail.com',            act:'copy', copy:'jackson.laptop95@gmail.com' },
@@ -398,13 +395,17 @@
           '<img class="jj-c-fill" src="' + IC + c.fill + '" alt="" aria-hidden="true">' +
         '</span>' +
         '<span class="jj-c-detail">' + c.detail + detailIco + '</span>';
-      a.querySelector('.jj-c-detail').style.top = 'calc(100% + ' + (2 + (c.dgap || 0)) + 'px)';   // pull the value up close to the art
+      var g2 = c.dgap || 0;                                                              // pull title + value close to the visible art (CV is the baseline)
+      a.querySelector('.jj-c-detail').style.top = 'calc(100% + ' + (2 + g2) + 'px)';
+      a.querySelector('.jj-c-label').style.bottom = 'calc(100% + ' + (4 + g2) + 'px)';
       a.addEventListener('click', function (e) {
-        if (c.act === 'copy') { e.preventDefault(); copyToClipboard(c.copy).then(function () { showCopied(a); }); }
-        else { e.preventDefault(); /* TODO: wire CV download + Credits view */ }
+        e.preventDefault();
+        if (c.act === 'copy') { copyToClipboard(c.copy).then(function () { showCopied(a); }); }
+        else if (c.act === 'view') { launchCredits(); }       // Credits = same as pressing Space
+        /* else c.act === 'download' (CV): parked until the file URL is ready */
       });
-      a.addEventListener('mouseenter', function () { spawnFloaters(a); });
-      a.addEventListener('mouseleave', function () { clearFloaters(a); });
+      a.addEventListener('mouseenter', function () { pauseContacts(); spawnFloaters(a); });
+      a.addEventListener('mouseleave', function () { resumeContacts(); clearFloaters(a); });
       if (window.gsap) gsap.set(a, { xPercent:-50, yPercent:-50 });   // centre on its point (float/orbit add transforms on top)
       wrap.appendChild(a);
     });
@@ -436,7 +437,7 @@
     btn._floaters = null; btn._floaterTweens = null;
   }
   /* gentle bob + a verrry slow EVEN orbit around a shared ellipse → they never overlap */
-  var contactOrbitOn = false;
+  var contactOrbitOn = false, contactMotion = [];
   function startContactOrbit(){
     if (contactOrbitOn || !window.gsap) return;
     var btns = document.querySelectorAll('#jj-contacts .jj-contact'); if (!btns.length) return;
@@ -445,15 +446,60 @@
     btns.forEach(function (btn) {
       var a0 = (ANG[btn.getAttribute('data-key')] || 0) * Math.PI / 180;
       var st = { a: a0 };
-      gsap.to(btn, { y: '-=8', duration: 2.6 + Math.random() * 1.2, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: Math.random() * 1.5 });   // slight float
-      gsap.to(st, { a: a0 - Math.PI * 2, duration: PERIOD, repeat: -1, ease: 'none',                                                              // ccw: linkedin→left, phone→down...
-        onUpdate: function () { btn.style.left = (ORB.cx + ORB.rx * Math.cos(st.a)) + '%'; btn.style.top = (ORB.cy + ORB.ry * Math.sin(st.a)) + '%'; } });
+      contactMotion.push(gsap.to(btn, { y: '-=8', duration: 2.6 + Math.random() * 1.2, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: Math.random() * 1.5 }));   // slight float
+      contactMotion.push(gsap.to(st, { a: a0 - Math.PI * 2, duration: PERIOD, repeat: -1, ease: 'none',                                                              // ccw: linkedin→left, phone→down...
+        onUpdate: function () { btn.style.left = (ORB.cx + ORB.rx * Math.cos(st.a)) + '%'; btn.style.top = (ORB.cy + ORB.ry * Math.sin(st.a)) + '%'; } }));
     });
+  }
+  /* freeze every button's drift while one is hovered, so the user isn't chasing a moving target */
+  function pauseContacts(){ contactMotion.forEach(function (t) { t.pause(); }); }
+  function resumeContacts(){ contactMotion.forEach(function (t) { t.resume(); }); }
+
+  /* ---- wizard captions: rapid typed lines bottom-centre; he reacts sad → happy ---- */
+  var WIZ = { sad: IC + '6a326b676232e8946bfa7893_Wizard%20-%20sad.svg', happy: IC + '6a326b682510ef80bdc333ec_Wizard%20-%20very%20happy.svg' };
+  function setWizard(face){
+    var el = document.getElementById('jj-philosopher'); if (!el) return;
+    if (face === 'sad') el.src = WIZ.sad; else if (face === 'happy') el.src = WIZ.happy;
+  }
+  function typeCaption(el, text, append, done){
+    var base = append ? (el._txt || '') : '';
+    if (!append) el._txt = '';
+    var i = 0;
+    clearInterval(el._tw);
+    el._tw = setInterval(function () {
+      i++; el._txt = base + text.slice(0, i); el.textContent = el._txt;
+      if (i >= text.length) { clearInterval(el._tw); if (done) done(); }
+    }, 24);   // rapid
+  }
+  function runCaptions(){
+    var cap = document.getElementById('jj-caption'); if (!cap || !window.gsap) return;
+    gsap.to(cap, { opacity: 1, duration: 0.4 });
+    typeCaption(cap, 'Want to talk? Have some feedback?', false, function () {
+      setTimeout(function () {
+        setWizard('sad');
+        typeCaption(cap, '\nMaybe you want to send me some hate mail?', true, function () {
+          setTimeout(function () {
+            setWizard('happy');
+            typeCaption(cap, "Or… Fancy playing a quick game, it's my favourite? Just press 'Space' to begin… Oh I see what he's done there… Space… Ha!", false, function () {});
+          }, 1600);
+        });
+      }, 1400);
+    });
+  }
+
+  /* Credits "VIEW" and the Spacebar both launch the credits experience. */
+  var creditsArmed = false;
+  function launchCredits(){
+    if (window.jjIntro && window.jjIntro.unlock) window.jjIntro.unlock();
+    /* TODO: hook the real credits / horizontal mini-game here */
   }
 
   function init(){
     lockScroll();
     startSong();
+    window.addEventListener('keydown', function (e) {                         // Spacebar launches credits (once the scene is up)
+      if ((e.code === 'Space' || e.keyCode === 32) && creditsArmed) { e.preventDefault(); launchCredits(); }
+    });
     var W = window.innerWidth;
     var T = { wipe:1.3, flyAt:1.8, fly:4.5 };   // wipe = Star Wars reveal time; flyAt = wipe end + 0.5s (dragon enters); fly = crossing time
     var headEl = document.querySelector('.jj-head');
@@ -530,7 +576,7 @@
     // once they've drifted out a moment, those 7 reverse-float back to centre as "Contact"
     // (normal spacing), keep bobbing, then float-fade out 2.5s after they land.
     tl.call(function () { reformContact(headEl); }, null, lastT + 2.6);
-    tl.call(function () { glitchContact(headEl); }, null, lastT + 6.5);                                                              // glitch → alien (2 letters pink)
+    tl.call(function () { alienizeContact(headEl); }, null, lastT + 6.8);                                                            // switch to alien font (2 letters pink)
     tl.call(function () { gsap.to(headEl._jjContact || [], { opacity:0, duration:1.6, ease:'power1.in' }); }, null, lastT + 7.4);    // then fade out
 
     // ---- story scene: comes in as the letters disperse (darken bg, storybook + characters,
@@ -548,7 +594,10 @@
     //      and very slowly orbit a shared ellipse (never overlapping) ----
     tl.call(function () { buildContacts(); }, null, lastT + 7.2);
     tl.to('#jj-contacts', { opacity:1, duration:1.4, ease:'power1.out',
-      onComplete:function () { var el = document.getElementById('jj-contacts'); if (el) el.classList.add('on'); startContactOrbit(); } }, lastT + 8.2);
+      onComplete:function () { var el = document.getElementById('jj-contacts'); if (el) el.classList.add('on'); startContactOrbit(); creditsArmed = true; } }, lastT + 8.2);
+
+    // ---- wizard captions: start 2s after the contacts have entered ----
+    tl.call(function () { runCaptions(); }, null, lastT + 11.6);
   }
 
   /* Wink the stars out one-by-one over a few seconds (not all at once). */

@@ -28,7 +28,7 @@
 #jj-story{position:absolute;left:1.5%;top:1.5%;width:min(38vw,480px);aspect-ratio:1/1;opacity:0;pointer-events:none;}
 #jj-story svg{display:block;width:100%!important;height:100%!important;}
 #jj-philosopher{position:absolute;left:1.5vw;bottom:-3vh;width:min(20vw,250px);opacity:0;pointer-events:none;}
-#jj-rest-dragon{position:absolute;right:1vw;bottom:-3vh;width:min(26vw,360px);opacity:0;pointer-events:none;will-change:transform;}
+#jj-rest-dragon{position:absolute;right:1vw;bottom:-24vh;width:min(36vw,540px);opacity:0;pointer-events:none;will-change:transform;}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
 #jj-wipe-line{position:absolute;top:0;bottom:0;left:var(--wp,0%);width:2px;margin-left:-1px;background:linear-gradient(to bottom,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;z-index:61;pointer-events:none;}
 #jj-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
@@ -47,7 +47,7 @@
 
   /* Lottie player for the animated storybook (page-turn). Loaded up front so it's
      ready by the time the story scene fades in (~8s). */
-  var BOOK_URL = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/book.json';
+  var BOOK_URL = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/book.json?v=2';  // ?v bumps to dodge stale CDN/browser cache when book.json content changes
   if (!window.lottie) {
     var ls = document.createElement('script');
     ls.src = 'https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js';

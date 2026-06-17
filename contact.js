@@ -23,6 +23,12 @@
 @keyframes jj-glow{0%,100%{filter:drop-shadow(0 0 8px rgba(255,255,255,0.7)) drop-shadow(0 0 24px rgba(255,255,255,0.4));}50%{filter:drop-shadow(0 0 45px rgba(255,255,255,1)) drop-shadow(0 0 90px rgba(255,255,255,0.75)) drop-shadow(0 0 160px rgba(180,200,255,0.5));}}
 @keyframes jj-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 @keyframes jj-spin-reverse{from{transform:rotate(360deg);}to{transform:rotate(0deg);}}
+#jj-dark{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;}
+#jj-story{position:absolute;left:50%;top:45%;width:min(44vw,520px);aspect-ratio:1/1;transform:translate(-50%,-50%);opacity:0;pointer-events:none;}
+#jj-story svg{display:block;width:100%!important;height:100%!important;}
+#jj-philosopher{position:absolute;left:1.5vw;bottom:-3vh;width:min(20vw,250px);opacity:0;pointer-events:none;}
+#jj-rest-dragon{position:absolute;right:2vw;bottom:4vh;width:min(30vw,360px);aspect-ratio:340/177;opacity:0;pointer-events:none;will-change:transform;}
+#jj-rest-dragon .jj-dragon-sprite{transform:scaleX(-1);}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
 #jj-wipe-line{position:absolute;top:0;bottom:0;left:var(--wp,0%);width:2px;margin-left:-1px;background:linear-gradient(to bottom,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;z-index:61;pointer-events:none;}
 #jj-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
@@ -32,12 +38,58 @@
 .jj-head{position:relative;--r:100%;font-family:'Joes Journey Headline',sans-serif;color:#fff;-webkit-text-stroke:1px rgba(0,0,0,.35);paint-order:stroke fill;text-shadow:0 2px 10px rgba(0,0,0,.5);clip-path:inset(0 var(--r) 0 0);}
 .jj-head .jj-char{display:inline-block;will-change:transform,opacity;}
 #jj-dragon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:155px;pointer-events:none;}
-#jj-dragon .jj-dragon-sprite{width:100%;height:100%;background-image:url('https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-sprite.png');background-repeat:no-repeat;background-size:900% 800%;}`;
+.jj-dragon-sprite{width:100%;height:100%;background-image:url('https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-sprite.png');background-repeat:no-repeat;background-size:900% 800%;}`;
 
   var style = document.createElement('style');
   style.id = 'jj-contact-style';
   style.textContent = CSS;
   document.head.appendChild(style);
+
+  /* Lottie player for the animated storybook (page-turn). Loaded up front so it's
+     ready by the time the story scene fades in (~8s). */
+  var BOOK_URL = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/book.json';
+  if (!window.lottie) {
+    var ls = document.createElement('script');
+    ls.src = 'https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js';
+    document.head.appendChild(ls);
+  }
+  function mountBook(){
+    var el = document.getElementById('jj-story');
+    if (!el || el._jjBook) return;
+    if (!window.lottie) { setTimeout(mountBook, 150); return; }   // wait for the player
+    el._jjBook = true;
+    window.lottie.loadAnimation({ container:el, renderer:'svg', loop:true, autoplay:true, path:BOOK_URL });
+  }
+
+  /* Contact-page song. Goes through Howler (the site's audio lib) so the existing
+     mute button controls it; ducks the site ambient when it starts. Autoplay is
+     gated by the browser, so it begins on the visitor's first interaction. */
+  var SONG_URL = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a31b05c96881e6dc6682d34_geoffreyburch-brandon-hill-glbml-109292%20-%20very%20good%20winpipe%20vibes.mp3';
+  function startSong(){
+    if (window._jjSong) return;
+    if (window.Howl) {
+      var song = new window.Howl({ src:[SONG_URL], format:['mp3'], loop:true, html5:true, volume:0 });
+      window._jjSong = song;
+      try { if (window.jjAudio && window.jjAudio.sounds) window.jjAudio.sounds.push(song); } catch (e) {}
+      song.once('play', function () {
+        try {                                                    // duck the site ambient so they don't clash
+          if (window.jjAudio) {
+            window.jjAudio.takeover = true;
+            var amb = window.jjAudio.ambient;
+            if (amb && amb.fade) amb.fade(amb.volume(), 0, 2200);
+          }
+        } catch (e) {}
+        song.fade(0, 0.5, 2500);
+      });
+      song.play();                                               // Howler resumes the audio context on first gesture
+    } else {
+      var a = new Audio(SONG_URL); a.loop = true; a.volume = 0.5; window._jjSong = a;
+      var tryPlay = function () { a.play().then(off).catch(function () {}); };
+      function off(){ ['pointerdown','keydown','wheel','touchstart'].forEach(function (ev) { window.removeEventListener(ev, tryPlay, true); }); }
+      tryPlay();
+      ['pointerdown','keydown','wheel','touchstart'].forEach(function (ev) { window.addEventListener(ev, tryPlay, true); });
+    }
+  }
 
   /* Start loading the brand fonts immediately so the intro can wait for them
      before revealing any text (prevents the fallback-font flash / FOUT). */
@@ -120,7 +172,11 @@
 </clipPath>
 </defs>
 </svg></div>
+  <div id="jj-dark"></div>
   <div id="jj-stars"></div>
+  <div id="jj-story"></div>
+  <img id="jj-philosopher" src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/philosopher.png" alt="" aria-hidden="true">
+  <div id="jj-rest-dragon"><div class="jj-dragon-sprite"></div></div>
   <div id="jj-stage"><div class="jj-copy">
     <p class="jj-alien">How would you like to get in touch</p>
     <p class="jj-head"><span class="jj-inner">How would you like to get in touch</span></p>
@@ -205,6 +261,7 @@
 
   function init(){
     lockScroll();
+    startSong();
     var W = window.innerWidth;
     var T = { wipe:1.3, flyAt:1.8, fly:4.5 };   // wipe = Star Wars reveal time; flyAt = wipe end + 0.5s (dragon enters); fly = crossing time
     var headEl = document.querySelector('.jj-head');
@@ -239,6 +296,7 @@
     gsap.set('#jj-dragon', { opacity:0, x:-vw(.72), y:0, rotation:4 });
     gsap.set('#jj-stars', { opacity:0 });                       // fades in after the wipe
     gsap.set('#jj-intro', { '--wp':'0%' });
+    gsap.set(['#jj-dark','#jj-story','#jj-philosopher','#jj-rest-dragon'], { opacity:0 });  // story scene, hidden
 
     var tl = gsap.timeline({ defaults:{ ease:'power2.out' } });
     // Star Wars wipe — black recedes left→right revealing the scene, bright line at the edge
@@ -254,20 +312,49 @@
       .to('#jj-dragon', { keyframes:{ y:[0,-26,14,-18,0] }, duration:T.fly, ease:'sine.inOut' }, T.flyAt)
       .to('#jj-dragon', { x:vw(.8), opacity:0, duration:0.7, ease:'power1.in' }, T.flyAt + T.fly);
 
-    // dragon-synced reveal: as the dragon's x reaches each letter, convert it alien → Joe's Journey
+    // dragon-synced reveal: as the dragon's x reaches each letter, convert it alien → Joe's Journey.
+    // Each letter fades in (dim alien) LEAD letters AHEAD of its own conversion, so a run of
+    // ~6 grey alien glyphs always sits to the right of the white reveal edge.
+    var LEAD = 6;
     var startX = -vw(.72), endX = vw(.55), span = (endX - startX) || 1;
-    var lastT = T.flyAt;
-    chars.forEach(function (c) {
+    var seq = chars.map(function (c) {
       var frac = Math.max(0, Math.min(1, (c._jjCx - W / 2 - startX) / span));
-      var revT = T.flyAt + frac * T.fly;
-      if (revT > lastT) lastT = revT;
-      tl.to(c, { opacity:1, duration:0.35, ease:'power1.out' }, Math.max(0, revT - 0.3));                     // comes in (alien, dim)
-      tl.call(function () { c.style.fontFamily = "'Joes Journey Headline', sans-serif"; c.style.color = '#fff'; }, null, revT); // → Joe's Journey
-      tl.fromTo(c, { scale:1 }, { scale:1.16, duration:0.13, yoyo:true, repeat:1, ease:'power2.out' }, revT);  // little pop
+      return { c:c, revT: T.flyAt + frac * T.fly };
+    });
+    seq.sort(function (a, b) { return a.revT - b.revT; });           // left → right
+    var lastT = T.flyAt;
+    seq.forEach(function (o, i) {
+      if (o.revT > lastT) lastT = o.revT;
+      var appearT = i >= LEAD ? seq[i - LEAD].revT : 0;             // visible (alien) 6 letters early
+      tl.to(o.c, { opacity:1, duration:0.4, ease:'power1.out' }, Math.max(0, appearT));                       // comes in (alien, dim)
+      tl.call(function () { o.c.style.fontFamily = "'Joes Journey Headline', sans-serif"; o.c.style.color = '#fff'; }, null, o.revT); // → Joe's Journey
+      tl.fromTo(o.c, { scale:1 }, { scale:1.16, duration:0.13, yoyo:true, repeat:1, ease:'power2.out' }, o.revT);  // little pop
     });
 
     // disperse begins the instant the dragon flies over the last (rightmost) letter
     tl.call(function () { floatOut(headEl); }, null, lastT);
+
+    // ---- story scene: as the letters drift away, darken the bg and bring in the
+    //      storybook + characters; the stars wink out over a few seconds ----
+    var sStart = lastT + 1.5;
+    tl.to('#jj-dark', { opacity:0.5, duration:2.6, ease:'power1.inOut' }, sStart);          // 50% black over the swirl
+    tl.call(function () { fadeStarsOut(); }, null, sStart);                                  // stars out, staggered
+    tl.call(function () { mountBook(); }, null, sStart);                                     // start the page-turn Lottie
+    tl.fromTo('#jj-story', { opacity:0, scale:0.94 }, { opacity:0.5, scale:1, duration:2.4, ease:'power2.out' }, sStart + 0.3);  // animated storybook backdrop @50%
+    tl.fromTo('#jj-philosopher', { opacity:0, y:46 }, { opacity:1, y:0, duration:1.4, ease:'power2.out' }, sStart + 0.9);        // bottom-left, peeks up
+    tl.fromTo('#jj-rest-dragon', { opacity:0, y:34 }, { opacity:1, y:0, duration:1.4, ease:'power2.out' }, sStart + 1.2);        // bottom-right
+    tl.call(function () { gsap.to('#jj-rest-dragon', { y:'-=24', duration:3.4, repeat:-1, yoyo:true, ease:'sine.inOut' }); }, null, sStart + 2.6); // slow float
+  }
+
+  /* Wink the stars out one-by-one over a few seconds (not all at once). */
+  function fadeStarsOut(){
+    var decos = document.querySelectorAll('#jj-stars .jj-deco');
+    for (var i = 0; i < decos.length; i++){
+      (function (el){
+        gsap.to(el, { opacity:0, duration:1.3, delay:Math.random() * 3.2, ease:'power1.in',
+          onStart:function(){ el.style.animation = 'none'; } });   // stop its twinkle so the fade reads cleanly
+      })(decos[i]);
+    }
   }
 
   /* The real landing-page decorations: Star 16.svg (flash), Moon.svg (glow) and
@@ -318,14 +405,15 @@
 
   /* Drives the dragon sprite sheet (9x8 grid, 72 frames @ 12fps) via background-position. */
   function playDragon(){
-    var sp = document.querySelector('#jj-dragon .jj-dragon-sprite');
-    if (!sp) return;
+    var sprites = document.querySelectorAll('.jj-dragon-sprite');   // flythrough + bottom-right rest dragon
+    if (!sprites.length) return;
     var FR = 72, COLS = 9, ROWS = 8, FPS = 12, f = 0, last = 0;
     function tick(t){
       if (!last) last = t;
       if (t - last >= 1000 / FPS) {
         last = t;
-        sp.style.backgroundPosition = ((f % COLS) / (COLS - 1) * 100) + '% ' + (Math.floor(f / COLS) / (ROWS - 1) * 100) + '%';
+        var bp = ((f % COLS) / (COLS - 1) * 100) + '% ' + (Math.floor(f / COLS) / (ROWS - 1) * 100) + '%';
+        for (var i = 0; i < sprites.length; i++) sprites[i].style.backgroundPosition = bp;
         f = (f + 1) % FR;
       }
       requestAnimationFrame(tick);

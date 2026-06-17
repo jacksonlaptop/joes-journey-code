@@ -344,7 +344,7 @@
     tl.call(function () { mountBook(); }, null, sStart);                                     // start the page-turn Lottie
     tl.fromTo('#jj-story', { opacity:0, scale:0.94, rotation:-10.6 }, { opacity:0.3, scale:1, rotation:-10.6, duration:2.4, ease:'power2.out' }, sStart + 0.3);  // huge tilted storybook backdrop @30%, centered on the top-left corner (SVG tilt)
     tl.fromTo('#jj-philosopher', { opacity:0, y:46 }, { opacity:1, y:0, duration:1.4, ease:'power2.out' }, sStart + 0.9);        // bottom-left, peeks up
-    tl.fromTo('#jj-rest-dragon', { opacity:0, y:34, rotation:-6 }, { opacity:1, y:0, rotation:-6, duration:1.4, ease:'power2.out' }, sStart + 1.2);  // bottom-right, tilted -6deg
+    tl.fromTo('#jj-rest-dragon', { opacity:0, y:34, rotation:-14 }, { opacity:1, y:0, rotation:-14, duration:1.4, ease:'power2.out' }, sStart + 1.2);  // bottom-right, tilted -14deg (visible lean)
     tl.call(function () { gsap.to('#jj-rest-dragon', { y:'-=24', duration:3.4, repeat:-1, yoyo:true, ease:'sine.inOut' }); }, null, sStart + 2.6); // slow float
   }
 

@@ -27,8 +27,8 @@
 #jj-dark{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;}
 #jj-story{position:absolute;left:0;top:0;margin-left:calc(min(100vw,1600px) * -0.5);margin-top:calc(min(100vw,1600px) * -0.3);width:min(100vw,1600px);aspect-ratio:1/1;opacity:0;pointer-events:none;}
 #jj-story svg{display:block;width:100%!important;height:100%!important;}
-#jj-philosopher{position:absolute;left:calc(min(20vw,250px) * -0.2);bottom:calc(min(20vw,250px) * -0.1);width:min(20vw,250px);opacity:0;pointer-events:none;}
-#jj-rest-dragon{position:absolute;right:calc(min(34vw,554px) * -0.2);bottom:calc(min(34vw,554px) * -0.5);width:min(34vw,554px);opacity:0;pointer-events:none;will-change:transform;}
+#jj-philosopher{position:absolute;left:calc(min(20vw,250px) * -0.2);bottom:calc(min(20vw,250px) * -0.1);width:min(20vw,250px);height:calc(min(20vw,250px) * 1.2);object-fit:contain;object-position:center bottom;opacity:0;pointer-events:none;}
+#jj-rest-dragon{position:absolute;right:calc(min(34vw,554px) * -0.2);bottom:calc(min(34vw,554px) * -0.5);width:min(34vw,554px);opacity:0;pointer-events:auto;will-change:transform;}
 /* ---- contact buttons (story scene) ---- */
 #jj-contacts{position:absolute;inset:0;opacity:0;z-index:7;pointer-events:none;}
 .jj-contact{position:absolute;width:min(16.5vw,225px);text-decoration:none;color:#fff;pointer-events:none;}
@@ -52,7 +52,10 @@
 .jj-contact:hover .jj-c-detail{transform:translateX(-50%) translateY(22px);}
 .jj-contact[data-key="credits"]:hover .jj-c-label{transform:translateX(-50%) translateY(-40px);}     /* credits grows more (1.42) */
 .jj-contact[data-key="credits"]:hover .jj-c-detail{transform:translateX(-50%) translateY(40px);}
-#jj-caption{position:absolute;left:14vw;bottom:15vh;width:min(54vw,740px);text-align:left;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(20px,2.3vw,34px);line-height:1.4;color:#fff;opacity:0;z-index:8;pointer-events:none;}
+#jj-caption{position:absolute;left:14vw;top:67vh;width:min(70vw,1000px);text-align:left;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(20px,2.3vw,34px);line-height:1.4;color:#fff;opacity:0;z-index:8;pointer-events:none;}
+#jj-toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(0.92);display:flex;align-items:center;gap:12px;padding:9px 24px 9px 14px;border-radius:9px;background:#e0e0de;border:4px solid #616068;box-shadow:0 0 0 5px #fbdd65,0 0 0 9px #2e2f31,0 0 34px rgba(251,221,101,.4);font-family:'Joes Journey Headline',sans-serif;font-size:clamp(15px,1.5vw,23px);color:#2e2f31;white-space:nowrap;opacity:0;pointer-events:none;z-index:40;transition:opacity .22s ease,transform .22s ease;}
+#jj-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
+#jj-toast img{width:40px;height:40px;object-fit:cover;object-position:50% 16%;border-radius:6px;flex:none;}
 #jj-spacebar{position:absolute;left:50%;bottom:2.5vh;width:min(8vw,120px);margin-left:calc(min(8vw,120px) * -0.5);height:auto;opacity:0;z-index:8;pointer-events:auto;will-change:transform;}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
 #jj-wipe-line{position:absolute;top:0;bottom:0;left:var(--wp,0%);width:2px;margin-left:-1px;background:linear-gradient(to bottom,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;z-index:61;pointer-events:none;}
@@ -202,10 +205,11 @@
   <div id="jj-stars"></div>
   <div id="jj-story"></div>
   <img id="jj-philosopher" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/philosopher.png" alt="" aria-hidden="true">
-  <img id="jj-rest-dragon" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" aria-hidden="true">
+  <img id="jj-rest-dragon" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" data-cursor="drag">
   <div id="jj-contacts"></div>
   <div id="jj-caption"></div>
   <img id="jj-spacebar" src="https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a32c43b02d23ed8f42fb5a6_Space%20bar.svg" alt="Press Space" data-cursor="hover">
+  <div id="jj-toast"><img src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" aria-hidden="true"><span class="jj-toast-text"></span></div>
   <div id="jj-stage"><div class="jj-copy">
     <p class="jj-alien">How would you like to get in touch</p>
     <p class="jj-head"><span class="jj-inner">How would you like to get in touch</span></p>
@@ -380,11 +384,11 @@
     var ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;left:-9999px;top:0;';
     document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta);
   }
-  function showCopied(a){
-    var d = a.querySelector('.jj-c-detail'); if (!d) return;
-    if (d._orig === undefined) d._orig = d.innerHTML;
-    d.innerHTML = 'Copied!'; d.style.opacity = '1';
-    clearTimeout(d._t); d._t = setTimeout(function () { d.innerHTML = d._orig; d.style.opacity = ''; }, 1300);
+  function showToast(text){
+    var t = document.getElementById('jj-toast'); if (!t) return;
+    t.querySelector('.jj-toast-text').textContent = text;
+    t.classList.add('show');
+    clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('show'); }, 2100);
   }
   function buildContacts(){
     var wrap = document.getElementById('jj-contacts'); if (!wrap || wrap.children.length) return;
@@ -406,7 +410,11 @@
       a.querySelector('.jj-c-label').style.bottom = 'calc(100% + ' + (4 + g2) + 'px)';
       a.addEventListener('click', function (e) {
         e.preventDefault();
-        if (c.act === 'copy') { copyToClipboard(c.copy).then(function () { showCopied(a); }); }
+        if (c.act === 'copy') {
+          copyToClipboard(c.copy).then(function () {
+            showToast(c.key === 'linkedin' ? 'Copied to clipboard!' : c.copy + '  copied to clipboard!');   // phone/mail show the value, linkedin doesn't
+          });
+        }
         else if (c.act === 'view') { launchCredits(); }       // Credits = same as pressing Space
         /* else c.act === 'download' (CV): parked until the file URL is ready */
       });
@@ -462,10 +470,17 @@
   function resumeContacts(){ contactMotion.forEach(function (t) { t.resume(); }); }
 
   /* ---- wizard captions: rapid typed lines bottom-centre; he reacts sad → happy ---- */
-  var WIZ = { sad: IC + '6a326b676232e8946bfa7893_Wizard%20-%20sad.svg', happy: IC + '6a326b682510ef80bdc333ec_Wizard%20-%20very%20happy.svg' };
-  function setWizard(face){
-    var el = document.getElementById('jj-philosopher'); if (!el) return;
-    if (face === 'sad') el.src = WIZ.sad; else if (face === 'happy') el.src = WIZ.happy;
+  var WIZ = {
+    normal: 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/philosopher.png',
+    sad:    IC + '6a326b676232e8946bfa7893_Wizard%20-%20sad.svg',
+    happy:  IC + '6a326b682510ef80bdc333ec_Wizard%20-%20very%20happy.svg'
+  };
+  function setWizard(face){                                                  // fade quickly out → swap → fade in, so he never appears to "move"
+    var el = document.getElementById('jj-philosopher'); var url = WIZ[face]; if (!el || !url || !window.gsap) return;
+    if (el.getAttribute('src') === url) return;
+    gsap.to(el, { opacity:0, duration:0.13, ease:'power1.in', onComplete:function () {
+      el.src = url; gsap.to(el, { opacity:1, duration:0.18, ease:'power1.out' });
+    } });
   }
   function typeCaption(el, text, append, done){
     var base = append ? (el._txt || '') : '';
@@ -506,6 +521,40 @@
     if (!sb._wired) { sb._wired = true; sb.addEventListener('click', function () { launchCredits(); }); }
     gsap.to(sb, { opacity:1, duration:0.5, ease:'power1.out' });
     gsap.to(sb, { scale:1.07, duration:0.95, repeat:-1, yoyo:true, ease:'sine.inOut' });       // gentle "press me" pulse
+  }
+
+  /* the bottom-right dragon reacts: hover → happy, click → angry + sink (face only) then back, idle smile every 5–10s */
+  var DR = {
+    normal: 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png',
+    happy:  'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-happy.png',
+    angry:  'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-angry.png'
+  };
+  function setupDragon(){
+    var d = document.getElementById('jj-rest-dragon'); if (!d || !window.gsap || d._wired) return;
+    d._wired = true;
+    var busy = false, hovering = false;
+    function face(f){ if (d.getAttribute('src') !== DR[f]) d.src = DR[f]; }
+    d.addEventListener('mouseenter', function () { hovering = true; if (!busy) face('happy'); });
+    d.addEventListener('mouseleave', function () { hovering = false; if (!busy) face('normal'); });
+    d.addEventListener('click', function () {
+      if (busy) return; busy = true;
+      face('angry');
+      gsap.killTweensOf(d);
+      gsap.to(d, { y: d.offsetHeight * 0.24, duration: 0.8, ease: 'power2.in', onComplete: function () {       // sink so only his face peeks over the edge
+        setTimeout(function () {
+          gsap.to(d, { y: 0, duration: 0.9, ease: 'power2.out', onComplete: function () {
+            busy = false; face(hovering ? 'happy' : 'normal');
+            gsap.to(d, { y: '-=24', duration: 3.4, repeat: -1, yoyo: true, ease: 'sine.inOut' });                // restore the gentle bob
+          } });
+        }, 2600);   // hold the sulk a few seconds
+      } });
+    });
+    (function idle(){
+      setTimeout(function () {
+        if (!busy && !hovering) { face('happy'); setTimeout(function () { if (!busy && !hovering) face('normal'); }, 1700); }
+        idle();
+      }, 5000 + Math.random() * 5000);
+    })();
   }
 
   function init(){
@@ -602,7 +651,7 @@
     tl.fromTo('#jj-story', { opacity:0, scale:0.94, rotation:-10.6 }, { opacity:0.3, scale:1, rotation:-10.6, duration:2.4, ease:'power2.out' }, sStart + 0.3);  // huge tilted storybook backdrop @30%, centered on the top-left corner (SVG tilt)
     tl.fromTo('#jj-philosopher', { opacity:0, y:46 }, { opacity:1, y:0, duration:1.4, ease:'power2.out' }, sStart + 0.9);        // bottom-left, peeks up
     tl.fromTo('#jj-rest-dragon', { opacity:0, y:34, rotation:18 }, { opacity:1, y:0, rotation:18, duration:1.4, ease:'power2.out' }, sStart + 1.2);  // bottom-right, tilted +18deg (head up, looking up)
-    tl.call(function () { gsap.to('#jj-rest-dragon', { y:'-=24', duration:3.4, repeat:-1, yoyo:true, ease:'sine.inOut' }); }, null, sStart + 2.6); // slow float
+    tl.call(function () { gsap.to('#jj-rest-dragon', { y:'-=24', duration:3.4, repeat:-1, yoyo:true, ease:'sine.inOut' }); setupDragon(); }, null, sStart + 2.6); // slow float + interactive
 
     // ---- contact scene: the 5 buttons fade in once "Contact" has gone, then they float
     //      and very slowly orbit a shared ellipse (never overlapping) ----

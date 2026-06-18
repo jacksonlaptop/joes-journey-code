@@ -53,13 +53,16 @@
 .jj-contact[data-key="credits"]:hover .jj-c-label{transform:translateX(-50%) translateY(-40px);}     /* credits grows more (1.42) */
 .jj-contact[data-key="credits"]:hover .jj-c-detail{transform:translateX(-50%) translateY(40px);}
 #jj-caption{position:absolute;left:14vw;top:67vh;width:min(70vw,1000px);text-align:left;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(20px,2.3vw,34px);line-height:1.4;color:#fff;opacity:0;z-index:8;pointer-events:none;}
-#jj-toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(0.92);display:flex;align-items:center;gap:12px;padding:9px 24px 9px 14px;border-radius:9px;background:#e0e0de;border:4px solid #616068;box-shadow:0 0 0 5px #fbdd65,0 0 0 9px #2e2f31,0 0 34px rgba(251,221,101,.4);font-family:'Joes Journey Headline',sans-serif;font-size:clamp(15px,1.5vw,23px);color:#2e2f31;white-space:nowrap;opacity:0;pointer-events:none;z-index:40;transition:opacity .22s ease,transform .22s ease;}
+#jj-toast{position:absolute;left:48%;top:43%;transform:translate(-50%,-50%) scale(0.92);display:flex;align-items:center;gap:8px;opacity:0;pointer-events:none;z-index:40;transition:opacity .22s ease,transform .22s ease;}
 #jj-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
-#jj-toast img{width:40px;height:40px;object-fit:cover;object-position:50% 16%;border-radius:6px;flex:none;}
+.jj-toast-head,.jj-toast-box{height:clamp(48px,4.2vw,66px);box-sizing:border-box;background:#e0e0de;border:3px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #fbdd65,0 0 0 9px #2e2f31,0 0 30px rgba(251,221,101,.35);}
+.jj-toast-head{flex:none;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;padding:6px;}
+.jj-toast-head img{max-width:100%;max-height:100%;object-fit:contain;display:block;}
+.jj-toast-box{display:flex;align-items:center;padding:0 26px;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(15px,1.5vw,23px);color:#2e2f31;white-space:nowrap;}
 #jj-spacebar{position:absolute;left:50%;bottom:2.5vh;width:min(8vw,120px);margin-left:calc(min(8vw,120px) * -0.5);height:auto;opacity:0;z-index:8;pointer-events:auto;will-change:transform;}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
 #jj-wipe-line{position:absolute;top:0;bottom:0;left:var(--wp,0%);width:2px;margin-left:-1px;background:linear-gradient(to bottom,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;z-index:61;pointer-events:none;}
-#jj-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+#jj-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
 .jj-copy{display:inline-grid;white-space:nowrap;text-align:center;}
 .jj-alien,.jj-head{grid-area:1/1;margin:0;font-size:clamp(20px,4vw,54px);line-height:1.2;letter-spacing:.01em;}
 .jj-alien{font-family:'Joes Journey Hieroglyphics',monospace;color:#22384b;}
@@ -205,11 +208,11 @@
   <div id="jj-stars"></div>
   <div id="jj-story"></div>
   <img id="jj-philosopher" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/philosopher.png" alt="" aria-hidden="true">
-  <img id="jj-rest-dragon" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" data-cursor="drag">
+  <img id="jj-rest-dragon" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" data-cursor="hover">
   <div id="jj-contacts"></div>
   <div id="jj-caption"></div>
   <img id="jj-spacebar" src="https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a32c43b02d23ed8f42fb5a6_Space%20bar.svg" alt="Press Space" data-cursor="hover">
-  <div id="jj-toast"><img src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" aria-hidden="true"><span class="jj-toast-text"></span></div>
+  <div id="jj-toast"><span class="jj-toast-head"><img src="https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a33bebf658e3eb02d1952fa_Dragon%20head%20-%20normal.svg" alt="" aria-hidden="true"></span><span class="jj-toast-box"><span class="jj-toast-text"></span></span></div>
   <div id="jj-stage"><div class="jj-copy">
     <p class="jj-alien">How would you like to get in touch</p>
     <p class="jj-head"><span class="jj-inner">How would you like to get in touch</span></p>
@@ -490,7 +493,7 @@
     el._tw = setInterval(function () {
       i++; el._txt = base + text.slice(0, i); el.textContent = el._txt;
       if (i >= text.length) { clearInterval(el._tw); if (done) done(); }
-    }, 24);   // rapid
+    }, 45);   // typing speed (ms per character)
   }
   function runCaptions(){
     var cap = document.getElementById('jj-caption'); if (!cap || !window.gsap) return;
@@ -501,8 +504,17 @@
         typeCaption(cap, '\nMaybe you want to send me some hate mail?', true, function () {
           setTimeout(function () {                                     // longer beat so the hate-mail line can be read
             setWizard('happy');
-            showSpacebar();
-            typeCaption(cap, "Or… Fancy playing a quick game, it's my favourite? Just press 'Space' to begin… Oh I see what he's done there… Space… Ha!", false, function () {});
+            // scene 3 types in chunks with pauses
+            typeCaption(cap, 'Or… Fancy playing a quick game, it’s my favourite?', false, function () {
+              setTimeout(function () {
+                showSpacebar();
+                typeCaption(cap, ' Just press ‘Space’ to begin…', true, function () {
+                  setTimeout(function () {
+                    typeCaption(cap, ' Oh I see what he’s done there… Space… Ha!', true, function () {});
+                  }, 1300);                                            // pause before "Oh I see..."
+                });
+              }, 1300);                                                // pause after "favourite?"
+            });
           }, 4000);
         });
       }, 1400);

@@ -31,9 +31,9 @@
 #jj-rest-dragon{position:absolute;right:calc(min(34vw,554px) * -0.2);bottom:calc(min(34vw,554px) * -0.5);width:min(34vw,554px);opacity:0;pointer-events:auto;will-change:transform;}
 /* ---- contact buttons (story scene) ---- */
 #jj-contacts{position:absolute;inset:0;opacity:0;z-index:7;pointer-events:none;}
-.jj-contact{position:absolute;width:min(16.5vw,225px);text-decoration:none;color:#fff;pointer-events:none;}
+.jj-contact{position:absolute;width:min(11.5vw,158px);text-decoration:none;color:#fff;pointer-events:none;}
 #jj-contacts.on .jj-contact{pointer-events:auto;cursor:pointer;}
-.jj-c-icon{position:relative;width:100%;height:min(16.5vw,225px);display:flex;align-items:center;justify-content:center;transition:transform .3s ease;will-change:transform;}
+.jj-c-icon{position:relative;width:100%;height:min(11.5vw,158px);display:flex;align-items:center;justify-content:center;transition:transform .3s ease;will-change:transform;}
 .jj-c-icon img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:contain;transition:opacity .3s ease;}
 .jj-c-fill{opacity:0;}
 .jj-c-glow{position:absolute;left:50%;top:50%;width:150%;height:150%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(150,190,255,.32),rgba(150,190,255,0) 66%);opacity:0;transition:opacity .35s ease;pointer-events:none;}
@@ -52,8 +52,8 @@
 .jj-contact:hover .jj-c-detail{transform:translateX(-50%) translateY(22px);}
 .jj-contact[data-key="credits"]:hover .jj-c-label{transform:translateX(-50%) translateY(-40px);}     /* credits grows more (1.42) */
 .jj-contact[data-key="credits"]:hover .jj-c-detail{transform:translateX(-50%) translateY(40px);}
-#jj-caption{position:absolute;left:16vw;top:78vh;width:min(56vw,820px);text-align:left;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(16px,1.85vw,28px);line-height:1.32;color:#fff;opacity:0;z-index:8;pointer-events:none;}
-#jj-toast{position:absolute;left:48%;top:43%;transform:translate(-50%,-50%) scale(0.92);display:flex;align-items:center;gap:26px;opacity:0;pointer-events:none;z-index:40;transition:opacity .22s ease,transform .22s ease;}
+#jj-caption{position:absolute;left:16vw;bottom:calc(2.5vh + min(8vw,120px) * 0.77 + 20px);width:min(60vw,940px);min-height:2.7em;text-align:left;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(18px,2vw,30px);line-height:1.32;color:#fff;opacity:0;z-index:8;pointer-events:none;}
+#jj-toast{position:absolute;left:48%;top:43%;transform:translate(-50%,-50%) scale(0.92);display:flex;align-items:center;gap:18px;opacity:0;pointer-events:none;z-index:40;transition:opacity .22s ease,transform .22s ease;}
 #jj-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
 .jj-toast-head,.jj-toast-box{height:clamp(48px,4.2vw,66px);box-sizing:border-box;background:#e0e0de;border:3px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #fbdd65,0 0 0 9px #2e2f31,0 0 30px rgba(251,221,101,.35);}
 .jj-toast-head{flex:none;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;padding:6px;}
@@ -371,11 +371,11 @@
   function ellipsePos(deg){ var r = deg * Math.PI / 180; return { x: ORB.cx + ORB.rx * Math.cos(r), y: ORB.cy + ORB.ry * Math.sin(r) }; }
   var ICN = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';            // cropped contact icons (no padding, art to the edge)
   var CONTACTS = [
-    { key:'phone',    label:'Phone',    dgap:17,  def:ICN+'icon-phone.png',    fill:ICN+'icon-phone-fill.png',    detail:'+44 7565 040886',                       act:'copy', copy:'+447565040886' },
-    { key:'linkedin', label:'LinkedIn', dgap:25,  def:ICN+'icon-linkedin.png', fill:ICN+'icon-linkedin-fill.png', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'copy', copy:'https://www.linkedin.com/in/joseph-jackson-ui/' },
-    { key:'credits',  label:'Credits',  dgap:10,  def:ICN+'icon-credits.png',  fill:ICN+'icon-credits-fill.png',  detail:'VIEW',                                  act:'view',     href:'#credits' },
-    { key:'mail',     label:'Mail',     dgap:-8,  def:ICN+'icon-mail.png',     fill:ICN+'icon-mail-fill.png',     detail:'jackson.laptop95@gmail.com',            act:'copy', copy:'jackson.laptop95@gmail.com' },
-    { key:'cv',       label:'CV',       dgap:0,   def:ICN+'icon-cv.png',       fill:ICN+'icon-cv-fill.png',       detail:'DOWNLOAD',                              act:'download', href:'#cv' }
+    { key:'phone',    label:'Phone',    dgap:0,   def:ICN+'icon-phone.png',    fill:ICN+'icon-phone-fill.png',    detail:'+44 7565 040886',                       act:'copy', copy:'+447565040886' },
+    { key:'linkedin', label:'LinkedIn', dgap:0,   def:ICN+'icon-linkedin.png', fill:ICN+'icon-linkedin-fill.png', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'copy', copy:'https://www.linkedin.com/in/joseph-jackson-ui/' },
+    { key:'credits',  label:'Credits',  dgap:0,   def:ICN+'icon-credits.png',  fill:ICN+'icon-credits-fill.png',  detail:'View',                                  act:'view',     href:'#credits' },
+    { key:'mail',     label:'Mail',     dgap:0,   def:ICN+'icon-mail.png',     fill:ICN+'icon-mail-fill.png',     detail:'jackson.laptop95@gmail.com',            act:'copy', copy:'jackson.laptop95@gmail.com' },
+    { key:'cv',       label:'CV',       dgap:0,   def:ICN+'icon-cv.png',       fill:ICN+'icon-cv-fill.png',       detail:'Download',                              act:'download', href:'#cv' }
   ];
   var SPACE = [
     IC+'6a32a12291178c585287628f_small%20space%201.svg',
@@ -397,6 +397,19 @@
     t.classList.add('show');
     clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('show'); }, 2100);
   }
+  var LBL_GAP = 18;                                                                      // desired visible gap (px) between the art edge and the title/value
+  function placeLabels(a){                                                              // object-fit:contain leaves transparent margin on non-square art — offset the text past it so every orb reads the same
+    var icon = a.querySelector('.jj-c-icon'), img = a.querySelector('.jj-c-def');
+    var bw = icon.clientWidth, bh = icon.clientHeight, nw = img.naturalWidth, nh = img.naturalHeight;
+    if (!nw || !nh || !bw || !bh) return;
+    var ws = Math.max(0, (bh - nh * Math.min(bw / nw, bh / nh)) / 2);                    // transparent top/bottom margin of the art inside the box
+    var g = LBL_GAP + (+a.getAttribute('data-dgap') || 0);
+    a.querySelector('.jj-c-label').style.bottom = 'calc(100% + ' + (g - ws) + 'px)';
+    a.querySelector('.jj-c-detail').style.top   = 'calc(100% + ' + (g - 2 - ws) + 'px)';
+  }
+  window.addEventListener('resize', function () {                                        // box size is vw-based — re-seat the labels when it changes
+    document.querySelectorAll('#jj-contacts .jj-contact').forEach(placeLabels);
+  });
   function buildContacts(){
     var wrap = document.getElementById('jj-contacts'); if (!wrap || wrap.children.length) return;
     CONTACTS.forEach(function (c) {
@@ -412,9 +425,10 @@
           '<img class="jj-c-fill" src="' + c.fill + '" alt="" aria-hidden="true">' +
         '</span>' +
         '<span class="jj-c-detail">' + c.detail + detailIco + '</span>';
-      var g2 = c.dgap || 0;                                                              // pull title + value close to the visible art (CV is the baseline)
-      a.querySelector('.jj-c-detail').style.top = 'calc(100% + ' + (2 + g2) + 'px)';
-      a.querySelector('.jj-c-label').style.bottom = 'calc(100% + ' + (4 + g2) + 'px)';
+      a.setAttribute('data-dgap', c.dgap || 0);
+      placeLabels(a);                                                                    // sit title/value a fixed gap off the visible art (auto-handles each icon's aspect)
+      var di = a.querySelector('.jj-c-def');
+      if (!di.complete || !di.naturalWidth) di.addEventListener('load', function () { placeLabels(a); });
       a.addEventListener('click', function (e) {
         e.preventDefault();
         if (c.act === 'copy') {
@@ -500,7 +514,7 @@
     w.addEventListener('mouseleave', function () { hovering = false; if (!busy) applyWizard(wizState); });
     w.addEventListener('click', function () {
       if (busy) return; busy = true;
-      applyWizard('sad'); gsap.killTweensOf(w);
+      gsap.killTweensOf(w); applyWizard('sad');                                          // kill leftover motion FIRST, then start the sad fade-swap (else killTweensOf cancels it)
       gsap.to(w, { x: -w.offsetWidth * 0.16, y: w.offsetHeight * 0.14, duration: 0.6, ease: 'power2.out', onComplete: function () {   // slightly left + down
         setTimeout(function () {
           gsap.to(w, { x: 0, y: 0, duration: 0.7, ease: 'power2.inOut', onComplete: function () {

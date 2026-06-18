@@ -27,7 +27,7 @@
 #jj-dark{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;}
 #jj-story{position:absolute;left:0;top:0;margin-left:calc(min(100vw,1600px) * -0.5);margin-top:calc(min(100vw,1600px) * -0.3);width:min(100vw,1600px);aspect-ratio:1/1;opacity:0;pointer-events:none;}
 #jj-story svg{display:block;width:100%!important;height:100%!important;}
-#jj-philosopher{position:absolute;left:calc(min(20vw,250px) * -0.2);bottom:calc(min(20vw,250px) * -0.1);width:min(20vw,250px);height:calc(min(20vw,250px) * 1.2);object-fit:contain;object-position:center bottom;opacity:0;pointer-events:none;}
+#jj-philosopher{position:absolute;left:calc(min(20vw,250px) * -0.2);bottom:calc(min(20vw,250px) * -0.1);width:min(20vw,250px);height:calc(min(20vw,250px) * 1.2);object-fit:contain;object-position:center bottom;opacity:0;pointer-events:auto;will-change:transform;}
 #jj-rest-dragon{position:absolute;right:calc(min(34vw,554px) * -0.2);bottom:calc(min(34vw,554px) * -0.5);width:min(34vw,554px);opacity:0;pointer-events:auto;will-change:transform;}
 /* ---- contact buttons (story scene) ---- */
 #jj-contacts{position:absolute;inset:0;opacity:0;z-index:7;pointer-events:none;}
@@ -52,8 +52,8 @@
 .jj-contact:hover .jj-c-detail{transform:translateX(-50%) translateY(22px);}
 .jj-contact[data-key="credits"]:hover .jj-c-label{transform:translateX(-50%) translateY(-40px);}     /* credits grows more (1.42) */
 .jj-contact[data-key="credits"]:hover .jj-c-detail{transform:translateX(-50%) translateY(40px);}
-#jj-caption{position:absolute;left:14vw;top:67vh;width:min(70vw,1000px);text-align:left;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(20px,2.3vw,34px);line-height:1.4;color:#fff;opacity:0;z-index:8;pointer-events:none;}
-#jj-toast{position:absolute;left:48%;top:43%;transform:translate(-50%,-50%) scale(0.92);display:flex;align-items:center;gap:8px;opacity:0;pointer-events:none;z-index:40;transition:opacity .22s ease,transform .22s ease;}
+#jj-caption{position:absolute;left:16vw;top:78vh;width:min(56vw,820px);text-align:left;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(16px,1.85vw,28px);line-height:1.32;color:#fff;opacity:0;z-index:8;pointer-events:none;}
+#jj-toast{position:absolute;left:48%;top:43%;transform:translate(-50%,-50%) scale(0.92);display:flex;align-items:center;gap:26px;opacity:0;pointer-events:none;z-index:40;transition:opacity .22s ease,transform .22s ease;}
 #jj-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
 .jj-toast-head,.jj-toast-box{height:clamp(48px,4.2vw,66px);box-sizing:border-box;background:#e0e0de;border:3px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #fbdd65,0 0 0 9px #2e2f31,0 0 30px rgba(251,221,101,.35);}
 .jj-toast-head{flex:none;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;padding:6px;}
@@ -207,7 +207,7 @@
   <div id="jj-dark"></div>
   <div id="jj-stars"></div>
   <div id="jj-story"></div>
-  <img id="jj-philosopher" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/philosopher.png" alt="" aria-hidden="true">
+  <img id="jj-philosopher" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/philosopher.png" alt="" data-cursor="hover">
   <img id="jj-rest-dragon" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" data-cursor="hover">
   <div id="jj-contacts"></div>
   <div id="jj-caption"></div>
@@ -344,13 +344,16 @@
     });
   }
 
-  /* Switch "Contact" into the alien font (2 letters pink) as it fades out — no glitch. */
+  /* As "Contact" fades out: switch to the alien font (2 letters pink), keep it floating, and
+     let the float ramp up (accelerate) just before the letters vanish. */
   function alienizeContact(headEl){
     var picks = headEl._jjContact || []; if (!picks.length) return;
     picks.forEach(function (c, i) {
-      gsap.killTweensOf(c);                                    // stop the gentle bob
-      c.style.fontFamily = "'Joes Journey Hieroglyphics', monospace";
-      if (i === 1 || i === 5) c.style.color = '#FF00F5';       // keep 2 pink
+      c.style.fontFamily = "'Joes Journey Hieroglyphics', monospace";       // alien as it fades
+      if (i === 1 || i === 5) c.style.color = '#FF00F5';                     // 2 stay pink
+      gsap.to(c, { opacity: 0, duration: 2.0, ease: 'power2.in' });                                          // fade out (the gentle bob keeps going underneath)
+      gsap.to(c, { y: '-=' + (52 + Math.random() * 34), rotation: gsap.utils.random(-16, 16),               // float ramps up — accelerates away just before vanishing
+        duration: 1.4, delay: 0.6, ease: 'power3.in', overwrite: 'auto' });
     });
   }
 
@@ -478,12 +481,33 @@
     sad:    IC + '6a326b676232e8946bfa7893_Wizard%20-%20sad.svg',
     happy:  IC + '6a326b682510ef80bdc333ec_Wizard%20-%20very%20happy.svg'
   };
-  function setWizard(face){                                                  // fade quickly out → swap → fade in, so he never appears to "move"
+  var wizState = 'normal';                                                   // the scripted resting expression
+  function applyWizard(face){                                               // fade quickly out → swap → fade in, so he never appears to "move"
     var el = document.getElementById('jj-philosopher'); var url = WIZ[face]; if (!el || !url || !window.gsap) return;
     if (el.getAttribute('src') === url) return;
     gsap.to(el, { opacity:0, duration:0.13, ease:'power1.in', onComplete:function () {
       el.src = url; gsap.to(el, { opacity:1, duration:0.18, ease:'power1.out' });
     } });
+  }
+  function setWizard(face){ wizState = face; applyWizard(face); }            // scripted (captions) — also sets the resting state
+  /* wizard is interactive: hover → happy, click → sad + shuffle down-left ~2s then back to resting */
+  function setupWizard(){
+    var w = document.getElementById('jj-philosopher'); if (!w || !window.gsap || w._wired) return;
+    w._wired = true;
+    var busy = false, hovering = false;
+    w.addEventListener('mouseenter', function () { hovering = true; if (!busy) applyWizard('happy'); });
+    w.addEventListener('mouseleave', function () { hovering = false; if (!busy) applyWizard(wizState); });
+    w.addEventListener('click', function () {
+      if (busy) return; busy = true;
+      applyWizard('sad'); gsap.killTweensOf(w);
+      gsap.to(w, { x: -w.offsetWidth * 0.16, y: w.offsetHeight * 0.14, duration: 0.6, ease: 'power2.out', onComplete: function () {   // slightly left + down
+        setTimeout(function () {
+          gsap.to(w, { x: 0, y: 0, duration: 0.7, ease: 'power2.inOut', onComplete: function () {
+            busy = false; applyWizard(hovering ? 'happy' : wizState);
+          } });
+        }, 2000);   // hold ~2 seconds
+      } });
+    });
   }
   function typeCaption(el, text, append, done){
     var base = append ? (el._txt || '') : '';
@@ -505,7 +529,7 @@
           setTimeout(function () {                                     // longer beat so the hate-mail line can be read
             setWizard('happy');
             // scene 3 types in chunks with pauses
-            typeCaption(cap, 'Or… Fancy playing a quick game, it’s my favourite?', false, function () {
+            typeCaption(cap, 'Fancy playing a quick game, it’s my favourite?', false, function () {
               setTimeout(function () {
                 showSpacebar();
                 typeCaption(cap, ' Just press ‘Space’ to begin…', true, function () {
@@ -651,8 +675,7 @@
     // once they've drifted out a moment, those 7 reverse-float back to centre as "Contact"
     // (normal spacing), keep bobbing, then float-fade out 2.5s after they land.
     tl.call(function () { reformContact(headEl); }, null, lastT + 2.6);
-    tl.call(function () { alienizeContact(headEl); }, null, lastT + 6.8);                                                            // switch to alien font (2 letters pink)
-    tl.call(function () { gsap.to(headEl._jjContact || [], { opacity:0, duration:1.6, ease:'power1.in' }); }, null, lastT + 7.4);    // then fade out
+    tl.call(function () { alienizeContact(headEl); }, null, lastT + 7.4);   // alien + pink + ramping float, all as it fades out
 
     // ---- story scene: comes in as the letters disperse (darken bg, storybook + characters,
     //      stars wink out). "Contact" stays centred over it and only fades after the dragon lands ----
@@ -661,7 +684,7 @@
     tl.call(function () { fadeStarsOut(); }, null, sStart);                                  // stars out, staggered
     tl.call(function () { mountBook(); }, null, sStart);                                     // start the page-turn Lottie
     tl.fromTo('#jj-story', { opacity:0, scale:0.94, rotation:-10.6 }, { opacity:0.3, scale:1, rotation:-10.6, duration:2.4, ease:'power2.out' }, sStart + 0.3);  // huge tilted storybook backdrop @30%, centered on the top-left corner (SVG tilt)
-    tl.fromTo('#jj-philosopher', { opacity:0, y:46 }, { opacity:1, y:0, duration:1.4, ease:'power2.out' }, sStart + 0.9);        // bottom-left, peeks up
+    tl.fromTo('#jj-philosopher', { opacity:0, y:46 }, { opacity:1, y:0, duration:1.4, ease:'power2.out', onComplete:setupWizard }, sStart + 0.9);   // bottom-left, peeks up + interactive
     tl.fromTo('#jj-rest-dragon', { opacity:0, y:34, rotation:18 }, { opacity:1, y:0, rotation:18, duration:1.4, ease:'power2.out' }, sStart + 1.2);  // bottom-right, tilted +18deg (head up, looking up)
     tl.call(function () { gsap.to('#jj-rest-dragon', { y:'-=24', duration:3.4, repeat:-1, yoyo:true, ease:'sine.inOut' }); setupDragon(); }, null, sStart + 2.6); // slow float + interactive
 

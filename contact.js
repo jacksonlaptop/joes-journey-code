@@ -49,6 +49,7 @@
 .jj-contact:hover .jj-c-glow{opacity:1;}
 .jj-contact:hover .jj-c-detail{opacity:1;}
 #jj-caption{position:absolute;left:50%;bottom:6vh;transform:translateX(-50%);width:min(72vw,900px);text-align:center;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(18px,2vw,30px);line-height:1.42;color:#fff;opacity:0;z-index:8;pointer-events:none;}
+#jj-spacebar{position:absolute;left:50%;bottom:2.5vh;width:min(8vw,120px);margin-left:calc(min(8vw,120px) * -0.5);height:auto;opacity:0;z-index:8;pointer-events:auto;will-change:transform;}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
 #jj-wipe-line{position:absolute;top:0;bottom:0;left:var(--wp,0%);width:2px;margin-left:-1px;background:linear-gradient(to bottom,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;z-index:61;pointer-events:none;}
 #jj-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
@@ -200,6 +201,7 @@
   <img id="jj-rest-dragon" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" aria-hidden="true">
   <div id="jj-contacts"></div>
   <div id="jj-caption"></div>
+  <img id="jj-spacebar" src="https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a32c43b02d23ed8f42fb5a6_Space%20bar.svg" alt="Press Space" data-cursor="hover">
   <div id="jj-stage"><div class="jj-copy">
     <p class="jj-alien">How would you like to get in touch</p>
     <p class="jj-head"><span class="jj-inner">How would you like to get in touch</span></p>
@@ -480,6 +482,7 @@
         typeCaption(cap, '\nMaybe you want to send me some hate mail?', true, function () {
           setTimeout(function () {
             setWizard('happy');
+            showSpacebar();
             typeCaption(cap, "Or… Fancy playing a quick game, it's my favourite? Just press 'Space' to begin… Oh I see what he's done there… Space… Ha!", false, function () {});
           }, 1600);
         });
@@ -492,6 +495,14 @@
   function launchCredits(){
     if (window.jjIntro && window.jjIntro.unlock) window.jjIntro.unlock();
     /* TODO: hook the real credits / horizontal mini-game here */
+  }
+  /* the "press Space" key prompt — fades in with the happy caption, clickable too */
+  function showSpacebar(){
+    var sb = document.getElementById('jj-spacebar'); if (!sb || !window.gsap) return;
+    if (!sb._wired) { sb._wired = true; sb.addEventListener('click', function () { launchCredits(); }); }
+    gsap.to('#jj-caption', { bottom:'14vh', duration:0.5, ease:'power2.out' });               // lift the caption so the key has room beneath it
+    gsap.to(sb, { opacity:1, duration:0.5, ease:'power1.out' });
+    gsap.to(sb, { scale:1.07, duration:0.95, repeat:-1, yoyo:true, ease:'sine.inOut' });       // gentle "press me" pulse
   }
 
   function init(){

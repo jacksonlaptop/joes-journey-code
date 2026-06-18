@@ -48,11 +48,11 @@
 .jj-contact[data-key="credits"]:hover .jj-c-icon{transform:scale(1.42);}  /* filled credits has a thick border → needs more to read as a grow */
 .jj-contact:hover .jj-c-glow{opacity:1;}
 .jj-contact:hover .jj-c-detail{opacity:1;}
-.jj-contact:hover .jj-c-label{transform:translateX(-50%) translateY(-22px);}                         /* clear the grown icon */
-.jj-contact:hover .jj-c-detail{transform:translateX(-50%) translateY(22px);}
-.jj-contact[data-key="credits"]:hover .jj-c-label{transform:translateX(-50%) translateY(-40px);}     /* credits grows more (1.42) */
-.jj-contact[data-key="credits"]:hover .jj-c-detail{transform:translateX(-50%) translateY(40px);}
-#jj-caption{position:absolute;left:16vw;bottom:calc(2.5vh + min(8vw,120px) * 0.77 + 20px);width:min(60vw,940px);min-height:2.7em;text-align:left;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(18px,2vw,30px);line-height:1.32;color:#fff;opacity:0;z-index:8;pointer-events:none;}
+.jj-contact:hover .jj-c-label{transform:translateX(-50%) translateY(-12px);}                         /* clear the grown icon (box is 158 now → less travel) */
+.jj-contact:hover .jj-c-detail{transform:translateX(-50%) translateY(12px);}
+.jj-contact[data-key="credits"]:hover .jj-c-label{transform:translateX(-50%) translateY(-28px);}     /* credits grows more (1.42) */
+.jj-contact[data-key="credits"]:hover .jj-c-detail{transform:translateX(-50%) translateY(28px);}
+#jj-caption{position:absolute;left:16vw;bottom:calc(2.5vh + min(8vw,120px) * 0.77 + 8px);width:min(60vw,940px);min-height:2.7em;text-align:left;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(18px,2vw,30px);line-height:1.32;color:#fff;opacity:0;z-index:8;pointer-events:none;}
 #jj-toast{position:absolute;left:48%;top:43%;transform:translate(-50%,-50%) scale(0.92);display:flex;align-items:center;gap:18px;opacity:0;pointer-events:none;z-index:40;transition:opacity .22s ease,transform .22s ease;}
 #jj-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
 .jj-toast-head,.jj-toast-box{height:clamp(48px,4.2vw,66px);box-sizing:border-box;background:#e0e0de;border:3px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #fbdd65,0 0 0 9px #2e2f31,0 0 30px rgba(251,221,101,.35);}
@@ -62,6 +62,19 @@
 #jj-spacebar{position:absolute;left:50%;bottom:2.5vh;width:min(8vw,120px);margin-left:calc(min(8vw,120px) * -0.5);height:auto;opacity:0;z-index:8;pointer-events:auto;will-change:transform;}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
 #jj-wipe-line{position:absolute;top:0;bottom:0;left:var(--wp,0%);width:2px;margin-left:-1px;background:linear-gradient(to bottom,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;z-index:61;pointer-events:none;}
+/* downward "Star Wars" wipe for the credits transition — a black panel that slides top→bottom (cover) then off the bottom (reveal), with a bright leading edge */
+#jj-wipe-v{position:absolute;inset:0;background:#04060d;transform:translateY(-100%);z-index:55;pointer-events:none;will-change:transform;}
+#jj-wipe-v .jj-wv-edge{position:absolute;left:0;right:0;height:3px;background:linear-gradient(to right,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;}
+#jj-wipe-v .jj-wv-edge.bottom{bottom:-1px;}
+#jj-wipe-v .jj-wv-edge.top{top:-1px;}
+/* credits = a wheel-driven horizontal reel revealed by the wipe (placeholder panels for now) */
+#jj-credits{position:absolute;inset:0;overflow:hidden;opacity:0;z-index:48;pointer-events:none;}
+#jj-credits-track{position:absolute;top:0;left:0;height:100%;display:flex;will-change:transform;}
+.jj-cr-panel{width:100vw;height:100%;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 8vw;box-sizing:border-box;}
+.jj-cr-role{font-family:'Joes Journey Headline',sans-serif;font-size:clamp(13px,1.1vw,18px);letter-spacing:3px;text-transform:uppercase;color:rgba(150,190,255,.85);margin-bottom:14px;}
+.jj-cr-name{font-family:'Joes Journey Headline',sans-serif;font-size:clamp(34px,6vw,92px);color:#fff;margin:0;line-height:1.05;}
+.jj-cr-sub{font-family:'Joes Journey Headline',sans-serif;font-size:clamp(15px,1.6vw,24px);color:rgba(255,255,255,.55);margin-top:18px;}
+#jj-caption.jj-yay{font-size:clamp(28px,3.2vw,48px);}
 #jj-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
 .jj-copy{display:inline-grid;white-space:nowrap;text-align:center;}
 .jj-alien,.jj-head{grid-area:1/1;margin:0;font-size:clamp(20px,4vw,54px);line-height:1.2;letter-spacing:.01em;}
@@ -218,7 +231,9 @@
     <p class="jj-head"><span class="jj-inner">How would you like to get in touch</span></p>
   </div></div>
   <div id="jj-dragon"><div class="jj-dragon-sprite"></div></div>
+  <div id="jj-credits"><div id="jj-credits-track"></div></div>
   <div id="jj-wipe"></div><div id="jj-wipe-line"></div>
+  <div id="jj-wipe-v"><span class="jj-wv-edge bottom"></span><span class="jj-wv-edge top"></span></div>
 </div>`;
 
   /* ---- 3. choreography ---- */
@@ -494,7 +509,8 @@
   var WIZ = {
     normal: 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/philosopher.png',
     sad:    IC + '6a326b676232e8946bfa7893_Wizard%20-%20sad.svg',
-    happy:  IC + '6a326b682510ef80bdc333ec_Wizard%20-%20very%20happy.svg'
+    happy:  IC + '6a326b682510ef80bdc333ec_Wizard%20-%20very%20happy.svg',
+    surprised: IC + '6a200195245a88910104f066_Sprite%20philios.svg'
   };
   var wizState = 'normal';                                                   // the scripted resting expression
   function applyWizard(face){                                               // fade quickly out → swap → fade in, so he never appears to "move"
@@ -510,10 +526,10 @@
     var w = document.getElementById('jj-philosopher'); if (!w || !window.gsap || w._wired) return;
     w._wired = true;
     var busy = false, hovering = false;
-    w.addEventListener('mouseenter', function () { hovering = true; if (!busy) applyWizard('happy'); });
-    w.addEventListener('mouseleave', function () { hovering = false; if (!busy) applyWizard(wizState); });
+    w.addEventListener('mouseenter', function () { if (creditsRunning) return; hovering = true; if (!busy) applyWizard('happy'); });
+    w.addEventListener('mouseleave', function () { if (creditsRunning) return; hovering = false; if (!busy) applyWizard(wizState); });
     w.addEventListener('click', function () {
-      if (busy) return; busy = true;
+      if (creditsRunning || busy) return; busy = true;
       gsap.killTweensOf(w); applyWizard('sad');                                          // kill leftover motion FIRST, then start the sad fade-swap (else killTweensOf cancels it)
       gsap.to(w, { x: -w.offsetWidth * 0.16, y: w.offsetHeight * 0.14, duration: 0.6, ease: 'power2.out', onComplete: function () {   // slightly left + down
         setTimeout(function () {
@@ -560,11 +576,190 @@
     });
   }
 
-  /* Credits "VIEW" and the Spacebar both launch the credits experience. */
-  var creditsArmed = false;
+  /* Credits "View", the Spacebar key and the spacebar icon all launch the credits experience. */
+  var creditsArmed = false, creditsRunning = false, creditsCleanup = null;
   function launchCredits(){
-    if (window.jjIntro && window.jjIntro.unlock) window.jjIntro.unlock();
-    /* TODO: hook the real credits / horizontal mini-game here */
+    if (creditsRunning || !window.gsap) return;
+    creditsRunning = true; creditsArmed = false;
+    runCreditsSequence();
+  }
+  function runCreditsSequence(){
+    var dragon = document.getElementById('jj-rest-dragon'), wiz = document.getElementById('jj-philosopher');
+    var cap = document.getElementById('jj-caption'), sb = document.getElementById('jj-spacebar');
+    var H = window.innerHeight;
+    // stop everything still moving in the contact scene
+    if (cap) clearInterval(cap._tw);
+    if (sb) { gsap.killTweensOf(sb); gsap.to(sb, { opacity:0, scale:0.5, duration:0.4, ease:'power2.in' }); }
+    contactMotion.forEach(function (t) { t.kill(); });
+    var cw = document.getElementById('jj-contacts'); if (cw) cw.classList.remove('on');
+    if (dragon) gsap.killTweensOf(dragon);
+    if (wiz) gsap.killTweensOf(wiz);
+    // reactions: wizard → surprised, dragon → super happy
+    applyWizard('surprised');
+    if (dragon) dragon.src = DR.happy;
+    // orbs spiral outward + shrink + spin + fade (staggered)
+    document.querySelectorAll('#jj-contacts .jj-contact').forEach(function (a, i) {
+      var st = { ang:(ANG[a.getAttribute('data-key')] || 0) * Math.PI / 180, rad:1 }, dir = i % 2 ? 1 : -1;
+      gsap.killTweensOf(a);
+      gsap.to(st, { ang: st.ang + dir * Math.PI * 0.6, rad:3.4, duration:1.4, ease:'power2.in', delay:i * 0.06,
+        onUpdate:function () { a.style.left = (ORB.cx + ORB.rx * st.rad * Math.cos(st.ang)) + '%'; a.style.top = (ORB.cy + ORB.ry * st.rad * Math.sin(st.ang)) + '%'; } });
+      gsap.to(a, { scale:0.12, rotation:dir * 100, opacity:0, duration:1.3, ease:'power2.in', delay:i * 0.06 });
+    });
+    var tl = gsap.timeline();
+    // caption → "Yay!" (bigger), holds ~2s, then floats up + fades
+    tl.call(function () {
+      if (!cap) return;
+      gsap.killTweensOf(cap); gsap.set(cap, { opacity:1, y:0 });
+      cap.classList.add('jj-yay'); cap.textContent = '';
+      typeCaption(cap, 'Yay!', false, function () {});
+    }, null, 0.25);
+    tl.to(cap, { y:'-=64', opacity:0, duration:1.0, ease:'power2.in' }, 2.25);
+    // dragon + wizard float out the bottom
+    tl.to([wiz, dragon], { y:'+=' + (H * 0.7), opacity:0, duration:1.1, ease:'power2.in', stagger:0.1 }, 2.75);
+    // downward Star-Wars wipe: cover top→bottom, swap in the credits reel, then reveal it
+    var coverAt = 2.95;
+    gsap.set('#jj-wipe-v', { yPercent:-100 });
+    tl.to('#jj-wipe-v .jj-wv-edge.bottom', { opacity:1, duration:0.16, ease:'power1.out' }, coverAt);
+    tl.to('#jj-wipe-v', { yPercent:0, duration:1.15, ease:'power2.inOut' }, coverAt);
+    tl.to('#jj-wipe-v .jj-wv-edge.bottom', { opacity:0, duration:0.25 }, coverAt + 1.0);
+    tl.call(function () { setupCredits(); }, null, coverAt + 1.18);
+    tl.to('#jj-wipe-v .jj-wv-edge.top', { opacity:1, duration:0.16 }, coverAt + 1.32);
+    tl.to('#jj-wipe-v', { yPercent:100, duration:1.25, ease:'power2.inOut' }, coverAt + 1.32);
+    tl.to('#jj-wipe-v .jj-wv-edge.top', { opacity:0, duration:0.3 }, coverAt + 2.3);
+  }
+  /* ===== "Trogdor" — the credits catch-game (revealed by the downward wipe) ===== */
+  var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/game/';            // game assets (upload the /game/ folder to the repo)
+  var GSPRITE = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-sprite.png';
+  function setupCredits(){
+    var stage = document.getElementById('jj-credits'); if (!stage || stage._game) return; stage._game = true;
+    ['jj-contacts','jj-caption','jj-spacebar','jj-dark','jj-story','jj-toast'].forEach(function(id){ var el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    if (!document.getElementById('jj-game-css')) {
+      var st = document.createElement('style'); st.id = 'jj-game-css';
+      st.textContent =
+      '#jj-credits.playing{pointer-events:auto;}'+
+      '#jj-cr-roll{position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;will-change:transform;z-index:2;}'+
+      '.jj-crd{flex:none;height:100%;display:flex;align-items:center;justify-content:center;padding:0 6vw;}'+
+      '.jj-crd img{width:min(46vw,820px);height:auto;display:block;}'+
+      '.jj-crd-text{font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(30px,3.4vw,56px);line-height:1.12;white-space:nowrap;}'+
+      '.jj-crd-text small{display:block;font-size:.6em;color:#cfe0ff;margin-bottom:.18em;}'+
+      '#jj-gdragon{position:absolute;left:16%;top:50%;width:var(--gd,122px);height:calc(var(--gd,122px)*.516);transform:translate(-50%,-50%);z-index:6;pointer-events:none;will-change:top,width;transition:width .5s ease;}'+
+      '#jj-gdragon .spr{width:100%;height:100%;background:url(\''+GSPRITE+'\') no-repeat;background-size:900% 800%;}'+
+      '.jj-item{position:absolute;transform:translate(-50%,-50%);z-index:4;pointer-events:none;will-change:left,top;}'+
+      '.jj-item img{width:100%;height:100%;display:block;}'+
+      '.jj-item.bad img{filter:drop-shadow(0 0 11px rgba(255,55,55,.75));}'+
+      '.jj-item.good img{filter:drop-shadow(0 0 9px rgba(130,175,255,.55));}'+
+      '#jj-hud{position:absolute;right:3vw;top:3.2vh;display:flex;flex-direction:column;align-items:flex-end;gap:6px;z-index:10;opacity:0;}'+
+      '#jj-hud-card{position:relative;width:min(17vw,240px);}'+
+      '#jj-hud-bar{width:100%;display:block;}'+
+      '#jj-hud-fill{position:absolute;left:11%;top:56%;height:17%;width:0;background:linear-gradient(90deg,#7be23a,#15c022);border-radius:3px;transition:width .25s ease;}'+
+      '#jj-score{font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(14px,1.2vw,18px);opacity:.85;}'+
+      '.jj-pop{position:absolute;transform:translate(-50%,-50%);z-index:9;pointer-events:none;}'+
+      '.jj-pop img{width:clamp(46px,4vw,70px);display:block;}'+
+      '#jj-gcap{position:absolute;left:50%;bottom:7vh;transform:translateX(-50%) scale(.96);min-width:280px;max-width:60vw;background:#E0E0DE;border:6px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #FBDD65,0 0 0 9px #2E2F31;padding:13px 24px;font-family:\'Joes Journey Headline\',sans-serif;font-size:clamp(15px,1.55vw,23px);color:#4A4A48;opacity:0;z-index:13;white-space:pre-line;transition:opacity .22s ease,transform .22s ease;}'+
+      '#jj-gcap.show{opacity:1;transform:translateX(-50%) scale(1);}'+
+      '#jj-keys{position:absolute;right:3vw;bottom:13vh;display:flex;flex-direction:column;gap:8px;align-items:center;z-index:10;opacity:0;}'+
+      '#jj-keys img{width:clamp(42px,3.8vw,62px);display:block;cursor:pointer;}'+
+      '#jj-end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(7,12,22,.72);opacity:0;z-index:20;font-family:\'Joes Journey Headline\',sans-serif;color:#fff;text-align:center;}'+
+      '#jj-end h2{font-size:clamp(34px,5vw,72px);margin:0;}#jj-end p{font-size:clamp(16px,1.8vw,26px);margin:0;color:rgba(255,255,255,.82);}'+
+      '#jj-back{position:absolute;left:3vw;bottom:3vh;z-index:14;background:#fff;color:#0b1a2b;border:none;border-radius:999px;padding:11px 20px;font-family:\'Joes Journey Headline\',sans-serif;font-size:clamp(13px,1.1vw,16px);cursor:pointer;display:flex;align-items:center;gap:8px;}';
+      document.head.appendChild(st);
+    }
+    stage.innerHTML =
+      '<div id="jj-cr-roll"></div>'+
+      '<div id="jj-gdragon"><div class="spr"></div></div>'+
+      '<div id="jj-hud"><div id="jj-hud-card"><img id="jj-hud-bar" src="'+GB+'bar-l1-empty.svg" alt=""><div id="jj-hud-fill"></div></div>'+
+        '<div id="jj-score">Score 0</div></div>'+
+      '<div id="jj-keys"><img src="'+GB+'arrow-up.svg" alt="Up"><img src="'+GB+'arrow-down.svg" alt="Down"></div>'+
+      '<div id="jj-gcap"></div>'+
+      '<button id="jj-back" data-cursor="hover">&#8592; Back to Contact</button>';
+    gsap.set(stage, { opacity:1 });
+
+    var CREDITS = [
+      { text:'<small>Created, Designed &amp; Directed by yours truly&hellip;</small>Joe Jackson' },
+      { img:'copy-developed.svg' },{ img:'copy-illustrations.svg' },{ img:'copy-animations.svg' },
+      { img:'copy-typography.svg' },{ img:'copy-logo.svg' },{ img:'copy-voice.svg' },{ img:'copy-music.svg' },
+      { img:'copy-claude.svg' },{ img:'copy-thanks.svg' },{ img:'copy-everyone.svg' }
+    ];
+    var roll = document.getElementById('jj-cr-roll');
+    roll.innerHTML = CREDITS.map(function(c){ return '<div class="jj-crd">'+(c.img?'<img src="'+GB+c.img+'">':'<div class="jj-crd-text">'+c.text+'</div>')+'</div>'; }).join('');
+
+    var dragon = document.getElementById('jj-gdragon'), spr = dragon.querySelector('.spr');
+    var fillEl = document.getElementById('jj-hud-fill'), barImg = document.getElementById('jj-hud-bar'), scoreEl = document.getElementById('jj-score'), cap = document.getElementById('jj-gcap');
+    function setLevelHUD(){ barImg.src = GB+(G.level>=2?'bar-l2-empty':'bar-l1-empty')+'.svg'; }
+    var GOOD = ['good-claude','good-gpt','good-perplexity','good-css','good-js','good-gsap','good-figma','good-miro','good-rive','good-jitter','good-procreate','good-music','good-coding','good-typography','good-voicework','good-webflow','good-logo','good-alien1','good-alien2','good-alien3'];
+    var BAD = ['bad-alien1','bad-alien2','bad-spiky','bad-rocks','bad-junk','bad-blackhole'], BADLG = ['bad-alien1-lg','bad-alien2-lg','bad-spiky-lg'];
+    var G = { run:false, score:0, level:1, fill:0, dy:50, ty:50, items:[], rollX:60, rollW:0, lastT:0, lastSpawn:0, f:0, fLast:0, said:{} };
+    setLevelHUD();
+    function setDragon(){ dragon.style.setProperty('--gd', (122 + (G.level-1)*7)+'px'); }
+    setDragon();
+    function frame(t){ if (t-G.fLast>=83){ G.fLast=t; spr.style.backgroundPosition=((G.f%9)/8*100)+'% '+(Math.floor(G.f/9)/7*100)+'%'; G.f=(G.f+1)%72; } }
+    function band(){ return 7.5; }
+
+    function up(){ G.ty=Math.max(16,G.ty-13); } function down(){ G.ty=Math.min(80,G.ty+13); }
+    function onKey(e){ if(!G.run) return; if(e.code==='ArrowUp'){e.preventDefault();up();} else if(e.code==='ArrowDown'){e.preventDefault();down();} }
+    window.addEventListener('keydown', onKey);
+    document.getElementById('jj-keys').children[0].addEventListener('click', up);
+    document.getElementById('jj-keys').children[1].addEventListener('click', down);
+
+    function showCap(text, ms, done){
+      cap.classList.add('show'); clearInterval(cap._tw); clearTimeout(cap._h); var i=0; cap.textContent='';
+      cap._tw=setInterval(function(){ i++; cap.textContent=text.slice(0,i); if(i>=text.length){ clearInterval(cap._tw); if(ms===0){ if(done)done(); } else { cap._h=setTimeout(function(){ cap.classList.remove('show'); if(done)done(); }, ms||1500); } } }, 34);
+    }
+    function flash(text, ms){ showCap(text, ms||1100); }
+    function pop(kind){ var p=document.createElement('div'); p.className='jj-pop'; p.innerHTML='<img src="'+GB+(kind>0?'pop-plus.svg':'pop-minus.svg')+'">'; p.style.left='16%'; p.style.top=G.dy+'%'; stage.appendChild(p);
+      gsap.fromTo(p,{opacity:0,scale:.7},{opacity:1,scale:1,duration:.18}); gsap.to(p,{top:(G.dy-8)+'%',opacity:0,duration:.9,delay:.2,ease:'power1.out',onComplete:function(){p.remove();}}); }
+    function levelUpFx(){ var l=document.createElement('div'); l.className='jj-pop'; l.innerHTML='<img src="'+GB+'levelup.svg" style="width:clamp(90px,9vw,150px);display:block"><img src="'+GB+'lvl-'+G.level+'.svg" style="width:clamp(34px,3.4vw,52px);display:block;margin:4px auto 0">'; l.style.left='16%'; l.style.top=(G.dy-15)+'%'; stage.appendChild(l);
+      gsap.fromTo(l,{opacity:0,scale:.5},{opacity:1,scale:1,duration:.4,ease:'back.out(2)'}); gsap.to(l,{top:(G.dy-22)+'%',opacity:0,duration:.7,delay:.7,onComplete:function(){l.remove();}}); }
+
+    function spawnItem(){
+      var bad = Math.random() < Math.min(.5, .2+(G.level-1)*.04);
+      var name, cls, big=false;
+      if (bad){ var lg=(G.level>=4 && Math.random()<.4); var pool=lg?BADLG:BAD; name=pool[Math.floor(Math.random()*pool.length)]; cls='bad'; big=lg; }
+      else { name=GOOD[Math.floor(Math.random()*GOOD.length)]; cls='good'; }
+      var el=document.createElement('div'); el.className='jj-item '+cls;
+      var sz = big ? 'clamp(72px,7vw,118px)' : 'clamp(56px,5.4vw,92px)';
+      el.style.width=sz; el.style.height=sz; el.innerHTML='<img src="'+GB+name+'.svg">';
+      var y=18+Math.random()*60; el.style.left='106%'; el.style.top=y+'%'; stage.appendChild(el);
+      G.items.push({ el:el, x:106, y:y, bad:bad, hit:false, band:band()+(big?2:0) });
+      if(!bad && !G.said.good){ G.said.good=1; flash("Mmm…Tasty…Trogdor looks like he'd enjoy that..",1600); }
+      if(bad && !G.said.warn){ G.said.warn=1; flash("Quick Tip! Trogdor hates things that glow red…",1700); }
+    }
+    function hit(it){
+      it.hit=true; it.el.remove(); var idx=G.items.indexOf(it); if(idx>=0) G.items.splice(idx,1);
+      if(it.bad){ G.score=Math.max(0,G.score-50); pop(-1); G.fill-=.34;
+        if(G.fill<0){ if(G.level>1){ G.level--; G.fill+=1; setLevelHUD(); setDragon(); } else G.fill=0; }
+        flash('Eugh!', G.said.eugh?700:1100); G.said.eugh=1; gsap.fromTo(dragon,{filter:'brightness(2.1) saturate(.4)'},{filter:'none',duration:.4});
+      } else { G.score+=50; pop(1); G.fill+=.2;
+        if(G.fill>=1){ G.fill-=1; if(G.level<9){ G.level++; setLevelHUD(); setDragon(); levelUpFx(); flash("I'm getting…stronger!",1300); } else G.fill=1; }
+        flash('Yum!', G.said.yum?650:1000); G.said.yum=1;
+      }
+      scoreEl.textContent='Score '+G.score; fillEl.style.width=Math.max(0,Math.min(1,G.fill))*76+'%';
+    }
+    var rollDone=false;
+    function loop(t){
+      if(!G.run) return; var dt=Math.min(48,t-(G.lastT||t)); G.lastT=t; var k=dt/16.7;
+      G.dy += (G.ty-G.dy)*Math.min(1,.22*k); dragon.style.top=(G.dy+Math.sin(t/520)*1.4)+'%';
+      frame(t);
+      if(t-G.lastSpawn > Math.max(560,1150-(G.level-1)*85)){ G.lastSpawn=t; spawnItem(); }
+      var sp=.30+(G.level-1)*.045;
+      for(var i=G.items.length-1;i>=0;i--){ var it=G.items[i]; it.x-=sp*k; it.el.style.left=it.x+'%'; it.el.style.top=it.y+'%';
+        if(!it.hit && it.x<=18 && it.x>=10 && Math.abs(it.y-G.dy)<it.band){ hit(it); continue; }
+        if(it.x<-8){ it.el.remove(); G.items.splice(i,1); } }
+      if(!rollDone){ G.rollX-=sp*.62*k; roll.style.transform='translateX('+G.rollX+'vw)'; if(-G.rollX>G.rollW){ rollDone=true; endGame(); } }
+      G.raf=requestAnimationFrame(loop);
+    }
+    function startPlay(){ G.run=true; stage.classList.add('playing'); G.lastT=0; G.lastSpawn=0;
+      G.rollW = roll.scrollWidth/window.innerWidth*100 + 50;
+      gsap.to('#jj-hud',{opacity:1,duration:.5}); gsap.to('#jj-keys',{opacity:1,duration:.5}); G.raf=requestAnimationFrame(loop); }
+    function endGame(){ G.run=false; cancelAnimationFrame(G.raf);
+      var end=document.createElement('div'); end.id='jj-end'; end.innerHTML='<h2>Thanks for playing!</h2><p>Final score '+G.score+' &middot; reached Level '+G.level+'</p>'; stage.appendChild(end); gsap.to(end,{opacity:1,duration:.6}); }
+
+    roll.style.transform='translateX(60vw)'; dragon.style.top='50%';
+    var TUT=[["Meet, Trogdor. He's a hungry boy!",1500],["Press 'Up' and 'Down' to move him…",1500],["Catch anything flying through space to level up…",1700],["But beware of anything that looks dangerous!",1700],["Let's get started! Check out who helped out along the way!",1500]];
+    function runTut(i){ if(i>=TUT.length){ startPlay(); return; } showCap(TUT[i][0],TUT[i][1],function(){ runTut(i+1); }); }
+    (function preFlap(t){ if(G.run) return; frame(t||0); requestAnimationFrame(preFlap); })(0);   // flap during tutorial
+    runTut(0);
+    creditsCleanup=function(){ G.run=false; if(G.raf)cancelAnimationFrame(G.raf); window.removeEventListener('keydown',onKey); clearInterval(cap._tw); clearTimeout(cap._h); };
   }
   /* the "press Space" key prompt — fades in with the happy caption, clickable too */
   function showSpacebar(){
@@ -585,10 +780,10 @@
     d._wired = true;
     var busy = false, hovering = false;
     function face(f){ if (d.getAttribute('src') !== DR[f]) d.src = DR[f]; }
-    d.addEventListener('mouseenter', function () { hovering = true; if (!busy) face('happy'); });
-    d.addEventListener('mouseleave', function () { hovering = false; if (!busy) face('normal'); });
+    d.addEventListener('mouseenter', function () { if (creditsRunning) return; hovering = true; if (!busy) face('happy'); });
+    d.addEventListener('mouseleave', function () { if (creditsRunning) return; hovering = false; if (!busy) face('normal'); });
     d.addEventListener('click', function () {
-      if (busy) return; busy = true;
+      if (creditsRunning || busy) return; busy = true;
       face('angry');
       gsap.killTweensOf(d);
       gsap.to(d, { y: d.offsetHeight * 0.24, duration: 0.8, ease: 'power2.in', onComplete: function () {       // sink so only his face peeks over the edge
@@ -602,7 +797,7 @@
     });
     (function idle(){
       setTimeout(function () {
-        if (!busy && !hovering) { face('happy'); setTimeout(function () { if (!busy && !hovering) face('normal'); }, 1700); }
+        if (!busy && !hovering && !creditsRunning) { face('happy'); setTimeout(function () { if (!busy && !hovering && !creditsRunning) face('normal'); }, 1700); }
         idle();
       }, 5000 + Math.random() * 5000);
     })();

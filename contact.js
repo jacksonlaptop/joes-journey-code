@@ -52,7 +52,7 @@
 .jj-contact:hover .jj-c-detail{transform:translateX(-50%) translateY(12px);}
 .jj-contact[data-key="credits"]:hover .jj-c-label{transform:translateX(-50%) translateY(-28px);}     /* credits grows more (1.42) */
 .jj-contact[data-key="credits"]:hover .jj-c-detail{transform:translateX(-50%) translateY(28px);}
-#jj-caption{position:absolute;left:16vw;bottom:calc(2.5vh + min(8vw,120px) * 0.77 + 8px);width:min(60vw,940px);min-height:2.7em;text-align:left;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(18px,2vw,30px);line-height:1.32;color:#fff;opacity:0;z-index:8;pointer-events:none;}
+#jj-caption{position:absolute;left:16vw;bottom:calc(2.5vh + min(8vw,120px) * 0.77 - 7px);width:min(60vw,940px);min-height:2.7em;text-align:left;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(18px,2vw,30px);line-height:1.32;color:#fff;opacity:0;z-index:8;pointer-events:none;}
 #jj-toast{position:absolute;left:48%;top:43%;transform:translate(-50%,-50%) scale(0.92);display:flex;align-items:center;gap:18px;opacity:0;pointer-events:none;z-index:40;transition:opacity .22s ease,transform .22s ease;}
 #jj-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
 .jj-toast-head,.jj-toast-box{height:clamp(48px,4.2vw,66px);box-sizing:border-box;background:#e0e0de;border:3px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #fbdd65,0 0 0 9px #2e2f31,0 0 30px rgba(251,221,101,.35);}
@@ -597,35 +597,24 @@
     // reactions: wizard → surprised, dragon → super happy
     applyWizard('surprised');
     if (dragon) dragon.src = DR.happy;
-    // orbs spiral outward + shrink + spin + fade (staggered)
+    // orbs spin slowly + shrink + fade out where they are (no jump, no fly-out)
     document.querySelectorAll('#jj-contacts .jj-contact').forEach(function (a, i) {
-      var st = { ang:(ANG[a.getAttribute('data-key')] || 0) * Math.PI / 180, rad:1 }, dir = i % 2 ? 1 : -1;
+      var dir = i % 2 ? 1 : -1;
       gsap.killTweensOf(a);
-      gsap.to(st, { ang: st.ang + dir * Math.PI * 0.6, rad:3.4, duration:1.4, ease:'power2.in', delay:i * 0.06,
-        onUpdate:function () { a.style.left = (ORB.cx + ORB.rx * st.rad * Math.cos(st.ang)) + '%'; a.style.top = (ORB.cy + ORB.ry * st.rad * Math.sin(st.ang)) + '%'; } });
-      gsap.to(a, { scale:0.12, rotation:dir * 100, opacity:0, duration:1.3, ease:'power2.in', delay:i * 0.06 });
+      gsap.to(a, { scale:0, rotation:dir * 150, opacity:0, duration:1.9, ease:'power1.inOut', delay:i * 0.05 });
     });
     var tl = gsap.timeline();
-    // caption → "Yay!" (bigger), holds ~2s, then floats up + fades
-    tl.call(function () {
-      if (!cap) return;
-      gsap.killTweensOf(cap); gsap.set(cap, { opacity:1, y:0 });
-      cap.classList.add('jj-yay'); cap.textContent = '';
-      typeCaption(cap, 'Yay!', false, function () {});
-    }, null, 0.25);
-    tl.to(cap, { y:'-=64', opacity:0, duration:1.0, ease:'power2.in' }, 2.25);
+    if (cap) gsap.to(cap, { opacity:0, duration:0.3 });                                  // clear the lingering "press Space" caption
     // dragon + wizard float out the bottom
     tl.to([wiz, dragon], { y:'+=' + (H * 0.7), opacity:0, duration:1.1, ease:'power2.in', stagger:0.1 }, 2.75);
     // downward Star-Wars wipe: cover top→bottom, swap in the credits reel, then reveal it
     var coverAt = 2.95;
-    gsap.set('#jj-wipe-v', { yPercent:-100 });
-    tl.to('#jj-wipe-v .jj-wv-edge.bottom', { opacity:1, duration:0.16, ease:'power1.out' }, coverAt);
-    tl.to('#jj-wipe-v', { yPercent:0, duration:1.15, ease:'power2.inOut' }, coverAt);
-    tl.to('#jj-wipe-v .jj-wv-edge.bottom', { opacity:0, duration:0.25 }, coverAt + 1.0);
-    tl.call(function () { setupCredits(); }, null, coverAt + 1.18);
-    tl.to('#jj-wipe-v .jj-wv-edge.top', { opacity:1, duration:0.16 }, coverAt + 1.32);
-    tl.to('#jj-wipe-v', { yPercent:100, duration:1.25, ease:'power2.inOut' }, coverAt + 1.32);
-    tl.to('#jj-wipe-v .jj-wv-edge.top', { opacity:0, duration:0.3 }, coverAt + 2.3);
+    gsap.set('#jj-wipe-v', { yPercent:-100, display:'block' });
+    tl.to('#jj-wipe-v .jj-wv-edge', { opacity:1, duration:0.16, ease:'power1.out' }, coverAt);
+    tl.to('#jj-wipe-v', { yPercent:100, duration:2.4, ease:'power1.inOut' }, coverAt);        // single downward sweep: cover → reveal (one tween, can't get stuck covering)
+    tl.call(function () { setupCredits(); }, null, coverAt + 1.2);                             // build the game behind the black at full cover
+    tl.to('#jj-wipe-v .jj-wv-edge', { opacity:0, duration:0.3 }, coverAt + 2.2);
+    tl.set('#jj-wipe-v', { display:'none' }, coverAt + 2.5);                                   // guarantee the cover is gone — no black-out
   }
   /* ===== "Trogdor" — the credits catch-game (revealed by the downward wipe) ===== */
   var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/game/';            // game assets (upload the /game/ folder to the repo)
@@ -806,6 +795,15 @@
   function init(){
     lockScroll();
     startSong();
+    // hide the site nav (J logo + Menu) during the opening, fade it in a few seconds later.
+    // NOTE: targets the standard Webflow nav classes — if your logo/menu don't fade, tell me their class and I'll point this at it.
+    try {
+      var nav = document.querySelectorAll('.navbar, .w-nav, .nav-bar, .nav_component, [class*="navbar"], .menu-button, .brand, .w-nav-brand');
+      if (nav.length) {
+        nav.forEach(function (n) { n.style.transition = 'opacity .9s ease'; n.style.opacity = '0'; });
+        setTimeout(function () { nav.forEach(function (n) { n.style.opacity = '1'; }); }, 3500);
+      }
+    } catch (e) {}
     window.addEventListener('keydown', function (e) {                         // Spacebar launches credits (once the scene is up)
       if ((e.code === 'Space' || e.keyCode === 32) && creditsArmed) { e.preventDefault(); launchCredits(); }
     });

@@ -369,12 +369,13 @@
   var ORB = { cx:48, cy:43, rx:33, ry:26 };
   var ANG = { linkedin:270, credits:342, cv:54, mail:126, phone:198 };   // degrees, evenly spaced
   function ellipsePos(deg){ var r = deg * Math.PI / 180; return { x: ORB.cx + ORB.rx * Math.cos(r), y: ORB.cy + ORB.ry * Math.sin(r) }; }
+  var ICN = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';            // cropped contact icons (no padding, art to the edge)
   var CONTACTS = [
-    { key:'phone',    label:'Phone',    dgap:-18, def:'6a326b671195e6aeb0fad6bd_Whatsapp.svg',  fill:'6a326b68ff1a7121507a3476_Whatsapp%20Filled.svg', detail:'+44 7565 040886',                       act:'copy', copy:'+447565040886' },
-    { key:'linkedin', label:'LinkedIn', dgap:22,  def:'6a326b6702196efc291ab506_Linkedin.svg',  fill:'6a326b68ff1a7121507a3479_Linkedin%20Filled.svg', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'copy', copy:'https://www.linkedin.com/in/joseph-jackson-ui/' },
-    { key:'credits',  label:'Credits',  dgap:-20, def:'6a326b672510ef80bdc333a5_Credits.svg',   fill:'6a326b670c2c4374e37980fd_Credits%20filled.svg',  detail:'VIEW',                                  act:'view',     href:'#credits' },
-    { key:'mail',     label:'Mail',     dgap:-50, def:'6a326b671e05c417a3694238_Mail.svg',      fill:'6a326b6751c667326423afe1_Mail%20-%20filled.svg', detail:'jackson.laptop95@gmail.com',            act:'copy', copy:'jackson.laptop95@gmail.com' },
-    { key:'cv',       label:'CV',       dgap:0,   def:'6a326b67ee3ceb7f9c962b7e_CV.svg',        fill:'6a326b671da70ae29008672b_CV%20-%20filled.svg',   detail:'DOWNLOAD',                              act:'download', href:'#cv' }
+    { key:'phone',    label:'Phone',    dgap:17,  def:ICN+'icon-phone.png',    fill:ICN+'icon-phone-fill.png',    detail:'+44 7565 040886',                       act:'copy', copy:'+447565040886' },
+    { key:'linkedin', label:'LinkedIn', dgap:25,  def:ICN+'icon-linkedin.png', fill:ICN+'icon-linkedin-fill.png', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'copy', copy:'https://www.linkedin.com/in/joseph-jackson-ui/' },
+    { key:'credits',  label:'Credits',  dgap:10,  def:ICN+'icon-credits.png',  fill:ICN+'icon-credits-fill.png',  detail:'VIEW',                                  act:'view',     href:'#credits' },
+    { key:'mail',     label:'Mail',     dgap:-8,  def:ICN+'icon-mail.png',     fill:ICN+'icon-mail-fill.png',     detail:'jackson.laptop95@gmail.com',            act:'copy', copy:'jackson.laptop95@gmail.com' },
+    { key:'cv',       label:'CV',       dgap:0,   def:ICN+'icon-cv.png',       fill:ICN+'icon-cv-fill.png',       detail:'DOWNLOAD',                              act:'download', href:'#cv' }
   ];
   var SPACE = [
     IC+'6a32a12291178c585287628f_small%20space%201.svg',
@@ -407,8 +408,8 @@
       a.innerHTML =
         '<span class="jj-c-label">' + c.label + labelIco + '</span>' +
         '<span class="jj-c-icon"><span class="jj-c-glow"></span>' +
-          '<img class="jj-c-def"  src="' + IC + c.def  + '" alt="' + c.label + '">' +
-          '<img class="jj-c-fill" src="' + IC + c.fill + '" alt="" aria-hidden="true">' +
+          '<img class="jj-c-def"  src="' + c.def  + '" alt="' + c.label + '">' +
+          '<img class="jj-c-fill" src="' + c.fill + '" alt="" aria-hidden="true">' +
         '</span>' +
         '<span class="jj-c-detail">' + c.detail + detailIco + '</span>';
       var g2 = c.dgap || 0;                                                              // pull title + value close to the visible art (CV is the baseline)

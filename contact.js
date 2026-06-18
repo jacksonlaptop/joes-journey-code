@@ -37,8 +37,8 @@
 .jj-c-icon img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:contain;transition:opacity .3s ease;}
 .jj-c-fill{opacity:0;}
 .jj-c-glow{position:absolute;left:50%;top:50%;width:150%;height:150%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(150,190,255,.32),rgba(150,190,255,0) 66%);opacity:0;transition:opacity .35s ease;pointer-events:none;}
-.jj-c-label{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(15px,1.55vw,26px);letter-spacing:.4px;}
-.jj-c-detail{position:absolute;left:50%;top:calc(100% + 2px);transform:translateX(-50%);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(12px,1.05vw,18px);opacity:0;transition:opacity .3s ease;}
+.jj-c-label{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(15px,1.55vw,26px);letter-spacing:.4px;transition:transform .25s ease;}
+.jj-c-detail{position:absolute;left:50%;top:calc(100% + 2px);transform:translateX(-50%);white-space:nowrap;display:inline-flex;align-items:center;gap:7px;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(12px,1.05vw,18px);opacity:0;transition:opacity .3s ease, transform .25s ease;}
 .jj-c-ico{flex:none;width:.92em;height:.92em;display:inline-flex;color:#fff;}
 .jj-c-ico svg{width:100%;height:100%;display:block;}
 .jj-c-floater{position:absolute;left:50%;top:50%;width:clamp(22px,2.3vw,36px);height:auto;margin-left:-18px;margin-top:-18px;pointer-events:none;}
@@ -48,7 +48,11 @@
 .jj-contact[data-key="credits"]:hover .jj-c-icon{transform:scale(1.42);}  /* filled credits has a thick border → needs more to read as a grow */
 .jj-contact:hover .jj-c-glow{opacity:1;}
 .jj-contact:hover .jj-c-detail{opacity:1;}
-#jj-caption{position:absolute;left:50%;bottom:6vh;transform:translateX(-50%);width:min(72vw,900px);text-align:center;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(18px,2vw,30px);line-height:1.42;color:#fff;opacity:0;z-index:8;pointer-events:none;}
+.jj-contact:hover .jj-c-label{transform:translateX(-50%) translateY(-22px);}                         /* clear the grown icon */
+.jj-contact:hover .jj-c-detail{transform:translateX(-50%) translateY(22px);}
+.jj-contact[data-key="credits"]:hover .jj-c-label{transform:translateX(-50%) translateY(-40px);}     /* credits grows more (1.42) */
+.jj-contact[data-key="credits"]:hover .jj-c-detail{transform:translateX(-50%) translateY(40px);}
+#jj-caption{position:absolute;left:14vw;bottom:15vh;width:min(54vw,740px);text-align:left;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(20px,2.3vw,34px);line-height:1.4;color:#fff;opacity:0;z-index:8;pointer-events:none;}
 #jj-spacebar{position:absolute;left:50%;bottom:2.5vh;width:min(8vw,120px);margin-left:calc(min(8vw,120px) * -0.5);height:auto;opacity:0;z-index:8;pointer-events:auto;will-change:transform;}
 #jj-wipe{position:absolute;inset:0;background:#04060d;clip-path:inset(0 0 0 var(--wp,0%));z-index:60;pointer-events:none;}
 #jj-wipe-line{position:absolute;top:0;bottom:0;left:var(--wp,0%);width:2px;margin-left:-1px;background:linear-gradient(to bottom,transparent,rgba(205,228,255,.95) 50%,transparent);box-shadow:0 0 34px 9px rgba(150,190,255,.5);opacity:0;z-index:61;pointer-events:none;}
@@ -68,7 +72,7 @@
 
   /* Lottie player for the animated storybook (page-turn). Loaded up front so it's
      ready by the time the story scene fades in (~8s). */
-  var BOOK_URL = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/book.json?v=2';  // ?v bumps to dodge stale CDN/browser cache when book.json content changes
+  var BOOK_URL = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/book.json?v=3';  // ?v bumps to dodge stale CDN/browser cache when book.json content changes
   if (!window.lottie) {
     var ls = document.createElement('script');
     ls.src = 'https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js';
@@ -357,8 +361,8 @@
   function ellipsePos(deg){ var r = deg * Math.PI / 180; return { x: ORB.cx + ORB.rx * Math.cos(r), y: ORB.cy + ORB.ry * Math.sin(r) }; }
   var CONTACTS = [
     { key:'phone',    label:'Phone',    dgap:-18, def:'6a326b671195e6aeb0fad6bd_Whatsapp.svg',  fill:'6a326b68ff1a7121507a3476_Whatsapp%20Filled.svg', detail:'+44 7565 040886',                       act:'copy', copy:'+447565040886' },
-    { key:'linkedin', label:'LinkedIn', dgap:-30, def:'6a326b6702196efc291ab506_Linkedin.svg',  fill:'6a326b68ff1a7121507a3479_Linkedin%20Filled.svg', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'copy', copy:'https://www.linkedin.com/in/joseph-jackson-ui/' },
-    { key:'credits',  label:'Credits',  dgap:-6,  def:'6a326b672510ef80bdc333a5_Credits.svg',   fill:'6a326b670c2c4374e37980fd_Credits%20filled.svg',  detail:'VIEW',                                  act:'view',     href:'#credits' },
+    { key:'linkedin', label:'LinkedIn', dgap:22,  def:'6a326b6702196efc291ab506_Linkedin.svg',  fill:'6a326b68ff1a7121507a3479_Linkedin%20Filled.svg', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'copy', copy:'https://www.linkedin.com/in/joseph-jackson-ui/' },
+    { key:'credits',  label:'Credits',  dgap:-20, def:'6a326b672510ef80bdc333a5_Credits.svg',   fill:'6a326b670c2c4374e37980fd_Credits%20filled.svg',  detail:'VIEW',                                  act:'view',     href:'#credits' },
     { key:'mail',     label:'Mail',     dgap:-50, def:'6a326b671e05c417a3694238_Mail.svg',      fill:'6a326b6751c667326423afe1_Mail%20-%20filled.svg', detail:'jackson.laptop95@gmail.com',            act:'copy', copy:'jackson.laptop95@gmail.com' },
     { key:'cv',       label:'CV',       dgap:0,   def:'6a326b67ee3ceb7f9c962b7e_CV.svg',        fill:'6a326b671da70ae29008672b_CV%20-%20filled.svg',   detail:'DOWNLOAD',                              act:'download', href:'#cv' }
   ];
@@ -480,11 +484,11 @@
       setTimeout(function () {
         setWizard('sad');
         typeCaption(cap, '\nMaybe you want to send me some hate mail?', true, function () {
-          setTimeout(function () {
+          setTimeout(function () {                                     // longer beat so the hate-mail line can be read
             setWizard('happy');
             showSpacebar();
             typeCaption(cap, "Or… Fancy playing a quick game, it's my favourite? Just press 'Space' to begin… Oh I see what he's done there… Space… Ha!", false, function () {});
-          }, 1600);
+          }, 4000);
         });
       }, 1400);
     });
@@ -500,7 +504,6 @@
   function showSpacebar(){
     var sb = document.getElementById('jj-spacebar'); if (!sb || !window.gsap) return;
     if (!sb._wired) { sb._wired = true; sb.addEventListener('click', function () { launchCredits(); }); }
-    gsap.to('#jj-caption', { bottom:'14vh', duration:0.5, ease:'power2.out' });               // lift the caption so the key has room beneath it
     gsap.to(sb, { opacity:1, duration:0.5, ease:'power1.out' });
     gsap.to(sb, { scale:1.07, duration:0.95, repeat:-1, yoyo:true, ease:'sine.inOut' });       // gentle "press me" pulse
   }

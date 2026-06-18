@@ -27,7 +27,7 @@
   a,button,[data-cursor]{cursor:none;}
   input,textarea,select,[contenteditable="true"]{cursor:auto;}
   .custom-cursor{position:fixed;top:0;left:0;width:14px;height:14px;border-radius:999px;pointer-events:none;z-index:999999;transform:translate(-50%,-50%);background:#fff;border:2px solid #080d18;box-shadow:0 0 0 5px rgba(141,125,255,.28),0 0 22px rgba(141,125,255,.65);transition:width .22s ease,height .22s ease,background .22s ease,border .22s ease,box-shadow .22s ease;}
-  .cursor-trail{position:fixed;top:0;left:0;width:52px;height:10px;border-radius:999px;pointer-events:none;z-index:999998;transform:translate(-50%,-50%);opacity:0;background:linear-gradient(90deg,rgba(141,125,255,0),rgba(141,125,255,.65),rgba(255,255,255,.85));filter:blur(5px);transition:opacity .18s ease;}
+  .cursor-trail{position:fixed;top:0;left:0;width:44px;height:8px;border-radius:999px;pointer-events:none;z-index:999998;transform:translate(-50%,-50%);opacity:0;background:linear-gradient(90deg,rgba(141,125,255,0),rgba(141,125,255,.32),rgba(255,255,255,.5));filter:blur(6px);transition:opacity .18s ease;}
   .cursor-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:8px;font-weight:700;line-height:1;text-align:center;text-transform:uppercase;opacity:0;transition:opacity .14s ease;}
   .custom-cursor.is-hovering{width:58px;height:58px;background:rgba(8,13,24,.45);border:1px solid rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(141,125,255,.25),0 0 28px rgba(141,125,255,.7);}
   .custom-cursor.is-external .cursor-label{opacity:1;font-size:28px;}
@@ -67,7 +67,7 @@
       trail.style.left = trailX + 'px';  trail.style.top  = trailY + 'px';
 
       var dx = mouseX - lastX, dy = mouseY - lastY;
-      trail.style.opacity = Math.sqrt(dx * dx + dy * dy) > 1 ? '1' : '0';
+      trail.style.opacity = Math.sqrt(dx * dx + dy * dy) > 1 ? '0.45' : '0';   // subtle trail, not too noticeable
       var angle = Math.atan2(dy, dx) * 180 / Math.PI;
       trail.style.transform = 'translate(-50%, -50%) rotate(' + (angle + 180) + 'deg)';
       lastX += (mouseX - lastX) * 0.2; lastY += (mouseY - lastY) * 0.2;

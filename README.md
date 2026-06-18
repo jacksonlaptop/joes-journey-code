@@ -15,6 +15,8 @@ jsDelivr. The Contact page only needs ONE `<script>` tag.
 | `dragon-happy.png`, `dragon-angry.png` | **once** — story-scene dragon expressions (hover/click) |
 | `icon-{phone,linkedin,credits,mail,cv}.png` | **once** — contact-orb default art (cropped: no padding, art to the edge) |
 | `icon-{phone,linkedin,credits,mail,cv}-fill.png` | **once** — contact-orb hover/filled art (10 icon files total) |
+| **`game/` folder** | **once** — the "Trogdor" credits-game assets (good-*/bad-* items, bar-l1/l2, lvl-1..9, arrow-up/down, pop-plus/minus, levelup, copy-*.svg credit panels). Upload the whole folder to the repo so paths resolve as `…/main/game/…`. The `cap-*.svg` conversation boxes are unused (captions are rebuilt in CSS) — fine to skip. |
+| `game-music-1.mp3`, `game-music-2.mp3` | **once** — the two 8-bit game tracks (1 = "8-bit Console From My Childhood", 2 = "The World of 8-bit Games"), played after the contact song fades out. (Or host on Webflow CDN and swap the `GM1`/`GM2` URLs.) |
 
 The contact-page song streams straight from the Webflow CDN — nothing to upload.
 `storybook.png` is no longer used.

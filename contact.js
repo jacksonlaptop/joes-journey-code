@@ -578,9 +578,26 @@
 
   /* Credits "View", the Spacebar key and the spacebar icon all launch the credits experience. */
   var creditsArmed = false, creditsRunning = false, creditsCleanup = null;
+  // ---- music: fade the contact song out over 5s, then roll the two 8-bit tracks ----
+  var GM1 = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/game-music-1.mp3';   // 8-bit Console From My Childhood
+  var GM2 = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/game-music-2.mp3';   // The World of 8-bit Games
+  function fadeOutSong(ms){
+    var s = window._jjSong; if (!s) return;
+    if (s.fade && s.volume) { try { s.fade(s.volume(), 0, ms); } catch (e) {} setTimeout(function () { try { s.stop(); } catch (e) {} }, ms + 80); }
+    else if (s.volume !== undefined) { var v0 = s.volume, t0 = performance.now(); var iv = setInterval(function () { var p = Math.min(1, (performance.now() - t0) / ms); try { s.volume = v0 * (1 - p); } catch (e) {} if (p >= 1) { clearInterval(iv); try { s.pause(); } catch (e) {} } }, 60); }
+  }
+  function playTrack(url, onEnd){
+    if (window.Howl) { var h = new window.Howl({ src:[url], format:['mp3'], html5:true, volume:0.55 }); try { if (window.jjAudio && window.jjAudio.sounds) window.jjAudio.sounds.push(h); } catch (e) {} if (onEnd) h.once('end', onEnd); h.play(); return h; }
+    var a = new Audio(url); a.volume = 0.55; if (onEnd) a.addEventListener('ended', onEnd); a.play().catch(function () {}); return a;
+  }
+  function startCreditsMusic(){
+    fadeOutSong(5000);                                                                          // fade the contact song over 5s
+    setTimeout(function () { playTrack(GM1, function () { setTimeout(function () { playTrack(GM2); }, 2500); }); }, 7000);   // wait (5s fade + ~2s), play track 1, then track 2 a few seconds after it ends
+  }
   function launchCredits(){
     if (creditsRunning || !window.gsap) return;
     creditsRunning = true; creditsArmed = false;
+    startCreditsMusic();
     runCreditsSequence();
   }
   function runCreditsSequence(){
@@ -608,16 +625,20 @@
     // dragon + wizard float out the bottom
     tl.to([wiz, dragon], { y:'+=' + (H * 0.7), opacity:0, duration:1.1, ease:'power2.in', stagger:0.1 }, 2.75);
     // downward Star-Wars wipe: cover top→bottom, swap in the credits reel, then reveal it
-    var coverAt = 2.95;
-    gsap.set('#jj-wipe-v', { yPercent:-100, display:'block' });
+    // transition: swipe UP to cover → hold black ~1s (swap all UI here) → swipe DOWN to reveal the game.
+    // driven by a proxy whose onUpdate writes the transform imperatively, so two phases can't fight over the property (no stuck black).
+    var coverAt = 2.95, wv = document.getElementById('jj-wipe-v'), wp = { v:0 };               // v: 0 = below, 1 = covering, 2 = below again
+    function applyWipe(){ if (wv) wv.style.transform = 'translateY(' + (wp.v <= 1 ? 100 * (1 - wp.v) : 100 * (wp.v - 1)) + '%)'; }
+    gsap.set('#jj-wipe-v', { display:'block' }); applyWipe();                                  // start fully below the viewport
     tl.to('#jj-wipe-v .jj-wv-edge', { opacity:1, duration:0.16, ease:'power1.out' }, coverAt);
-    tl.to('#jj-wipe-v', { yPercent:100, duration:2.4, ease:'power1.inOut' }, coverAt);        // single downward sweep: cover → reveal (one tween, can't get stuck covering)
-    tl.call(function () { setupCredits(); }, null, coverAt + 1.2);                             // build the game behind the black at full cover
-    tl.to('#jj-wipe-v .jj-wv-edge', { opacity:0, duration:0.3 }, coverAt + 2.2);
-    tl.set('#jj-wipe-v', { display:'none' }, coverAt + 2.5);                                   // guarantee the cover is gone — no black-out
+    tl.to(wp, { v:1, duration:0.7, ease:'power2.in', onUpdate:applyWipe }, coverAt);           // swipe UP → black covers
+    tl.call(function () { setupCredits(); }, null, coverAt + 1.15);                            // hold black ~1s; swap ALL the UI in here
+    tl.to(wp, { v:2, duration:0.85, ease:'power2.out', onUpdate:applyWipe }, coverAt + 1.7);   // swipe DOWN → reveal the game
+    tl.to('#jj-wipe-v .jj-wv-edge', { opacity:0, duration:0.3 }, coverAt + 2.3);
+    tl.set('#jj-wipe-v', { display:'none' }, coverAt + 2.7);                                   // gone for good — no black-out
   }
   /* ===== "Trogdor" — the credits catch-game (revealed by the downward wipe) ===== */
-  var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/game/';            // game assets (upload the /game/ folder to the repo)
+  var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';                 // game assets live at the repo root (uploaded flat, not in a /game/ folder)
   var GSPRITE = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-sprite.png';
   function setupCredits(){
     var stage = document.getElementById('jj-credits'); if (!stage || stage._game) return; stage._game = true;
@@ -650,7 +671,8 @@
       '#jj-keys img{width:clamp(42px,3.8vw,62px);display:block;cursor:pointer;}'+
       '#jj-end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(7,12,22,.72);opacity:0;z-index:20;font-family:\'Joes Journey Headline\',sans-serif;color:#fff;text-align:center;}'+
       '#jj-end h2{font-size:clamp(34px,5vw,72px);margin:0;}#jj-end p{font-size:clamp(16px,1.8vw,26px);margin:0;color:rgba(255,255,255,.82);}'+
-      '#jj-back{position:absolute;left:3vw;bottom:3vh;z-index:14;background:#fff;color:#0b1a2b;border:none;border-radius:999px;padding:11px 20px;font-family:\'Joes Journey Headline\',sans-serif;font-size:clamp(13px,1.1vw,16px);cursor:pointer;display:flex;align-items:center;gap:8px;}';
+      '#jj-back{position:absolute;left:3vw;bottom:3vh;z-index:14;color:#000;cursor:pointer;background:#fff;border:none;border-radius:8px;column-gap:1rem;justify-content:center;align-items:center;padding:1.2vh 1.5vw;font-family:\'Joes Journey Body\',sans-serif;font-size:clamp(13px,1vw,18px);transition:background-color .2s;display:flex;}'+
+      '#jj-back:hover{background:#bebebe;}#jj-back svg{display:block;flex:none;}';
       document.head.appendChild(st);
     }
     stage.innerHTML =
@@ -660,7 +682,7 @@
         '<div id="jj-score">Score 0</div></div>'+
       '<div id="jj-keys"><img src="'+GB+'arrow-up.svg" alt="Up"><img src="'+GB+'arrow-down.svg" alt="Down"></div>'+
       '<div id="jj-gcap"></div>'+
-      '<button id="jj-back" data-cursor="hover">&#8592; Back to Contact</button>';
+      '<button id="jj-back" data-cursor="hover"><svg width="34" height="15" viewBox="0 0 34 15" fill="none"><path d="M33 7.5H1M1 7.5L7.5 1M1 7.5L7.5 14" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>BACK TO CONTACT</button>';
     gsap.set(stage, { opacity:1 });
 
     var CREDITS = [
@@ -684,7 +706,7 @@
     function frame(t){ if (t-G.fLast>=83){ G.fLast=t; spr.style.backgroundPosition=((G.f%9)/8*100)+'% '+(Math.floor(G.f/9)/7*100)+'%'; G.f=(G.f+1)%72; } }
     function band(){ return 7.5; }
 
-    function up(){ G.ty=Math.max(16,G.ty-13); } function down(){ G.ty=Math.min(80,G.ty+13); }
+    function up(){ G.ty=Math.max(16,G.ty-8); } function down(){ G.ty=Math.min(80,G.ty+8); }
     function onKey(e){ if(!G.run) return; if(e.code==='ArrowUp'){e.preventDefault();up();} else if(e.code==='ArrowDown'){e.preventDefault();down();} }
     window.addEventListener('keydown', onKey);
     document.getElementById('jj-keys').children[0].addEventListener('click', up);
@@ -795,14 +817,11 @@
   function init(){
     lockScroll();
     startSong();
-    // hide the site nav (J logo + Menu) during the opening, fade it in a few seconds later.
-    // NOTE: targets the standard Webflow nav classes — if your logo/menu don't fade, tell me their class and I'll point this at it.
+    // hide the site nav (J logo + Menu) during the opening, fade it in a few seconds later
     try {
-      var nav = document.querySelectorAll('.navbar, .w-nav, .nav-bar, .nav_component, [class*="navbar"], .menu-button, .brand, .w-nav-brand');
-      if (nav.length) {
-        nav.forEach(function (n) { n.style.transition = 'opacity .9s ease'; n.style.opacity = '0'; });
-        setTimeout(function () { nav.forEach(function (n) { n.style.opacity = '1'; }); }, 3500);
-      }
+      var nav = document.querySelectorAll('.nav-logo-link, .nav-logo, .menu-container');
+      nav.forEach(function (n) { n.style.transition = 'opacity .9s ease'; n.style.opacity = '0'; });
+      setTimeout(function () { nav.forEach(function (n) { n.style.opacity = '1'; }); }, 3500);
     } catch (e) {}
     window.addEventListener('keydown', function (e) {                         // Spacebar launches credits (once the scene is up)
       if ((e.code === 'Space' || e.keyCode === 32) && creditsArmed) { e.preventDefault(); launchCredits(); }
@@ -883,7 +902,7 @@
     // once they've drifted out a moment, those 7 reverse-float back to centre as "Contact"
     // (normal spacing), keep bobbing, then float-fade out 2.5s after they land.
     tl.call(function () { reformContact(headEl); }, null, lastT + 2.6);
-    tl.call(function () { alienizeContact(headEl); }, null, lastT + 7.4);   // alien + pink + ramping float, all as it fades out
+    tl.call(function () { alienizeContact(headEl); }, null, lastT + 6.4);   // alien + pink + ramping float, all as it fades out (1s earlier)
 
     // ---- story scene: comes in as the letters disperse (darken bg, storybook + characters,
     //      stars wink out). "Contact" stays centred over it and only fades after the dragon lands ----
@@ -898,12 +917,12 @@
 
     // ---- contact scene: the 5 buttons fade in once "Contact" has gone, then they float
     //      and very slowly orbit a shared ellipse (never overlapping) ----
-    tl.call(function () { buildContacts(); }, null, lastT + 7.2);
+    tl.call(function () { buildContacts(); }, null, lastT + 6.2);
     tl.to('#jj-contacts', { opacity:1, duration:1.4, ease:'power1.out',
-      onComplete:function () { var el = document.getElementById('jj-contacts'); if (el) el.classList.add('on'); startContactOrbit(); creditsArmed = true; } }, lastT + 8.2);
+      onComplete:function () { var el = document.getElementById('jj-contacts'); if (el) el.classList.add('on'); startContactOrbit(); creditsArmed = true; } }, lastT + 7.2);
 
     // ---- wizard captions: start 2s after the contacts have entered ----
-    tl.call(function () { runCaptions(); }, null, lastT + 11.6);
+    tl.call(function () { runCaptions(); }, null, lastT + 10.6);
   }
 
   /* Wink the stars out one-by-one over a few seconds (not all at once). */

@@ -68,6 +68,48 @@
   // first, so the reload window shows the blue first panel instead of the black end-of-scroll).
   try { history.scrollRestoration = 'manual'; } catch (e) {}
 
+  // Homepage nav + logo: not shown on first load, then fade + drop in after 3s (matches the contact page)
+  (function jjNavDropIn(){
+    var SEL = '.nav-logo-link, .nav-logo, .menu-container, .menu-button';
+    function run(){
+      var els = document.querySelectorAll(SEL);
+      if (!els.length) { setTimeout(run, 150); return; }
+      Array.prototype.forEach.call(els, function (el) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-20px)';
+        el.style.willChange = 'opacity, transform';
+      });
+      setTimeout(function () {
+        Array.prototype.forEach.call(els, function (el) {
+          el.style.transition = 'opacity 0.9s ease, transform 0.9s cubic-bezier(0.34, 1.4, 0.64, 1)';
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        });
+        setTimeout(function () {                       // hand control back to Webflow once it has settled
+          Array.prototype.forEach.call(els, function (el) {
+            el.style.transition = ''; el.style.transform = ''; el.style.willChange = '';
+          });
+        }, 1100);
+      }, 3000);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+  })();
+
+  // Main-menu links: Contact → /contact, Credits → /contact?credits=1 (auto-plays the credits there)
+  (function jjMenuLinks(){
+    function run(){
+      try {
+        var links = document.querySelectorAll('a');
+        for (var i = 0; i < links.length; i++) {
+          var a = links[i]; if (a._jjMenuWired) continue;
+          var t = (a.textContent || '').trim().toLowerCase();
+          if (t === 'credits') { a._jjMenuWired = 1; a.setAttribute('href', '/contact?credits=1'); }
+          else if (t === 'contact' && !a.getAttribute('href')) { a._jjMenuWired = 1; a.setAttribute('href', '/contact'); }
+        }
+      } catch (e) {}
+    }
+    run(); setTimeout(run, 1500); setTimeout(run, 3500);
+  })();
 
   try {
     if (sessionStorage.getItem('jjUserMuted') === '1') jjUserMuted = true;

@@ -578,6 +578,35 @@
 
   /* Credits "View", the Spacebar key and the spacebar icon all launch the credits experience. */
   var creditsArmed = false, creditsRunning = false, creditsCleanup = null, wfBack = null;
+  var wantCredits = /[?&]credits=1\b/.test(location.search) || location.hash === '#credits';   // Credits menu item lands here with ?credits=1 → auto-play
+  function onContactPage(){ return /(^|\/)contact\/?$/.test(location.pathname); }
+  function wireMenuLinks(){                                                  // make the main-menu items work: Contact → /contact, Credits → the credits sequence
+    try {
+      var links = document.querySelectorAll('a');
+      for (var i = 0; i < links.length; i++) {
+        var a = links[i]; if (a._jjMenuWired) continue;
+        var t = (a.textContent || '').trim().toLowerCase();
+        if (t === 'credits') { a._jjMenuWired = 1; a.setAttribute('href', '/contact?credits=1');
+          a.addEventListener('click', function (e) {
+            if (onContactPage() && creditsArmed && !creditsRunning) { e.preventDefault(); launchCredits(); }   // already here → start in place
+          });
+        } else if (t === 'contact' && !a.getAttribute('href')) { a._jjMenuWired = 1; a.setAttribute('href', '/contact'); }
+      }
+    } catch (e) {}
+  }
+  function findWfBack(){                                                     // locate your Webflow "Back to Contact" button by its text
+    if (wfBack && document.body.contains(wfBack)) return wfBack;
+    try {
+      var cands = document.querySelectorAll('a, button, .w-button, .w-inline-block, [role="button"], div, span');
+      for (var i = 0; i < cands.length; i++) {
+        var el = cands[i]; if (el.id === 'jj-back') continue;               // never my own fallback
+        var t = (el.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
+        if (t.indexOf('back to contact') !== -1 && t.length <= 30) { wfBack = el.closest('a, button, .w-inline-block, [role="button"]') || el; return wfBack; }
+      }
+    } catch (e) {}
+    return null;
+  }
+  function hideWfBack(){ var b = findWfBack(); if (b) { b.style.setProperty('opacity', '0', 'important'); b.style.setProperty('pointer-events', 'none', 'important'); b.style.transition = 'opacity .6s ease'; } }
   // ---- music: fade the contact song out over 5s, then roll the two 8-bit tracks ----
   var GM1 = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/game-music-1.mp3';   // 8-bit Console From My Childhood
   var GM2 = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/game-music-2.mp3';   // The World of 8-bit Games
@@ -587,8 +616,8 @@
     else if (s.volume !== undefined) { var v0 = s.volume, t0 = performance.now(); var iv = setInterval(function () { var p = Math.min(1, (performance.now() - t0) / ms); try { s.volume = v0 * (1 - p); } catch (e) {} if (p >= 1) { clearInterval(iv); try { s.pause(); } catch (e) {} } }, 60); }
   }
   function playTrack(url, onEnd){
-    if (window.Howl) { var h = new window.Howl({ src:[url], format:['mp3'], html5:true, volume:0.28 }); try { if (window.jjAudio && window.jjAudio.sounds) window.jjAudio.sounds.push(h); } catch (e) {} if (onEnd) h.once('end', onEnd); h.play(); return h; }
-    var a = new Audio(url); a.volume = 0.28; if (onEnd) a.addEventListener('ended', onEnd); a.play().catch(function () {}); return a;
+    if (window.Howl) { var h = new window.Howl({ src:[url], format:['mp3'], html5:true, volume:0.14 }); try { if (window.jjAudio && window.jjAudio.sounds) window.jjAudio.sounds.push(h); } catch (e) {} if (onEnd) h.once('end', onEnd); h.play(); return h; }
+    var a = new Audio(url); a.volume = 0.14; if (onEnd) a.addEventListener('ended', onEnd); a.play().catch(function () {}); return a;
   }
   function startCreditsMusic(){
     fadeOutSong(5000);                                                                          // fade the contact song over 5s
@@ -648,10 +677,18 @@
       st.textContent =
       '#jj-credits.playing{pointer-events:auto;}'+
       '#jj-cr-roll{position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;will-change:transform;z-index:2;}'+
-      '.jj-crd{flex:none;height:100%;display:flex;align-items:center;justify-content:center;padding:0 6vw;}'+
-      '.jj-crd img{width:min(46vw,820px);height:auto;display:block;}'+
-      '.jj-crd-text{font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(30px,3.4vw,56px);line-height:1.12;white-space:nowrap;}'+
+      '.jj-crd{flex:none;width:100vw;height:100%;display:flex;align-items:center;justify-content:center;padding:0 4vw;position:relative;z-index:2;}'+   // each credit gets its own full-width panel
+      '.jj-crd img{width:min(44vw,760px);height:auto;display:block;}'+
+      '.jj-crd-text{font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(30px,3.4vw,56px);line-height:1.12;white-space:nowrap;text-align:center;}'+
       '.jj-crd-text small{display:block;font-size:.6em;color:#cfe0ff;margin-bottom:.18em;}'+
+      '.jj-wave{position:absolute;bottom:-1px;width:80vw;height:15vh;z-index:0;pointer-events:none;opacity:.9;animation:jjwave 4.6s ease-in-out infinite;}'+   // waves along the bottom of the scroll
+      '.jj-wave.alt{transform:scaleX(-1);}.jj-wave svg{width:100%;height:100%;display:block;}'+
+      '.jj-moon{position:absolute;top:5vh;width:clamp(80px,9vw,164px);height:clamp(80px,9vw,164px);z-index:0;pointer-events:none;filter:drop-shadow(0 0 26px rgba(205,225,255,.45));animation:jjmoon 7.5s ease-in-out infinite;}'+   // moon floating across the top
+      '.jj-moon svg{width:100%;height:100%;display:block;}'+
+      '@keyframes jjwave{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}'+
+      '@keyframes jjwave2{0%,100%{transform:scaleX(-1) translateY(0)}50%{transform:scaleX(-1) translateY(-7px)}}'+
+      '.jj-wave.alt{animation-name:jjwave2;}'+
+      '@keyframes jjmoon{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}'+
       '#jj-gdragon{position:absolute;left:16%;top:50%;width:var(--gd,122px);height:calc(var(--gd,122px)*.516);transform:translate(-50%,-50%);z-index:6;pointer-events:none;will-change:top,width;transition:width .5s ease;}'+
       '#jj-gdragon .spr{width:100%;height:100%;background:url(\''+GSPRITE+'\') no-repeat;background-size:900% 800%;}'+
       '.jj-item{position:absolute;transform:translate(-50%,-50%);z-index:4;pointer-events:none;will-change:left,top;}'+
@@ -660,37 +697,65 @@
       '.jj-item.good img{filter:drop-shadow(0 0 9px rgba(130,175,255,.55));}'+
       '@font-face{font-family:\'Mario\';src:url(\''+GB+'mario.ttf\') format(\'truetype\');font-display:swap;}'+
       '#jj-hud{position:absolute;left:50%;top:3vh;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:10;opacity:0;}'+
-      '#jj-hud-card{position:relative;width:min(20vw,280px);}'+
-      '#jj-hud-bar{width:100%;display:block;}'+
-      '#jj-hud-fill{position:absolute;left:11%;top:56%;height:17%;width:0;background:linear-gradient(90deg,#7be23a,#15c022);border-radius:3px;transition:width .25s ease;}'+
+      '#jj-hud-card{position:relative;width:min(23vw,300px);background:#E0E0DE;border:3px solid #9b9b99;border-radius:6px;box-shadow:0 0 0 4px #4B4B4B;padding:8px 11px 9px;display:flex;flex-direction:column;gap:6px;}'+
+      '#jj-hud-title{font-family:\'Joes Journey Headline\',sans-serif;color:#4A4A48;font-size:clamp(14px,1.65vw,25px);line-height:1;display:flex;align-items:center;justify-content:center;gap:.34em;white-space:nowrap;}'+
+      '#jj-hud-title .mars{color:#3aa6ea;font-weight:700;}'+
+      '#jj-hud-barrow{display:flex;align-items:center;gap:7px;background:#B7B7B7;border-radius:3px;padding:3px 6px;}'+
+      '#jj-hud-levlabel{font-family:\'Joes Journey Headline\',sans-serif;color:#E59A00;font-size:clamp(9px,.98vw,15px);letter-spacing:.4px;white-space:nowrap;}'+
+      '#jj-hud-groove{position:relative;flex:1;height:clamp(9px,1vw,15px);background:#F5F5F5;border-radius:2px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.22);}'+
+      '#jj-hud-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(#2bd636,#15c022);border-radius:2px;transition:width .25s ease;}'+
       '#jj-score{font-family:\'Mario\',\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(20px,2.3vw,36px);letter-spacing:1px;text-shadow:0 3px 0 rgba(0,0,0,.45);}'+
+      '#jj-cr-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}'+   // scrolling space background (parallax)
+      '#jj-cr-neb,#jj-cr-stars,#jj-cr-stars2{position:absolute;top:-5%;left:-5%;width:110%;height:110%;background-repeat:repeat;will-change:background-position;}'+
+      '#jj-cr-neb{background-image:radial-gradient(closest-side at 20% 35%,rgba(90,110,210,.40),transparent),radial-gradient(closest-side at 68% 60%,rgba(140,80,200,.36),transparent),radial-gradient(closest-side at 88% 28%,rgba(60,120,195,.32),transparent),radial-gradient(closest-side at 42% 82%,rgba(120,70,185,.34),transparent),radial-gradient(closest-side at 8% 72%,rgba(70,100,205,.3),transparent);background-size:1000px 720px;}'+
+      '#jj-cr-stars{background-image:radial-gradient(1.5px 1.5px at 30px 40px,rgba(255,255,255,.55),transparent),radial-gradient(1.5px 1.5px at 130px 150px,rgba(255,255,255,.4),transparent),radial-gradient(2px 2px at 210px 80px,rgba(205,225,255,.5),transparent),radial-gradient(1px 1px at 280px 205px,rgba(255,255,255,.4),transparent);background-size:300px 260px;}'+
+      '#jj-cr-stars2{background-image:radial-gradient(2.5px 2.5px at 80px 120px,rgba(210,230,255,.6),transparent),radial-gradient(1.5px 1.5px at 250px 60px,rgba(255,255,255,.5),transparent),radial-gradient(2px 2px at 380px 230px,rgba(255,255,255,.45),transparent);background-size:480px 380px;}'+
+      '#jj-cr-progress{position:absolute;left:0;bottom:0;width:100%;height:4px;z-index:14;opacity:0;pointer-events:none;}'+   // pink scroll-progress bar — matches the homepage #jj-progress
+      '#jj-cr-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#FF00F5,#ff7df4);box-shadow:0 0 12px rgba(255,0,245,0.7);transition:width .12s linear;}'+
       '#jj-gtitle{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:min(82vw,1050px);text-align:center;font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(30px,4.2vw,66px);line-height:1.1;opacity:0;z-index:13;pointer-events:none;}'+
       '.jj-pop{position:absolute;transform:translate(-50%,-50%);z-index:9;pointer-events:none;}'+
       '.jj-pop img{width:clamp(46px,4vw,70px);display:block;}'+
       '#jj-gcap{position:absolute;left:50%;bottom:7vh;transform:translateX(-50%) scale(.96);min-width:280px;max-width:60vw;background:#E0E0DE;border:6px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #FBDD65,0 0 0 9px #2E2F31;padding:13px 24px;font-family:\'Joes Journey Headline\',sans-serif;font-size:clamp(15px,1.55vw,23px);color:#4A4A48;opacity:0;z-index:13;white-space:pre-line;transition:opacity .22s ease,transform .22s ease;}'+
       '#jj-gcap.show{opacity:1;transform:translateX(-50%) scale(1);}'+
-      '#jj-keys{position:absolute;right:3vw;bottom:15vh;display:flex;flex-direction:row;gap:10px;align-items:center;z-index:10;opacity:0;}'+
-      '#jj-keys img{width:clamp(42px,3.8vw,62px);display:block;cursor:pointer;}'+
-      '#jj-end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(7,12,22,.72);opacity:0;z-index:20;font-family:\'Joes Journey Headline\',sans-serif;color:#fff;text-align:center;}'+
-      '#jj-end h2{font-size:clamp(34px,5vw,72px);margin:0;}#jj-end p{font-size:clamp(16px,1.8vw,26px);margin:0;color:rgba(255,255,255,.82);}'+
+      '#jj-keys{position:absolute;left:50%;transform:translateX(-50%);bottom:13vh;display:flex;flex-direction:row;gap:clamp(22px,4vw,60px);align-items:center;z-index:10;opacity:0;}'+   // centered, generous spacing
+      '#jj-keys img{width:clamp(46px,4.2vw,68px);display:block;cursor:pointer;}'+
       '#jj-back{position:absolute;left:3vw;bottom:3vh;z-index:14;color:#000;cursor:pointer;background:#fff;border:none;border-radius:8px;column-gap:1rem;justify-content:center;align-items:center;padding:1.2vh 1.5vw;font-family:\'Joes Journey Body\',sans-serif;font-size:clamp(13px,1vw,18px);transition:background-color .2s;display:flex;}'+
-      '#jj-back:hover{background:#FF00F5;color:#fff;}#jj-back:active{transform:scale(.96);}#jj-back svg{display:block;flex:none;stroke:currentColor;}';
+      '#jj-back:hover{background:#FF00F5;color:#fff;}#jj-back:active{transform:scale(.96);}#jj-back svg{display:block;flex:none;stroke:currentColor;}'+
+      '.jj-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:rgba(7,12,22,.55);z-index:30;opacity:0;}'+
+      '.jj-menu-title{font-family:\'Mario\',\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(40px,6.5vw,104px);letter-spacing:2px;text-shadow:0 6px 0 rgba(0,0,0,.4);}'+
+      '.jj-menu-box{background:#E0E0DE;border:6px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #FBDD65,0 0 0 9px #2E2F31;padding:14px 32px 14px 14px;min-width:300px;}'+
+      '.jj-menu-item{font-family:\'Joes Journey Headline\',sans-serif;color:#7a7a78;font-size:clamp(18px,2vw,30px);padding:7px 8px 7px 36px;position:relative;cursor:pointer;line-height:1.15;transition:color .12s ease;}'+
+      '.jj-menu-item .tri{position:absolute;left:9px;top:50%;width:0;height:0;border-left:11px solid #FF2A2A;border-top:7px solid transparent;border-bottom:7px solid transparent;transform:translateY(-50%);opacity:0;}'+
+      '.jj-menu-item.sel{color:#2E2F31;}.jj-menu-item.sel .tri{opacity:1;}'+
+      '#jj-end .jj-e-col{display:flex;flex-direction:column;align-items:center;gap:20px;}'+
+      '#jj-end .jj-e-title{font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(34px,5.5vw,82px);margin:0;text-align:center;line-height:1.05;}'+
+      '#jj-end .jj-e-sub{font-family:\'Joes Journey Headline\',sans-serif;color:rgba(255,255,255,.82);font-size:clamp(15px,1.7vw,24px);margin:0;text-align:center;}'+
+      '#jj-end .jj-e-lvl{display:flex;flex-direction:column;align-items:center;gap:8px;font-family:\'Mario\',sans-serif;color:#fff;font-size:clamp(15px,1.7vw,24px);letter-spacing:2px;}'+
+      '#jj-end .jj-e-num{width:clamp(58px,6.5vw,96px);height:clamp(58px,6.5vw,96px);border-radius:50%;background:radial-gradient(circle,#fff 58%,rgba(197,231,255,.25) 72%);box-shadow:0 0 28px 9px rgba(197,231,255,.4);display:flex;align-items:center;justify-content:center;font-family:\'Mario\',sans-serif;font-size:clamp(28px,3.4vw,50px);-webkit-text-stroke:2px #111;}';
       document.head.appendChild(st);
     }
     stage.innerHTML =
+      '<div id="jj-cr-bg"><div id="jj-cr-neb"></div><div id="jj-cr-stars"></div><div id="jj-cr-stars2"></div></div>'+
       '<div id="jj-cr-roll"></div>'+
       '<div id="jj-gdragon"><div class="spr"></div></div>'+
-      '<div id="jj-hud"><div id="jj-hud-card"><img id="jj-hud-bar" src="'+GB+'bar-l1-empty.svg" alt=""><div id="jj-hud-fill"></div></div>'+
-        '<div id="jj-score">SCORE : 0</div></div>'+
+      '<div id="jj-hud"><div id="jj-hud-card">'+
+        '<div id="jj-hud-title">Trogdor <span class="mars">♂</span> Lv.<span id="jj-hud-lv">1</span></div>'+
+        '<div id="jj-hud-barrow"><span id="jj-hud-levlabel">LEVEL <span id="jj-hud-levn">1</span></span>'+
+          '<div id="jj-hud-groove"><div id="jj-hud-fill"></div></div></div>'+
+        '</div><div id="jj-score">SCORE : 0</div></div>'+
       '<div id="jj-keys"><img src="'+GB+'arrow-up.svg" alt="Up"><img src="'+GB+'arrow-down.svg" alt="Down"></div>'+
       '<div id="jj-gtitle"></div>'+
       '<div id="jj-gcap"></div>'+
+      '<div id="jj-cr-progress"><div id="jj-cr-progress-fill"></div></div>'+
       '<button id="jj-back" data-cursor="hover"><svg width="34" height="15" viewBox="0 0 34 15" fill="none"><path d="M33 7.5H1M1 7.5L7.5 1M1 7.5L7.5 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>BACK TO CONTACT</button>';
     gsap.set(stage, { opacity:1 });
-    // Back-to-Contact: prefer your Webflow button (keeps its pink hover/fill/press), else the built-in one. Fade + grow it in with the game.
-    var backEl = wfBack || document.getElementById('jj-back');
-    if (wfBack) { var jb0 = document.getElementById('jj-back'); if (jb0) jb0.remove(); }
-    if (backEl) { backEl.style.pointerEvents = ''; gsap.fromTo(backEl, { opacity:0, scale:0.8 }, { opacity:1, scale:1, duration:0.7, ease:'back.out(1.5)', delay:1.2, transformOrigin:'left bottom' }); }
+    // Back-to-Contact: use YOUR Webflow button (keeps its pink hover/fill/press) and drop my fallback. Fade + grow it in with the game.
+    var backEl = findWfBack() || document.getElementById('jj-back');
+    if (backEl && backEl.id !== 'jj-back') { var jb0 = document.getElementById('jj-back'); if (jb0) jb0.remove(); }   // your button exists → remove mine entirely
+    if (backEl) {
+      backEl.style.removeProperty('opacity'); backEl.style.removeProperty('pointer-events');                       // undo the load-time hide
+      gsap.fromTo(backEl, { opacity:0, scale:0.8 }, { opacity:1, scale:1, duration:0.7, ease:'back.out(1.5)', delay:1.2, transformOrigin:'left bottom' });
+    }
 
     var CREDITS = [
       { text:'<small>Created, Designed &amp; Directed by yours truly&hellip;</small>Joe Jackson' },
@@ -700,10 +765,35 @@
     ];
     var roll = document.getElementById('jj-cr-roll');
     roll.innerHTML = CREDITS.map(function(c){ return '<div class="jj-crd">'+(c.img?'<img src="'+GB+c.img+'">':'<div class="jj-crd-text">'+c.text+'</div>')+'</div>'; }).join('');
+    // Scrolling background: waves along the bottom (every 2.5 panels), moon floating across the top (every 3 panels)
+    var WAVE_SVG='<svg viewBox="0 0 1200 300" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'+
+      '<path d="M0,150 C200,110 400,182 600,142 C800,102 1000,176 1200,136 L1200,300 L0,300 Z" fill="#15264a" opacity=".72"/>'+
+      '<path d="M0,182 C220,142 360,206 600,170 C840,134 1010,202 1200,166 L1200,300 L0,300 Z" fill="#1f3a66" opacity=".88"/>'+
+      '<path d="M0,212 C180,180 420,236 640,200 C880,162 1040,230 1200,198 L1200,300 L0,300 Z" fill="#284a82"/>'+
+      '<path d="M0,212 C180,180 420,236 640,200 C880,162 1040,230 1200,198" fill="none" stroke="#cfe0ff" stroke-width="4" opacity=".5"/></svg>';
+    var MOON_SVG='<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="jjmg" cx="40%" cy="34%" r="72%">'+
+      '<stop offset="0%" stop-color="#eef1f6"/><stop offset="62%" stop-color="#c2c7d2"/><stop offset="100%" stop-color="#9aa0ad"/></radialGradient></defs>'+
+      '<circle cx="50" cy="50" r="40" fill="url(#jjmg)"/>'+
+      '<circle cx="38" cy="40" r="7" fill="#a7adba" opacity=".7"/><circle cx="63" cy="58" r="9" fill="#a7adba" opacity=".6"/>'+
+      '<circle cx="56" cy="33" r="4" fill="#a7adba" opacity=".6"/><circle cx="44" cy="65" r="5" fill="#a7adba" opacity=".55"/></svg>';
+    var span = CREDITS.length*100, deco='', wi=0, mi=0;
+    for(var wx=30; wx<span; wx+=250){ deco+='<div class="jj-wave'+(wi%2?' alt':'')+'" style="left:'+wx+'vw;animation-delay:'+(-wi*0.7)+'s">'+WAVE_SVG+'</div>'; wi++; }
+    for(var mx=185; mx<span; mx+=300){ deco+='<div class="jj-moon" style="left:'+mx+'vw;animation-delay:'+(-mi*1.4)+'s">'+MOON_SVG+'</div>'; mi++; }
+    roll.insertAdjacentHTML('beforeend', deco);
 
     var dragon = document.getElementById('jj-gdragon'), spr = dragon.querySelector('.spr');
-    var fillEl = document.getElementById('jj-hud-fill'), barImg = document.getElementById('jj-hud-bar'), scoreEl = document.getElementById('jj-score'), cap = document.getElementById('jj-gcap');
-    function setLevelHUD(){ barImg.src = GB+(G.level>=2?'bar-l2-empty':'bar-l1-empty')+'.svg'; }
+    var fillEl = document.getElementById('jj-hud-fill'), scoreEl = document.getElementById('jj-score'), cap = document.getElementById('jj-gcap');
+    var lvNumEl = document.getElementById('jj-hud-lv'), levNumEl = document.getElementById('jj-hud-levn');
+    var bgNeb = document.getElementById('jj-cr-neb'), bgStars = document.getElementById('jj-cr-stars'), bgStars2 = document.getElementById('jj-cr-stars2'), progFill = document.getElementById('jj-cr-progress-fill');
+    var introBg = document.getElementById('jj-intro-bg');                                            // the swirl SVG — scroll it too (parallax)
+    if(introBg){ introBg.style.width='330vw'; introBg.style.left='-35vw'; introBg.style.willChange='transform'; }
+    function setLevelHUD(){ if(lvNumEl) lvNumEl.textContent = G.level; if(levNumEl) levNumEl.textContent = G.level; }
+    function paintScroll(){ roll.style.transform='translateX('+G.rollX+'vw)';                       // keep bg + progress in sync with the credits scroll
+      if(introBg) introBg.style.transform='translateX('+(G.rollX*0.15)+'vw)';                        // swirl drift (deepest layer)
+      if(bgNeb) bgNeb.style.backgroundPositionX=(G.rollX*3)+'px';
+      if(bgStars) bgStars.style.backgroundPositionX=(G.rollX*6)+'px';
+      if(bgStars2) bgStars2.style.backgroundPositionX=(G.rollX*9)+'px';
+      if(progFill){ var p=(60-G.rollX)/(60+(G.rollW||1)); progFill.style.width=Math.max(0,Math.min(1,p))*100+'%'; } }
     var GOOD = ['good-claude','good-gpt','good-perplexity','good-css','good-js','good-gsap','good-figma','good-miro','good-rive','good-jitter','good-procreate','good-music','good-coding','good-typography','good-voicework','good-webflow','good-logo','good-alien1','good-alien2','good-alien3'];
     var BAD = ['bad-alien1','bad-alien2','bad-spiky','bad-rocks','bad-junk','bad-blackhole'], BADLG = ['bad-alien1-lg','bad-alien2-lg','bad-spiky-lg'];
     var G = { run:false, score:0, level:1, fill:0, dy:50, ty:50, items:[], rollX:60, rollW:0, lastT:0, lastSpawn:0, f:0, fLast:0, said:{} };
@@ -714,10 +804,56 @@
     function band(){ return 7.5; }
 
     function up(){ G.ty=Math.max(16,G.ty-8); } function down(){ G.ty=Math.min(80,G.ty+8); }
-    function onKey(e){ if(!G.run) return; if(e.code==='ArrowUp'){e.preventDefault();up();} else if(e.code==='ArrowDown'){e.preventDefault();down();} }
+    var paused=false, viewMode=false, menuOpen=false, menuSel=0, menuItems=null, menuBoxEl=null, pauseFrom='play', ended=false;
+    var LVLCOL=['#FF00F5','#EEFF00','#A38CFF','#FF0000','#00FF33','#BF00FF','#FFBB00','#FFDDFE','#FF00F5'];
+    function onKey(e){
+      if(menuOpen){
+        if(e.code==='ArrowUp'){ e.preventDefault(); menuMove(-1); }
+        else if(e.code==='ArrowDown'){ e.preventDefault(); menuMove(1); }
+        else if(e.code==='Enter'){ e.preventDefault(); menuActivate(menuSel); }
+        else if(e.code==='Space'){ e.preventDefault(); menuActivate(0); }     // Space activates the first item (Continue / Restart)
+        return;
+      }
+      if(e.code==='Space'){ e.preventDefault(); if(G.run){ openMenu(viewMode?'view':'play'); } return; }   // Space pauses anytime
+      if(!G.run || paused) return;
+      if(e.code==='ArrowUp'){ e.preventDefault(); up(); } else if(e.code==='ArrowDown'){ e.preventDefault(); down(); }
+    }
     window.addEventListener('keydown', onKey);
-    document.getElementById('jj-keys').children[0].addEventListener('click', up);
-    document.getElementById('jj-keys').children[1].addEventListener('click', down);
+    document.getElementById('jj-keys').children[0].addEventListener('click', function(){ if(!paused) up(); });
+    document.getElementById('jj-keys').children[1].addEventListener('click', function(){ if(!paused) down(); });
+
+    // ---- pause / View-Scene / end menu ----
+    function buildMenuBox(items, sel){
+      var box=document.createElement('div'); box.className='jj-menu-box';
+      box.innerHTML=items.map(function(it,i){ return '<div class="jj-menu-item'+(i===sel?' sel':'')+'" data-i="'+i+'"><span class="tri"></span>'+it.label+'</div>'; }).join('');
+      box.addEventListener('click', function(e){ var el=e.target.closest('.jj-menu-item'); if(el){ menuSel=+el.getAttribute('data-i'); paintMenu(); menuActivate(menuSel); } });
+      box.addEventListener('mousemove', function(e){ var el=e.target.closest('.jj-menu-item'); if(el && +el.getAttribute('data-i')!==menuSel){ menuSel=+el.getAttribute('data-i'); paintMenu(); } });
+      return box;
+    }
+    function paintMenu(){ if(!menuBoxEl)return; var its=menuBoxEl.querySelectorAll('.jj-menu-item'); for(var i=0;i<its.length;i++) its[i].classList.toggle('sel',i===menuSel); }
+    function menuMove(d){ if(!menuItems)return; menuSel=(menuSel+d+menuItems.length)%menuItems.length; paintMenu(); }
+    function menuActivate(i){ if(!menuItems)return; var it=menuItems[Math.min(i,menuItems.length-1)]; if(it) it.fn(); }
+    function pauseItems(){ return [ {label:'Continue',fn:resume}, {label:'Restart',fn:restartGame}, {label:'Back to Contact',fn:backToContact}, {label:'View Scene',fn:enterView}, {label:'Main Menu',fn:openMainMenu} ]; }
+    function endItems(){ return [ {label:'Restart',fn:restartGame}, {label:'Back to Contact',fn:backToContact}, {label:'View Scene',fn:enterView}, {label:'Main Menu',fn:openMainMenu} ]; }
+    function openMenu(from){
+      if(menuOpen)return; menuOpen=true; paused=true; pauseFrom=from||'play';
+      var ov=document.createElement('div'); ov.id='jj-pause'; ov.className='jj-overlay';
+      var t=document.createElement('div'); t.className='jj-menu-title'; t.textContent='PAUSED'; ov.appendChild(t);
+      menuItems=pauseItems(); menuSel=0; menuBoxEl=buildMenuBox(menuItems,0); ov.appendChild(menuBoxEl);
+      stage.appendChild(ov); gsap.fromTo(ov,{opacity:0},{opacity:1,duration:.22});
+    }
+    function closeMenu(){ ['jj-pause','jj-end'].forEach(function(id){ var o=document.getElementById(id); if(o)o.remove(); }); menuOpen=false; menuItems=null; menuBoxEl=null; }
+    function resume(){ closeMenu(); if(pauseFrom==='view'){ paused=true; viewMode=true; showCap("Press 'Space' to open the menu…",0); } else { paused=false; viewMode=false; cap.classList.remove('show'); G.lastT=0; } }
+    function restartGame(){ closeMenu();
+      document.querySelectorAll('#jj-credits .jj-item').forEach(function(el){el.remove();}); G.items=[];
+      G.score=0; G.level=1; G.fill=0; G.dy=50; G.ty=50; G.said={}; G.rollX=60; rollDone=false; ended=false;
+      setLevelHUD(); setDragon(); scoreEl.textContent='SCORE : 0'; fillEl.style.width='0%';
+      paintScroll(); cap.classList.remove('show');
+      gsap.to(['#jj-hud','#jj-keys','#jj-cr-progress'],{opacity:1,duration:.3}); if(backEl) gsap.to(backEl,{opacity:1,duration:.3});   // restore gameplay UI (may have been hidden by the end screen)
+      paused=false; viewMode=false; if(!G.run){ G.run=true; G.lastT=0; G.lastSpawn=0; G.raf=requestAnimationFrame(loop); } else { G.lastT=0; } }
+    function backToContact(){ location.reload(); }
+    function openMainMenu(){ var m=document.querySelector('.menu-container, .menu-button, .menu-links-wrap'); closeMenu(); if(m) m.click(); }
+    function enterView(){ closeMenu(); paused=true; viewMode=true; pauseFrom='view'; showCap("Press 'Space' to open the menu…",0); if(!G.run){ G.run=true; G.lastT=0; G.raf=requestAnimationFrame(loop); } }
 
     function showCap(text, ms, done){
       cap.classList.add('show'); clearInterval(cap._tw); clearTimeout(cap._h); var i=0; cap.textContent='';
@@ -751,28 +887,40 @@
         if(G.fill>=1){ G.fill-=1; if(G.level<9){ G.level++; setLevelHUD(); setDragon(); levelUpFx(); flash("I'm getting…stronger!",1300); } else G.fill=1; }
         flash('Yum!', G.said.yum?650:1000); G.said.yum=1;
       }
-      scoreEl.textContent='SCORE : '+G.score; fillEl.style.width=Math.max(0,Math.min(1,G.fill))*76+'%';
+      scoreEl.textContent='SCORE : '+G.score; fillEl.style.width=Math.max(0,Math.min(1,G.fill))*100+'%';
     }
     var rollDone=false;
     function loop(t){
       if(!G.run) return; var dt=Math.min(48,t-(G.lastT||t)); G.lastT=t; var k=dt/16.7;
+      frame(t);                                                       // dragon keeps flapping even while paused
+      if(paused){                                                     // pause menu open, or View-Scene mode
+        G.lastSpawn=t;                                                 // keep spawn clock fresh so resume doesn't burst
+        if(viewMode){ G.rollX-=0.16*k; paintScroll(); if(-G.rollX>G.rollW){ G.rollX=60; } }
+        dragon.style.top=(G.dy+Math.sin(t/520)*1.4)+'%'; G.raf=requestAnimationFrame(loop); return;
+      }
       G.dy += (G.ty-G.dy)*Math.min(1,.22*k); dragon.style.top=(G.dy+Math.sin(t/520)*1.4)+'%';
-      frame(t);
       if(t-G.lastSpawn > Math.max(560,1150-(G.level-1)*85)){ G.lastSpawn=t; spawnItem(); }
       var sp=.30+(G.level-1)*.045;
       for(var i=G.items.length-1;i>=0;i--){ var it=G.items[i]; it.x-=sp*k; it.el.style.left=it.x+'%'; it.el.style.top=it.y+'%';
         if(!it.hit && it.x<=18 && it.x>=10 && Math.abs(it.y-G.dy)<it.band){ hit(it); continue; }
         if(it.x<-8){ it.el.remove(); G.items.splice(i,1); } }
-      if(!rollDone){ G.rollX-=sp*.31*k; roll.style.transform='translateX('+G.rollX+'vw)'; if(-G.rollX>G.rollW){ rollDone=true; endGame(); } }
+      if(!rollDone){ G.rollX-=sp*.31*k; paintScroll(); if(-G.rollX>G.rollW){ rollDone=true; endGame(); } }
       G.raf=requestAnimationFrame(loop);
     }
     function startPlay(){ G.run=true; stage.classList.add('playing'); G.lastT=0; G.lastSpawn=0;
       G.rollW = roll.scrollWidth/window.innerWidth*100 + 50;
-      gsap.to('#jj-hud',{opacity:1,duration:.5}); gsap.to('#jj-keys',{opacity:1,duration:.5}); G.raf=requestAnimationFrame(loop); }
-    function endGame(){ G.run=false; cancelAnimationFrame(G.raf);
-      var end=document.createElement('div'); end.id='jj-end'; end.innerHTML='<h2>Thanks for playing!</h2><p>Final score '+G.score+' &middot; reached Level '+G.level+'</p>'; stage.appendChild(end); gsap.to(end,{opacity:1,duration:.6}); }
+      gsap.to('#jj-hud',{opacity:1,duration:.5}); gsap.to('#jj-keys',{opacity:1,duration:.5}); gsap.to('#jj-cr-progress',{opacity:1,duration:.5}); G.raf=requestAnimationFrame(loop); }
+    function endGame(){ if(ended)return; ended=true; G.run=false; if(G.raf)cancelAnimationFrame(G.raf); paused=false; viewMode=false;
+      gsap.to(['#jj-hud','#jj-keys','#jj-cr-progress'],{opacity:0,duration:.4}); if(backEl) gsap.to(backEl,{opacity:0,duration:.4});   // clear gameplay UI for the end screen
+      var end=document.createElement('div'); end.id='jj-end'; end.className='jj-overlay';
+      var col=document.createElement('div'); col.className='jj-e-col';
+      col.innerHTML='<h2 class="jj-e-title">Thanks for Playing!</h2><div class="jj-e-sub">Final score '+G.score+' &middot; reached Level '+G.level+'</div>';
+      menuItems=endItems(); menuSel=0; menuBoxEl=buildMenuBox(menuItems,0); col.appendChild(menuBoxEl);
+      var lvl=document.createElement('div'); lvl.className='jj-e-lvl'; lvl.innerHTML='LEVEL REACHED<div class="jj-e-num" style="color:'+LVLCOL[Math.min(8,G.level-1)]+';text-shadow:0 0 26px '+LVLCOL[Math.min(8,G.level-1)]+'">'+G.level+'</div>';
+      col.appendChild(lvl); end.appendChild(col); stage.appendChild(end);
+      menuOpen=true; gsap.fromTo(end,{opacity:0},{opacity:1,duration:.6}); gsap.fromTo(lvl.querySelector('.jj-e-num'),{scale:.4,opacity:0},{scale:1,opacity:1,duration:.6,delay:.3,ease:'back.out(2)'}); }
 
-    roll.style.transform='translateX(60vw)'; dragon.style.top='50%'; dragon.style.left='-14%';   // Trogdor starts off-screen left
+    paintScroll(); dragon.style.top='50%'; dragon.style.left='-14%';   // Trogdor starts off-screen left
     gsap.set(['#jj-hud','#jj-keys'],{opacity:0});
     var gtitle=document.getElementById('jj-gtitle');
     function showTitle(text, ms, done){ gtitle.textContent=text; gsap.killTweensOf(gtitle); gsap.to(gtitle,{opacity:1,duration:.5}); setTimeout(function(){ gsap.to(gtitle,{opacity:0,duration:.5,onComplete:done}); }, ms); }
@@ -836,15 +984,9 @@
       nav.forEach(function (n) { n.style.transition = 'opacity .9s ease'; n.style.opacity = '0'; });
       setTimeout(function () { nav.forEach(function (n) { n.style.opacity = '1'; }); }, 3500);
     } catch (e) {}
-    // find your Webflow "Back to Contact" button (by its text) and keep it hidden until the game
-    try {
-      var bels = document.querySelectorAll('a, button, .w-inline-block, [role="button"]');
-      for (var bi = 0; bi < bels.length; bi++) {
-        var bt = (bels[bi].textContent || '').trim().toLowerCase();
-        if (bt.length < 24 && bt.indexOf('back to contact') >= 0) { wfBack = bels[bi]; break; }
-      }
-      if (wfBack) { wfBack.style.opacity = '0'; wfBack.style.pointerEvents = 'none'; }
-    } catch (e) {}
+    // find your Webflow "Back to Contact" button and keep it hidden until the game (retry: it may render late)
+    hideWfBack(); setTimeout(hideWfBack, 800); setTimeout(hideWfBack, 2000);
+    wireMenuLinks(); setTimeout(wireMenuLinks, 1200); setTimeout(wireMenuLinks, 3000);   // menu may render lazily; re-wire a couple times
     window.addEventListener('keydown', function (e) {                         // Spacebar launches credits (once the scene is up)
       if ((e.code === 'Space' || e.keyCode === 32) && creditsArmed) { e.preventDefault(); launchCredits(); }
     });
@@ -941,7 +1083,8 @@
     //      and very slowly orbit a shared ellipse (never overlapping) ----
     tl.call(function () { buildContacts(); }, null, lastT + 6.2);
     tl.to('#jj-contacts', { opacity:1, duration:1.4, ease:'power1.out',
-      onComplete:function () { var el = document.getElementById('jj-contacts'); if (el) el.classList.add('on'); startContactOrbit(); creditsArmed = true; } }, lastT + 7.2);
+      onComplete:function () { var el = document.getElementById('jj-contacts'); if (el) el.classList.add('on'); startContactOrbit(); creditsArmed = true;
+        if (wantCredits) setTimeout(function () { if (creditsArmed && !creditsRunning) launchCredits(); }, 900); } }, lastT + 7.2);   // arrived from the Credits menu item → auto-launch
 
     // ---- wizard captions: start 2s after the contacts have entered ----
     tl.call(function () { runCaptions(); }, null, lastT + 10.6);

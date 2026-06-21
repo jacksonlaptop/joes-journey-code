@@ -252,16 +252,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       audioTrigger.removeEventListener('click', playAudio);
 
-      // SKIP SPEECH (fired by the homepage HUD): stop the stardust speech, clear captions, music up now.
-      document.addEventListener('jj:skip-speech', function jjSkip() {
-        document.removeEventListener('jj:skip-speech', jjSkip);
-        try { speech.fade(speech.volume(), 0, 350); } catch (e) {}
-        setTimeout(function () { try { speech.stop(); } catch (e) {} }, 350);
-        hideSub(); clearSubs();
-        var si = activeSounds.indexOf(speech); if (si > -1) activeSounds.splice(si, 1);
-        if (amb) amb.fade(amb.volume(), ambBack, 1500);
-      });
-
       if (audioController) {
         audioController.addEventListener('click', function () {
           activeSounds.forEach(function (s) {
@@ -622,5 +612,34 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
   }
   document.querySelectorAll('.next-section-button').forEach(function (el) { el.setAttribute('data-jj', 'btn'); });
   document.querySelectorAll('[data-jj="btn"]').forEach(setupBtn);
+})();
+
+/* Site-wide: make the footer + menu "Contact" and "Credits" links work on every page.
+   Contact  -> /contact
+   Credits  -> /contact?credits=1   (the contact page auto-plays the credits sequence on arrival)
+   On /contact itself, contact.js does the richer wiring (launch credits in place), so we stay out of its way there. */
+(function () {
+  function onContactPage() { return /(^|\/)contact\/?$/.test(location.pathname); }
+  function wireMenuLinks() {
+    if (onContactPage()) return;
+    try {
+      var links = document.querySelectorAll('a');
+      for (var i = 0; i < links.length; i++) {
+        var a = links[i];
+        if (a._jjMenuWired) continue;
+        var t = (a.textContent || '').trim().toLowerCase();
+        if (t === 'credits') {
+          a._jjMenuWired = 1;
+          a.setAttribute('href', '/contact?credits=1');
+        } else if (t === 'contact') {
+          var h = a.getAttribute('href');
+          if (!h || h === '#' || h === '') { a._jjMenuWired = 1; a.setAttribute('href', '/contact'); }
+        }
+      }
+    } catch (e) {}
+  }
+  function run() { wireMenuLinks(); setTimeout(wireMenuLinks, 1200); setTimeout(wireMenuLinks, 3000); setTimeout(wireMenuLinks, 6000); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
 })();
 

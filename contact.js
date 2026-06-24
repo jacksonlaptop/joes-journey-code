@@ -615,7 +615,7 @@
     if (s.fade && s.volume) { try { s.fade(s.volume(), 0, ms); } catch (e) {} setTimeout(function () { try { s.stop(); } catch (e) {} }, ms + 80); }
     else if (s.volume !== undefined) { var v0 = s.volume, t0 = performance.now(); var iv = setInterval(function () { var p = Math.min(1, (performance.now() - t0) / ms); try { s.volume = v0 * (1 - p); } catch (e) {} if (p >= 1) { clearInterval(iv); try { s.pause(); } catch (e) {} } }, 60); }
   }
-  var GAME_VOL = 0.5;                                                                            // game music at 50% (user spec)
+  var GAME_VOL = 0.25;                                                                           // game music at 50% of the site's other music (the contact song plays at 0.5) — it was too loud at parity
   var gameMusic = null, gameMusicMuted = false, gameMusicIdx = 0;
   function applyGameVol(){ if (!gameMusic) return; var v = gameMusicMuted ? 0 : GAME_VOL;
     try { if (typeof gameMusic.volume === 'function') gameMusic.volume(v); else gameMusic.volume = v; } catch (e) {} }
@@ -695,6 +695,27 @@
   // Homepage "hi I'm Joe" horizontal-scroll background art — reused so the credits scroll matches it.
   var BG_BACK  = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0c90afafa53a631f4ff3ac_Starry%20Board%20-%20Background.svg';
   var BG_FRONT = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0c964e79a06e8151f7f16b_Starry%20Board%20-%20Foreground2.svg';
+  // Homepage waves + moon — the same assets used by the "hi I'm Joe" horizontal scroll.
+  var WAVES_RIV = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a19b8f4191d4fbca532593b_Waves.riv';   // Rive waves (State Machine 1)
+  var RIVE_RUNTIME = 'https://unpkg.com/@rive-app/canvas@2/rive.js';
+  var MOON_URL = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0d67bbb86603f359ae1311_289a8c92ed8a9b7dd3efdae788f3d0ae_Moon.svg';   // homepage Moon
+  function mountRiveWaves(canvas){
+    if (!canvas || canvas._rive) return; canvas._rive = true;
+    function go(){
+      if (canvas._riveInst) return;
+      if (!window.rive || !window.rive.Rive) { setTimeout(go, 150); return; }                   // wait for the runtime
+      try {
+        var r = new window.rive.Rive({ src:WAVES_RIV, canvas:canvas, autoplay:true,
+          stateMachines:'State Machine 1',
+          layout:new window.rive.Layout({ fit:window.rive.Fit.Fill, alignment:window.rive.Alignment.BottomCenter }),
+          onLoad:function(){ try{ r.resizeDrawingSurfaceToCanvas(); }catch(e){} } });
+        canvas._riveInst = r;
+        window.addEventListener('resize', function(){ try{ r.resizeDrawingSurfaceToCanvas(); }catch(e){} });
+      } catch (e) {}
+    }
+    if (!window.rive && !document.getElementById('jj-rive-rt')) { var s=document.createElement('script'); s.id='jj-rive-rt'; s.src=RIVE_RUNTIME; document.head.appendChild(s); }
+    go();
+  }
   function setupCredits(){
     var stage = document.getElementById('jj-credits'); if (!stage || stage._game) return; stage._game = true;
     ['jj-contacts','jj-caption','jj-spacebar','jj-dark','jj-story','jj-toast','jj-stage','jj-dragon'].forEach(function(id){ var el = document.getElementById(id); if (el) el.style.display = 'none'; });
@@ -707,14 +728,11 @@
       '.jj-crd img{width:min(44vw,760px);height:auto;display:block;}'+
       '.jj-crd-text{font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(30px,3.4vw,56px);line-height:1.12;white-space:nowrap;text-align:center;}'+
       '.jj-crd-text small{display:block;font-size:.6em;color:#cfe0ff;margin-bottom:.18em;}'+
-      '.jj-wave{position:absolute;bottom:-1px;width:80vw;height:15vh;z-index:0;pointer-events:none;opacity:.9;animation:jjwave 4.6s ease-in-out infinite;}'+   // waves along the bottom of the scroll
-      '.jj-wave.alt{transform:scaleX(-1);}.jj-wave svg{width:100%;height:100%;display:block;}'+
-      '.jj-moon{position:absolute;top:5vh;width:clamp(80px,9vw,164px);height:clamp(80px,9vw,164px);z-index:0;pointer-events:none;filter:drop-shadow(0 0 26px rgba(205,225,255,.45));animation:jjmoon 7.5s ease-in-out infinite;}'+   // moon floating across the top
-      '.jj-moon svg{width:100%;height:100%;display:block;}'+
-      '@keyframes jjwave{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}'+
-      '@keyframes jjwave2{0%,100%{transform:scaleX(-1) translateY(0)}50%{transform:scaleX(-1) translateY(-7px)}}'+
-      '.jj-wave.alt{animation-name:jjwave2;}'+
-      '@keyframes jjmoon{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}'+
+      '#jj-waves{position:absolute;left:0;right:0;bottom:0;width:100%;height:7.5vh;z-index:1;pointer-events:none;}'+   // homepage Rive waves, fixed at the bottom, 50% shorter than the old SVG waves (15vh→7.5vh)
+      '#jj-waves canvas{width:100%!important;height:100%!important;display:block;}'+
+      '.jj-moon{position:absolute;top:5vh;width:clamp(46px,5vw,90px);height:auto;z-index:0;pointer-events:none;animation:jj-glow-m 4.6s ease-in-out infinite;}'+   // homepage moon, glowing, ~50% smaller, floats across the top
+      '.jj-moon img{width:100%;height:auto;display:block;}'+
+      '@keyframes jj-glow-m{0%,100%{filter:drop-shadow(0 0 7px rgba(255,255,255,.6)) drop-shadow(0 0 20px rgba(205,225,255,.35));}50%{filter:drop-shadow(0 0 20px rgba(255,255,255,.92)) drop-shadow(0 0 46px rgba(205,225,255,.55));}}'+
       '#jj-gdragon{position:absolute;left:16%;top:50%;width:var(--gd,122px);height:calc(var(--gd,122px)*.516);transform:translate(-50%,-50%);z-index:6;pointer-events:none;will-change:top,width;transition:width .5s ease;}'+
       '#jj-gdragon .spr{width:100%;height:100%;background:url(\''+GSPRITE+'\') no-repeat;background-size:900% 800%;}'+
       '.jj-item{position:absolute;transform:translate(-50%,-50%);z-index:4;pointer-events:none;will-change:left,top;}'+
@@ -722,15 +740,15 @@
       '.jj-item.bad img{filter:drop-shadow(0 0 11px rgba(255,55,55,.75));}'+
       '.jj-item.good img{filter:drop-shadow(0 0 9px rgba(130,175,255,.55));}'+
       '@font-face{font-family:\'Mario\';src:url(\''+GB+'mario.ttf\') format(\'truetype\');font-display:swap;}'+
-      '#jj-hud{position:absolute;left:50%;top:3vh;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:15px;z-index:10;opacity:0;}'+
+      '#jj-hud{position:absolute;left:50%;top:3vh;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:24px;z-index:10;opacity:0;}'+   // ~20px gap below the card (its 4px outer ring eats some)
       '#jj-hud-card{position:relative;width:min(23vw,300px);background:#E0E0DE;border:3px solid #9b9b99;border-radius:6px;box-shadow:0 0 0 4px #4B4B4B;padding:8px 11px 9px;display:flex;flex-direction:column;gap:6px;}'+
-      '#jj-hud-title{font-family:\'Joes Journey Headline\',sans-serif;color:#4A4A48;font-size:clamp(14px,1.65vw,25px);line-height:1;display:flex;align-items:center;justify-content:center;gap:.2em;white-space:nowrap;}'+
+      '#jj-hud-title{font-family:\'Joes Journey Headline\',sans-serif;color:#4A4A48;font-size:clamp(14px,1.65vw,25px);line-height:1;display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;}'+   // 10px between the ♂ and the name
       '#jj-hud-title .mars{color:#3aa6ea;font-weight:700;}'+
       '#jj-hud-barrow{display:flex;align-items:center;gap:7px;background:#B7B7B7;border-radius:3px;padding:3px 6px;}'+
       '#jj-hud-levlabel{font-family:\'Joes Journey Headline\',sans-serif;color:#FFB21E;font-size:clamp(9px,.98vw,15px);letter-spacing:.4px;white-space:nowrap;text-shadow:-1px -1px 0 rgba(0,0,0,.6),1px -1px 0 rgba(0,0,0,.6),-1px 1px 0 rgba(0,0,0,.6),1px 1px 0 rgba(0,0,0,.6);}'+
       '#jj-hud-groove{position:relative;flex:1;height:clamp(9px,1vw,15px);background:#F5F5F5;border-radius:2px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.22);}'+
       '#jj-hud-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(#2bd636,#15c022);border-radius:2px;transition:width .25s ease;}'+
-      '#jj-score{font-family:\'Mario\',\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(20px,2.3vw,36px);letter-spacing:1px;-webkit-text-stroke:2px #2E2F31;paint-order:stroke fill;text-shadow:0 3px 0 rgba(0,0,0,.5);}'+
+      '#jj-score{font-family:\'Mario\',\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(15px,1.7vw,26px);letter-spacing:1px;-webkit-text-stroke:1.5px #2E2F31;paint-order:stroke fill;text-shadow:0 3px 0 rgba(0,0,0,.5);}'+   // smaller than before
       '#jj-cr-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}'+   // homepage Starry Board layers, scrolled horizontally (parallax)
       '#jj-cr-back,#jj-cr-front{position:absolute;inset:0;overflow:hidden;will-change:transform;}'+
       '.jj-bg-strip{position:absolute;top:0;bottom:0;left:0;display:flex;align-items:stretch;will-change:transform;}'+
@@ -742,12 +760,13 @@
       '.jj-pop img{width:clamp(46px,4vw,70px);display:block;}'+
       '#jj-gcap{position:absolute;left:50%;bottom:7vh;transform:translateX(-50%) scale(.96);min-width:280px;max-width:60vw;background:#E0E0DE;border:6px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #FBDD65,0 0 0 9px #2E2F31;padding:13px 24px;font-family:\'Joes Journey Headline\',sans-serif;font-size:clamp(15px,1.55vw,23px);color:#4A4A48;opacity:0;z-index:13;white-space:pre-line;transition:opacity .22s ease,transform .22s ease;}'+
       '#jj-gcap.show{opacity:1;transform:translateX(-50%) scale(1);}'+
-      '#jj-keys{position:absolute;left:50%;transform:translateX(-50%);bottom:22vh;display:flex;flex-direction:row;gap:clamp(34px,5.5vw,82px);align-items:center;z-index:10;opacity:0;}'+   // raised higher + wider gap between the up/down keys
+      '#jj-keys{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(7vh + 86px);display:flex;flex-direction:row;gap:clamp(34px,5.5vw,82px);align-items:center;z-index:10;opacity:0;}'+   // sit ~20px above the caption box (caption is bottom:7vh, ~66px tall)
       '#jj-keys img{width:clamp(46px,4.2vw,68px);display:block;cursor:pointer;}'+
       '#jj-back{position:absolute;left:3vw;bottom:3vh;z-index:14;color:#000;cursor:pointer;background:#fff;border:none;border-radius:8px;column-gap:1rem;justify-content:center;align-items:center;padding:1.2vh 1.5vw;font-family:\'Joes Journey Body\',sans-serif;font-size:clamp(13px,1vw,18px);transition:background-color .2s;display:flex;}'+
       '#jj-back:hover{background:#FF00F5;color:#fff;}#jj-back:active{transform:scale(.96);}#jj-back svg{display:block;flex:none;stroke:currentColor;}'+
       '.jj-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:rgba(7,12,22,.55);z-index:30;opacity:0;}'+
       '.jj-menu-title{font-family:\'Mario\',\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(40px,6.5vw,104px);letter-spacing:2px;text-shadow:0 6px 0 rgba(0,0,0,.4);}'+
+      '.jj-paused-img{width:clamp(180px,24vw,300px);height:auto;display:block;margin-bottom:6px;filter:drop-shadow(0 0 16px rgba(255,0,245,.4));}'+   // the PAUSED graphic; overlay gap(24)+6 ≈ 30px above the menu box
       '.jj-menu-box{background:#E0E0DE;border:6px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #FBDD65,0 0 0 9px #2E2F31;padding:14px 32px 14px 14px;min-width:300px;}'+
       '.jj-menu-item{font-family:\'Joes Journey Headline\',sans-serif;color:#7a7a78;font-size:clamp(18px,2vw,30px);padding:7px 8px 7px 36px;position:relative;cursor:pointer;line-height:1.15;transition:color .12s ease;}'+
       '.jj-menu-item .tri{position:absolute;left:9px;top:50%;width:0;height:0;border-left:11px solid #FF2A2A;border-top:7px solid transparent;border-bottom:7px solid transparent;transform:translateY(-50%);opacity:0;}'+
@@ -761,10 +780,11 @@
     }
     stage.innerHTML =
       '<div id="jj-cr-bg"><div id="jj-cr-back"></div><div id="jj-cr-front"></div></div>'+
+      '<canvas id="jj-waves"></canvas>'+
       '<div id="jj-cr-roll"></div>'+
       '<div id="jj-gdragon"><div class="spr"></div></div>'+
       '<div id="jj-hud"><div id="jj-hud-card">'+
-        '<div id="jj-hud-title"><span class="jj-hud-name">Trogdor</span><span class="mars">♂</span></div>'+
+        '<div id="jj-hud-title"><span class="mars">♂</span><span class="jj-hud-name">Trogdor</span></div>'+
         '<div id="jj-hud-barrow"><span id="jj-hud-levlabel">LEVEL <span id="jj-hud-levn">1</span></span>'+
           '<div id="jj-hud-groove"><div id="jj-hud-fill"></div></div></div>'+
         '</div><div id="jj-score">SCORE : 0</div></div>'+
@@ -790,21 +810,11 @@
     ];
     var roll = document.getElementById('jj-cr-roll');
     roll.innerHTML = CREDITS.map(function(c){ return '<div class="jj-crd">'+(c.img?'<img src="'+GB+c.img+'">':'<div class="jj-crd-text">'+c.text+'</div>')+'</div>'; }).join('');
-    // Scrolling background: waves along the bottom (every 2.5 panels), moon floating across the top (every 3 panels)
-    var WAVE_SVG='<svg viewBox="0 0 1200 300" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'+
-      '<path d="M0,150 C200,110 400,182 600,142 C800,102 1000,176 1200,136 L1200,300 L0,300 Z" fill="#15264a" opacity=".72"/>'+
-      '<path d="M0,182 C220,142 360,206 600,170 C840,134 1010,202 1200,166 L1200,300 L0,300 Z" fill="#1f3a66" opacity=".88"/>'+
-      '<path d="M0,212 C180,180 420,236 640,200 C880,162 1040,230 1200,198 L1200,300 L0,300 Z" fill="#284a82"/>'+
-      '<path d="M0,212 C180,180 420,236 640,200 C880,162 1040,230 1200,198" fill="none" stroke="#cfe0ff" stroke-width="4" opacity=".5"/></svg>';
-    var MOON_SVG='<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="jjmg" cx="40%" cy="34%" r="72%">'+
-      '<stop offset="0%" stop-color="#eef1f6"/><stop offset="62%" stop-color="#c2c7d2"/><stop offset="100%" stop-color="#9aa0ad"/></radialGradient></defs>'+
-      '<circle cx="50" cy="50" r="40" fill="url(#jjmg)"/>'+
-      '<circle cx="38" cy="40" r="7" fill="#a7adba" opacity=".7"/><circle cx="63" cy="58" r="9" fill="#a7adba" opacity=".6"/>'+
-      '<circle cx="56" cy="33" r="4" fill="#a7adba" opacity=".6"/><circle cx="44" cy="65" r="5" fill="#a7adba" opacity=".55"/></svg>';
-    var span = CREDITS.length*100, deco='', wi=0, mi=0;
-    for(var wx=30; wx<span; wx+=250){ deco+='<div class="jj-wave'+(wi%2?' alt':'')+'" style="left:'+wx+'vw;animation-delay:'+(-wi*0.7)+'s">'+WAVE_SVG+'</div>'; wi++; }
-    for(var mx=185; mx<span; mx+=300){ deco+='<div class="jj-moon" style="left:'+mx+'vw;animation-delay:'+(-mi*1.4)+'s">'+MOON_SVG+'</div>'; mi++; }
+    // Decorations: the homepage Moon glides across the top every few panels (waves are the fixed Rive scene below).
+    var span = CREDITS.length*100, deco='', mi=0;
+    for(var mx=185; mx<span; mx+=300){ deco+='<div class="jj-moon" style="left:'+mx+'vw;animation-delay:'+(-mi*1.4)+'s"><img src="'+MOON_URL+'" alt=""></div>'; mi++; }
     roll.insertAdjacentHTML('beforeend', deco);
+    mountRiveWaves(document.getElementById('jj-waves'));                                          // homepage Waves.riv, fixed at the bottom
 
     var dragon = document.getElementById('jj-gdragon'), spr = dragon.querySelector('.spr');
     var fillEl = document.getElementById('jj-hud-fill'), scoreEl = document.getElementById('jj-score'), cap = document.getElementById('jj-gcap');
@@ -813,30 +823,32 @@
     var introBg = document.getElementById('jj-intro-bg');                                            // the swirl SVG — scroll it too (parallax)
     if(introBg){ introBg.style.width='330vw'; introBg.style.left='-35vw'; introBg.style.willChange='transform'; }
     function setLevelHUD(){ if(lvNumEl) lvNumEl.textContent = G.level; if(levNumEl) levNumEl.textContent = G.level; }
-    function paintScroll(){ roll.style.transform='translateX('+G.rollX+'vw)';                       // reel + swirl track the credits scroll; progress bar follows
+    var REEL_K=1.2;                                                                                  // credits reel scrolls 20% faster than the bg parallax → clearly not glued to it
+    function paintScroll(){ roll.style.transform='translateX('+(G.rollX*REEL_K)+'vw)';
       if(introBg) introBg.style.transform='translateX('+(G.rollX*0.15)+'vw)';                        // swirl drift (deepest layer)
-      if(progFill){ var p=(60-G.rollX)/(60+(G.rollW||1)); progFill.style.width=Math.max(0,Math.min(1,p))*100+'%'; } }
+      if(progFill){ var p=(60-G.rollX)/(60+((G.rollW||1)/REEL_K)); progFill.style.width=Math.max(0,Math.min(1,p))*100+'%'; } }
     // Reuse the homepage's "hi I'm Joe" Starry Board layers, parallaxed at the same back/front ratio
     // (0.3 / 0.6) — driven by the credits scroll (G.rollX) + a slow drift so the space keeps moving even
     // before gameplay starts. Each layer is a strip of the SVG with EVERY OTHER COPY MIRRORED (scaleX -1)
     // so adjacent tile edges match; the scroll wraps on a 2-tile period so the loop point is seamless too.
     var BG_BACK_SPEED=0.3, BG_FRONT_SPEED=0.6, bgT0=null;
-    function buildMirrorStrip(host, url){
+    function buildMirrorStrip(host, url, speed){
       var strip=document.createElement('div'); strip.className='jj-bg-strip'; host.appendChild(strip);
-      var st={strip:strip, tileW:0};
+      var st={strip:strip, tileW:0, speed:speed, phase:0};
       function addTile(){ var i=strip.children.length; var im=document.createElement('img'); im.className='jj-bg-tile'; im.alt=''; if(i%2) im.style.transform='scaleX(-1)'; im.src=url; strip.appendChild(im); }
       function fill(){ var f=strip.querySelector('img'); if(!f) return; var w=f.getBoundingClientRect().width; if(!w) return; st.tileW=w;
-        var need=Math.ceil(window.innerWidth/w)+4; while(strip.children.length<need) addTile(); }    // cover viewport + 2-tile wrap buffer
+        var need=Math.ceil(window.innerWidth/w)+2; while(strip.children.length<need) addTile();        // boards are ~11:1, so a tile is several viewports wide → 3 tiles is plenty
+        var period=2*w, pxInit=(60*st.speed)*window.innerWidth/100; st.phase=period/4 - pxInit; }      // start mid-tile so the opening never sits on a mirror seam
       addTile(); addTile();                                                                            // seed a normal + a mirrored copy
       var f=strip.querySelector('img');
       if(f.complete && f.naturalWidth) fill(); else f.addEventListener('load', fill);
       window.addEventListener('resize', fill);
       return st;
     }
-    var stripBack = bgBack ? buildMirrorStrip(bgBack, BG_BACK) : null;
-    var stripFront = bgFront ? buildMirrorStrip(bgFront, BG_FRONT) : null;
-    function moveStrip(st, vwOffset){ if(!st || !st.tileW) return;                                     // translate within one 2-tile period (mirror parity preserved → no jump at the wrap)
-      var px=vwOffset*window.innerWidth/100, period=2*st.tileW, off=((px%period)+period)%period;
+    var stripBack = bgBack ? buildMirrorStrip(bgBack, BG_BACK, BG_BACK_SPEED) : null;
+    var stripFront = bgFront ? buildMirrorStrip(bgFront, BG_FRONT, BG_FRONT_SPEED) : null;
+    function moveStrip(st, vwOffset){ if(!st || !st.tileW) return;                                     // translate within one 2-tile period (mirror parity preserved → seamless wrap)
+      var px=vwOffset*window.innerWidth/100 + st.phase, period=2*st.tileW, off=((px%period)+period)%period;
       st.strip.style.transform='translateX('+(off-period)+'px)'; }
     function bgScroll(t){
       if(!stage._game) return;                                                                         // stops when the scene is torn down (page reload)
@@ -890,7 +902,7 @@
     function openMenu(from){
       if(menuOpen)return; menuOpen=true; paused=true; pauseFrom=from||'play'; setGameMute(true);   // pausing with Space also mutes the music
       var ov=document.createElement('div'); ov.id='jj-pause'; ov.className='jj-overlay';
-      var t=document.createElement('div'); t.className='jj-menu-title'; t.textContent='PAUSED'; ov.appendChild(t);
+      var t=document.createElement('img'); t.className='jj-paused-img'; t.src=GB+'paused.svg'; t.alt='Paused'; ov.appendChild(t);   // the attached PAUSED graphic
       menuItems=pauseItems(); menuSel=0; menuBoxEl=buildMenuBox(menuItems,0); ov.appendChild(menuBoxEl);
       stage.appendChild(ov); gsap.fromTo(ov,{opacity:0},{opacity:1,duration:.22});
     }
@@ -926,7 +938,7 @@
       var sz = big ? 'clamp(72px,7vw,118px)' : 'clamp(56px,5.4vw,92px)';
       el.style.width=sz; el.style.height=sz; el.innerHTML='<img src="'+GB+name+'.svg">';
       var y=18+Math.random()*60; el.style.left='106%'; el.style.top=y+'%'; stage.appendChild(el);
-      G.items.push({ el:el, x:106, y:y, bad:bad, hit:false, band:band()+(big?2:0) });
+      G.items.push({ el:el, x:106, y:y, bad:bad, hit:false, band:band()+(big?2:0), spd:0.85+Math.random()*0.3, bobA:1.1+Math.random()*1.7, bobP:Math.random()*6.283, bobS:0.0009+Math.random()*0.0009 });   // varied speed + gentle float
       if(!bad && !G.said.good){ G.said.good=1; flash("Mmm…Tasty…Trogdor looks like he'd enjoy that..",1600); }
       if(bad && !G.said.warn){ G.said.warn=1; flash("Quick Tip! Trogdor hates things that glow red…",1700); }
     }
@@ -934,10 +946,10 @@
       it.hit=true; it.el.remove(); var idx=G.items.indexOf(it); if(idx>=0) G.items.splice(idx,1);
       if(it.bad){ G.score=Math.max(0,G.score-50); pop(-1); G.fill-=.34;
         if(G.fill<0){ if(G.level>1){ G.level--; G.fill+=1; setLevelHUD(); setDragon(); } else G.fill=0; }
-        flash('Eugh!', G.said.eugh?700:1100); G.said.eugh=1; gsap.fromTo(dragon,{filter:'brightness(2.1) saturate(.4)'},{filter:'none',duration:.4});
+        if(Math.random()<0.25) flash('Eugh!',900); gsap.fromTo(dragon,{filter:'brightness(2.1) saturate(.4)'},{filter:'none',duration:.4});   // only react now and then — every time is distracting
       } else { G.score+=50; pop(1); G.fill+=.2;
         if(G.fill>=1){ G.fill-=1; if(G.level<9){ G.level++; setLevelHUD(); setDragon(); levelUpFx(); flash("I'm getting…stronger!",1300); } else G.fill=1; }
-        flash('Yum!', G.said.yum?650:1000); G.said.yum=1;
+        if(Math.random()<0.22) flash('Yum!',900);   // only now and then
       }
       scoreEl.textContent='SCORE : '+G.score; fillEl.style.width=Math.max(0,Math.min(1,G.fill))*100+'%';
     }
@@ -947,16 +959,16 @@
       frame(t);                                                       // dragon keeps flapping even while paused
       if(paused){                                                     // pause menu open, or View-Scene mode
         G.lastSpawn=t;                                                 // keep spawn clock fresh so resume doesn't burst
-        if(viewMode){ G.rollX-=0.16*k; paintScroll(); if(-G.rollX>G.rollW){ G.rollX=60; } }
+        if(viewMode){ G.rollX-=0.16*k; paintScroll(); if(-G.rollX*REEL_K>G.rollW){ G.rollX=60; } }
         dragon.style.top=(G.dy+Math.sin(t/520)*1.4)+'%'; G.raf=requestAnimationFrame(loop); return;
       }
       G.dy += (G.ty-G.dy)*Math.min(1,.22*k); dragon.style.top=(G.dy+Math.sin(t/520)*1.4)+'%';
-      if(t-G.lastSpawn > Math.max(560,1150-(G.level-1)*85)){ G.lastSpawn=t; spawnItem(); }
+      if(t-G.lastSpawn > Math.max(560,1150-(G.level-1)*85)*1.25){ G.lastSpawn=t; spawnItem(); }     // ~20% fewer items (longer gap between spawns)
       var sp=.30+(G.level-1)*.045;
-      for(var i=G.items.length-1;i>=0;i--){ var it=G.items[i]; it.x-=sp*k; it.el.style.left=it.x+'%'; it.el.style.top=it.y+'%';
+      for(var i=G.items.length-1;i>=0;i--){ var it=G.items[i]; it.x-=sp*(it.spd||1)*k; it.el.style.left=it.x+'%'; it.el.style.top=(it.y+Math.sin(t*it.bobS+it.bobP)*it.bobA)+'%';
         if(!it.hit && it.x<=18 && it.x>=10 && Math.abs(it.y-G.dy)<it.band){ hit(it); continue; }
         if(it.x<-8){ it.el.remove(); G.items.splice(i,1); } }
-      if(!rollDone){ G.rollX-=sp*.31*k; paintScroll(); if(-G.rollX>G.rollW){ rollDone=true; endGame(); } }
+      if(!rollDone){ G.rollX-=sp*.31*k; paintScroll(); if(-G.rollX*REEL_K>G.rollW){ rollDone=true; endGame(); } }
       G.raf=requestAnimationFrame(loop);
     }
     function startPlay(){ G.run=true; stage.classList.add('playing'); G.lastT=0; G.lastSpawn=0;

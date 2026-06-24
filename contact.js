@@ -615,19 +615,42 @@
     if (s.fade && s.volume) { try { s.fade(s.volume(), 0, ms); } catch (e) {} setTimeout(function () { try { s.stop(); } catch (e) {} }, ms + 80); }
     else if (s.volume !== undefined) { var v0 = s.volume, t0 = performance.now(); var iv = setInterval(function () { var p = Math.min(1, (performance.now() - t0) / ms); try { s.volume = v0 * (1 - p); } catch (e) {} if (p >= 1) { clearInterval(iv); try { s.pause(); } catch (e) {} } }, 60); }
   }
+  var GAME_VOL = 0.5;                                                                            // game music at 50% (user spec)
+  var gameMusic = null, gameMusicMuted = false, gameMusicIdx = 0;
+  function applyGameVol(){ if (!gameMusic) return; var v = gameMusicMuted ? 0 : GAME_VOL;
+    try { if (typeof gameMusic.volume === 'function') gameMusic.volume(v); else gameMusic.volume = v; } catch (e) {} }
+  function setGameMute(m){ gameMusicMuted = m; applyGameVol(); }                                // Space (pause) also mutes; resume restores
   function playTrack(url, onEnd){
-    if (window.Howl) { var h = new window.Howl({ src:[url], format:['mp3'], html5:true, volume:0.14 }); try { if (window.jjAudio && window.jjAudio.sounds) window.jjAudio.sounds.push(h); } catch (e) {} if (onEnd) h.once('end', onEnd); h.play(); return h; }
-    var a = new Audio(url); a.volume = 0.14; if (onEnd) a.addEventListener('ended', onEnd); a.play().catch(function () {}); return a;
+    var v = gameMusicMuted ? 0 : GAME_VOL;
+    if (window.Howl) { var h = new window.Howl({ src:[url], format:['mp3'], html5:true, loop:false, volume:v }); try { if (window.jjAudio && window.jjAudio.sounds) window.jjAudio.sounds.push(h); } catch (e) {} if (onEnd) h.once('end', onEnd); h.play(); return h; }
+    var a = new Audio(url); a.volume = v; if (onEnd) a.addEventListener('ended', onEnd); a.play().catch(function () {}); return a;
   }
-  function startCreditsMusic(){
-    fadeOutSong(5000);                                                                          // fade the contact song over 5s
-    setTimeout(function () { playTrack(GM1, function () { setTimeout(function () { playTrack(GM2); }, 2500); }); }, 7000);   // wait (5s fade + ~2s), play track 1, then track 2 a few seconds after it ends
+  function nextGameTrack(){                                                                      // GM1 → GM2 → GM1 … endless loop of the pair
+    if (gameMusic) { try { if (gameMusic.stop) gameMusic.stop(); else if (gameMusic.pause) gameMusic.pause(); } catch (e) {} }
+    var tracks = [GM1, GM2], url = tracks[gameMusicIdx % tracks.length]; gameMusicIdx++;
+    gameMusic = playTrack(url, nextGameTrack);                                                   // when a track ends, roll into the next
+  }
+  function startCreditsMusic(immediate){
+    fadeOutSong(immediate ? 1200 : 5000);                                                        // fade the contact song (no-op if it never started)
+    setTimeout(nextGameTrack, immediate ? 700 : 7000);                                           // normal: wait for the 5s fade; direct (?credits=1): start almost right away
   }
   function launchCredits(){
     if (creditsRunning || !window.gsap) return;
     creditsRunning = true; creditsArmed = false;
     startCreditsMusic();
     runCreditsSequence();
+  }
+  /* Deep-link entry (?credits=1): there's no contact scene to transition out of, so skip the opening
+     choreography entirely and drop straight into the credits/game with a quick fade. */
+  function runCreditsDirect(){
+    if (creditsRunning || !window.gsap) return;
+    creditsRunning = true; creditsArmed = false;
+    gsap.set('#jj-intro', { '--wp':'100%' });                                  // open the opening Star-Wars wipe panel (else it covers the screen black)
+    gsap.set('#jj-intro-bg', { opacity:1, scale:1 });                          // show the space backdrop
+    gsap.set(['#jj-stars','#jj-wipe','#jj-wipe-line'], { opacity:0 });
+    startCreditsMusic(true);                                                   // game music right away (no contact song to fade out)
+    setupCredits();
+    gsap.fromTo('#jj-credits', { opacity:0 }, { opacity:1, duration:0.6, ease:'power1.out' });
   }
   function runCreditsSequence(){
     var dragon = document.getElementById('jj-rest-dragon'), wiz = document.getElementById('jj-philosopher');
@@ -669,9 +692,12 @@
   /* ===== "Trogdor" — the credits catch-game (revealed by the downward wipe) ===== */
   var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';                 // game assets live at the repo root (uploaded flat, not in a /game/ folder)
   var GSPRITE = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-sprite.png';
+  // Homepage "hi I'm Joe" horizontal-scroll background art — reused so the credits scroll matches it.
+  var BG_BACK  = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0c90afafa53a631f4ff3ac_Starry%20Board%20-%20Background.svg';
+  var BG_FRONT = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0c964e79a06e8151f7f16b_Starry%20Board%20-%20Foreground2.svg';
   function setupCredits(){
     var stage = document.getElementById('jj-credits'); if (!stage || stage._game) return; stage._game = true;
-    ['jj-contacts','jj-caption','jj-spacebar','jj-dark','jj-story','jj-toast'].forEach(function(id){ var el = document.getElementById(id); if (el) el.style.display = 'none'; });
+    ['jj-contacts','jj-caption','jj-spacebar','jj-dark','jj-story','jj-toast','jj-stage','jj-dragon'].forEach(function(id){ var el = document.getElementById(id); if (el) el.style.display = 'none'; });
     if (!document.getElementById('jj-game-css')) {
       var st = document.createElement('style'); st.id = 'jj-game-css';
       st.textContent =
@@ -696,20 +722,19 @@
       '.jj-item.bad img{filter:drop-shadow(0 0 11px rgba(255,55,55,.75));}'+
       '.jj-item.good img{filter:drop-shadow(0 0 9px rgba(130,175,255,.55));}'+
       '@font-face{font-family:\'Mario\';src:url(\''+GB+'mario.ttf\') format(\'truetype\');font-display:swap;}'+
-      '#jj-hud{position:absolute;left:50%;top:3vh;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:10;opacity:0;}'+
+      '#jj-hud{position:absolute;left:50%;top:3vh;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:15px;z-index:10;opacity:0;}'+
       '#jj-hud-card{position:relative;width:min(23vw,300px);background:#E0E0DE;border:3px solid #9b9b99;border-radius:6px;box-shadow:0 0 0 4px #4B4B4B;padding:8px 11px 9px;display:flex;flex-direction:column;gap:6px;}'+
-      '#jj-hud-title{font-family:\'Joes Journey Headline\',sans-serif;color:#4A4A48;font-size:clamp(14px,1.65vw,25px);line-height:1;display:flex;align-items:center;justify-content:center;gap:.34em;white-space:nowrap;}'+
+      '#jj-hud-title{font-family:\'Joes Journey Headline\',sans-serif;color:#4A4A48;font-size:clamp(14px,1.65vw,25px);line-height:1;display:flex;align-items:center;justify-content:center;gap:.2em;white-space:nowrap;}'+
       '#jj-hud-title .mars{color:#3aa6ea;font-weight:700;}'+
       '#jj-hud-barrow{display:flex;align-items:center;gap:7px;background:#B7B7B7;border-radius:3px;padding:3px 6px;}'+
-      '#jj-hud-levlabel{font-family:\'Joes Journey Headline\',sans-serif;color:#E59A00;font-size:clamp(9px,.98vw,15px);letter-spacing:.4px;white-space:nowrap;}'+
+      '#jj-hud-levlabel{font-family:\'Joes Journey Headline\',sans-serif;color:#FFB21E;font-size:clamp(9px,.98vw,15px);letter-spacing:.4px;white-space:nowrap;text-shadow:-1px -1px 0 rgba(0,0,0,.6),1px -1px 0 rgba(0,0,0,.6),-1px 1px 0 rgba(0,0,0,.6),1px 1px 0 rgba(0,0,0,.6);}'+
       '#jj-hud-groove{position:relative;flex:1;height:clamp(9px,1vw,15px);background:#F5F5F5;border-radius:2px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.22);}'+
       '#jj-hud-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(#2bd636,#15c022);border-radius:2px;transition:width .25s ease;}'+
-      '#jj-score{font-family:\'Mario\',\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(20px,2.3vw,36px);letter-spacing:1px;text-shadow:0 3px 0 rgba(0,0,0,.45);}'+
-      '#jj-cr-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}'+   // scrolling space background (parallax)
-      '#jj-cr-neb,#jj-cr-stars,#jj-cr-stars2{position:absolute;top:-5%;left:-5%;width:110%;height:110%;background-repeat:repeat;will-change:background-position;}'+
-      '#jj-cr-neb{background-image:radial-gradient(closest-side at 20% 35%,rgba(90,110,210,.40),transparent),radial-gradient(closest-side at 68% 60%,rgba(140,80,200,.36),transparent),radial-gradient(closest-side at 88% 28%,rgba(60,120,195,.32),transparent),radial-gradient(closest-side at 42% 82%,rgba(120,70,185,.34),transparent),radial-gradient(closest-side at 8% 72%,rgba(70,100,205,.3),transparent);background-size:1000px 720px;}'+
-      '#jj-cr-stars{background-image:radial-gradient(1.5px 1.5px at 30px 40px,rgba(255,255,255,.55),transparent),radial-gradient(1.5px 1.5px at 130px 150px,rgba(255,255,255,.4),transparent),radial-gradient(2px 2px at 210px 80px,rgba(205,225,255,.5),transparent),radial-gradient(1px 1px at 280px 205px,rgba(255,255,255,.4),transparent);background-size:300px 260px;}'+
-      '#jj-cr-stars2{background-image:radial-gradient(2.5px 2.5px at 80px 120px,rgba(210,230,255,.6),transparent),radial-gradient(1.5px 1.5px at 250px 60px,rgba(255,255,255,.5),transparent),radial-gradient(2px 2px at 380px 230px,rgba(255,255,255,.45),transparent);background-size:480px 380px;}'+
+      '#jj-score{font-family:\'Mario\',\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(20px,2.3vw,36px);letter-spacing:1px;-webkit-text-stroke:2px #2E2F31;paint-order:stroke fill;text-shadow:0 3px 0 rgba(0,0,0,.5);}'+
+      '#jj-cr-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}'+   // homepage Starry Board layers, scrolled horizontally (parallax)
+      '#jj-cr-back,#jj-cr-front{position:absolute;inset:0;overflow:hidden;will-change:transform;}'+
+      '.jj-bg-strip{position:absolute;top:0;bottom:0;left:0;display:flex;align-items:stretch;will-change:transform;}'+
+      '.jj-bg-tile{height:100%;width:auto;max-width:none;display:block;flex:none;}'+   // every other tile mirrored in JS (scaleX -1) → seamless edges
       '#jj-cr-progress{position:absolute;left:0;bottom:0;width:100%;height:4px;z-index:14;opacity:0;pointer-events:none;}'+   // pink scroll-progress bar — matches the homepage #jj-progress
       '#jj-cr-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#FF00F5,#ff7df4);box-shadow:0 0 12px rgba(255,0,245,0.7);transition:width .12s linear;}'+
       '#jj-gtitle{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:min(82vw,1050px);text-align:center;font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(30px,4.2vw,66px);line-height:1.1;opacity:0;z-index:13;pointer-events:none;}'+
@@ -717,7 +742,7 @@
       '.jj-pop img{width:clamp(46px,4vw,70px);display:block;}'+
       '#jj-gcap{position:absolute;left:50%;bottom:7vh;transform:translateX(-50%) scale(.96);min-width:280px;max-width:60vw;background:#E0E0DE;border:6px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #FBDD65,0 0 0 9px #2E2F31;padding:13px 24px;font-family:\'Joes Journey Headline\',sans-serif;font-size:clamp(15px,1.55vw,23px);color:#4A4A48;opacity:0;z-index:13;white-space:pre-line;transition:opacity .22s ease,transform .22s ease;}'+
       '#jj-gcap.show{opacity:1;transform:translateX(-50%) scale(1);}'+
-      '#jj-keys{position:absolute;left:50%;transform:translateX(-50%);bottom:13vh;display:flex;flex-direction:row;gap:clamp(22px,4vw,60px);align-items:center;z-index:10;opacity:0;}'+   // centered, generous spacing
+      '#jj-keys{position:absolute;left:50%;transform:translateX(-50%);bottom:22vh;display:flex;flex-direction:row;gap:clamp(34px,5.5vw,82px);align-items:center;z-index:10;opacity:0;}'+   // raised higher + wider gap between the up/down keys
       '#jj-keys img{width:clamp(46px,4.2vw,68px);display:block;cursor:pointer;}'+
       '#jj-back{position:absolute;left:3vw;bottom:3vh;z-index:14;color:#000;cursor:pointer;background:#fff;border:none;border-radius:8px;column-gap:1rem;justify-content:center;align-items:center;padding:1.2vh 1.5vw;font-family:\'Joes Journey Body\',sans-serif;font-size:clamp(13px,1vw,18px);transition:background-color .2s;display:flex;}'+
       '#jj-back:hover{background:#FF00F5;color:#fff;}#jj-back:active{transform:scale(.96);}#jj-back svg{display:block;flex:none;stroke:currentColor;}'+
@@ -735,11 +760,11 @@
       document.head.appendChild(st);
     }
     stage.innerHTML =
-      '<div id="jj-cr-bg"><div id="jj-cr-neb"></div><div id="jj-cr-stars"></div><div id="jj-cr-stars2"></div></div>'+
+      '<div id="jj-cr-bg"><div id="jj-cr-back"></div><div id="jj-cr-front"></div></div>'+
       '<div id="jj-cr-roll"></div>'+
       '<div id="jj-gdragon"><div class="spr"></div></div>'+
       '<div id="jj-hud"><div id="jj-hud-card">'+
-        '<div id="jj-hud-title">Trogdor <span class="mars">♂</span> Lv.<span id="jj-hud-lv">1</span></div>'+
+        '<div id="jj-hud-title"><span class="jj-hud-name">Trogdor</span><span class="mars">♂</span></div>'+
         '<div id="jj-hud-barrow"><span id="jj-hud-levlabel">LEVEL <span id="jj-hud-levn">1</span></span>'+
           '<div id="jj-hud-groove"><div id="jj-hud-fill"></div></div></div>'+
         '</div><div id="jj-score">SCORE : 0</div></div>'+
@@ -784,16 +809,43 @@
     var dragon = document.getElementById('jj-gdragon'), spr = dragon.querySelector('.spr');
     var fillEl = document.getElementById('jj-hud-fill'), scoreEl = document.getElementById('jj-score'), cap = document.getElementById('jj-gcap');
     var lvNumEl = document.getElementById('jj-hud-lv'), levNumEl = document.getElementById('jj-hud-levn');
-    var bgNeb = document.getElementById('jj-cr-neb'), bgStars = document.getElementById('jj-cr-stars'), bgStars2 = document.getElementById('jj-cr-stars2'), progFill = document.getElementById('jj-cr-progress-fill');
+    var bgBack = document.getElementById('jj-cr-back'), bgFront = document.getElementById('jj-cr-front'), progFill = document.getElementById('jj-cr-progress-fill');
     var introBg = document.getElementById('jj-intro-bg');                                            // the swirl SVG — scroll it too (parallax)
     if(introBg){ introBg.style.width='330vw'; introBg.style.left='-35vw'; introBg.style.willChange='transform'; }
     function setLevelHUD(){ if(lvNumEl) lvNumEl.textContent = G.level; if(levNumEl) levNumEl.textContent = G.level; }
-    function paintScroll(){ roll.style.transform='translateX('+G.rollX+'vw)';                       // keep bg + progress in sync with the credits scroll
+    function paintScroll(){ roll.style.transform='translateX('+G.rollX+'vw)';                       // reel + swirl track the credits scroll; progress bar follows
       if(introBg) introBg.style.transform='translateX('+(G.rollX*0.15)+'vw)';                        // swirl drift (deepest layer)
-      if(bgNeb) bgNeb.style.backgroundPositionX=(G.rollX*3)+'px';
-      if(bgStars) bgStars.style.backgroundPositionX=(G.rollX*6)+'px';
-      if(bgStars2) bgStars2.style.backgroundPositionX=(G.rollX*9)+'px';
       if(progFill){ var p=(60-G.rollX)/(60+(G.rollW||1)); progFill.style.width=Math.max(0,Math.min(1,p))*100+'%'; } }
+    // Reuse the homepage's "hi I'm Joe" Starry Board layers, parallaxed at the same back/front ratio
+    // (0.3 / 0.6) — driven by the credits scroll (G.rollX) + a slow drift so the space keeps moving even
+    // before gameplay starts. Each layer is a strip of the SVG with EVERY OTHER COPY MIRRORED (scaleX -1)
+    // so adjacent tile edges match; the scroll wraps on a 2-tile period so the loop point is seamless too.
+    var BG_BACK_SPEED=0.3, BG_FRONT_SPEED=0.6, bgT0=null;
+    function buildMirrorStrip(host, url){
+      var strip=document.createElement('div'); strip.className='jj-bg-strip'; host.appendChild(strip);
+      var st={strip:strip, tileW:0};
+      function addTile(){ var i=strip.children.length; var im=document.createElement('img'); im.className='jj-bg-tile'; im.alt=''; if(i%2) im.style.transform='scaleX(-1)'; im.src=url; strip.appendChild(im); }
+      function fill(){ var f=strip.querySelector('img'); if(!f) return; var w=f.getBoundingClientRect().width; if(!w) return; st.tileW=w;
+        var need=Math.ceil(window.innerWidth/w)+4; while(strip.children.length<need) addTile(); }    // cover viewport + 2-tile wrap buffer
+      addTile(); addTile();                                                                            // seed a normal + a mirrored copy
+      var f=strip.querySelector('img');
+      if(f.complete && f.naturalWidth) fill(); else f.addEventListener('load', fill);
+      window.addEventListener('resize', fill);
+      return st;
+    }
+    var stripBack = bgBack ? buildMirrorStrip(bgBack, BG_BACK) : null;
+    var stripFront = bgFront ? buildMirrorStrip(bgFront, BG_FRONT) : null;
+    function moveStrip(st, vwOffset){ if(!st || !st.tileW) return;                                     // translate within one 2-tile period (mirror parity preserved → no jump at the wrap)
+      var px=vwOffset*window.innerWidth/100, period=2*st.tileW, off=((px%period)+period)%period;
+      st.strip.style.transform='translateX('+(off-period)+'px)'; }
+    function bgScroll(t){
+      if(!stage._game) return;                                                                         // stops when the scene is torn down (page reload)
+      if(bgT0==null) bgT0=t; var e=(t-bgT0)/1000;
+      moveStrip(stripBack,  G.rollX*BG_BACK_SPEED  - e*1.1);                                            // far board — slow parallax
+      moveStrip(stripFront, G.rollX*BG_FRONT_SPEED - e*2.2);                                            // near board — faster parallax
+      requestAnimationFrame(bgScroll);
+    }
+    requestAnimationFrame(bgScroll);
     var GOOD = ['good-claude','good-gpt','good-perplexity','good-css','good-js','good-gsap','good-figma','good-miro','good-rive','good-jitter','good-procreate','good-music','good-coding','good-typography','good-voicework','good-webflow','good-logo','good-alien1','good-alien2','good-alien3'];
     var BAD = ['bad-alien1','bad-alien2','bad-spiky','bad-rocks','bad-junk','bad-blackhole'], BADLG = ['bad-alien1-lg','bad-alien2-lg','bad-spiky-lg'];
     var G = { run:false, score:0, level:1, fill:0, dy:50, ty:50, items:[], rollX:60, rollW:0, lastT:0, lastSpawn:0, f:0, fLast:0, said:{} };
@@ -836,13 +888,13 @@
     function pauseItems(){ return [ {label:'Continue',fn:resume}, {label:'Restart',fn:restartGame}, {label:'Back to Contact',fn:backToContact}, {label:'View Scene',fn:enterView}, {label:'Main Menu',fn:openMainMenu} ]; }
     function endItems(){ return [ {label:'Restart',fn:restartGame}, {label:'Back to Contact',fn:backToContact}, {label:'View Scene',fn:enterView}, {label:'Main Menu',fn:openMainMenu} ]; }
     function openMenu(from){
-      if(menuOpen)return; menuOpen=true; paused=true; pauseFrom=from||'play';
+      if(menuOpen)return; menuOpen=true; paused=true; pauseFrom=from||'play'; setGameMute(true);   // pausing with Space also mutes the music
       var ov=document.createElement('div'); ov.id='jj-pause'; ov.className='jj-overlay';
       var t=document.createElement('div'); t.className='jj-menu-title'; t.textContent='PAUSED'; ov.appendChild(t);
       menuItems=pauseItems(); menuSel=0; menuBoxEl=buildMenuBox(menuItems,0); ov.appendChild(menuBoxEl);
       stage.appendChild(ov); gsap.fromTo(ov,{opacity:0},{opacity:1,duration:.22});
     }
-    function closeMenu(){ ['jj-pause','jj-end'].forEach(function(id){ var o=document.getElementById(id); if(o)o.remove(); }); menuOpen=false; menuItems=null; menuBoxEl=null; }
+    function closeMenu(){ ['jj-pause','jj-end'].forEach(function(id){ var o=document.getElementById(id); if(o)o.remove(); }); menuOpen=false; menuItems=null; menuBoxEl=null; setGameMute(false); }   // un-mute on resume/restart/view
     function resume(){ closeMenu(); if(pauseFrom==='view'){ paused=true; viewMode=true; showCap("Press 'Space' to open the menu…",0); } else { paused=false; viewMode=false; cap.classList.remove('show'); G.lastT=0; } }
     function restartGame(){ closeMenu();
       document.querySelectorAll('#jj-credits .jj-item').forEach(function(el){el.remove();}); G.items=[];
@@ -851,7 +903,7 @@
       paintScroll(); cap.classList.remove('show');
       gsap.to(['#jj-hud','#jj-keys','#jj-cr-progress'],{opacity:1,duration:.3}); if(backEl) gsap.to(backEl,{opacity:1,duration:.3});   // restore gameplay UI (may have been hidden by the end screen)
       paused=false; viewMode=false; if(!G.run){ G.run=true; G.lastT=0; G.lastSpawn=0; G.raf=requestAnimationFrame(loop); } else { G.lastT=0; } }
-    function backToContact(){ location.reload(); }
+    function backToContact(){ location.href = location.pathname; }   // drop ?credits=1 so Back returns to the normal contact scene (not straight back into the game)
     function openMainMenu(){ var m=document.querySelector('.menu-container, .menu-button, .menu-links-wrap'); closeMenu(); if(m) m.click(); }
     function enterView(){ closeMenu(); paused=true; viewMode=true; pauseFrom='view'; showCap("Press 'Space' to open the menu…",0); if(!G.run){ G.run=true; G.lastT=0; G.raf=requestAnimationFrame(loop); } }
 
@@ -977,7 +1029,6 @@
 
   function init(){
     lockScroll();
-    startSong();
     // hide the site nav (J logo + Menu) during the opening, fade it in a few seconds later
     try {
       var nav = document.querySelectorAll('.nav-logo-link, .nav-logo, .menu-container');
@@ -987,6 +1038,8 @@
     // find your Webflow "Back to Contact" button and keep it hidden until the game (retry: it may render late)
     hideWfBack(); setTimeout(hideWfBack, 800); setTimeout(hideWfBack, 2000);
     wireMenuLinks(); setTimeout(wireMenuLinks, 1200); setTimeout(wireMenuLinks, 3000);   // menu may render lazily; re-wire a couple times
+    if (wantCredits) { runCreditsDirect(); return; }                         // arrived via a Credits link (?credits=1) → skip the whole opening, go straight to the credits sequence
+    startSong();
     window.addEventListener('keydown', function (e) {                         // Spacebar launches credits (once the scene is up)
       if ((e.code === 'Space' || e.keyCode === 32) && creditsArmed) { e.preventDefault(); launchCredits(); }
     });
@@ -1083,8 +1136,8 @@
     //      and very slowly orbit a shared ellipse (never overlapping) ----
     tl.call(function () { buildContacts(); }, null, lastT + 6.2);
     tl.to('#jj-contacts', { opacity:1, duration:1.4, ease:'power1.out',
-      onComplete:function () { var el = document.getElementById('jj-contacts'); if (el) el.classList.add('on'); startContactOrbit(); creditsArmed = true;
-        if (wantCredits) setTimeout(function () { if (creditsArmed && !creditsRunning) launchCredits(); }, 900); } }, lastT + 7.2);   // arrived from the Credits menu item → auto-launch
+      onComplete:function () { var el = document.getElementById('jj-contacts'); if (el) el.classList.add('on'); startContactOrbit(); creditsArmed = true; } }, lastT + 7.2);
+      // (?credits=1 no longer waits for the whole opening — it's handled up front in init() via runCreditsDirect)
 
     // ---- wizard captions: start 2s after the contacts have entered ----
     tl.call(function () { runCaptions(); }, null, lastT + 10.6);

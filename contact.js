@@ -707,7 +707,7 @@
       try {
         var r = new window.rive.Rive({ src:WAVES_RIV, canvas:canvas, autoplay:true,
           stateMachines:'State Machine 1',
-          layout:new window.rive.Layout({ fit:window.rive.Fit.Fill, alignment:window.rive.Alignment.BottomCenter }),
+          layout:new window.rive.Layout({ fit:window.rive.Fit.FitWidth, alignment:window.rive.Alignment.BottomCenter }),   // FitWidth = full width, true aspect (no squish); BottomCenter pins the waterline to the bottom
           onLoad:function(){ try{ r.resizeDrawingSurfaceToCanvas(); }catch(e){} } });
         canvas._riveInst = r;
         window.addEventListener('resize', function(){ try{ r.resizeDrawingSurfaceToCanvas(); }catch(e){} });
@@ -728,7 +728,7 @@
       '.jj-crd img{width:min(44vw,760px);height:auto;display:block;}'+
       '.jj-crd-text{font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(30px,3.4vw,56px);line-height:1.12;white-space:nowrap;text-align:center;}'+
       '.jj-crd-text small{display:block;font-size:.6em;color:#cfe0ff;margin-bottom:.18em;}'+
-      '#jj-waves{position:absolute;left:0;right:0;bottom:0;width:100%;height:7.5vh;z-index:1;pointer-events:none;}'+   // homepage Rive waves, fixed at the bottom, 50% shorter than the old SVG waves (15vh→7.5vh)
+      '#jj-waves{position:absolute;left:0;right:0;bottom:0;width:100%;height:14vh;z-index:1;pointer-events:none;overflow:hidden;}'+   // homepage Rive waves, fixed at the bottom; FitWidth keeps the wave proportions, the short box shows just the bottom band
       '#jj-waves canvas{width:100%!important;height:100%!important;display:block;}'+
       '.jj-moon{position:absolute;top:5vh;width:clamp(46px,5vw,90px);height:auto;z-index:0;pointer-events:none;animation:jj-glow-m 4.6s ease-in-out infinite;}'+   // homepage moon, glowing, ~50% smaller, floats across the top
       '.jj-moon img{width:100%;height:auto;display:block;}'+

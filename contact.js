@@ -606,7 +606,8 @@
     } catch (e) {}
     return null;
   }
-  function hideWfBack(){ var b = findWfBack(); if (b) { b.style.setProperty('opacity', '0', 'important'); b.style.setProperty('pointer-events', 'none', 'important'); b.style.transition = 'opacity .6s ease'; } }
+  function hideWfBack(){ if (creditsRunning) return;                                            // once credits start, setupCredits owns this button — don't let the load-time retries re-hide it
+    var b = findWfBack(); if (b) { b.style.setProperty('opacity', '0', 'important'); b.style.setProperty('pointer-events', 'none', 'important'); b.style.transition = 'opacity .6s ease'; } }
   // ---- music: fade the contact song out over 5s, then roll the two 8-bit tracks ----
   var GM1 = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/game-music-1.mp3';   // 8-bit Console From My Childhood
   var GM2 = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/game-music-2.mp3';   // The World of 8-bit Games
@@ -728,7 +729,7 @@
       '.jj-crd img{width:min(44vw,760px);height:auto;display:block;}'+
       '.jj-crd-text{font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(30px,3.4vw,56px);line-height:1.12;white-space:nowrap;text-align:center;}'+
       '.jj-crd-text small{display:block;font-size:.6em;color:#cfe0ff;margin-bottom:.18em;}'+
-      '#jj-waves{position:absolute;left:0;right:0;bottom:0;width:100%;height:14vh;z-index:1;pointer-events:none;overflow:hidden;}'+   // homepage Rive waves, fixed at the bottom; FitWidth keeps the wave proportions, the short box shows just the bottom band
+      '#jj-waves{position:absolute;left:0;right:0;bottom:0;width:100%;height:22vh;z-index:1;pointer-events:none;overflow:hidden;}'+   // tall enough to contain the full wave crests (FitWidth makes them full-width/true-aspect); raise/lower this to taste
       '#jj-waves canvas{width:100%!important;height:100%!important;display:block;}'+
       '.jj-moon{position:absolute;top:5vh;width:clamp(46px,5vw,90px);height:auto;z-index:0;pointer-events:none;animation:jj-glow-m 4.6s ease-in-out infinite;}'+   // homepage moon, glowing, ~50% smaller, floats across the top
       '.jj-moon img{width:100%;height:auto;display:block;}'+
@@ -742,8 +743,9 @@
       '@font-face{font-family:\'Mario\';src:url(\''+GB+'mario.ttf\') format(\'truetype\');font-display:swap;}'+
       '#jj-hud{position:absolute;left:50%;top:3vh;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:24px;z-index:10;opacity:0;}'+   // ~20px gap below the card (its 4px outer ring eats some)
       '#jj-hud-card{position:relative;width:min(23vw,300px);background:#E0E0DE;border:3px solid #9b9b99;border-radius:6px;box-shadow:0 0 0 4px #4B4B4B;padding:8px 11px 9px;display:flex;flex-direction:column;gap:6px;}'+
-      '#jj-hud-title{font-family:\'Joes Journey Headline\',sans-serif;color:#4A4A48;font-size:clamp(14px,1.65vw,25px);line-height:1;display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;}'+   // 10px between the ♂ and the name
-      '#jj-hud-title .mars{color:#3aa6ea;font-weight:700;}'+
+      '#jj-hud-title{font-family:\'Joes Journey Headline\',sans-serif;color:#4A4A48;font-size:clamp(14px,1.65vw,25px);line-height:1;display:flex;align-items:center;justify-content:center;white-space:nowrap;}'+
+      '#jj-hud-title .jj-hud-name{display:inline-flex;align-items:center;}'+                          // icon + name are one centered unit so they can never drift apart
+      '#jj-hud-title .mars{color:#3aa6ea;font-weight:700;margin-right:10px;display:inline-flex;align-items:center;line-height:1;}'+   // ♂ sits exactly 10px to the left of the name, vertically aligned
       '#jj-hud-barrow{display:flex;align-items:center;gap:7px;background:#B7B7B7;border-radius:3px;padding:3px 6px;}'+
       '#jj-hud-levlabel{font-family:\'Joes Journey Headline\',sans-serif;color:#FFB21E;font-size:clamp(9px,.98vw,15px);letter-spacing:.4px;white-space:nowrap;text-shadow:-1px -1px 0 rgba(0,0,0,.6),1px -1px 0 rgba(0,0,0,.6),-1px 1px 0 rgba(0,0,0,.6),1px 1px 0 rgba(0,0,0,.6);}'+
       '#jj-hud-groove{position:relative;flex:1;height:clamp(9px,1vw,15px);background:#F5F5F5;border-radius:2px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.22);}'+
@@ -771,7 +773,8 @@
       '.jj-menu-item{font-family:\'Joes Journey Headline\',sans-serif;color:#7a7a78;font-size:clamp(18px,2vw,30px);padding:7px 8px 7px 36px;position:relative;cursor:pointer;line-height:1.15;transition:color .12s ease;}'+
       '.jj-menu-item .tri{position:absolute;left:9px;top:50%;width:0;height:0;border-left:11px solid #FF2A2A;border-top:7px solid transparent;border-bottom:7px solid transparent;transform:translateY(-50%);opacity:0;}'+
       '.jj-menu-item.sel{color:#2E2F31;}.jj-menu-item.sel .tri{opacity:1;}'+
-      '#jj-end .jj-e-col{display:flex;flex-direction:column;align-items:center;gap:20px;}'+
+      '#jj-end .jj-e-col{display:flex;flex-direction:column;align-items:center;gap:24px;}'+   // space between the title block, menu, and level badge
+      '#jj-end .jj-e-head{display:flex;flex-direction:column;align-items:center;gap:6px;}'+   // title + subtitle are a tight pair (per design)
       '#jj-end .jj-e-title{font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(34px,5.5vw,82px);margin:0;text-align:center;line-height:1.05;}'+
       '#jj-end .jj-e-sub{font-family:\'Joes Journey Headline\',sans-serif;color:rgba(255,255,255,.82);font-size:clamp(15px,1.7vw,24px);margin:0;text-align:center;}'+
       '#jj-end .jj-e-lvl{display:flex;flex-direction:column;align-items:center;gap:8px;font-family:\'Mario\',sans-serif;color:#fff;font-size:clamp(15px,1.7vw,24px);letter-spacing:2px;}'+
@@ -784,7 +787,7 @@
       '<div id="jj-cr-roll"></div>'+
       '<div id="jj-gdragon"><div class="spr"></div></div>'+
       '<div id="jj-hud"><div id="jj-hud-card">'+
-        '<div id="jj-hud-title"><span class="mars">♂</span><span class="jj-hud-name">Trogdor</span></div>'+
+        '<div id="jj-hud-title"><span class="jj-hud-name"><span class="mars">♂</span>Trogdor</span></div>'+
         '<div id="jj-hud-barrow"><span id="jj-hud-levlabel">LEVEL <span id="jj-hud-levn">1</span></span>'+
           '<div id="jj-hud-groove"><div id="jj-hud-fill"></div></div></div>'+
         '</div><div id="jj-score">SCORE : 0</div></div>'+
@@ -978,7 +981,7 @@
       gsap.to(['#jj-hud','#jj-keys','#jj-cr-progress'],{opacity:0,duration:.4}); if(backEl) gsap.to(backEl,{opacity:0,duration:.4});   // clear gameplay UI for the end screen
       var end=document.createElement('div'); end.id='jj-end'; end.className='jj-overlay';
       var col=document.createElement('div'); col.className='jj-e-col';
-      col.innerHTML='<h2 class="jj-e-title">Thanks for Playing!</h2><div class="jj-e-sub">Final score '+G.score+' &middot; reached Level '+G.level+'</div>';
+      col.innerHTML='<div class="jj-e-head"><h2 class="jj-e-title">Thanks for Playing!</h2><div class="jj-e-sub">Final score '+G.score+' &middot; reached Level '+G.level+'</div></div>';
       menuItems=endItems(); menuSel=0; menuBoxEl=buildMenuBox(menuItems,0); col.appendChild(menuBoxEl);
       var lvl=document.createElement('div'); lvl.className='jj-e-lvl'; lvl.innerHTML='LEVEL REACHED<div class="jj-e-num" style="color:'+LVLCOL[Math.min(8,G.level-1)]+';text-shadow:0 0 26px '+LVLCOL[Math.min(8,G.level-1)]+'">'+G.level+'</div>';
       col.appendChild(lvl); end.appendChild(col); stage.appendChild(end);

@@ -82,7 +82,9 @@
 .jj-head{position:relative;--r:100%;font-family:'Joes Journey Headline',sans-serif;color:#fff;-webkit-text-stroke:1px rgba(0,0,0,.35);paint-order:stroke fill;text-shadow:0 2px 10px rgba(0,0,0,.5);clip-path:inset(0 var(--r) 0 0);}
 .jj-head .jj-char{display:inline-block;will-change:transform,opacity;}
 #jj-dragon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:155px;pointer-events:none;}
-#jj-dragon .jj-dragon-sprite{width:100%;height:100%;background-image:url('https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-sprite.png');background-repeat:no-repeat;background-size:900% 800%;}`;
+#jj-dragon .jj-dragon-sprite{width:100%;height:100%;background-image:url('https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-sprite.png');background-repeat:no-repeat;background-size:900% 800%;}
+/* hide the Webflow "Back to Contact" button (.next-section-button.back) everywhere EXCEPT inside the credits game (where setupCredits adds .jj-credits-on to <html>) */
+html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-events:none !important;}`;
 
   var style = document.createElement('style');
   style.id = 'jj-contact-style';
@@ -719,6 +721,7 @@
   }
   function setupCredits(){
     var stage = document.getElementById('jj-credits'); if (!stage || stage._game) return; stage._game = true;
+    document.documentElement.classList.add('jj-credits-on');                                       // lets the Webflow "Back to Contact" button show now that we're in the game
     ['jj-contacts','jj-caption','jj-spacebar','jj-dark','jj-story','jj-toast','jj-stage','jj-dragon'].forEach(function(id){ var el = document.getElementById(id); if (el) el.style.display = 'none'; });
     if (!document.getElementById('jj-game-css')) {
       var st = document.createElement('style'); st.id = 'jj-game-css';

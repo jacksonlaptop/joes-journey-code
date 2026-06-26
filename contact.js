@@ -15,7 +15,7 @@
 (function () {
   /* Build marker — to confirm the browser is running the latest file, open the console and look for this
      line (or type window.JJ_CONTACT_BUILD). If it's missing/old, you're on a cached copy → bump ?v in Webflow. */
-  window.JJ_CONTACT_BUILD = 'r2 · waves-fill · red-grow-halfway · end-spacing';
+  window.JJ_CONTACT_BUILD = 'r3 · name-fix · vol-0.15 · reel-1.38 · back-btn · tutorial-freeze';
   try { console.log('%c[JJ] contact.js build: ' + window.JJ_CONTACT_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
   /* ---- 1. styles: uses the site's OWN Webflow brand fonts (already served) ---- */
   var CSS = `
@@ -622,14 +622,14 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     if (s.fade && s.volume) { try { s.fade(s.volume(), 0, ms); } catch (e) {} setTimeout(function () { try { s.stop(); } catch (e) {} }, ms + 80); }
     else if (s.volume !== undefined) { var v0 = s.volume, t0 = performance.now(); var iv = setInterval(function () { var p = Math.min(1, (performance.now() - t0) / ms); try { s.volume = v0 * (1 - p); } catch (e) {} if (p >= 1) { clearInterval(iv); try { s.pause(); } catch (e) {} } }, 60); }
   }
-  var GAME_VOL = 0.25;                                                                           // game music at 50% of the site's other music (the contact song plays at 0.5) — it was too loud at parity
+  var GAME_VOL = 0.15;                                                                           // game music kept well under the rest of the mix — the 8-bit tracks are loud, so this sits ~30% of the contact song (0.5)
   var gameMusic = null, gameMusicMuted = false, gameMusicIdx = 0;
   function applyGameVol(){ if (!gameMusic) return; var v = gameMusicMuted ? 0 : GAME_VOL;
     try { if (typeof gameMusic.volume === 'function') gameMusic.volume(v); else gameMusic.volume = v; } catch (e) {} }
   function setGameMute(m){ gameMusicMuted = m; applyGameVol(); }                                // Space (pause) also mutes; resume restores
   function playTrack(url, onEnd){
     var v = gameMusicMuted ? 0 : GAME_VOL;
-    if (window.Howl) { var h = new window.Howl({ src:[url], format:['mp3'], html5:true, loop:false, volume:v }); try { if (window.jjAudio && window.jjAudio.sounds) window.jjAudio.sounds.push(h); } catch (e) {} if (onEnd) h.once('end', onEnd); h.play(); return h; }
+    if (window.Howl) { var h = new window.Howl({ src:[url], format:['mp3'], html5:true, loop:false, volume:v }); try { if (window.jjAudio && window.jjAudio.sounds) window.jjAudio.sounds.push(h); } catch (e) {} if (onEnd) h.once('end', onEnd); h.play(); try { h.volume(v); h.once('play', function(){ try { h.volume(v); } catch(e){} }); } catch (e) {} return h; }   // re-assert volume (html5 Howls sometimes ignore the constructor volume until playing)
     var a = new Audio(url); a.volume = v; if (onEnd) a.addEventListener('ended', onEnd); a.play().catch(function () {}); return a;
   }
   function nextGameTrack(){                                                                      // GM1 → GM2 → GM1 … endless loop of the pair
@@ -750,9 +750,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       '@font-face{font-family:\'Mario\';src:url(\''+GB+'mario.ttf\') format(\'truetype\');font-display:swap;}'+
       '#jj-hud{position:absolute;left:50%;top:3vh;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:24px;z-index:10;opacity:0;}'+   // ~20px gap below the card (its 4px outer ring eats some)
       '#jj-hud-card{position:relative;width:min(23vw,300px);background:#E0E0DE;border:3px solid #9b9b99;border-radius:6px;box-shadow:0 0 0 4px #4B4B4B;padding:8px 11px 9px;display:flex;flex-direction:column;gap:6px;}'+
-      '#jj-hud-title{font-family:\'Joes Journey Headline\',sans-serif;color:#4A4A48;font-size:clamp(14px,1.65vw,25px);line-height:1;display:flex;align-items:center;justify-content:center;white-space:nowrap;}'+
-      '#jj-hud-title .jj-hud-name{display:inline-flex;align-items:center;}'+                          // icon + name are one centered unit so they can never drift apart
-      '#jj-hud-title .mars{color:#3aa6ea;font-weight:700;margin-right:10px;display:inline-flex;align-items:center;line-height:1;}'+   // ♂ sits exactly 10px to the left of the name, vertically aligned
+      '#jj-hud-title{font-family:\'Joes Journey Headline\',sans-serif;color:#4A4A48;font-size:clamp(14px,1.65vw,25px);line-height:1;text-align:center;white-space:nowrap;}'+   // plain centered line — ♂ + name are inline text, nothing can reposition them
+      '#jj-hud-title .mars{color:#3aa6ea;font-weight:700;margin-right:10px;}'+   // ♂ sits 10px to the left of the name
       '#jj-hud-barrow{display:flex;align-items:center;gap:7px;background:#B7B7B7;border-radius:3px;padding:3px 6px;}'+
       '#jj-hud-levlabel{font-family:\'Joes Journey Headline\',sans-serif;color:#FFB21E;font-size:clamp(9px,.98vw,15px);letter-spacing:.4px;white-space:nowrap;text-shadow:-1px -1px 0 rgba(0,0,0,.6),1px -1px 0 rgba(0,0,0,.6),-1px 1px 0 rgba(0,0,0,.6),1px 1px 0 rgba(0,0,0,.6);}'+
       '#jj-hud-groove{position:relative;flex:1;height:clamp(9px,1vw,15px);background:#F5F5F5;border-radius:2px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.22);}'+
@@ -769,6 +768,9 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       '.jj-pop img{width:clamp(46px,4vw,70px);display:block;}'+
       '#jj-gcap{position:absolute;left:50%;bottom:7vh;transform:translateX(-50%) scale(.96);min-width:280px;max-width:60vw;background:#E0E0DE;border:6px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #FBDD65,0 0 0 9px #2E2F31;padding:13px 24px;font-family:\'Joes Journey Headline\',sans-serif;font-size:clamp(15px,1.55vw,23px);color:#4A4A48;opacity:0;z-index:13;white-space:pre-line;transition:opacity .22s ease,transform .22s ease;}'+
       '#jj-gcap.show{opacity:1;transform:translateX(-50%) scale(1);}'+
+      '.jj-tut-svg{position:absolute;inset:0;width:100%;height:100%;z-index:20;pointer-events:none;overflow:visible;}'+   // connector line from the caption to the highlighted item
+      '.jj-tut-box{position:absolute;border:4px dashed #FF00F5;border-radius:8px;z-index:21;pointer-events:none;animation:jj-tut-pulse 1.1s ease-in-out infinite;}'+
+      '@keyframes jj-tut-pulse{0%,100%{box-shadow:0 0 14px rgba(255,0,245,.45);}50%{box-shadow:0 0 28px rgba(255,0,245,.8);}}'+
       '#jj-keys{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(7vh + 86px);display:flex;flex-direction:row;gap:clamp(34px,5.5vw,82px);align-items:center;z-index:10;opacity:0;}'+   // sit ~20px above the caption box (caption is bottom:7vh, ~66px tall)
       '#jj-keys img{width:clamp(46px,4.2vw,68px);display:block;cursor:pointer;}'+
       '#jj-back{position:absolute;left:3vw;bottom:3vh;z-index:14;color:#000;cursor:pointer;background:#fff;border:none;border-radius:8px;column-gap:1rem;justify-content:center;align-items:center;padding:1.2vh 1.5vw;font-family:\'Joes Journey Body\',sans-serif;font-size:clamp(13px,1vw,18px);transition:background-color .2s;display:flex;}'+
@@ -794,7 +796,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       '<div id="jj-cr-roll"></div>'+
       '<div id="jj-gdragon"><div class="spr"></div></div>'+
       '<div id="jj-hud"><div id="jj-hud-card">'+
-        '<div id="jj-hud-title"><span class="jj-hud-name"><span class="mars">♂</span>Trogdor</span></div>'+
+        '<div id="jj-hud-title"><span class="mars">♂</span>Trogdor</div>'+
         '<div id="jj-hud-barrow"><span id="jj-hud-levlabel">LEVEL <span id="jj-hud-levn">1</span></span>'+
           '<div id="jj-hud-groove"><div id="jj-hud-fill"></div></div></div>'+
         '</div><div id="jj-score">SCORE : 0</div></div>'+
@@ -810,6 +812,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     if (backEl) {
       backEl.style.removeProperty('opacity'); backEl.style.removeProperty('pointer-events');                       // undo the load-time hide
       gsap.fromTo(backEl, { opacity:0, scale:0.8 }, { opacity:1, scale:1, duration:0.7, ease:'back.out(1.5)', delay:1.2, transformOrigin:'left bottom' });
+      if (!backEl._jjWired) { backEl._jjWired = true; backEl.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); backToContact(); }, true); }   // make it actually return to /contact (reload), not whatever Webflow had it do
     }
 
     var CREDITS = [
@@ -833,7 +836,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     var introBg = document.getElementById('jj-intro-bg');                                            // the swirl SVG — scroll it too (parallax)
     if(introBg){ introBg.style.width='330vw'; introBg.style.left='-35vw'; introBg.style.willChange='transform'; }
     function setLevelHUD(){ if(lvNumEl) lvNumEl.textContent = G.level; if(levNumEl) levNumEl.textContent = G.level; }
-    var REEL_K=1.2;                                                                                  // credits reel scrolls 20% faster than the bg parallax → clearly not glued to it
+    var REEL_K=1.38;                                                                                 // credits reel speed (was 1.2; +15%)
     function paintScroll(){ roll.style.transform='translateX('+(G.rollX*REEL_K)+'vw)';
       if(introBg) introBg.style.transform='translateX('+(G.rollX*0.15)+'vw)';                        // swirl drift (deepest layer)
       if(progFill){ var p=(60-G.rollX)/(60+((G.rollW||1)/REEL_K)); progFill.style.width=Math.max(0,Math.min(1,p))*100+'%'; } }
@@ -841,7 +844,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     // (0.3 / 0.6) — driven by the credits scroll (G.rollX) + a slow drift so the space keeps moving even
     // before gameplay starts. Each layer is a strip of the SVG with EVERY OTHER COPY MIRRORED (scaleX -1)
     // so adjacent tile edges match; the scroll wraps on a 2-tile period so the loop point is seamless too.
-    var BG_BACK_SPEED=0.3, BG_FRONT_SPEED=0.6, bgT0=null;
+    var BG_BACK_SPEED=0.3, BG_FRONT_SPEED=0.6, bgLast=null, bgElapsed=0;
     function buildMirrorStrip(host, url, speed){
       var strip=document.createElement('div'); strip.className='jj-bg-strip'; host.appendChild(strip);
       var st={strip:strip, tileW:0, speed:speed, phase:0};
@@ -862,7 +865,9 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       st.strip.style.transform='translateX('+(off-period)+'px)'; }
     function bgScroll(t){
       if(!stage._game) return;                                                                         // stops when the scene is torn down (page reload)
-      if(bgT0==null) bgT0=t; var e=(t-bgT0)/1000;
+      if(bgLast==null) bgLast=t; var dt=t-bgLast; bgLast=t;
+      if(!G.frozen && !paused) bgElapsed += dt;                                                         // freeze the drift during a tutorial freeze / menu pause
+      var e=bgElapsed/1000;
       moveStrip(stripBack,  G.rollX*BG_BACK_SPEED  - e*1.1);                                            // far board — slow parallax
       moveStrip(stripFront, G.rollX*BG_FRONT_SPEED - e*2.2);                                            // near board — faster parallax
       requestAnimationFrame(bgScroll);
@@ -870,7 +875,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     requestAnimationFrame(bgScroll);
     var GOOD = ['good-claude','good-gpt','good-perplexity','good-css','good-js','good-gsap','good-figma','good-miro','good-rive','good-jitter','good-procreate','good-music','good-coding','good-typography','good-voicework','good-webflow','good-logo','good-alien1','good-alien2','good-alien3'];
     var BAD = ['bad-alien1','bad-alien2','bad-spiky','bad-rocks','bad-junk','bad-blackhole'], BADLG = ['bad-alien1-lg','bad-alien2-lg','bad-spiky-lg'];
-    var G = { run:false, score:0, level:1, fill:0, dy:50, ty:50, items:[], rollX:60, rollW:0, lastT:0, lastSpawn:0, f:0, fLast:0, said:{}, harder:false };
+    var G = { run:false, score:0, level:1, fill:0, dy:50, ty:50, items:[], rollX:60, rollW:0, lastT:0, lastSpawn:0, f:0, fLast:0, said:{}, harder:false, frozen:false };
     setLevelHUD();
     function setDragon(){ dragon.style.setProperty('--gd', (122 + (G.level-1)*7)+'px'); }
     setDragon();
@@ -888,6 +893,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
         else if(e.code==='Space'){ e.preventDefault(); menuActivate(0); }     // Space activates the first item (Continue / Restart)
         return;
       }
+      if(G.frozen){ e.preventDefault(); return; }                            // input is locked during the 3s tutorial freeze
       if(e.code==='Space'){ e.preventDefault(); if(G.run){ openMenu(viewMode?'view':'play'); } return; }   // Space pauses anytime
       if(!G.run || paused) return;
       if(e.code==='ArrowUp'){ e.preventDefault(); up(); } else if(e.code==='ArrowDown'){ e.preventDefault(); down(); }
@@ -920,7 +926,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     function resume(){ closeMenu(); if(pauseFrom==='view'){ paused=true; viewMode=true; showCap("Press 'Space' to open the menu…",0); } else { paused=false; viewMode=false; cap.classList.remove('show'); G.lastT=0; } }
     function restartGame(){ closeMenu();
       document.querySelectorAll('#jj-credits .jj-item').forEach(function(el){el.remove();}); G.items=[];
-      G.score=0; G.level=1; G.fill=0; G.dy=50; G.ty=50; G.said={}; G.harder=false; G.rollX=60; rollDone=false; ended=false;
+      G.score=0; G.level=1; G.fill=0; G.dy=50; G.ty=50; G.said={}; G.harder=false; G.frozen=false; G.rollX=60; rollDone=false; ended=false;
+      ['jj-tut-box','jj-tut-svg'].forEach(function(c){ document.querySelectorAll('.'+c).forEach(function(el){el.remove();}); });   // clear any leftover tutorial highlight
       setLevelHUD(); setDragon(); scoreEl.textContent='SCORE : 0'; fillEl.style.width='0%';
       paintScroll(); cap.classList.remove('show');
       gsap.to(['#jj-hud','#jj-keys','#jj-cr-progress'],{opacity:1,duration:.3}); if(backEl) gsap.to(backEl,{opacity:1,duration:.3});   // restore gameplay UI (may have been hidden by the end screen)
@@ -939,19 +946,43 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     function levelUpFx(){ var l=document.createElement('div'); l.className='jj-pop'; l.innerHTML='<img src="'+GB+'levelup-'+Math.min(9,G.level)+'.svg" style="width:clamp(120px,13vw,210px);display:block">'; l.style.left='16%'; l.style.top=(G.dy-16)+'%'; stage.appendChild(l);
       gsap.fromTo(l,{opacity:0,scale:.5},{opacity:1,scale:1,duration:.4,ease:'back.out(2)'}); gsap.to(l,{top:(G.dy-22)+'%',opacity:0,duration:.7,delay:.7,onComplete:function(){l.remove();}}); }
 
+    /* Tutorial freeze: hold the whole scene, ring an item with a dashed box, draw a line to it from the
+       caption, show the caption for 3s, then resume. Used for the first good (figma) and first red item. */
+    function tutorialHighlight(itemEl, captionText){
+      if(G.frozen) return; G.frozen=true;
+      var box=document.createElement('div'); box.className='jj-tut-box'; stage.appendChild(box);
+      var NS='http://www.w3.org/2000/svg';
+      var svg=document.createElementNS(NS,'svg'); svg.setAttribute('class','jj-tut-svg');
+      var line=document.createElementNS(NS,'line'); line.setAttribute('stroke','#FF00F5'); line.setAttribute('stroke-width','4'); line.setAttribute('stroke-linecap','round');
+      var dot=document.createElementNS(NS,'circle'); dot.setAttribute('r','9'); dot.setAttribute('fill','#FF00F5');
+      svg.appendChild(line); svg.appendChild(dot); stage.appendChild(svg);
+      showCap(captionText, 0);                                                                       // show + hold the caption
+      var sr=stage.getBoundingClientRect(), r=itemEl.getBoundingClientRect();
+      var cx=r.left+r.width/2-sr.left, cy=r.top+r.height/2-sr.top, pad=Math.max(14, r.width*0.16);
+      box.style.left=(cx-r.width/2-pad)+'px'; box.style.top=(cy-r.height/2-pad)+'px';
+      box.style.width=(r.width+pad*2)+'px'; box.style.height=(r.height+pad*2)+'px';
+      var capR=document.getElementById('jj-gcap').getBoundingClientRect();
+      var sx=capR.left+capR.width/2-sr.left, sy=capR.top-sr.top-2;
+      line.setAttribute('x1',sx); line.setAttribute('y1',sy); line.setAttribute('x2',cx); line.setAttribute('y2',cy);
+      dot.setAttribute('cx',cx); dot.setAttribute('cy',cy);
+      setTimeout(function(){ box.remove(); svg.remove(); document.getElementById('jj-gcap').classList.remove('show'); G.frozen=false; G.lastT=0; G.lastSpawn=0; }, 3000);
+    }
     function spawnItem(){
       var bad = Math.random() < Math.min(.5, .2+(G.level-1)*.04);
+      if(!G.said.good) bad=false;                                                                   // make sure the very first item is a good one (so the figma tutorial comes first)
+      var firstGood = (!bad && !G.said.good), firstBad = (bad && !G.said.warn), tut = firstGood || firstBad;
       var name, cls, big=false;
       if (bad){ var lg=(G.level>=4 && Math.random()<.4); var pool=lg?BADLG:BAD; name=pool[Math.floor(Math.random()*pool.length)]; cls='bad'; big=lg; }
-      else { name=GOOD[Math.floor(Math.random()*GOOD.length)]; cls='good'; }
+      else { name = firstGood ? 'good-figma' : GOOD[Math.floor(Math.random()*GOOD.length)]; cls='good'; }   // first good = the figma one (it gets highlighted)
       var el=document.createElement('div'); el.className='jj-item '+cls;
       var sz = big ? 'clamp(72px,7vw,118px)' : 'clamp(56px,5.4vw,92px)';
       if(bad && G.harder) sz='calc(('+sz+') * 1.2)';                                              // past halfway, the red (bad) ones grow 20%
       el.style.width=sz; el.style.height=sz; el.innerHTML='<img src="'+GB+name+'.svg">';
-      var y=18+Math.random()*60; el.style.left='106%'; el.style.top=y+'%'; stage.appendChild(el);
-      G.items.push({ el:el, x:106, y:y, bad:bad, hit:false, band:band()+(big?2:0)+(bad&&G.harder?1.5:0), spd:0.85+Math.random()*0.3, bobA:1.1+Math.random()*1.7, bobP:Math.random()*6.283, bobS:0.0009+Math.random()*0.0009 });   // varied speed + gentle float; bigger red ones catch a touch wider
-      if(!bad && !G.said.good){ G.said.good=1; flash("Mmm…Tasty…Trogdor looks like he'd enjoy that..",1600); }
-      if(bad && !G.said.warn){ G.said.warn=1; flash("Quick Tip! Trogdor hates things that glow red…",1700); }
+      var startX = tut ? 58 : 106;                                                                // tutorial items spawn already on-screen so they can be ringed
+      var y = tut ? (34+Math.random()*22) : (18+Math.random()*60); el.style.left=startX+'%'; el.style.top=y+'%'; stage.appendChild(el);
+      G.items.push({ el:el, x:startX, y:y, bad:bad, hit:false, band:band()+(big?2:0)+(bad&&G.harder?1.5:0), spd:0.85+Math.random()*0.3, bobA:1.1+Math.random()*1.7, bobP:Math.random()*6.283, bobS:0.0009+Math.random()*0.0009 });   // varied speed + gentle float; bigger red ones catch a touch wider
+      if(firstGood){ G.said.good=1; tutorialHighlight(el, "Mmm…Tasty…Trogdor looks like he'd enjoy that.."); }
+      else if(firstBad){ G.said.warn=1; tutorialHighlight(el, "Oh, he doesn't like the look of that!"); }
     }
     function hit(it){
       it.hit=true; it.el.remove(); var idx=G.items.indexOf(it); if(idx>=0) G.items.splice(idx,1);
@@ -967,6 +998,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     var rollDone=false;
     function loop(t){
       if(!G.run) return; var dt=Math.min(48,t-(G.lastT||t)); G.lastT=t; var k=dt/16.7;
+      if(G.frozen){ G.lastSpawn=t; G.raf=requestAnimationFrame(loop); return; }   // tutorial freeze: hold the dragon, items, scroll & spawns in place
       frame(t);                                                       // dragon keeps flapping even while paused
       if(paused){                                                     // pause menu open, or View-Scene mode
         G.lastSpawn=t;                                                 // keep spawn clock fresh so resume doesn't burst

@@ -12,7 +12,7 @@
    Opens on black with a medieval torch-light reveal; the nav drops in after 3s.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's3 · locals fix';
+  window.JJ_STORY_BUILD = 's5 · punctuation-beats · shorter-end-wait';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';   // assets uploaded to the repo root
@@ -35,9 +35,11 @@
     boxFadeAt:  2700,    // caption frame + progress bar fade in (after the reveal)
     menuDropAt: 3000,    // nav drops in + fades
     firstTypeAt:3500,    // first line starts typing
-    typeSpeed:    40,    // ms per character
-    readPerChar:  46,    // extra read time per character once a line finishes
-    readMin:    2600,    // minimum read time between lines
+    typeSpeed:    24,    // ms per character (faster typing)
+    pauseDot:    280,    // quick beat after a full stop / ! / ?
+    pauseEllipsis:620,   // longer beat after an ellipsis (…)
+    readPerChar:  32,    // extra read time per character once a line finishes
+    readMin:    1700,    // minimum read between lines (shorter wait at the end of each panel)
     endFade:    1500     // fade-to-black at the end
   };
 
@@ -58,7 +60,7 @@
     { text:"He had many names, Beast, Dragon, Death, but the one that put fear into the hearts of the locals was...Trogdor! Trogdor The Burninator..." },
     { text:"Luckily one day a brave young man appeared to try and best this beast! His goal? To save the villagers and stop this evil...",
       triggers:[ { at:"Luckily one day", run:function(){ transitionBg(I.tavern, 'zoom', FOCUS_HUT); } } ] },
-    { text:"“Joe the Righteous” they called! He set off a journey to find the beast, searching through hills and mountains...He went toe to toe with...",
+    { text:"“Joe the Righteous” they called! He set off a journey to find the beast, searching through hills and mountains...He went toe to toe with the beast...",
       triggers:[ { at:"Joe the Righteous", run:function(){ transitionBg(I.woods, 'dissolve'); } },
                  { at:"mountains",          run:function(){ transitionBg(I.castle, 'zoom', FOCUS_CASTLE); } } ] },
     { text:"Wait a minute, I think this might be the wrong story...Ah yes, sorry. Different Joe, this one is the story of a Designer...A magical Designer.",
@@ -77,7 +79,7 @@
   '#jjst-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#FF00F5,#ff7df4);box-shadow:0 0 12px rgba(255,0,245,.7);transition:width .6s ease;}'+
   '#jjst-cap{position:absolute;left:50%;bottom:4.5vh;transform:translateX(-50%);width:min(90vw,1297px);aspect-ratio:1297 / 200;z-index:5;opacity:0;transition:opacity .8s ease;background:url(\''+BOX+'\') no-repeat center/contain;display:flex;align-items:center;justify-content:center;pointer-events:none;}'+
   '#jjst-cap.on{opacity:1;}'+
-  '#jjst-cap-text{width:74%;text-align:center;color:#3a2a12;font-size:clamp(14px,1.55vw,27px);line-height:1.28;white-space:pre-wrap;}';
+  '#jjst-cap-text{width:84%;text-align:center;color:#3a2a12;font-size:clamp(16px,1.7vw,29px);line-height:1.28;white-space:pre-wrap;}';   // wider (less padding to the box) + 2px bigger
 
   var style = document.createElement('style'); style.id = 'jj-storytime-style'; style.textContent = CSS; document.head.appendChild(style);
 
@@ -128,12 +130,21 @@
   function setProgress(i){ fill.style.width = Math.min(1, (i + 1) / SCENES.length) * 100 + '%'; }
   function typeText(text, triggers, done){
     var trs = (triggers || []).map(function (tr) { var k = text.indexOf(tr.at); return { idx: k < 0 ? -1 : k + tr.at.length, run: tr.run, fired: false }; });
-    textEl.textContent = ''; var i = 0; clearInterval(textEl._tw);
-    textEl._tw = setInterval(function () {
+    textEl.textContent = ''; var i = 0; clearTimeout(textEl._tw);
+    function step(){
       i++; textEl.textContent = text.slice(0, i);
       for (var j = 0; j < trs.length; j++) { if (!trs[j].fired && trs[j].idx >= 0 && i >= trs[j].idx) { trs[j].fired = true; try { trs[j].run(); } catch (e) {} } }
-      if (i >= text.length) { clearInterval(textEl._tw); if (done) done(); }
-    }, T.typeSpeed);
+      if (i >= text.length) { if (done) done(); return; }
+      var ch = text.charAt(i - 1), delay = T.typeSpeed;                            // pause on punctuation
+      if (ch === '…') delay = T.pauseEllipsis;                                 // single-char ellipsis
+      else if (ch === '.') {
+        if (text.charAt(i) === '.') delay = T.typeSpeed;                            // mid dot-run — keep going
+        else if (text.charAt(i - 2) === '.') delay = T.pauseEllipsis;               // just finished "…" → longer beat
+        else delay = T.pauseDot;                                                    // lone full stop → quick beat
+      } else if (ch === '!' || ch === '?') delay = T.pauseDot;
+      textEl._tw = setTimeout(step, delay);
+    }
+    textEl._tw = setTimeout(step, T.typeSpeed);
   }
   function runScene(i){
     if (i >= SCENES.length) return;

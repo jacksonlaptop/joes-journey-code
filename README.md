@@ -1,56 +1,49 @@
-# Joe's Journey — Contact page intro (hosted)
+# Joe's Journey — Storytime page (hosted)
 
-Hosted on GitHub (`jacksonlaptop/joes-journey-code`) and served to Webflow via
-jsDelivr. The Contact page only needs ONE `<script>` tag.
+Hosted on GitHub (`jacksonlaptop/joes-journey-code`) and served via raw.githack.com,
+same as the other scripts. The Storytime page needs ONE `<script>` tag.
 
-## Files to upload — to the repo ROOT (same level as homepage-footer.js)
+## Files to upload — to the repo ROOT (same level as contact.js)
 
-| File | Upload when |
-|------|-------------|
-| `contact.js` | every time the intro changes (Claude updates it locally) |
-| `dragon-sprite.png` | **once** — the flythrough dragon sprite sheet (**currently missing on the repo — this is why no dragon shows**) |
-| `book.json` | **once** — story scene: the animated storybook (your `story icon.lottie`, top-left) |
-| `philosopher.png` | **once** — story scene: thinking wizard (bottom-left) |
-| `dragon-rest.png` | **once** — story scene: floating dragon (bottom-right) |
-| `dragon-happy.png`, `dragon-angry.png` | **once** — story-scene dragon expressions (hover/click) |
-| `icon-{phone,linkedin,credits,mail,cv}.png` | **once** — contact-orb default art (cropped: no padding, art to the edge) |
-| `icon-{phone,linkedin,credits,mail,cv}-fill.png` | **once** — contact-orb hover/filled art (10 icon files total) |
-| **game assets (flat, repo root)** | **once** — the "Trogdor" credits-game assets, all uploaded FLAT to the repo root (not a subfolder): good-*/bad-* items, bar-l1/l2, arrow-up/down, pop-plus/minus, copy-*.svg credit panels, **mario.ttf** (PAUSED/score font), **levelup-1..9.svg** (per-level "LEVEL UP!" graphics), **wave-1/2.svg** + **end-screen.svg** (used in the next pass). `lvl-*.svg` and `cap-*.svg` are now unused — fine to skip. Code resolves them as `…/main/<file>` (GB = repo root). |
-| `game-music-1.mp3`, `game-music-2.mp3` | **once** — the two 8-bit game tracks (1 = "8-bit Console From My Childhood", 2 = "The World of 8-bit Games"), played after the contact song fades out. (Or host on Webflow CDN and swap the `GM1`/`GM2` URLs.) |
+| File | Notes |
+|------|-------|
+| `storytime.js` | the scene engine (re-upload whenever it changes) |
+| `story-bg-1-village.svg` | bg 1 — village |
+| `story-bg-2-tavern.svg` | bg 2 — tavern |
+| `story-bg-3-woods.svg` | bg 3 — woods |
+| `story-bg-4-castle.svg` | bg 4 — castle mountain |
+| `story-bg-5-cave.svg` | bg 5 — cave |
+| `story-box.svg` | the empty caption frame (Text Empty.svg) |
 
-The contact-page song streams straight from the Webflow CDN — nothing to upload.
-`storybook.png` is no longer used.
+The BGs are big (1.4–2.2 MB each). They load once and are cached; if githack feels
+slow we can move them to the Webflow CDN and just swap the URLs at the top of `storytime.js`.
 
-Upload via GitHub → **Add file → Upload files** → drag the files in → **Commit**.
-(This README is local reference only — no need to upload it.)
+## Webflow setup (Storytime page → Page Settings → Custom Code)
 
-## Webflow setup (one time)
-
-Contact page → Page Settings → Custom Code → **Before `</body>` tag** — use the
-**raw.githack.com** URL (same host as the site's other scripts; jsDelivr cached
-stale and its purge endpoint is unreliable):
-
+**Inside `<head>`** (already added):
 ```html
-<script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/contact.js"></script>
+<style>.nav-logo-link,.menu-container{opacity:0}</style>
 ```
 
-Leave the **Inside `<head>`** box empty — `contact.js` injects its own styles +
-`@font-face`. Remove any earlier `head.html`/`body.html` paste so it doesn't double up.
+**Before `</body>` tag:**
+```html
+<script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/storytime.js"></script>
+```
 
-## Updating the animation
+## What it does
 
-1. Claude edits `contact.js` locally and tells you it's ready.
-2. Re-upload `contact.js` (+ any changed assets) to the repo.
-3. Hard-refresh `/contact`. **No purge step** — githack serves the new commit
-   within a few minutes. (If it lags, add `?v=2` to the script src to bust the
-   browser cache.)
+- Site nav drops in from the top + fades in after 3s.
+- Full-screen background cross-fades through the 5 scenes in order.
+- The caption frame fades in after 2s; 3s later the first panel starts typing.
+- Each panel types out (centered), holds long enough to read, then the next types.
+- A pink progress bar (top) tracks how far through the story you are.
 
-## Notes
+## To finish — copy + checks
 
-- **Font is self-hosted** here, so the headline always renders — no dependency on
-  Webflow's font serving.
-- Intro is a fixed full-screen overlay (`z-index:50`). Raise the nav's z-index if
-  it should sit on top.
-- Scroll is locked; call `window.jjIntro.unlock()` to release it (for the future
-  Spacebar / "Play Credits" trigger).
-- The dragon is a placeholder — it'll be replaced by the Rive.
+- **Copy:** the `Text 1–6.svg` panels are outlined (text → paths), so the copy can't be
+  auto-read. Panels 2/3/4 are transcribed from the screenshots; panels **1, 5, 6 are
+  placeholders** in `STORY` — paste the real lines there.
+- **BG ↔ panel mapping** lives in the `bg:` numbers in `STORY` (0–4). Default guess: 1→village,
+  2→village, 3→tavern, 4→woods, 5→castle, 6→cave.
+- **Font:** captions use the brand `Joes Journey Headline`. If the panels use a different font, say which.
+- **Timings** are at the top of the file (`T = {...}`).

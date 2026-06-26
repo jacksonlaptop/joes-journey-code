@@ -15,7 +15,7 @@
 (function () {
   /* Build marker — to confirm the browser is running the latest file, open the console and look for this
      line (or type window.JJ_CONTACT_BUILD). If it's missing/old, you're on a cached copy → bump ?v in Webflow. */
-  window.JJ_CONTACT_BUILD = 'r3 · name-fix · vol-0.15 · reel-1.38 · back-btn · tutorial-freeze';
+  window.JJ_CONTACT_BUILD = 'r4 · name-svg-icon · duck-ambient · tut-centre+line-behind';
   try { console.log('%c[JJ] contact.js build: ' + window.JJ_CONTACT_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
   /* ---- 1. styles: uses the site's OWN Webflow brand fonts (already served) ---- */
   var CSS = `
@@ -638,6 +638,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     gameMusic = playTrack(url, nextGameTrack);                                                   // when a track ends, roll into the next
   }
   function startCreditsMusic(immediate){
+    try { if (window.jjAudio) { window.jjAudio.takeover = true; var amb = window.jjAudio.ambient;   // DUCK THE SITE AMBIENT (0.6, loops site-wide). On ?credits=1 the contact song never ran to duck it, so it played full-volume — THIS is the "loud music" that ignored GAME_VOL.
+      if (amb && typeof amb.fade === 'function') amb.fade(amb.volume(), 0, 1500); } } catch (e) {}
     fadeOutSong(immediate ? 1200 : 5000);                                                        // fade the contact song (no-op if it never started)
     setTimeout(nextGameTrack, immediate ? 700 : 7000);                                           // normal: wait for the 5s fade; direct (?credits=1): start almost right away
   }
@@ -750,8 +752,9 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       '@font-face{font-family:\'Mario\';src:url(\''+GB+'mario.ttf\') format(\'truetype\');font-display:swap;}'+
       '#jj-hud{position:absolute;left:50%;top:3vh;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:24px;z-index:10;opacity:0;}'+   // ~20px gap below the card (its 4px outer ring eats some)
       '#jj-hud-card{position:relative;width:min(23vw,300px);background:#E0E0DE;border:3px solid #9b9b99;border-radius:6px;box-shadow:0 0 0 4px #4B4B4B;padding:8px 11px 9px;display:flex;flex-direction:column;gap:6px;}'+
-      '#jj-hud-title{font-family:\'Joes Journey Headline\',sans-serif;color:#4A4A48;font-size:clamp(14px,1.65vw,25px);line-height:1;text-align:center;white-space:nowrap;}'+   // plain centered line — ♂ + name are inline text, nothing can reposition them
-      '#jj-hud-title .mars{color:#3aa6ea;font-weight:700;margin-right:10px;}'+   // ♂ sits 10px to the left of the name
+      '#jj-hud-title{font-family:\'Joes Journey Headline\',sans-serif;color:#4A4A48;font-size:clamp(14px,1.65vw,25px);line-height:1;text-align:center !important;white-space:nowrap !important;display:block !important;}'+   // forced block + centered so nothing can stack the icon above the name
+      '#jj-hud-title .mars{display:inline-block !important;vertical-align:middle !important;width:.95em;height:.95em;margin-right:10px;flex:none;}'+   // ♂ icon, inline, 10px left of the name
+      '#jj-hud-title .tname{display:inline-block !important;vertical-align:middle !important;}'+
       '#jj-hud-barrow{display:flex;align-items:center;gap:7px;background:#B7B7B7;border-radius:3px;padding:3px 6px;}'+
       '#jj-hud-levlabel{font-family:\'Joes Journey Headline\',sans-serif;color:#FFB21E;font-size:clamp(9px,.98vw,15px);letter-spacing:.4px;white-space:nowrap;text-shadow:-1px -1px 0 rgba(0,0,0,.6),1px -1px 0 rgba(0,0,0,.6),-1px 1px 0 rgba(0,0,0,.6),1px 1px 0 rgba(0,0,0,.6);}'+
       '#jj-hud-groove{position:relative;flex:1;height:clamp(9px,1vw,15px);background:#F5F5F5;border-radius:2px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.22);}'+
@@ -768,7 +771,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       '.jj-pop img{width:clamp(46px,4vw,70px);display:block;}'+
       '#jj-gcap{position:absolute;left:50%;bottom:7vh;transform:translateX(-50%) scale(.96);min-width:280px;max-width:60vw;background:#E0E0DE;border:6px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #FBDD65,0 0 0 9px #2E2F31;padding:13px 24px;font-family:\'Joes Journey Headline\',sans-serif;font-size:clamp(15px,1.55vw,23px);color:#4A4A48;opacity:0;z-index:13;white-space:pre-line;transition:opacity .22s ease,transform .22s ease;}'+
       '#jj-gcap.show{opacity:1;transform:translateX(-50%) scale(1);}'+
-      '.jj-tut-svg{position:absolute;inset:0;width:100%;height:100%;z-index:20;pointer-events:none;overflow:visible;}'+   // connector line from the caption to the highlighted item
+      '.jj-tut-svg{position:absolute;inset:0;width:100%;height:100%;z-index:12;pointer-events:none;overflow:visible;}'+   // connector line — z below the caption (13) so its end hides behind it, above the scene/HUD
       '.jj-tut-box{position:absolute;border:4px dashed #FF00F5;border-radius:8px;z-index:21;pointer-events:none;animation:jj-tut-pulse 1.1s ease-in-out infinite;}'+
       '@keyframes jj-tut-pulse{0%,100%{box-shadow:0 0 14px rgba(255,0,245,.45);}50%{box-shadow:0 0 28px rgba(255,0,245,.8);}}'+
       '#jj-keys{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(7vh + 86px);display:flex;flex-direction:row;gap:clamp(34px,5.5vw,82px);align-items:center;z-index:10;opacity:0;}'+   // sit ~20px above the caption box (caption is bottom:7vh, ~66px tall)
@@ -796,7 +799,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       '<div id="jj-cr-roll"></div>'+
       '<div id="jj-gdragon"><div class="spr"></div></div>'+
       '<div id="jj-hud"><div id="jj-hud-card">'+
-        '<div id="jj-hud-title"><span class="mars">♂</span>Trogdor</div>'+
+        '<div id="jj-hud-title"><svg class="mars" viewBox="0 0 24 24" fill="none" stroke="#3aa6ea" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="14" r="6"/><path d="M14.2 9.8 20 4"/><path d="M14.5 4H20v5.5"/></svg><span class="tname">Trogdor</span></div>'+
         '<div id="jj-hud-barrow"><span id="jj-hud-levlabel">LEVEL <span id="jj-hud-levn">1</span></span>'+
           '<div id="jj-hud-groove"><div id="jj-hud-fill"></div></div></div>'+
         '</div><div id="jj-score">SCORE : 0</div></div>'+
@@ -957,14 +960,16 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       var dot=document.createElementNS(NS,'circle'); dot.setAttribute('r','9'); dot.setAttribute('fill','#FF00F5');
       svg.appendChild(line); svg.appendChild(dot); stage.appendChild(svg);
       showCap(captionText, 0);                                                                       // show + hold the caption
-      var sr=stage.getBoundingClientRect(), r=itemEl.getBoundingClientRect();
-      var cx=r.left+r.width/2-sr.left, cy=r.top+r.height/2-sr.top, pad=Math.max(14, r.width*0.16);
-      box.style.left=(cx-r.width/2-pad)+'px'; box.style.top=(cy-r.height/2-pad)+'px';
-      box.style.width=(r.width+pad*2)+'px'; box.style.height=(r.height+pad*2)+'px';
-      var capR=document.getElementById('jj-gcap').getBoundingClientRect();
-      var sx=capR.left+capR.width/2-sr.left, sy=capR.top-sr.top-2;
-      line.setAttribute('x1',sx); line.setAttribute('y1',sy); line.setAttribute('x2',cx); line.setAttribute('y2',cy);
-      dot.setAttribute('cx',cx); dot.setAttribute('cy',cy);
+      requestAnimationFrame(function(){                                                              // one frame later the item has settled into its frozen spot → box centres on it
+        var sr=stage.getBoundingClientRect(), r=itemEl.getBoundingClientRect();
+        var cx=r.left+r.width/2-sr.left, cy=r.top+r.height/2-sr.top, pad=Math.max(16, r.width*0.18);
+        box.style.left=(cx-r.width/2-pad)+'px'; box.style.top=(cy-r.height/2-pad)+'px';
+        box.style.width=(r.width+pad*2)+'px'; box.style.height=(r.height+pad*2)+'px';
+        var capR=document.getElementById('jj-gcap').getBoundingClientRect();
+        var sx=capR.left+capR.width/2-sr.left, sy=capR.top+capR.height*0.5-sr.top;                   // start at the caption's middle so the line's end tucks behind it (svg sits below the caption)
+        line.setAttribute('x1',sx); line.setAttribute('y1',sy); line.setAttribute('x2',cx); line.setAttribute('y2',cy);
+        dot.setAttribute('cx',cx); dot.setAttribute('cy',cy);
+      });
       setTimeout(function(){ box.remove(); svg.remove(); document.getElementById('jj-gcap').classList.remove('show'); G.frozen=false; G.lastT=0; G.lastSpawn=0; }, 3000);
     }
     function spawnItem(){
@@ -980,7 +985,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       el.style.width=sz; el.style.height=sz; el.innerHTML='<img src="'+GB+name+'.svg">';
       var startX = tut ? 58 : 106;                                                                // tutorial items spawn already on-screen so they can be ringed
       var y = tut ? (34+Math.random()*22) : (18+Math.random()*60); el.style.left=startX+'%'; el.style.top=y+'%'; stage.appendChild(el);
-      G.items.push({ el:el, x:startX, y:y, bad:bad, hit:false, band:band()+(big?2:0)+(bad&&G.harder?1.5:0), spd:0.85+Math.random()*0.3, bobA:1.1+Math.random()*1.7, bobP:Math.random()*6.283, bobS:0.0009+Math.random()*0.0009 });   // varied speed + gentle float; bigger red ones catch a touch wider
+      G.items.push({ el:el, x:startX, y:y, bad:bad, hit:false, band:band()+(big?2:0)+(bad&&G.harder?1.5:0), spd:0.85+Math.random()*0.3, bobA:tut?0:(1.1+Math.random()*1.7), bobP:Math.random()*6.283, bobS:0.0009+Math.random()*0.0009 });   // varied speed + gentle float; tutorial items don't bob (so the ring stays centred)
       if(firstGood){ G.said.good=1; tutorialHighlight(el, "Mmm…Tasty…Trogdor looks like he'd enjoy that.."); }
       else if(firstBad){ G.said.warn=1; tutorialHighlight(el, "Oh, he doesn't like the look of that!"); }
     }

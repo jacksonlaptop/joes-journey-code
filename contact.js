@@ -13,6 +13,10 @@
    The jj-headline.woff / jj-hieroglyphics.woff uploads are now unused.
    ============================================================================ */
 (function () {
+  /* Build marker — to confirm the browser is running the latest file, open the console and look for this
+     line (or type window.JJ_CONTACT_BUILD). If it's missing/old, you're on a cached copy → bump ?v in Webflow. */
+  window.JJ_CONTACT_BUILD = 'r2 · waves-fill · red-grow-halfway · end-spacing';
+  try { console.log('%c[JJ] contact.js build: ' + window.JJ_CONTACT_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
   /* ---- 1. styles: uses the site's OWN Webflow brand fonts (already served) ---- */
   var CSS = `
 #jj-intro{position:fixed;inset:0;overflow:hidden;z-index:50;background:#091725;}
@@ -710,7 +714,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       try {
         var r = new window.rive.Rive({ src:WAVES_RIV, canvas:canvas, autoplay:true,
           stateMachines:'State Machine 1',
-          layout:new window.rive.Layout({ fit:window.rive.Fit.FitWidth, alignment:window.rive.Alignment.BottomCenter }),   // FitWidth = full width, true aspect (no squish); BottomCenter pins the waterline to the bottom
+          layout:new window.rive.Layout({ fit:window.rive.Fit.Fill, alignment:window.rive.Alignment.BottomCenter }),   // full-screen canvas + Fill = identical to the homepage waves (no crop, no squish)
           onLoad:function(){ try{ r.resizeDrawingSurfaceToCanvas(); }catch(e){} } });
         canvas._riveInst = r;
         window.addEventListener('resize', function(){ try{ r.resizeDrawingSurfaceToCanvas(); }catch(e){} });
@@ -732,7 +736,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       '.jj-crd img{width:min(44vw,760px);height:auto;display:block;}'+
       '.jj-crd-text{font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(30px,3.4vw,56px);line-height:1.12;white-space:nowrap;text-align:center;}'+
       '.jj-crd-text small{display:block;font-size:.6em;color:#cfe0ff;margin-bottom:.18em;}'+
-      '#jj-waves{position:absolute;left:0;right:0;bottom:0;width:100%;height:22vh;z-index:1;pointer-events:none;overflow:hidden;}'+   // tall enough to contain the full wave crests (FitWidth makes them full-width/true-aspect); raise/lower this to taste
+      '#jj-waves{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;}'+   // full-screen canvas so the Rive waves (1920×1080 artboard) render at the bottom UNCUT, exactly like the homepage
       '#jj-waves canvas{width:100%!important;height:100%!important;display:block;}'+
       '.jj-moon{position:absolute;top:5vh;width:clamp(46px,5vw,90px);height:auto;z-index:0;pointer-events:none;animation:jj-glow-m 4.6s ease-in-out infinite;}'+   // homepage moon, glowing, ~50% smaller, floats across the top
       '.jj-moon img{width:100%;height:auto;display:block;}'+
@@ -776,7 +780,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       '.jj-menu-item{font-family:\'Joes Journey Headline\',sans-serif;color:#7a7a78;font-size:clamp(18px,2vw,30px);padding:7px 8px 7px 36px;position:relative;cursor:pointer;line-height:1.15;transition:color .12s ease;}'+
       '.jj-menu-item .tri{position:absolute;left:9px;top:50%;width:0;height:0;border-left:11px solid #FF2A2A;border-top:7px solid transparent;border-bottom:7px solid transparent;transform:translateY(-50%);opacity:0;}'+
       '.jj-menu-item.sel{color:#2E2F31;}.jj-menu-item.sel .tri{opacity:1;}'+
-      '#jj-end .jj-e-col{display:flex;flex-direction:column;align-items:center;gap:24px;}'+   // space between the title block, menu, and level badge
+      '#jj-end .jj-e-col{display:flex;flex-direction:column;align-items:center;gap:40px;}'+   // more space between the title block, menu, and level badge
       '#jj-end .jj-e-head{display:flex;flex-direction:column;align-items:center;gap:6px;}'+   // title + subtitle are a tight pair (per design)
       '#jj-end .jj-e-title{font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(34px,5.5vw,82px);margin:0;text-align:center;line-height:1.05;}'+
       '#jj-end .jj-e-sub{font-family:\'Joes Journey Headline\',sans-serif;color:rgba(255,255,255,.82);font-size:clamp(15px,1.7vw,24px);margin:0;text-align:center;}'+
@@ -866,7 +870,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     requestAnimationFrame(bgScroll);
     var GOOD = ['good-claude','good-gpt','good-perplexity','good-css','good-js','good-gsap','good-figma','good-miro','good-rive','good-jitter','good-procreate','good-music','good-coding','good-typography','good-voicework','good-webflow','good-logo','good-alien1','good-alien2','good-alien3'];
     var BAD = ['bad-alien1','bad-alien2','bad-spiky','bad-rocks','bad-junk','bad-blackhole'], BADLG = ['bad-alien1-lg','bad-alien2-lg','bad-spiky-lg'];
-    var G = { run:false, score:0, level:1, fill:0, dy:50, ty:50, items:[], rollX:60, rollW:0, lastT:0, lastSpawn:0, f:0, fLast:0, said:{} };
+    var G = { run:false, score:0, level:1, fill:0, dy:50, ty:50, items:[], rollX:60, rollW:0, lastT:0, lastSpawn:0, f:0, fLast:0, said:{}, harder:false };
     setLevelHUD();
     function setDragon(){ dragon.style.setProperty('--gd', (122 + (G.level-1)*7)+'px'); }
     setDragon();
@@ -916,7 +920,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     function resume(){ closeMenu(); if(pauseFrom==='view'){ paused=true; viewMode=true; showCap("Press 'Space' to open the menu…",0); } else { paused=false; viewMode=false; cap.classList.remove('show'); G.lastT=0; } }
     function restartGame(){ closeMenu();
       document.querySelectorAll('#jj-credits .jj-item').forEach(function(el){el.remove();}); G.items=[];
-      G.score=0; G.level=1; G.fill=0; G.dy=50; G.ty=50; G.said={}; G.rollX=60; rollDone=false; ended=false;
+      G.score=0; G.level=1; G.fill=0; G.dy=50; G.ty=50; G.said={}; G.harder=false; G.rollX=60; rollDone=false; ended=false;
       setLevelHUD(); setDragon(); scoreEl.textContent='SCORE : 0'; fillEl.style.width='0%';
       paintScroll(); cap.classList.remove('show');
       gsap.to(['#jj-hud','#jj-keys','#jj-cr-progress'],{opacity:1,duration:.3}); if(backEl) gsap.to(backEl,{opacity:1,duration:.3});   // restore gameplay UI (may have been hidden by the end screen)
@@ -942,9 +946,10 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       else { name=GOOD[Math.floor(Math.random()*GOOD.length)]; cls='good'; }
       var el=document.createElement('div'); el.className='jj-item '+cls;
       var sz = big ? 'clamp(72px,7vw,118px)' : 'clamp(56px,5.4vw,92px)';
+      if(bad && G.harder) sz='calc(('+sz+') * 1.2)';                                              // past halfway, the red (bad) ones grow 20%
       el.style.width=sz; el.style.height=sz; el.innerHTML='<img src="'+GB+name+'.svg">';
       var y=18+Math.random()*60; el.style.left='106%'; el.style.top=y+'%'; stage.appendChild(el);
-      G.items.push({ el:el, x:106, y:y, bad:bad, hit:false, band:band()+(big?2:0), spd:0.85+Math.random()*0.3, bobA:1.1+Math.random()*1.7, bobP:Math.random()*6.283, bobS:0.0009+Math.random()*0.0009 });   // varied speed + gentle float
+      G.items.push({ el:el, x:106, y:y, bad:bad, hit:false, band:band()+(big?2:0)+(bad&&G.harder?1.5:0), spd:0.85+Math.random()*0.3, bobA:1.1+Math.random()*1.7, bobP:Math.random()*6.283, bobS:0.0009+Math.random()*0.0009 });   // varied speed + gentle float; bigger red ones catch a touch wider
       if(!bad && !G.said.good){ G.said.good=1; flash("Mmm…Tasty…Trogdor looks like he'd enjoy that..",1600); }
       if(bad && !G.said.warn){ G.said.warn=1; flash("Quick Tip! Trogdor hates things that glow red…",1700); }
     }
@@ -974,7 +979,9 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       for(var i=G.items.length-1;i>=0;i--){ var it=G.items[i]; it.x-=sp*(it.spd||1)*k; it.el.style.left=it.x+'%'; it.el.style.top=(it.y+Math.sin(t*it.bobS+it.bobP)*it.bobA)+'%';
         if(!it.hit && it.x<=18 && it.x>=10 && Math.abs(it.y-G.dy)<it.band){ hit(it); continue; }
         if(it.x<-8){ it.el.remove(); G.items.splice(i,1); } }
-      if(!rollDone){ G.rollX-=sp*.31*k; paintScroll(); if(-G.rollX*REEL_K>G.rollW){ rollDone=true; endGame(); } }
+      if(!rollDone){ G.rollX-=sp*.31*k; paintScroll();
+        if(!G.harder && G.rollW){ var prog=(60-G.rollX)/(60+(G.rollW)/REEL_K); if(prog>=0.5){ G.harder=true; flash("Be careful! It's starting to get a bit harder now!",2400); } }   // halfway → red ones grow + warn
+        if(-G.rollX*REEL_K>G.rollW){ rollDone=true; endGame(); } }
       G.raf=requestAnimationFrame(loop);
     }
     function startPlay(){ G.run=true; stage.classList.add('playing'); G.lastT=0; G.lastSpawn=0;

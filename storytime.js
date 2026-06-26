@@ -12,20 +12,23 @@
    Opens on black with a medieval torch-light reveal; the nav drops in after 3s.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's5 · punctuation-beats · shorter-end-wait';
+  window.JJ_STORY_BUILD = 's6 · transparent scenes + night-sky backdrop + scroll-lock';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';   // assets uploaded to the repo root
+  var AV = '?a=2';   // asset cache-buster — bump when the bg/sky SVGs are re-uploaded
 
-  /* ---- backgrounds (file index → meaning); story uses them out of order ---- */
+  /* ---- scene backgrounds (now transparent-sky cut-outs — the night sky shows through behind them).
+         Tavern is an interior (no sky), so it stays opaque. ---- */
   var BG = [
-    GB + 'story-bg-1-village.svg',
-    GB + 'story-bg-2-tavern.svg',
-    GB + 'story-bg-3-woods.svg',
-    GB + 'story-bg-4-castle.svg',
-    GB + 'story-bg-5-cave.svg'
+    GB + 'story-bg-1-village.svg' + AV,
+    GB + 'story-bg-2-tavern.svg' + AV,
+    GB + 'story-bg-3-woods.svg' + AV,
+    GB + 'story-bg-4-castle.svg' + AV,
+    GB + 'story-bg-5-cave.svg' + AV
   ];
   var I = { village:0, tavern:1, woods:2, castle:3, cave:4 };   // named indices
+  var SKY = GB + 'story-nightsky.svg' + AV;                     // tall night-sky backdrop behind every scene (fit to width)
   var BOX = GB + 'story-box.svg';
 
   /* ---- timings (ms) — all adjustable ---- */
@@ -71,6 +74,7 @@
   var CSS =
   '#jjst{position:fixed;inset:0;z-index:1;overflow:hidden;background:#0b1b2e;font-family:\'Joes Journey Headline\',sans-serif;}'+
   '#jjst-bgwrap{position:absolute;inset:0;overflow:hidden;}'+
+  '#jjst-sky{position:absolute;top:0;left:0;width:100%;height:auto;display:block;}'+   // night sky, fit-to-width, anchored at the top — deepest layer, behind every scene
   '#jjst .jjst-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform,opacity;}'+
   '#jjst-black{position:absolute;left:50%;top:55%;width:0;height:0;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 90px 24px rgba(255,176,84,.35) inset,0 0 0 9999px #05080f;z-index:8;pointer-events:none;}'+   // torch-light reveal: a transparent circle that grows, surrounded by black
   '#jjst-fade{position:absolute;inset:0;background:#05080f;opacity:0;z-index:10;pointer-events:none;transition:opacity '+T.endFade+'ms ease;}'+
@@ -86,7 +90,7 @@
   /* ---- 2. markup ---- */
   var wrap = document.createElement('div'); wrap.id = 'jjst';
   wrap.innerHTML =
-    '<div id="jjst-bgwrap"></div>'+
+    '<div id="jjst-bgwrap"><img id="jjst-sky" alt=""></div>'+
     '<div id="jjst-black"></div>'+
     '<div id="jjst-fade"></div>'+
     '<div id="jjst-progress"><div id="jjst-progress-fill"></div></div>'+
@@ -123,7 +127,8 @@
     b.style.width = '260vmax'; b.style.height = '260vmax';                       // grow the clear circle → reveals the scene
     setTimeout(function () { b.style.display = 'none'; }, T.revealDur + 120);
   }
-  function fadeToBlack(){ var f = document.getElementById('jjst-fade'); void f.offsetWidth; f.style.opacity = '1'; }
+  function fadeToBlack(){ var f = document.getElementById('jjst-fade'); void f.offsetWidth; f.style.opacity = '1';
+    setTimeout(function () { if (window.jjStory && window.jjStory.unlock) window.jjStory.unlock(); }, T.endFade + 200); }   // story finished → unlock scroll
 
   /* ---- 4. typing + scene runner ---- */
   var textEl, capEl, prog, fill;
@@ -160,6 +165,11 @@
   function mount(){
     if (document.getElementById('jjst')) return;
     document.body.appendChild(wrap);
+    document.getElementById('jjst-sky').src = SKY;                                // night-sky backdrop behind the scenes
+    var docEl = document.documentElement;                                         // lock scroll until the story ends ("not scrollable until the final scene")
+    docEl.style.overflow = 'hidden'; document.body.style.overflow = 'hidden';
+    window.jjStory = window.jjStory || {};
+    window.jjStory.unlock = function () { docEl.style.overflow = ''; document.body.style.overflow = ''; };   // called once the story finishes — ready for the scrollable story
     bgWrap = document.getElementById('jjst-bgwrap');
     textEl = document.getElementById('jjst-cap-text'); capEl = document.getElementById('jjst-cap');
     prog = document.getElementById('jjst-progress'); fill = document.getElementById('jjst-progress-fill');

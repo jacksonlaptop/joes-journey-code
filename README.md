@@ -1,56 +1,39 @@
 # Joe's Journey — Storytime page (hosted)
 
-Hosted on GitHub (`jacksonlaptop/joes-journey-code`) and served via raw.githack.com,
-same as the other scripts. The Storytime page needs ONE `<script>` tag.
+Hosted on GitHub (`jacksonlaptop/joes-journey-code`) and served via raw.githack.com.
+The intro is a sequence of **full-screen frames (WebP)** that swap on words as each line types.
 
 ## Files to upload — to the repo ROOT (same level as contact.js)
 
 | File | Notes |
 |------|-------|
 | `storytime.js` | the scene engine (re-upload whenever it changes) |
-| `story-nightsky.svg` | tall night-sky backdrop (1629×18691) behind every scene, fit to width |
-| `story-bg-1-village.svg` | village — **transparent sky** (night sky shows through) |
-| `story-bg-2-tavern.svg` | tavern — interior, opaque (no sky) |
-| `story-bg-3-woods.svg` | woods — **transparent sky** |
-| `story-bg-4-castle.svg` | castle mountain — **transparent sky** |
-| `story-bg-5-cave.svg` | cave — **transparent sky** |
-| `story-box.svg` | the empty caption frame (Text Empty.svg) |
+| `story-cavern-1/2/3.webp` | chapter 1 frames |
+| `story-village-1/2/3/4.webp` | chapter 2 frames |
+| `story-tavern-1.webp` | chapter 3 |
+| `story-woodland-1.webp` | chapter 4 |
+| `story-castle-1..6 + 13.webp` | chapter 5 frames |
+| `story-box.webp` | the caption frame |
+| `story-nightsky.svg` | tall night-sky backdrop — kept for the later scrollable section (hidden behind the opaque frames here) |
 
-The 4 outdoor scenes are transparent-sky cut-outs so `story-nightsky.svg` shows behind them.
-When you re-upload any bg/sky SVG, bump `AV` at the top of `storytime.js` (`?a=2` → `?a=3`) so browsers re-fetch it.
-
-The BGs are big (1.4–2.2 MB each). They load once and are cached; if githack feels
-slow we can move them to the Webflow CDN and just swap the URLs at the top of `storytime.js`.
+All frames are **WebP @ 2400px / q82**, converted from the source SVGs (~95 MB → ~1.7 MB, 98% smaller).
+Re-convert with `sharp(src,{density:200}).resize({width:2400}).webp({quality:82})`. Bump `AV` (`?a=3` → `?a=4`) in
+`storytime.js` when you re-upload a frame. The old `story-bg-*.svg/.webp` in the repo are unused — safe to delete.
 
 ## Webflow setup (Storytime page → Page Settings → Custom Code)
 
-**Inside `<head>`** (already added):
-```html
-<style>.nav-logo-link,.menu-container{opacity:0}</style>
-```
+**Inside `<head>`** (already added): `<style>.nav-logo-link,.menu-container{opacity:0}</style>`
 
-**Before `</body>` tag:**
-```html
-<script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/storytime.js"></script>
-```
+**Before `</body>`:** `<script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/storytime.js?v=8"></script>`
 
-## What it does
+## How it works
 
-- Opens on **black**, then a medieval **torch-light reveal** (a clear circle grows out of the dark) uncovers the cave.
-- Site nav drops in from the top + fades after 3s.
-- Caption frame + pink progress bar fade in (~2.7s), then the first line types.
-- Each line types out (centered), holds long enough to read, then the next types.
-- **Backgrounds are triggered mid-line by phrases** (all in the `SCENES` array):
-  - "more sinister" → **swipe** cave → village
-  - "Luckily one day" → **zoom a hut** + fade → tavern
-  - "Joe the Righteous" → **dissolve** → woods
-  - "mountains" → **zoom the castle** + fade → castle-mountain
-  - 1.5s after "magical Designer" → **fade to black** (caption + bg)
+- Opens on black → medieval torch-light reveal of the first frame.
+- Each line types out; on certain **words** the full-screen frame **crossfades** to the next (e.g. cavern-1 → "beast" → cavern-2 → "darkness" → cavern-3).
+- Nav drops in after 3s; pink progress bar; a loading screen holds until the first frame + box decode; scroll is locked until the final fade-to-black.
 
-## To tweak
+## To finish
 
-- **Copy / triggers / bg order** all live in the `SCENES` array. Each scene = `{ text, triggers:[{at,run}], end }`.
-- **Zoom focal points** (`FOCUS_HUT`, `FOCUS_CASTLE`) are percent-of-frame estimates — nudge to taste.
-- **Timings** are in `T = {...}` at the top.
-- **Font:** captions use the brand `Joes Journey Headline`.
-- Copy is verbatim except `"He he" → "He had"` (clear typo). Scenes 2 & 3 (identical text in the brief) are merged into one line.
+The `SCENES` array holds each line + its `frame` (opening frame) + `triggers:[{at:word, frame:name}]`.
+Cavern is wired (your example). **Still needed:** the trigger word for `village-2/3/4`, the Trogdor frame swap,
+and `castle-2..6` + `castle-13` (see the TODO comments in `storytime.js`).

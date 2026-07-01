@@ -3,7 +3,7 @@
 
    IN WEBFLOW (Storytime page → Page Settings):
      Inside <head>:  <style>.nav-logo-link,.menu-container{opacity:0}</style>
-     Before </body>: <script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/storytime.js?v=13"></script>
+     Before </body>: <script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/storytime.js?v=14"></script>
 
    Every scene is COMPOSED FROM LAYERS in code (not a flat image): the night sky
    backdrop → a transparent scene bg → positioned character layers (some animated)
@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's14 · village 4 panels on equal timer · hi-res dragon · flicker-free crossfade';
+  window.JJ_STORY_BUILD = 's15 · village panels: no-restart bug fixed · positions matched to mockups · villagers above box';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -44,41 +44,42 @@
     ]}
   };
 
-  /* ---- VILLAGE = 4-panel storyboard. Same bg + same characters (matched by `key`), so between
-         panels the dragon FIRE crossfades in place (body pixel-locked) and the villagers *walk*
-         to their new spots (position morphs). Only the fire escalates + people move — no jitter.
-         Panel beats (advance on words): 1 smoke → 2 fire → 3 bigger → 4 biggest.
-         The pitchfork guy (char-4) charges the beast across 1→3, then turns & flees in 4. ---- */
-  var VIL_DRAGON = 'right:-3%;bottom:7vh;width:min(82vw,1200px)';   // fixed for all panels
+  /* ---- VILLAGE = 4-panel storyboard, positions matched to the "2 - Village 1..4" mockups.
+         Same bg + same characters (matched by `key`): the dragon FIRE crossfades in place (body
+         pixel-locked) while villagers MORPH to their new spots. All villagers sit at MID height
+         (clear above the caption banner). Everyone drifts LEFT as the fire grows; the bonnet girl
+         starts on the right by the dragon then flees; the pitchfork guy (char-4) holds with the
+         group, then in P4 the terrified drop-guy (vil-pitch-drop) fades in as the others flee
+         off-screen left. Panels advance on an equal timer (see runVillageSeq). ---- */
+  var VIL_DRAGON = 'right:12%;bottom:26vh;width:min(72vw,1460px)';   // fixed body position for all 4 shots
+  var W1 = ';width:min(7vw,150px)', WP = ';width:min(8.5vw,175px)', WD = ';width:min(9vw,185px)';
   function vil(dragon, p){
     return { bg:'vil-bg', layers:[
       { key:'dragon', src:dragon,       css:VIL_DRAGON },
-      { key:'v1', src:'vil-char-1', cls:'idle', css:p.v1 },
-      { key:'v2', src:'vil-char-2', cls:'idle', css:p.v2 },
-      { key:'v3', src:'vil-char-3', cls:'idle', css:p.v3 },
-      { key:'v5', src:'vil-char-5', cls:'idle', css:p.v5 },
-      { key:'pitch', src:'vil-char-4', cls:'idle', css:p.pitch }
+      { key:'v1', src:'vil-char-1', cls:'idle', css:p.v1 },   // old man
+      { key:'v2', src:'vil-char-2', cls:'idle', css:p.v2 },   // bonnet girl (starts right)
+      { key:'v3', src:'vil-char-3', cls:'idle', css:p.v3 },   // redhead
+      { key:'v5', src:'vil-char-5', cls:'idle', css:p.v5 },   // curly
+      { key:'pitch', src:'vil-char-4', cls:'idle', css:p.pitch } // pitchfork guy
     ]};
   }
-  var VW = ';width:min(6.4vw,86px)', VWs = ';width:min(5.6vw,74px)', PW = ';width:min(8vw,108px)';
-  COMP.village1 = vil('vil-dragon-1', {        // small smoke — villagers scared, facing every way
-    v1:'left:25%;bottom:22vh'+VW, v2:'left:15%;bottom:15vh'+VW, v3:'left:33%;bottom:13vh'+VWs,
-    v5:'left:8%;bottom:25vh'+VWs, pitch:'left:41%;bottom:17vh'+PW });
-  COMP.village2 = vil('vil-dragon-2', {        // fire — group backs away, pitchfork charges in
-    v1:'left:19%;bottom:23vh'+VW, v2:'left:11%;bottom:16vh'+VW, v3:'left:26%;bottom:13vh'+VWs,
-    v5:'left:5%;bottom:26vh'+VWs, pitch:'left:51%;bottom:17vh'+PW });
-  COMP.village3 = vil('vil-dragon-3', {        // bigger fire — villagers run, pitchfork nearly on him
-    v1:'left:14%;bottom:24vh'+VWs, v2:'left:7%;bottom:16vh'+VWs, v3:'left:20%;bottom:12vh'+VWs,
-    v5:'left:2%;bottom:27vh'+VWs, pitch:'left:59%;bottom:16vh'+PW });
-  COMP.village4 = { bg:'vil-bg', layers:[   // biggest fire — pitchfork guy recoils & DROPS it (char-4 → scared-drop)
+  COMP.village1 = vil('vil-dragon-1', {        // smoke
+    v1:'left:6%;bottom:38vh'+W1, v2:'left:82%;bottom:31vh'+W1, v3:'left:20%;bottom:39vh'+W1,
+    v5:'left:10%;bottom:31vh'+W1, pitch:'left:15%;bottom:39vh'+WP });
+  COMP.village2 = vil('vil-dragon-2', {        // small flame
+    v1:'left:4%;bottom:37vh'+W1, v2:'left:80%;bottom:28vh'+W1, v3:'left:20%;bottom:39vh'+W1,
+    v5:'left:9%;bottom:30vh'+W1, pitch:'left:14%;bottom:36vh'+WP });
+  COMP.village3 = vil('vil-dragon-3', {        // medium flame — bonnet now fleeing through the middle
+    v1:'left:3%;bottom:36vh'+W1, v2:'left:44%;bottom:37vh'+W1, v3:'left:9%;bottom:39vh'+W1,
+    v5:'left:6%;bottom:30vh'+W1, pitch:'left:13%;bottom:32vh'+WP });
+  COMP.village4 = { bg:'vil-bg', layers:[   // big flame — others flee off-screen left, pitchfork guy DROPS it
     { key:'dragon', src:'vil-dragon-4', css:VIL_DRAGON },
-    { key:'v1', src:'vil-char-1', cls:'idle', css:'left:12%;bottom:25vh'+VWs },
-    { key:'v2', src:'vil-char-2', cls:'idle', css:'left:5%;bottom:16vh'+VWs },
-    { key:'v3', src:'vil-char-3', cls:'idle', css:'left:17%;bottom:12vh'+VWs },
-    { key:'v5', src:'vil-char-5', cls:'idle', css:'left:1%;bottom:28vh'+VWs },
-    { key:'pitchdrop', src:'vil-pitch-drop', cls:'idle', css:'left:36%;bottom:30vh;width:min(10vw,140px)' }
-  ]};   // note: key 'pitch' is absent here so the charging guy fades out as the terrified drop-guy fades in.
-        // pitchdrop sits ABOVE the caption banner (banner covers bottom ~4.5→27vh centre) so he's visible.
+    { key:'v1', src:'vil-char-1', cls:'idle', css:'left:-12%;bottom:36vh'+W1 },
+    { key:'v2', src:'vil-char-2', cls:'idle', css:'left:21%;bottom:34vh'+W1 },
+    { key:'v3', src:'vil-char-3', cls:'idle', css:'left:-9%;bottom:39vh'+W1 },
+    { key:'v5', src:'vil-char-5', cls:'idle', css:'left:-14%;bottom:30vh'+W1 },
+    { key:'pitchdrop', src:'vil-pitch-drop', cls:'idle', css:'left:6%;bottom:33vh'+WD }
+  ]};   // key 'pitch' absent → the charging guy fades out as the terrified drop-guy fades in
 
   /* ---- captions: each = the line + the chapter it's on + word `triggers` that switch chapter ---- */
   var SCENES = [
@@ -204,7 +205,9 @@
     });
   }
   function setComp(name){
-    if (name === curComp) return; curComp = name;
+    if (name === curComp) return;
+    if (name === 'village1' && typeof curComp === 'string' && curComp.indexOf('village') === 0) return; // don't restart the village once it's running (2nd caption keeps comp:'village1')
+    curComp = name;
     var c = COMP[name]; if (!c) return;
     showBg(c.bg); buildLayers(c.layers);
     if (name === 'village1') runVillageSeq();        // start the equal-timed dragon-fire sequence

@@ -27,14 +27,14 @@ Re-convert with `sharp(src,{density:200}).resize({width:2400}).webp({quality:82}
 
 **Inside `<head>`** (already added): `<style>.nav-logo-link,.menu-container{opacity:0}</style>`
 
-**Before `</body>`:** `<script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/storytime.js?v=11"></script>`
+**Before `</body>`:** `<script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/storytime.js?v=12"></script>`
 
 ## Village = 4-panel storyboard (build s12)
 
 Village is now **4 panels sharing one bg + one set of characters** (matched by `key` in the engine),
 so between panels the dragon's **fire crossfades in place** (body pixel-locked — no jitter) and the
-**villagers walk** to their new spots (position morphs). Panels advance on words:
-`more sinister`→P1 (smoke), `Dragon`→P2 (fire), `fear`→P3 (bigger), `Trogdor`→P4 (biggest).
+**villagers walk** to their new spots (position morphs). P1 (smoke) appears on the word `more sinister`,
+then the 4 shots advance on an **equal timer** (`T.villagePanel`, ~3.6s each) — smoke → fire → bigger → biggest.
 The pitchfork guy (char-4) charges the beast across P1→P3, then in P4 he dissolves to the
 terrified `vil-pitch-drop` state (recoiled, dropping his pitchfork).
 Positions are plain CSS strings in `COMP.village1..4` — nudge freely. Dragon canvas = `?a=5`.

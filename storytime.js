@@ -3,7 +3,7 @@
 
    IN WEBFLOW (Storytime page → Page Settings):
      Inside <head>:  <style>.nav-logo-link,.menu-container{opacity:0}</style>
-     Before </body>: <script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/storytime.js?v=11"></script>
+     Before </body>: <script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/storytime.js?v=13"></script>
 
    Every scene is COMPOSED FROM LAYERS in code (not a flat image): the night sky
    backdrop → a transparent scene bg → positioned character layers (some animated)
@@ -11,11 +11,11 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's12 · village storyboard (4 panels) · fixed dragon + escalating fire · morphing layers';
+  window.JJ_STORY_BUILD = 's14 · village 4 panels on equal timer · hi-res dragon · flicker-free crossfade';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
-  var AV = '?a=5';
+  var AV = '?a=6';
   function F(name){ return GB + 'story-' + name + '.webp' + AV; }
   var BANNER = GB + 'story-banner.webp' + AV;             // J-swirl caption frame
   var SKY = GB + 'story-nightsky.svg' + AV;
@@ -76,8 +76,9 @@
     { key:'v2', src:'vil-char-2', cls:'idle', css:'left:5%;bottom:16vh'+VWs },
     { key:'v3', src:'vil-char-3', cls:'idle', css:'left:17%;bottom:12vh'+VWs },
     { key:'v5', src:'vil-char-5', cls:'idle', css:'left:1%;bottom:28vh'+VWs },
-    { key:'pitchdrop', src:'vil-pitch-drop', cls:'idle', css:'left:44%;bottom:11vh;width:min(9vw,124px)' }
-  ]};   // note: key 'pitch' is absent here so the charging guy fades out as the terrified drop-guy fades in
+    { key:'pitchdrop', src:'vil-pitch-drop', cls:'idle', css:'left:36%;bottom:30vh;width:min(10vw,140px)' }
+  ]};   // note: key 'pitch' is absent here so the charging guy fades out as the terrified drop-guy fades in.
+        // pitchdrop sits ABOVE the caption banner (banner covers bottom ~4.5→27vh centre) so he's visible.
 
   /* ---- captions: each = the line + the chapter it's on + word `triggers` that switch chapter ---- */
   var SCENES = [
@@ -85,7 +86,7 @@
     { text:"He had a fascination for gold, jewels, treasures and anything that sparkled...but also something more sinister...the local villagers!",
       comp:'cavern', triggers:[ { at:'more sinister', comp:'village1' } ] },
     { text:"He had many names, Beast, Dragon, Death, but the one that put fear into the hearts of the locals was...Trogdor! Trogdor The Burninator...",
-      comp:'village1', triggers:[ { at:'Dragon', comp:'village2' }, { at:'fear', comp:'village3' }, { at:'Trogdor', comp:'village4' } ] },
+      comp:'village1' },   // village1→2→3→4 now advance on an equal timer (see runVillageSeq), not on these words
     { text:"Luckily one day a brave young man appeared to try and best this beast! His goal? To save the villagers and stop this evil...",
       comp:'village4', triggers:[ { at:'Luckily one day', comp:'tavern' } ] },
     { text:"“Joe the Righteous” they called! He set off a journey to find the beast, searching through hills and mountains...He went toe to toe with the beast...",
@@ -96,7 +97,8 @@
 
   /* ---- timings (ms) ---- */
   var T = { revealAt:700, revealDur:2200, boxFadeAt:2700, menuDropAt:3000, firstTypeAt:3500,
-    typeSpeed:24, pauseDot:280, pauseEllipsis:620, readPerChar:32, readMin:1700, bgFade:600, endFade:1500 };
+    typeSpeed:24, pauseDot:280, pauseEllipsis:620, readPerChar:32, readMin:1700, bgFade:600, endFade:1500,
+    villagePanel:3600 };   // each of the 4 village dragon 'shots' holds this long (equal timing, not word-driven)
 
   /* ---- styles ---- */
   var CSS =
@@ -155,11 +157,14 @@
   function clearAnims(){ animTimers.forEach(function (t) { clearInterval(t); }); animTimers = []; }
   function fadeRemove(el){ el.style.transition = 'opacity .5s ease'; el.style.opacity = '0';
     setTimeout(function () { if (el.parentNode) el.remove(); }, 560); }
-  function crossfadeSrc(el, src){                            // swap art with a fade (body is pixel-locked, so only the fire visibly changes)
-    var ghost = el.cloneNode(false); ghost.src = src; ghost.style.opacity = '0';
+  function crossfadeSrc(el, src){                            // body is pixel-locked, so only the fire visibly changes.
+    var ghost = el.cloneNode(false);                         // ghost = the OLD art, laid ON TOP,
+    ghost.src = el.currentSrc || el.src;                     // then faded out to reveal the NEW art (already committed to el).
+    ghost.style.cssText = el.style.cssText + ';opacity:1;transition:opacity .55s ease;animation:none;';
+    el.src = src;                                            // commit new underneath first — no end-of-swap flash
     el.parentNode.insertBefore(ghost, el.nextSibling);
-    requestAnimationFrame(function () { ghost.style.opacity = '1'; });
-    setTimeout(function () { el.src = src; if (ghost.parentNode) ghost.remove(); }, 560);
+    requestAnimationFrame(function () { ghost.style.opacity = '0'; });
+    setTimeout(function () { if (ghost.parentNode) ghost.remove(); }, 620);
   }
   function keyOf(L, idx){ return L.key || (L.anim ? 'anim:' + L.anim[0] : L.src) || ('i' + idx); }
   function buildLayers(layers){
@@ -190,10 +195,20 @@
       })(rec, L.anim, L.int); }
     });
   }
+  var panelTimers = [];
+  function clearPanels(){ panelTimers.forEach(function (t) { clearTimeout(t); }); panelTimers = []; }
+  function runVillageSeq(){                          // village1 is up — advance 2→3→4 at equal intervals
+    clearPanels();
+    ['village2','village3','village4'].forEach(function (name, i) {
+      panelTimers.push(setTimeout(function () { setComp(name); }, T.villagePanel * (i + 1)));
+    });
+  }
   function setComp(name){
     if (name === curComp) return; curComp = name;
     var c = COMP[name]; if (!c) return;
     showBg(c.bg); buildLayers(c.layers);
+    if (name === 'village1') runVillageSeq();        // start the equal-timed dragon-fire sequence
+    else if (name.indexOf('village') !== 0) clearPanels();  // left the village → cancel any pending shots
   }
 
   function revealFromBlack(){ var b = document.getElementById('jjst-black');

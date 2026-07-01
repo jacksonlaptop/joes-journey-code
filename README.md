@@ -9,7 +9,10 @@ The intro is a sequence of **full-screen frames (WebP)** that swap on words as e
 |------|-------|
 | `storytime.js` | the scene engine (re-upload whenever it changes) |
 | `story-cavern-1/2/3.webp` | chapter 1 frames |
-| `story-village-1/2/3/4.webp` | chapter 2 frames |
+| `story-vil-bg.webp` | chapter 2 transparent bg (over the night sky) |
+| `story-vil-dragon-1/2/3/4.webp` | chapter 2 dragon — 4 fire states (smoke→small→big→huge), body pixel-locked on one canvas |
+| `story-vil-char-1..5.webp` | chapter 2 villagers (char-4 = pitchfork guy, charging) |
+| `story-vil-pitch-drop.webp` | chapter 2 panel-4 state — same guy, terrified, dropping his pitchfork |
 | `story-tavern-1.webp` | chapter 3 |
 | `story-woodland-1.webp` | chapter 4 |
 | `story-castle-1..6 + 13.webp` | chapter 5 frames |
@@ -24,7 +27,17 @@ Re-convert with `sharp(src,{density:200}).resize({width:2400}).webp({quality:82}
 
 **Inside `<head>`** (already added): `<style>.nav-logo-link,.menu-container{opacity:0}</style>`
 
-**Before `</body>`:** `<script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/storytime.js?v=8"></script>`
+**Before `</body>`:** `<script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/storytime.js?v=11"></script>`
+
+## Village = 4-panel storyboard (build s12)
+
+Village is now **4 panels sharing one bg + one set of characters** (matched by `key` in the engine),
+so between panels the dragon's **fire crossfades in place** (body pixel-locked — no jitter) and the
+**villagers walk** to their new spots (position morphs). Panels advance on words:
+`more sinister`→P1 (smoke), `Dragon`→P2 (fire), `fear`→P3 (bigger), `Trogdor`→P4 (biggest).
+The pitchfork guy (char-4) charges the beast across P1→P3, then in P4 he dissolves to the
+terrified `vil-pitch-drop` state (recoiled, dropping his pitchfork).
+Positions are plain CSS strings in `COMP.village1..4` — nudge freely. Dragon canvas = `?a=5`.
 
 ## How it works
 

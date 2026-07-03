@@ -1,52 +1,69 @@
-# Joe's Journey — Storytime page (hosted)
+# Joe's Journey — accurate page loader (`jj-loader.js`)
 
-Hosted on GitHub (`jacksonlaptop/joes-journey-code`) and served via raw.githack.com.
-The intro is a sequence of **full-screen frames (WebP)** that swap on words as each line types.
+A **real** progress loader, not a timed spinner. It measures the actual bytes of a chosen set of
+heavy assets as they download (reading each file's `Content-Length` and streaming the body), moves a
+**trotting Joe** by that true percentage, and reveals the page only when those assets are downloaded
+**and** decoded. Zero dependencies. Verified live: real byte progress + reveal-on-ready.
 
-## Files to upload — to the repo ROOT (same level as contact.js)
+## Two looks (A/B — pick one)
+- `variant:'journey'` — the whole route is on screen; Joe trots past the story landmarks
+  (village → tavern → woodland → mountains → castle), which light up as he passes; the pink road
+  fills behind him. Progress is *spatial* — you see how far.
+- `variant:'scroll'` — Joe is centred and larger, trotting in place while the world slides past
+  him; a progress bar sits underneath.
 
-| File | Notes |
-|------|-------|
-| `storytime.js` | the scene engine (re-upload whenever it changes) |
-| `story-cavern-1/2/3.webp` | chapter 1 frames |
-| `story-vil-bg.webp` | chapter 2 transparent bg (over the night sky) |
-| `story-vil-dragon-1/2/3/4.webp` | chapter 2 dragon — 4 fire states (smoke→small→big→huge), body pixel-locked on one canvas |
-| `story-vil-char-1..5.webp` | chapter 2 villagers (char-4 = pitchfork guy, charging) |
-| `story-vil-pitch-drop.webp` | chapter 2 panel-4 state — same guy, terrified, dropping his pitchfork |
-| `story-tavern-1.webp` | chapter 3 |
-| `story-woodland-1.webp` | chapter 4 |
-| `story-castle-1..6 + 13.webp` | chapter 5 frames |
-| `story-box.webp` | the caption frame |
-| `story-nightsky.svg` | tall night-sky backdrop — kept for the later scrollable section (hidden behind the opaque frames here) |
+Joe is a **few-frame trot cycle** (`frames:[...]` @ `fps`). `joe-trot-1..4.png` are **placeholders** —
+swap in your art on the same square-ish canvas with his feet centred at the bottom.
 
-All frames are **WebP @ 2400px / q82**, converted from the source SVGs (~95 MB → ~1.7 MB, 98% smaller).
-Re-convert with `sharp(src,{density:200}).resize({width:2400}).webp({quality:82})`. Bump `AV` (`?a=3` → `?a=4`) in
-`storytime.js` when you re-upload a frame. The old `story-bg-*.svg/.webp` in the repo are unused — safe to delete.
+## Why the current one needs replacing
+`site-footer.js` reveals the homepage on a hardcoded `delay: 13.0` (line ~356) — Joe flies for 13s and
+the page shows whether the assets loaded in 2s or aren't ready at 13s. It's a countdown, not a measure.
 
-## Webflow setup (Storytime page → Page Settings → Custom Code)
+## API
+```js
+JJLoader.start({
+  variant: 'journey',                 // or 'scroll'
+  assets:  ['https://.../fly-2.riv', 'https://.../hero.mp4', ...],  // what to gate on (measured by bytes)
+  frames:  ['https://.../joe-trot-1.png', ...4], fps: 8,            // the trot cycle
+  minTime: 900,     // ms — keep the loader up at least this long so fast loads don't snap through
+  maxWait: 15000,   // ms — hard safety; never traps the user
+  decode:  true,    // also wait until images are decoded/paintable, not just downloaded
+  onReady: function(){ ...truly ready -> start the intro / fade the page in... },
+  driver:  function(onProgress, onDone){ ... }  // OPTIONAL: feed progress yourself (AJAX transitions)
+});
+```
 
-**Inside `<head>`** (already added): `<style>.nav-logo-link,.menu-container{opacity:0}</style>`
+## Recipe A — Homepage (replace the 13s reveal)
+Gate the reveal on real load instead of the timer; put your existing reveal in `onReady`:
+```js
+JJLoader.start({
+  variant: 'journey',
+  assets: [ 'https://.../fly-2.riv', 'https://.../waves.riv', 'https://.../hero-video.mp4' /* + big images */ ],
+  frames: ['https://.../joe-trot-1.png','https://.../joe-trot-2.png','https://.../joe-trot-3.png','https://.../joe-trot-4.png'],
+  minTime: 1200,
+  onReady: revealPage      // your existing reveal — but delete the `delay: 13.0` so it fires now
+});
+```
 
-**Before `</body>`:** `<script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/storytime.js?v=12"></script>`
+## Recipe B — Page transitions (site-wide, full-page navigation)
+Put it in the **site-wide Footer** so it runs on every page; each page's loader measures that page's
+heavy assets and reveals when ready. Optional polish: fade a black cover in on internal link click
+before navigating (kills any white flash) — not required, since the next page's loader covers the screen.
 
-## Village = 4-panel storyboard (build s12)
+## Recipe C — True cross-page progress (AJAX transitions, most seamless)
+With Swup/Barba, pass a `driver` that reports the page fetch's real byte progress so the bar spans the
+*whole* transition (see the streaming-fetch snippet pattern in `jj-loader.js`'s `measure`).
 
-Village is now **4 panels sharing one bg + one set of characters** (matched by `key` in the engine),
-so between panels the dragon's **fire crossfades in place** (body pixel-locked — no jitter) and the
-**villagers walk** to their new spots (position morphs). P1 (smoke) appears on the word `more sinister`,
-then the 4 shots advance on an **equal timer** (`T.villagePanel`, ~3.6s each) — smoke → fire → bigger → biggest.
-The pitchfork guy (char-4) charges the beast across P1→P3, then in P4 he dissolves to the
-terrified `vil-pitch-drop` state (recoiled, dropping his pitchfork).
-Positions are plain CSS strings in `COMP.village1..4` — nudge freely. Dragon canvas = `?a=5`.
+## Honest limits
+- There is **no browser API** for "the whole next page is X% loaded" — you measure a *known set* of files.
+  For this site that set is exactly what matters (Rive, video, big images).
+- Byte measuring needs `Content-Length` + CORS. GitHub/jsDelivr/Webflow have both. Any asset that can't be
+  fetched (CORS/error) is skipped so it never blocks the reveal.
+- "Downloaded" ≠ "painted": `decode:true` adds an image-decode wait so the reveal isn't a beat early.
 
-## How it works
-
-- Opens on black → medieval torch-light reveal of the first frame.
-- Each line types out; on certain **words** the full-screen frame **crossfades** to the next (e.g. cavern-1 → "beast" → cavern-2 → "darkness" → cavern-3).
-- Nav drops in after 3s; pink progress bar; a loading screen holds until the first frame + box decode; scroll is locked until the final fade-to-black.
-
-## To finish
-
-The `SCENES` array holds each line + its `frame` (opening frame) + `triggers:[{at:word, frame:name}]`.
-Cavern is wired (your example). **Still needed:** the trigger word for `village-2/3/4`, the Trogdor frame swap,
-and `castle-2..6` + `castle-13` (see the TODO comments in `storytime.js`).
+## Files / upload
+- `jj-loader.js` → repo root (same place as `storytime.js`).
+- `joe-trot-1..4.png` → repo root (placeholder trot frames; replace with your Joe).
+- `ab-test.html` → repo root to try both looks live at
+  `https://raw.githack.com/jacksonlaptop/joes-journey-code/main/ab-test.html` (**Run A** / **Run B**,
+  plus the "real assets" buttons). It's a test harness — not part of the live site.

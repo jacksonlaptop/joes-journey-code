@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JJ Loader — A/B</title>
+<style>
+  html,body{margin:0;height:100%;background:#0e1420;color:#e8d9b5;font-family:Georgia,serif;}
+  .page{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;text-align:center;}
+  h1{font-size:40px;margin:0;} p{opacity:.7;margin:0;}
+  .btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
+  button{background:#FF00F5;border:none;color:#fff;font:inherit;font-size:16px;padding:12px 22px;border-radius:9px;cursor:pointer;}
+  button.alt{background:#2b3550;}
+  #log{position:fixed;left:12px;bottom:12px;font-family:monospace;font-size:12px;color:#8fd;opacity:.85;}
+</style>
+</head>
+<body>
+  <div class="page">
+    <h1>The page is here.</h1>
+    <p>Run each loader and compare. Joe is a 4-frame trot cycle (placeholder art).</p>
+    <div class="btns">
+      <button onclick="run('journey')">Run A · The Journey</button>
+      <button onclick="run('scroll')">Run B · Scrolling world</button>
+    </div>
+    <div class="btns">
+      <button class="alt" onclick="run('journey',true)">A · real assets</button>
+      <button class="alt" onclick="run('scroll',true)">B · real assets</button>
+    </div>
+  </div>
+  <div id="log"></div>
+
+  <script src="./jj-loader.js"></script>
+  <script>
+    function log(m){ document.getElementById('log').textContent = m; }
+    var FRAMES = ['./joe-trot-1.png','./joe-trot-2.png','./joe-trot-3.png','./joe-trot-4.png'];
+
+    function run(variant, real){
+      var base = { variant:variant, frames:FRAMES, fps:8, minTime:600,
+        onReady:function(){ log(variant+' · revealed ✓'); } };
+      if (real){
+        var GB='https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/', b='?b='+Math.floor(Math.random()*1e6);
+        base.assets = ['story-vil-dragon-1.webp','story-vil-dragon-2.webp','story-vil-dragon-3.webp','story-vil-dragon-4.webp',
+                       'story-vil-bg.webp','story-nightsky.svg','story-vil-char-1.webp','story-vil-char-2.webp',
+                       'story-vil-char-3.webp','story-vil-char-4.webp','story-vil-char-5.webp','story-vil-pitch-drop.webp']
+                      .map(function(f){return GB+f+b;});
+        base.decode = true; log(variant+' · measuring real bytes…');
+      } else {
+        base.driver = function(onProgress,onDone){ var p=0; var iv=setInterval(function(){
+          p += 0.015 + Math.random()*0.02; onProgress(Math.min(0.99,p));
+          log(variant+' · '+Math.round(Math.min(0.99,p)*100)+'%');
+          if(p>=1){ clearInterval(iv); onDone(); } }, 90); };
+      }
+      JJLoader.start(base);
+    }
+  </script>
+</body>
+</html>

@@ -29,19 +29,21 @@
   </div>
   <div id="log"></div>
 
-  <script src="./jj-loader.js"></script>
+  <script src="./jj-loader.js?v=5"></script>
   <script>
     function log(m){ document.getElementById('log').textContent = m; }
-    var TROT = ['./joe-trot-1.png','./joe-trot-2.png','./joe-trot-3.png','./joe-trot-4.png'];
-    var GALLOP = [1,2,3,4,5,6,7,8].map(function(i){ return './joe-gallop-'+i+'.webp'; });
+    var AV = '?v=5';   // bump when frames are re-uploaded (busts the githack cache)
+    var TROT = ['./joe-trot-1.png'+AV,'./joe-trot-2.png'+AV,'./joe-trot-3.png'+AV,'./joe-trot-4.png'+AV];
+    var GALLOP = [];
+    for (var g=1; g<=15; g++) GALLOP.push('./joe-gallop-'+g+'.webp'+AV);   // 15-frame loop from the video
 
     function run(variant, real){
       var isScroll = variant === 'scroll';
       var base = { variant:variant, minTime:600,
         frames: isScroll ? GALLOP : TROT,
         fps: isScroll ? 14 : 8,
-        frameAR: isScroll ? 400/337 : 200/175,   // gallop frames are 400x337
-        footFrac: isScroll ? 0.97 : 150/175,      // hooves sit near the bottom of the crop
+        frameAR: isScroll ? 400/358 : 200/175,   // gallop frames are 400x358
+        footFrac: isScroll ? 0.963 : 150/175,     // hooves sit near the bottom of the crop
         joeH: isScroll ? 150 : 66,
         onReady:function(){ log(variant+' · revealed ✓'); } };
       if (real){

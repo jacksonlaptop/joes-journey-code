@@ -61,8 +61,35 @@
   function pine(c){ return '<rect x="-3" y="18" width="6" height="10" fill="#5a4632"/><polygon points="0,-14 -14,6 14,6" fill="'+c+'"/><polygon points="0,-2 -16,20 16,20" fill="'+c+'"/>'; }
   function mtn(c){ return '<polygon points="-22,22 -2,-20 16,22" fill="'+c+'"/><polygon points="-2,-20 -9,-6 5,-6" fill="#e9eef7"/><polygon points="6,22 22,-6 34,22" fill="'+c+'"/>'; }
   function castle(c){ return '<rect x="-26" y="-6" width="52" height="40" fill="'+c+'"/><rect x="-26" y="-16" width="10" height="12" fill="'+c+'"/><rect x="-6" y="-16" width="12" height="12" fill="'+c+'"/><rect x="16" y="-16" width="10" height="12" fill="'+c+'"/><rect x="-4" y="14" width="10" height="20" fill="#2a2030"/><line x1="22" y1="-16" x2="22" y2="-42" stroke="'+c+'" stroke-width="3"/><polygon points="22,-42 44,-36 22,-30" fill="#FF00F5"/>'; }
-  var STARS = '<circle cx="120" cy="50" r="2" fill="#fff" opacity=".5"/><circle cx="300" cy="35" r="1.5" fill="#fff" opacity=".4"/><circle cx="560" cy="60" r="2" fill="#fff" opacity=".5"/><circle cx="820" cy="40" r="1.5" fill="#fff" opacity=".4"/><circle cx="700" cy="85" r="1.5" fill="#fff" opacity=".35"/><circle cx="440" cy="80" r="1.3" fill="#fff" opacity=".3"/>';
-  var DEFS = '<defs><linearGradient id="jjsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1226"/><stop offset="1" stop-color="#05070d"/></linearGradient></defs>';
+  var STARS = '<circle cx="120" cy="50" r="2" fill="#fff" opacity=".5"/><circle cx="300" cy="35" r="1.5" fill="#fff" opacity=".4"/><circle cx="560" cy="60" r="2" fill="#fff" opacity=".5"/><circle cx="820" cy="40" r="1.5" fill="#fff" opacity=".4"/><circle cx="700" cy="85" r="1.5" fill="#fff" opacity=".35"/><circle cx="440" cy="80" r="1.3" fill="#fff" opacity=".3"/><circle cx="220" cy="140" r="1.4" fill="#aeb6c4" opacity=".35"/><circle cx="640" cy="150" r="1.3" fill="#aeb6c4" opacity=".3"/><circle cx="930" cy="120" r="1.5" fill="#aeb6c4" opacity=".35"/>';
+  var DEFS = '<defs><linearGradient id="jjsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#101c34"/><stop offset="1" stop-color="#0a1222"/></linearGradient></defs>';
+  /* the site's space swirls (darker strokes on the sky, like the homepage/game bg) + its grey moon */
+  var SWIRLS = '<g fill="none" stroke="#0a1120" stroke-linecap="round" opacity=".85">' +
+      '<path d="M120,140 q150,-100 340,-50 q170,45 260,-35" stroke-width="46"/>' +
+      '<path d="M520,210 q180,-60 330,-10" stroke-width="34" opacity=".7"/>' +
+      '<path d="M-20,230 q120,-50 260,-14" stroke-width="30" opacity=".6"/></g>';
+  var MOON = '<g transform="translate(872,64)"><defs><clipPath id="jjmoonc"><circle r="46"/></clipPath></defs>' +
+      '<circle r="46" fill="#49525f"/><g clip-path="url(#jjmoonc)"><circle cx="-15" cy="12" r="46" fill="#333c49"/></g>' +
+      '<circle cx="14" cy="-12" r="7" fill="#3c4552"/><circle cx="26" cy="8" r="4.5" fill="#3c4552"/><circle cx="2" cy="-26" r="4" fill="#3c4552"/></g>';
+  /* a drifting cartoon wave band in the site's style: navy body + grey foam crests + curl dots.
+     `humps` = [[w,h],...] repeated; the pattern period = sum of widths, and the CSS drift distance
+     must equal that period so the loop is seamless. Alternating hump sizes keeps it organic. */
+  function waveBand(cls, yTop, humps, body, foam, foamOp) {
+    var period = 0; humps.forEach(function (hp) { period += hp[0]; });
+    var d = 'M' + (-period) + ',' + yTop, foamD = '', curls = '', x = -period;
+    while (x < 1000 + period) {
+      for (var i = 0; i < humps.length; i++) {
+        var w = humps[i][0], h = humps[i][1], x1 = x + w;
+        d += ' A' + (w / 2) + ' ' + h + ' 0 0 1 ' + x1 + ',' + yTop;
+        foamD += 'M' + x + ',' + yTop + ' A' + (w / 2) + ' ' + h + ' 0 0 1 ' + x1 + ',' + yTop + ' ';
+        if (h > 15) curls += '<circle cx="' + (x + w * 0.16) + '" cy="' + (yTop - h * 0.55) + '" r="' + (h * 0.22) + '" fill="' + foam + '" opacity="' + (foamOp || 1) + '"/>';
+        x = x1;
+      }
+    }
+    d += ' L' + x + ',340 L' + (-period) + ',340 Z';
+    return '<g class="' + cls + '"><path d="' + d + '" fill="' + body + '"/>' +
+      '<path d="' + foamD + '" fill="none" stroke="' + foam + '" stroke-width="4.5" stroke-linecap="round" opacity="' + (foamOp || 1) + '"/>' + curls + '</g>';
+  }
 
   var CSS =
     '#jjld{position:fixed;inset:0;z-index:2147483000;background:#05070d;display:flex;align-items:center;justify-content:center;transition:opacity .6s ease;font-family:"Joes Journey Headline",Georgia,serif;}' +
@@ -71,7 +98,13 @@
     '#jjld .wp{opacity:.34;transition:opacity .45s ease,filter .45s ease;}' +
     '#jjld .wp.lit{opacity:1;filter:drop-shadow(0 0 7px rgba(255,45,149,.75));}' +
     '#jjld .pct{fill:#f0e4c4;font-size:30px;}#jjld .cap{fill:rgba(240,228,196,.55);font-size:13px;letter-spacing:4px;}' +
-    '#jjld .trail{transition:none;}';
+    '#jjld .trail{transition:none;}' +
+    '@keyframes jjdriftB{to{transform:translateX(-170px);}}' +
+    '@keyframes jjdriftF{to{transform:translateX(-220px);}}' +
+    '@keyframes jjbob{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}' +
+    '#jjld .wback{animation:jjdriftB 11s linear infinite;}' +
+    '#jjld .wfront{animation:jjdriftF 6.5s linear infinite;}' +
+    '#jjld .joe{animation:jjbob 1.7s ease-in-out infinite;}';
 
   function mount(html) {
     if (!document.getElementById('jjld-style')) { var st = document.createElement('style'); st.id = 'jjld-style'; st.textContent = CSS; document.head.appendChild(st); }
@@ -100,7 +133,8 @@
       '</svg>');
     var trail = el.querySelector('.trail'), L = trail.getTotalLength();
     trail.style.strokeDasharray = L; trail.style.strokeDashoffset = L;
-    var joe = el.querySelector('.joe'), JH = 66, JW = JH * 200 / 175, FOOT = 150 / 175;
+    var AR = opts.frameAR || (200 / 175), FOOT = opts.footFrac != null ? opts.footFrac : (150 / 175);
+    var joe = el.querySelector('.joe'), JH = opts.joeH || 66, JW = JH * AR;
     if (joe.tagName.toLowerCase() === 'image') { joe.setAttribute('width', JW); joe.setAttribute('height', JH); }
     var pct = el.querySelector('.pct');
     return { el: el, joe: joe, render: function (p) {
@@ -121,24 +155,26 @@
     var worldHtml = world.map(function (w) { return '<g transform="translate(' + w.vx + ',150) scale(' + w.k + ')">' + w.s + '</g>'; }).join('');
     var el = mount(
       '<svg viewBox="0 0 1000 320">' + DEFS +
-        '<rect x="-50" y="-50" width="1100" height="420" fill="url(#jjsky)"/>' + STARS +
-        '<g id="jjfar"><path d="M-200,258 Q250,225 600,255 T1400,248 L1400,330 L-200,330 Z" fill="#101728"/></g>' +
+        '<rect x="-50" y="-50" width="1100" height="420" fill="url(#jjsky)"/>' + SWIRLS + STARS + MOON +
         '<g id="jjmid">' + worldHtml + '</g>' +
-        '<rect x="-50" y="272" width="1120" height="60" fill="#0e1524"/>' +
-        '<path d="M-50,272 Q250,262 520,272 T1050,268" fill="none" stroke="#2c3346" stroke-width="4"/>' +
-        '<g id="jjstreak"></g>' +
+        /* speed streaks above the water */
+        '<g stroke="rgba(255,255,255,.14)" stroke-width="3" stroke-linecap="round">' +
+          '<line x1="415" y1="196" x2="378" y2="196"/><line x1="398" y1="212" x2="352" y2="212"/><line x1="420" y1="228" x2="390" y2="228"/></g>' +
+        /* the sea: back band (slate, slow) + front band (navy, faster) drifting seamlessly */
+        waveBand('wback', 246, [[95, 18], [75, 12]], '#39434f', '#78818c', .9) +
+        waveBand('wfront', 266, [[130, 30], [90, 20]], '#142a47', '#c9cfd9', .95) +
         joeSvg(frames) +
-        '<rect x="340" y="300" width="320" height="9" rx="4.5" fill="#2c3346"/>' +
+        '<rect x="340" y="300" width="320" height="9" rx="4.5" fill="rgba(255,255,255,.14)"/>' +
         '<rect class="bar" x="340" y="300" width="0" height="9" rx="4.5" fill="#FF00F5"/>' +
         '<text class="pct" x="500" y="292" text-anchor="middle" style="font-size:22px">0%</text>' +
       '</svg>');
-    var mid = el.querySelector('#jjmid'), far = el.querySelector('#jjfar'), bar = el.querySelector('.bar'), pct = el.querySelector('.pct');
-    var joe = el.querySelector('.joe'), JH = 128, JW = JH * 200 / 175, FOOT = 150 / 175, CENTER = 505, ROAD = 262;
+    var mid = el.querySelector('#jjmid'), bar = el.querySelector('.bar'), pct = el.querySelector('.pct');
+    var AR = opts.frameAR || (200 / 175), FOOT = opts.footFrac != null ? opts.footFrac : (150 / 175);
+    var joe = el.querySelector('.joe'), JH = opts.joeH || 150, JW = JH * AR, CENTER = 505, ROAD = 258;   // hooves ride the front crests
     if (joe.tagName.toLowerCase() === 'image') { joe.setAttribute('width', JW); joe.setAttribute('height', JH); joe.setAttribute('x', (CENTER - JW / 2).toFixed(1)); joe.setAttribute('y', (ROAD - JH * FOOT).toFixed(1)); }
     else { joe.setAttribute('cx', CENTER); joe.setAttribute('cy', ROAD - 14); }
     return { el: el, joe: joe, render: function (p) {
       mid.setAttribute('transform', 'translate(' + (500 - p * 1400).toFixed(1) + ',0)');
-      far.setAttribute('transform', 'translate(' + (-p * 300).toFixed(1) + ',0)');
       bar.setAttribute('width', (320 * p).toFixed(1));
       pct.textContent = Math.round(p * 100) + '%';
     }};

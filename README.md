@@ -5,12 +5,15 @@ heavy assets as they download (reading each file's `Content-Length` and streamin
 **trotting Joe** by that true percentage, and reveals the page only when those assets are downloaded
 **and** decoded. Zero dependencies. Verified live: real byte progress + reveal-on-ready.
 
-## Two looks (A/B — pick one)
+## Three looks (pick one)
 - `variant:'journey'` — the whole route is on screen; Joe trots past the story landmarks
   (village → tavern → woodland → mountains → castle), which light up as he passes; the pink road
   fills behind him. Progress is *spatial* — you see how far.
-- `variant:'scroll'` — Joe is centred and larger, trotting in place while the world slides past
-  him; a progress bar sits underneath.
+- `variant:'scroll'` — Joe is centred and larger, galloping in place while the world slides past
+  him over the site's space + waves scene; with `fillFrames` he paint-fills grey→colour as he goes.
+- `variant:'evolution'` — the evolution-of-Joe row (`stages` + `stagesGrey` + `stageBounds`):
+  amoeba → fish → blob-walker → ape → caveman → knight → designer Joe, each figure paint-filling
+  with colour during its share of the load (`joe-evo-1..7.webp` + `joe-evo-grey-1..7.webp`).
 
 Joe is a **frame cycle** (`frames:[...]` @ `fps`) — the real art is `joe-gallop-1..15.webp` (extracted
 from the gallop video). **Paint-fill:** pass `fillFrames` (the `joe-grey-1..15.webp` silhouettes) and Joe

@@ -104,7 +104,8 @@
     '@keyframes jjbob{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}' +
     '#jjld .wback{animation:jjdriftB 11s linear infinite;}' +
     '#jjld .wfront{animation:jjdriftF 6.5s linear infinite;}' +
-    '#jjld .joe,#jjld .joeg{animation:jjbob 1.7s ease-in-out infinite;}';   // same timeline → grey & colour bob in sync
+    '#jjld .joe{animation:jjbob 1.7s ease-in-out infinite;}' +
+    '#jjld .jjbobw{animation:jjbob 1.7s ease-in-out infinite;}';   // ONE bob wrapper in fill mode → layers can't drift
 
   function mount(html) {
     if (!document.getElementById('jjld-style')) { var st = document.createElement('style'); st.id = 'jjld-style'; st.textContent = CSS; document.head.appendChild(st); }
@@ -158,18 +159,27 @@
     var JX = CENTER - JW / 2, JY = ROAD - JH * FOOT;
     var greys = (opts.fillFrames || []).filter(Boolean);
 
-    /* paint-fill mode: grey Joe underneath, colour Joe on top clipped by a rising liquid whose wavy
-       surface sloshes sideways (jjslosh drifts exactly one 68px hump period → seamless). */
+    /* paint-fill mode: grey Joe underneath, colour Joe on top clipped by a rising liquid.
+       ALL frames (grey + colour) are mounted ONCE as stacked <image>s and swapped by toggling
+       visibility — swapping href on two live images decodes async per layer, so grey and colour
+       could show DIFFERENT gallop poses (looked like two horses). A style flip is synchronous:
+       both layers always show the same pose. One bob wrapper keeps them phase-locked too. */
     var joeHtml, liq = null;
     if (greys.length && frames.length) {
       var lw = 34, lx0 = JX - 100, surf = 'M' + lx0 + ',0', n = Math.ceil((JW + 240) / lw);
       for (var li = 0; li < n; li++) surf += ' A' + (lw / 2) + ' 5 0 0 1 ' + (lx0 + (li + 1) * lw) + ',0';
       surf += ' L' + (lx0 + n * lw) + ',' + (JH + 80) + ' L' + lx0 + ',' + (JH + 80) + ' Z';
+      var stackImgs = function (urls, cls) {
+        var s = '';
+        for (var si = 0; si < urls.length; si++)
+          s += '<image class="' + cls + '" href="' + urls[si] + '" x="' + JX.toFixed(1) + '" y="' + JY.toFixed(1) + '" width="' + JW + '" height="' + JH + '"' + (si ? ' style="display:none"' : '') + '/>';
+        return s;
+      };
       joeHtml =
         /* NOTE: clipPath children may only be shapes/text/use — a <g> here is ignored and empties the clip */
         '<clipPath id="jjliq" clipPathUnits="userSpaceOnUse"><path class="liqP" transform="translate(0,' + (JY + JH + 10) + ')" d="' + surf + '"/></clipPath>' +
-        '<image class="joeg" href="' + greys[0] + '" x="' + JX.toFixed(1) + '" y="' + JY.toFixed(1) + '" width="' + JW + '" height="' + JH + '"/>' +
-        '<g clip-path="url(#jjliq)"><image class="joe" href="' + frames[0] + '" x="' + JX.toFixed(1) + '" y="' + JY.toFixed(1) + '" width="' + JW + '" height="' + JH + '"/></g>';
+        '<g class="jjbobw"><g>' + stackImgs(greys, 'jfg') + '</g>' +
+        '<g clip-path="url(#jjliq)">' + stackImgs(frames, 'jfc') + '</g></g>';
     } else {
       joeHtml = joeSvg(frames);
     }
@@ -190,11 +200,19 @@
         '<text class="pct" x="500" y="292" text-anchor="middle" style="font-size:22px">0%</text>' +
       '</svg>');
     var mid = el.querySelector('#jjmid'), bar = el.querySelector('.bar'), pct = el.querySelector('.pct');
-    var joe = el.querySelector('.joe'), joeg = el.querySelector('.joeg');
+    var joe = el.querySelector('.joe');
     liq = el.querySelector('.liqP');
-    if (!greys.length && joe.tagName.toLowerCase() === 'image') { joe.setAttribute('width', JW); joe.setAttribute('height', JH); joe.setAttribute('x', JX.toFixed(1)); joe.setAttribute('y', JY.toFixed(1)); }
-    else if (!greys.length && joe.tagName.toLowerCase() !== 'image') { joe.setAttribute('cx', CENTER); joe.setAttribute('cy', ROAD - 14); }
-    return { el: el, joe: joe, joeg: joeg, greys: greys, render: function (p) {
+    if (joe && joe.tagName.toLowerCase() === 'image') { joe.setAttribute('width', JW); joe.setAttribute('height', JH); joe.setAttribute('x', JX.toFixed(1)); joe.setAttribute('y', JY.toFixed(1)); }
+    else if (joe && joe.tagName.toLowerCase() !== 'image') { joe.setAttribute('cx', CENTER); joe.setAttribute('cy', ROAD - 14); }
+    var slice = function (sel) { return Array.prototype.slice.call(el.querySelectorAll(sel)); };
+    var colImgs = slice('.jfc'), gryImgs = slice('.jfg'), curF = 0;
+    var setFrame = colImgs.length ? function (i) {
+      if (i === curF) return;
+      colImgs[curF].style.display = 'none'; gryImgs[curF].style.display = 'none';
+      colImgs[i].style.display = ''; gryImgs[i].style.display = '';
+      curF = i;
+    } : null;
+    return { el: el, joe: joe, setFrame: setFrame, render: function (p) {
       mid.setAttribute('transform', 'translate(' + (500 - p * 1400).toFixed(1) + ',0)');
       if (liq) {   // surface rises with real %; slosh via attribute transform (CSS anims don't reach clip content)
         var sx = -((performance.now() / 23) % 68);
@@ -205,13 +223,57 @@
     }};
   }
 
+  /* ---------- VARIANT C — evolution row (each stage paint-fills in turn) ---------- */
+  function Evolution(opts) {
+    var colour = (opts.stages || []).filter(Boolean), grey = (opts.stagesGrey || []).filter(Boolean);
+    var N = colour.length, S = 128, GAP = 8, GROUND = 272;
+    var total = N * S + (N - 1) * GAP, X0 = (1000 - total) / 2;
+    var bounds = opts.stageBounds || [];   // per-stage [topFrac,botFrac] of the art's content in its canvas
+    var clips = '', row = '', tops = [];
+    for (var i = 0; i < N; i++) {
+      var bt = bounds[i] || [0, 1];
+      var bx = X0 + i * (S + GAP), by = GROUND - S * bt[1];   // seat the CONTENT (not the canvas) on the ground
+      tops.push(GROUND - S * (bt[1] - bt[0]));                 // the content's top edge — fill spans feet→head only
+      /* per-stage liquid clip: wavy top edge, sized to the stage box (shapes only — no <g> in clipPath) */
+      var lw = 26, lx = bx - 40, hn = Math.ceil((S + 80) / lw), d = 'M' + lx + ',0';
+      for (var h = 0; h < hn; h++) d += ' A' + (lw / 2) + ' 4 0 0 1 ' + (lx + (h + 1) * lw) + ',0';
+      d += ' L' + (lx + hn * lw) + ',' + (S + 60) + ' L' + lx + ',' + (S + 60) + ' Z';
+      clips += '<clipPath id="jjevo' + i + '" clipPathUnits="userSpaceOnUse"><path class="evoclip" transform="translate(0,' + (GROUND + 6) + ')" d="' + d + '"/></clipPath>';
+      row +=
+        '<image href="' + grey[i] + '" x="' + bx + '" y="' + by.toFixed(1) + '" width="' + S + '" height="' + S + '"/>' +
+        '<g clip-path="url(#jjevo' + i + ')"><image href="' + colour[i] + '" x="' + bx + '" y="' + by.toFixed(1) + '" width="' + S + '" height="' + S + '"/></g>';
+    }
+    var el = mount(
+      '<svg viewBox="0 0 1000 320">' + DEFS +
+        '<rect x="-50" y="-50" width="1100" height="420" fill="url(#jjsky)"/>' + SWIRLS + STARS + MOON +
+        '<rect x="-50" y="' + GROUND + '" width="1100" height="60" fill="#131b2c"/>' +
+        '<line x1="-50" y1="' + GROUND + '" x2="1050" y2="' + GROUND + '" stroke="#232e44" stroke-width="3"/>' +
+        clips + row +
+        '<text class="pct" x="500" y="306" text-anchor="middle" style="font-size:22px">0%</text>' +
+      '</svg>');
+    var pct = el.querySelector('.pct');
+    var clipEls = Array.prototype.slice.call(el.querySelectorAll('.evoclip'));
+    return { el: el, joe: null, render: function (p) {
+      var sx = -((performance.now() / 26) % 52);   // shared slosh (52 = 2 hump periods)
+      for (var i = 0; i < clipEls.length; i++) {
+        var local = Math.max(0, Math.min(1, p * N - i));         // stage i fills during its 1/N slice of the load
+        var y = (GROUND + 6) + local * ((tops[i] - 6) - (GROUND + 6));   // feet → head of the actual figure
+        clipEls[i].setAttribute('transform', 'translate(' + sx.toFixed(1) + ',' + y.toFixed(1) + ')');
+      }
+      pct.textContent = Math.round(p * 100) + '%';
+    }};
+  }
+
   /* ---------- RUN ---------- */
   JJ.start = function (opts) {
     opts = opts || {};
     if (document.getElementById('jjld')) return;
     var frames = (opts.frames || []).filter(Boolean);
-    frames.concat(opts.fillFrames || []).forEach(function (u) { var im = new Image(); im.src = u; });   // preload all frame art
-    var scene = (opts.variant === 'scroll' ? Scroll : Journey)(opts, frames);
+    frames.concat(opts.fillFrames || [], opts.stages || [], opts.stagesGrey || []).forEach(function (u) {   // preload + decode all art up front
+      var im = new Image(); im.src = u; if (im.decode) im.decode().catch(function () {});
+    });
+    var scene = (opts.variant === 'evolution' ? Evolution(opts)
+      : (opts.variant === 'scroll' ? Scroll : Journey)(opts, frames));
     var startT = performance.now(), minTime = opts.minTime != null ? opts.minTime : 900;
     var fps = opts.fps || 8, fi = 0, lastF = 0;
     var target = 0, shown = 0, revealed = false, downloaded = false, decoded = !opts.decode;
@@ -219,9 +281,10 @@
     (function loop(now) {
       shown += (target - shown) * 0.12; if (target - shown < 0.001) shown = target;
       scene.render(shown);
-      if (frames.length && scene.joe.tagName && scene.joe.tagName.toLowerCase() === 'image' && now - lastF > 1000 / fps) {
-        lastF = now; fi = (fi + 1) % frames.length; scene.joe.setAttribute('href', frames[fi]);
-        if (scene.joeg && scene.greys && scene.greys.length) scene.joeg.setAttribute('href', scene.greys[fi % scene.greys.length]);
+      if (frames.length && now - lastF > 1000 / fps) {
+        lastF = now; fi = (fi + 1) % frames.length;
+        if (scene.setFrame) scene.setFrame(fi);
+        else if (scene.joe && scene.joe.tagName && scene.joe.tagName.toLowerCase() === 'image') scene.joe.setAttribute('href', frames[fi]);
       }
       var ready = downloaded && decoded && shown > 0.995 && (now - startT) >= minTime;
       if (ready && !revealed) { revealed = true; finish(); return; }

@@ -21,27 +21,32 @@
     <div class="btns">
       <button onclick="run('journey')">Run A · The Journey</button>
       <button onclick="run('scroll')">Run B · Scrolling world</button>
+      <button onclick="run('evolution')">Run C · Evolution</button>
     </div>
     <div class="btns">
       <button class="alt" onclick="run('journey',true)">A · real assets</button>
       <button class="alt" onclick="run('scroll',true)">B · real assets</button>
+      <button class="alt" onclick="run('evolution',true)">C · real assets</button>
     </div>
   </div>
   <div id="log"></div>
 
-  <script src="./jj-loader.js?v=6"></script>
+  <script src="./jj-loader.js?v=8"></script>
   <script>
     function log(m){ document.getElementById('log').textContent = m; }
-    var AV = '?v=6';   // bump when frames are re-uploaded (busts the githack cache)
+    var AV = '?v=8';   // bump when frames are re-uploaded (busts the githack cache)
     var TROT = ['./joe-trot-1.png'+AV,'./joe-trot-2.png'+AV,'./joe-trot-3.png'+AV,'./joe-trot-4.png'+AV];
-    var GALLOP = [], GREY = [];
+    var GALLOP = [], GREY = [], EVO = [], EVOG = [];
     for (var g=1; g<=15; g++) { GALLOP.push('./joe-gallop-'+g+'.webp'+AV); GREY.push('./joe-grey-'+g+'.webp'+AV); }   // colour + grey 15-frame loops
+    for (var e=1; e<=7; e++) { EVO.push('./joe-evo-'+e+'.webp'+AV); EVOG.push('./joe-evo-grey-'+e+'.webp'+AV); }      // evolution stages
 
     function run(variant, real){
-      var isScroll = variant === 'scroll';
+      var isScroll = variant === 'scroll', isEvo = variant === 'evolution';
       var base = { variant:variant, minTime:600,
-        frames: isScroll ? GALLOP : TROT,
+        frames: isEvo ? [] : (isScroll ? GALLOP : TROT),
         fillFrames: isScroll ? GREY : null,       // paint-fill: grey Joe fills with colour by real %
+        stages: isEvo ? EVO : null, stagesGrey: isEvo ? EVOG : null,   // evolution row fills stage by stage
+        stageBounds: isEvo ? [[0.390,0.590],[0.292,0.655],[0.278,0.740],[0.165,0.780],[0.163,0.805],[0.090,0.880],[0.115,0.838]] : null,   // measured content top/bottom per stage
         fps: isScroll ? 14 : 8,
         frameAR: isScroll ? 400/358 : 200/175,   // gallop frames are 400x358
         footFrac: isScroll ? 0.963 : 150/175,     // hooves sit near the bottom of the crop

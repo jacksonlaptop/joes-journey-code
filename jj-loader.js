@@ -105,7 +105,17 @@
     '#jjld .wback{animation:jjdriftB 11s linear infinite;}' +
     '#jjld .wfront{animation:jjdriftF 6.5s linear infinite;}' +
     '#jjld .joe{animation:jjbob 1.7s ease-in-out infinite;}' +
-    '#jjld .jjbobw{animation:jjbob 1.7s ease-in-out infinite;}';   // ONE bob wrapper in fill mode → layers can't drift
+    '#jjld .jjbobw{animation:jjbob 1.7s ease-in-out infinite;}' +   // ONE bob wrapper in fill mode → layers can't drift
+    /* evolution stage life-cycle: frozen grey → shiver while painting → alive once coloured */
+    '#jjld .evoStage{transform-box:fill-box;transform-origin:50% 100%;}' +
+    '@keyframes jjshiver{0%,100%{transform:translateX(0);}25%{transform:translateX(-1px);}75%{transform:translateX(1px);}}' +
+    '@keyframes jjwalk{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-3px) rotate(-1.2deg);}50%{transform:translateY(0) rotate(0deg);}75%{transform:translateY(-3px) rotate(1.2deg);}}' +
+    '@keyframes jjswim{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-4px) rotate(2deg);}}' +
+    '@keyframes jjsquish{0%,100%{transform:scale(1,1);}50%{transform:scale(1.07,0.9);}}' +
+    '#jjld .evoFillin{animation:jjshiver .18s linear infinite;}' +
+    '#jjld .evoWalk{animation:jjwalk .9s ease-in-out infinite;}' +
+    '#jjld .evoSwim{animation:jjswim 1.4s ease-in-out infinite;}' +
+    '#jjld .evoSquish{animation:jjsquish 1.2s ease-in-out infinite;}';
 
   function mount(html) {
     if (!document.getElementById('jjld-style')) { var st = document.createElement('style'); st.id = 'jjld-style'; st.textContent = CSS; document.head.appendChild(st); }
@@ -243,9 +253,14 @@
       for (var h = 0; h < hn; h++) d += ' A4 ' + (lw / 2) + ' 0 0 1 0,' + ((h + 1) * lw);   // vertical chord → rx is the 4px bulge, ry the half-chord
       d += ' L' + (-S - 160) + ',' + (hn * lw) + ' L' + (-S - 160) + ',0 Z';
       clips += '<clipPath id="jjevo' + i + '" clipPathUnits="userSpaceOnUse"><path class="evoclip" transform="translate(' + xs[i][0] + ',' + (GROUND - S - 60) + ')" d="' + d + '"/></clipPath>';
+      /* whole stage (grey + clipped colour) in ONE wrapper so any animation moves both layers —
+         and the userSpaceOnUse clip rides along with the wrapper's transform, so the fill level
+         stays glued to the figure while it moves. Phase offset so they don't march in sync. */
       row +=
-        '<image href="' + grey[i] + '" x="' + bx + '" y="' + by.toFixed(1) + '" width="' + S + '" height="' + S + '"/>' +
-        '<g clip-path="url(#jjevo' + i + ')"><image href="' + colour[i] + '" x="' + bx + '" y="' + by.toFixed(1) + '" width="' + S + '" height="' + S + '"/></g>';
+        '<g class="evoStage" style="animation-delay:-' + (i * 0.13).toFixed(2) + 's">' +
+          '<image href="' + grey[i] + '" x="' + bx + '" y="' + by.toFixed(1) + '" width="' + S + '" height="' + S + '"/>' +
+          '<g clip-path="url(#jjevo' + i + ')"><image href="' + colour[i] + '" x="' + bx + '" y="' + by.toFixed(1) + '" width="' + S + '" height="' + S + '"/></g>' +
+        '</g>';
     }
     var el = mount(
       '<svg viewBox="0 0 1000 320">' + DEFS +
@@ -257,12 +272,23 @@
       '</svg>');
     var pct = el.querySelector('.pct');
     var clipEls = Array.prototype.slice.call(el.querySelectorAll('.evoclip'));
+    var stageEls = Array.prototype.slice.call(el.querySelectorAll('.evoStage'));
+    /* per-stage idle animation once alive: amoeba squishes, fish swims, the rest walk (overridable) */
+    var anims = opts.stageAnims || [];
+    function animClass(i) { var a = anims[i] || (i === 0 ? 'squish' : (i === 1 ? 'swim' : 'walk'));
+      return a === 'squish' ? 'evoSquish' : (a === 'swim' ? 'evoSwim' : 'evoWalk'); }
+    var states = [];                                             // 0 frozen · 1 filling (shiver) · 2 alive
     return { el: el, joe: null, render: function (p) {
       var sy = (GROUND - S - 60) - ((performance.now() / 26) % 52);   // wave pattern drifts vertically (52 = 2 hump periods)
       for (var i = 0; i < clipEls.length; i++) {
         var local = Math.max(0, Math.min(1, p * N - i));         // stage i fills during its 1/N slice of the load
         var x = xs[i][0] + local * (xs[i][1] - xs[i][0]);        // sweep the wavy edge left → right across the figure
         clipEls[i].setAttribute('transform', 'translate(' + x.toFixed(1) + ',' + sy.toFixed(1) + ')');
+        var st = local <= 0 ? 0 : (local < 1 ? 1 : 2);
+        if (st !== states[i]) {                                  // update classes only on state change
+          states[i] = st;
+          stageEls[i].setAttribute('class', 'evoStage' + (st === 1 ? ' evoFillin' : (st === 2 ? ' ' + animClass(i) : '')));
+        }
       }
       pct.textContent = Math.round(p * 100) + '%';
     }};

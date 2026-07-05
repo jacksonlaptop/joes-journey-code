@@ -115,7 +115,11 @@
     '#jjld .evoFillin{animation:jjshiver .18s linear infinite;}' +
     '#jjld .evoWalk{animation:jjwalk .9s ease-in-out infinite;}' +
     '#jjld .evoSwim{animation:jjswim 1.4s ease-in-out infinite;}' +
-    '#jjld .evoSquish{animation:jjsquish 1.2s ease-in-out infinite;}';
+    '#jjld .evoSquish{animation:jjsquish 1.2s ease-in-out infinite;}' +
+    /* the one-shot STEP the moment a figure finishes painting (wrapper), idles live on the inner group */
+    '#jjld .evoInner{transform-box:fill-box;transform-origin:50% 100%;}' +
+    '@keyframes jjstep{0%{transform:translateX(0) translateY(0);}45%{transform:translateX(5px) translateY(-7px);}100%{transform:translateX(9px) translateY(0);}}' +
+    '#jjld .evoStepped{animation:jjstep .5s ease-out forwards;}';
 
   function mount(html) {
     if (!document.getElementById('jjld-style')) { var st = document.createElement('style'); st.id = 'jjld-style'; st.textContent = CSS; document.head.appendChild(st); }
@@ -236,7 +240,8 @@
   /* ---------- VARIANT C — evolution row (each stage paint-fills in turn) ---------- */
   function Evolution(opts) {
     var colour = (opts.stages || []).filter(Boolean), grey = (opts.stagesGrey || []).filter(Boolean);
-    var N = colour.length, S = 128, GAP = 8, GROUND = 272;
+    var colourB = (opts.stagesB || []).filter(Boolean);          // optional 2nd pose per stage → real steps once alive
+    var N = colour.length, S = 128, GAP = 8, GROUND = 272, hasB = colourB.length === N;
     var total = N * S + (N - 1) * GAP, X0 = (1000 - total) / 2;
     var bounds = opts.stageBounds || [];    // per-stage [topFrac,botFrac] of the art's content (for seating)
     var boundsX = opts.stageBoundsX || [];  // per-stage [leftFrac,rightFrac] — the fill sweeps this span
@@ -254,13 +259,18 @@
       d += ' L' + (-S - 160) + ',' + (hn * lw) + ' L' + (-S - 160) + ',0 Z';
       clips += '<clipPath id="jjevo' + i + '" clipPathUnits="userSpaceOnUse"><path class="evoclip" transform="translate(' + xs[i][0] + ',' + (GROUND - S - 60) + ')" d="' + d + '"/></clipPath>';
       /* whole stage (grey + clipped colour) in ONE wrapper so any animation moves both layers —
-         and the userSpaceOnUse clip rides along with the wrapper's transform, so the fill level
-         stays glued to the figure while it moves. Phase offset so they don't march in sync. */
+         and the userSpaceOnUse clip rides along with the transforms, so the fill level stays glued
+         to the figure while it moves. Wrapper = one-shot step-forward on completion; inner = the
+         infinite idle (phase-offset so the line doesn't march in sync). */
+      var box = ' x="' + bx + '" y="' + by.toFixed(1) + '" width="' + S + '" height="' + S + '"';
       row +=
-        '<g class="evoStage" style="animation-delay:-' + (i * 0.13).toFixed(2) + 's">' +
-          '<image href="' + grey[i] + '" x="' + bx + '" y="' + by.toFixed(1) + '" width="' + S + '" height="' + S + '"/>' +
-          '<g clip-path="url(#jjevo' + i + ')"><image href="' + colour[i] + '" x="' + bx + '" y="' + by.toFixed(1) + '" width="' + S + '" height="' + S + '"/></g>' +
-        '</g>';
+        '<g class="evoStage"><g class="evoInner" style="animation-delay:-' + (i * 0.13).toFixed(2) + 's">' +
+          '<image class="evoG" href="' + grey[i] + '"' + box + '/>' +
+          '<g clip-path="url(#jjevo' + i + ')">' +
+            '<image class="evoA" href="' + colour[i] + '"' + box + '/>' +
+            (hasB ? '<image class="evoB" style="display:none" href="' + colourB[i] + '"' + box + '/>' : '') +
+          '</g>' +
+        '</g></g>';
     }
     var el = mount(
       '<svg viewBox="0 0 1000 320">' + DEFS +
@@ -273,21 +283,33 @@
     var pct = el.querySelector('.pct');
     var clipEls = Array.prototype.slice.call(el.querySelectorAll('.evoclip'));
     var stageEls = Array.prototype.slice.call(el.querySelectorAll('.evoStage'));
+    var innerEls = Array.prototype.slice.call(el.querySelectorAll('.evoInner'));
+    var aEls = Array.prototype.slice.call(el.querySelectorAll('.evoA'));
+    var bEls = Array.prototype.slice.call(el.querySelectorAll('.evoB'));
+    var gEls = Array.prototype.slice.call(el.querySelectorAll('.evoG'));
     /* per-stage idle animation once alive: amoeba squishes, fish swims, the rest walk (overridable) */
     var anims = opts.stageAnims || [];
     function animClass(i) { var a = anims[i] || (i === 0 ? 'squish' : (i === 1 ? 'swim' : 'walk'));
       return a === 'squish' ? 'evoSquish' : (a === 'swim' ? 'evoSwim' : 'evoWalk'); }
-    var states = [];                                             // 0 frozen · 1 filling (shiver) · 2 alive
+    var states = [], poseFr = [];                                // 0 frozen · 1 filling (shiver) · 2 alive (step + idle + pose cycle)
     return { el: el, joe: null, render: function (p) {
-      var sy = (GROUND - S - 60) - ((performance.now() / 26) % 52);   // wave pattern drifts vertically (52 = 2 hump periods)
+      var now = performance.now();
+      var sy = (GROUND - S - 60) - ((now / 26) % 52);            // wave pattern drifts vertically (52 = 2 hump periods)
       for (var i = 0; i < clipEls.length; i++) {
         var local = Math.max(0, Math.min(1, p * N - i));         // stage i fills during its 1/N slice of the load
-        var x = xs[i][0] + local * (xs[i][1] - xs[i][0]);        // sweep the wavy edge left → right across the figure
+        var x = local >= 1 ? xs[i][1] + 24                       // done → park the edge clear of the step-forward hop
+                           : xs[i][0] + local * (xs[i][1] - xs[i][0]);   // else sweep left → right across the figure
         clipEls[i].setAttribute('transform', 'translate(' + x.toFixed(1) + ',' + sy.toFixed(1) + ')');
         var st = local <= 0 ? 0 : (local < 1 ? 1 : 2);
         if (st !== states[i]) {                                  // update classes only on state change
           states[i] = st;
-          stageEls[i].setAttribute('class', 'evoStage' + (st === 1 ? ' evoFillin' : (st === 2 ? ' ' + animClass(i) : '')));
+          stageEls[i].setAttribute('class', 'evoStage' + (st === 2 ? ' evoStepped' : ''));          // one-shot hop forward
+          innerEls[i].setAttribute('class', 'evoInner' + (st === 1 ? ' evoFillin' : (st === 2 ? ' ' + animClass(i) : '')));
+          if (hasB && gEls[i]) gEls[i].style.display = st === 2 ? 'none' : '';   // alive → hide grey so pose B's different silhouette can't expose it
+        }
+        if (hasB && st === 2) {                                  // alive → alternate pose A/B at step cadence (staggered)
+          var fr = Math.floor(now / 320 + i * 0.5) % 2;
+          if (fr !== poseFr[i]) { poseFr[i] = fr; aEls[i].style.display = fr ? 'none' : ''; bEls[i].style.display = fr ? '' : 'none'; }
         }
       }
       pct.textContent = Math.round(p * 100) + '%';
@@ -299,7 +321,7 @@
     opts = opts || {};
     if (document.getElementById('jjld')) return;
     var frames = (opts.frames || []).filter(Boolean);
-    frames.concat(opts.fillFrames || [], opts.stages || [], opts.stagesGrey || []).forEach(function (u) {   // preload + decode all art up front
+    frames.concat(opts.fillFrames || [], opts.stages || [], opts.stagesGrey || [], opts.stagesB || []).forEach(function (u) {   // preload + decode all art up front
       var im = new Image(); im.src = u; if (im.decode) im.decode().catch(function () {});
     });
     var scene = (opts.variant === 'evolution' ? Evolution(opts)

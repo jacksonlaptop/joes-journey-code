@@ -11,9 +11,11 @@ heavy assets as they download (reading each file's `Content-Length` and streamin
   fills behind him. Progress is *spatial* — you see how far.
 - `variant:'scroll'` — Joe is centred and larger, galloping in place while the world slides past
   him over the site's space + waves scene; with `fillFrames` he paint-fills grey→colour as he goes.
-- `variant:'evolution'` — the evolution-of-Joe row (`stages` + `stagesGrey` + `stageBounds`):
-  amoeba → fish → blob-walker → ape → caveman → knight → designer Joe, each figure paint-filling
-  with colour during its share of the load (`joe-evo-1..7.webp` + `joe-evo-grey-1..7.webp`).
+- `variant:'evolution'` — the evolution-of-Joe row (`stages` + `stagesGrey` + `stagesB` +
+  `stageBounds`/`stageBoundsX`): amoeba → fish → blob-walker → ape → caveman → knight → designer
+  Joe. Each figure paint-fills LEFT→RIGHT during its share of the load (shivering while painted),
+  then hops forward and **walks** — alternating between its two poses (`joe-evo-N.webp` /
+  `joe-evo-Nb.webp`) at step cadence, with squish/swim idles layered on top.
 
 Joe is a **frame cycle** (`frames:[...]` @ `fps`) — the real art is `joe-gallop-1..15.webp` (extracted
 from the gallop video). **Paint-fill:** pass `fillFrames` (the `joe-grey-1..15.webp` silhouettes) and Joe

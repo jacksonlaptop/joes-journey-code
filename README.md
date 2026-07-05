@@ -12,8 +12,10 @@ heavy assets as they download (reading each file's `Content-Length` and streamin
 - `variant:'scroll'` — Joe is centred and larger, trotting in place while the world slides past
   him; a progress bar sits underneath.
 
-Joe is a **few-frame trot cycle** (`frames:[...]` @ `fps`). `joe-trot-1..4.png` are **placeholders** —
-swap in your art on the same square-ish canvas with his feet centred at the bottom.
+Joe is a **frame cycle** (`frames:[...]` @ `fps`) — the real art is `joe-gallop-1..15.webp` (extracted
+from the gallop video). **Paint-fill:** pass `fillFrames` (the `joe-grey-1..15.webp` silhouettes) and Joe
+starts grey, filling with colour bottom-to-top by real % behind a sloshing liquid line. The grey frames
+are auto-generated from the colour ones — regenerate rather than hand-export if the art changes.
 
 ## Why the current one needs replacing
 `site-footer.js` reveals the homepage on a hardcoded `delay: 13.0` (line ~356) — Joe flies for 13s and

@@ -104,7 +104,7 @@
     '@keyframes jjbob{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}' +
     '#jjld .wback{animation:jjdriftB 11s linear infinite;}' +
     '#jjld .wfront{animation:jjdriftF 6.5s linear infinite;}' +
-    '#jjld .joe{animation:jjbob 1.7s ease-in-out infinite;}';
+    '#jjld .joe,#jjld .joeg{animation:jjbob 1.7s ease-in-out infinite;}';   // same timeline → grey & colour bob in sync
 
   function mount(html) {
     if (!document.getElementById('jjld-style')) { var st = document.createElement('style'); st.id = 'jjld-style'; st.textContent = CSS; document.head.appendChild(st); }
@@ -153,6 +153,27 @@
     var world = [ {vx:0,s:house('#4a5468'),k:1.7}, {vx:350,s:mug('#4a5468'),k:1.6},
       {vx:700,s:pine('#3f7a58'),k:1.7}, {vx:1050,s:mtn('#4a5468'),k:1.5}, {vx:1400,s:castle('#8a93a8'),k:1.6} ];
     var worldHtml = world.map(function (w) { return '<g transform="translate(' + w.vx + ',150) scale(' + w.k + ')">' + w.s + '</g>'; }).join('');
+    var AR = opts.frameAR || (200 / 175), FOOT = opts.footFrac != null ? opts.footFrac : (150 / 175);
+    var JH = opts.joeH || 150, JW = JH * AR, CENTER = 505, ROAD = 258;   // hooves ride the front crests
+    var JX = CENTER - JW / 2, JY = ROAD - JH * FOOT;
+    var greys = (opts.fillFrames || []).filter(Boolean);
+
+    /* paint-fill mode: grey Joe underneath, colour Joe on top clipped by a rising liquid whose wavy
+       surface sloshes sideways (jjslosh drifts exactly one 68px hump period → seamless). */
+    var joeHtml, liq = null;
+    if (greys.length && frames.length) {
+      var lw = 34, lx0 = JX - 100, surf = 'M' + lx0 + ',0', n = Math.ceil((JW + 240) / lw);
+      for (var li = 0; li < n; li++) surf += ' A' + (lw / 2) + ' 5 0 0 1 ' + (lx0 + (li + 1) * lw) + ',0';
+      surf += ' L' + (lx0 + n * lw) + ',' + (JH + 80) + ' L' + lx0 + ',' + (JH + 80) + ' Z';
+      joeHtml =
+        /* NOTE: clipPath children may only be shapes/text/use — a <g> here is ignored and empties the clip */
+        '<clipPath id="jjliq" clipPathUnits="userSpaceOnUse"><path class="liqP" transform="translate(0,' + (JY + JH + 10) + ')" d="' + surf + '"/></clipPath>' +
+        '<image class="joeg" href="' + greys[0] + '" x="' + JX.toFixed(1) + '" y="' + JY.toFixed(1) + '" width="' + JW + '" height="' + JH + '"/>' +
+        '<g clip-path="url(#jjliq)"><image class="joe" href="' + frames[0] + '" x="' + JX.toFixed(1) + '" y="' + JY.toFixed(1) + '" width="' + JW + '" height="' + JH + '"/></g>';
+    } else {
+      joeHtml = joeSvg(frames);
+    }
+
     var el = mount(
       '<svg viewBox="0 0 1000 320">' + DEFS +
         '<rect x="-50" y="-50" width="1100" height="420" fill="url(#jjsky)"/>' + SWIRLS + STARS + MOON +
@@ -163,18 +184,22 @@
         /* the sea: back band (slate, slow) + front band (navy, faster) drifting seamlessly */
         waveBand('wback', 246, [[95, 18], [75, 12]], '#39434f', '#78818c', .9) +
         waveBand('wfront', 266, [[130, 30], [90, 20]], '#142a47', '#c9cfd9', .95) +
-        joeSvg(frames) +
+        joeHtml +
         '<rect x="340" y="300" width="320" height="9" rx="4.5" fill="rgba(255,255,255,.14)"/>' +
         '<rect class="bar" x="340" y="300" width="0" height="9" rx="4.5" fill="#FF00F5"/>' +
         '<text class="pct" x="500" y="292" text-anchor="middle" style="font-size:22px">0%</text>' +
       '</svg>');
     var mid = el.querySelector('#jjmid'), bar = el.querySelector('.bar'), pct = el.querySelector('.pct');
-    var AR = opts.frameAR || (200 / 175), FOOT = opts.footFrac != null ? opts.footFrac : (150 / 175);
-    var joe = el.querySelector('.joe'), JH = opts.joeH || 150, JW = JH * AR, CENTER = 505, ROAD = 258;   // hooves ride the front crests
-    if (joe.tagName.toLowerCase() === 'image') { joe.setAttribute('width', JW); joe.setAttribute('height', JH); joe.setAttribute('x', (CENTER - JW / 2).toFixed(1)); joe.setAttribute('y', (ROAD - JH * FOOT).toFixed(1)); }
-    else { joe.setAttribute('cx', CENTER); joe.setAttribute('cy', ROAD - 14); }
-    return { el: el, joe: joe, render: function (p) {
+    var joe = el.querySelector('.joe'), joeg = el.querySelector('.joeg');
+    liq = el.querySelector('.liqP');
+    if (!greys.length && joe.tagName.toLowerCase() === 'image') { joe.setAttribute('width', JW); joe.setAttribute('height', JH); joe.setAttribute('x', JX.toFixed(1)); joe.setAttribute('y', JY.toFixed(1)); }
+    else if (!greys.length && joe.tagName.toLowerCase() !== 'image') { joe.setAttribute('cx', CENTER); joe.setAttribute('cy', ROAD - 14); }
+    return { el: el, joe: joe, joeg: joeg, greys: greys, render: function (p) {
       mid.setAttribute('transform', 'translate(' + (500 - p * 1400).toFixed(1) + ',0)');
+      if (liq) {   // surface rises with real %; slosh via attribute transform (CSS anims don't reach clip content)
+        var sx = -((performance.now() / 23) % 68);
+        liq.setAttribute('transform', 'translate(' + sx.toFixed(1) + ',' + (JY - 10 + (JH + 20) * (1 - p)).toFixed(1) + ')');
+      }
       bar.setAttribute('width', (320 * p).toFixed(1));
       pct.textContent = Math.round(p * 100) + '%';
     }};
@@ -185,7 +210,7 @@
     opts = opts || {};
     if (document.getElementById('jjld')) return;
     var frames = (opts.frames || []).filter(Boolean);
-    frames.forEach(function (u) { var im = new Image(); im.src = u; });          // preload trot frames
+    frames.concat(opts.fillFrames || []).forEach(function (u) { var im = new Image(); im.src = u; });   // preload all frame art
     var scene = (opts.variant === 'scroll' ? Scroll : Journey)(opts, frames);
     var startT = performance.now(), minTime = opts.minTime != null ? opts.minTime : 900;
     var fps = opts.fps || 8, fi = 0, lastF = 0;
@@ -196,6 +221,7 @@
       scene.render(shown);
       if (frames.length && scene.joe.tagName && scene.joe.tagName.toLowerCase() === 'image' && now - lastF > 1000 / fps) {
         lastF = now; fi = (fi + 1) % frames.length; scene.joe.setAttribute('href', frames[fi]);
+        if (scene.joeg && scene.greys && scene.greys.length) scene.joeg.setAttribute('href', scene.greys[fi % scene.greys.length]);
       }
       var ready = downloaded && decoded && shown > 0.995 && (now - startT) >= minTime;
       if (ready && !revealed) { revealed = true; finish(); return; }

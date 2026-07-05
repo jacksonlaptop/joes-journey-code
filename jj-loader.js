@@ -228,17 +228,21 @@
     var colour = (opts.stages || []).filter(Boolean), grey = (opts.stagesGrey || []).filter(Boolean);
     var N = colour.length, S = 128, GAP = 8, GROUND = 272;
     var total = N * S + (N - 1) * GAP, X0 = (1000 - total) / 2;
-    var bounds = opts.stageBounds || [];   // per-stage [topFrac,botFrac] of the art's content in its canvas
-    var clips = '', row = '', tops = [];
+    var bounds = opts.stageBounds || [];    // per-stage [topFrac,botFrac] of the art's content (for seating)
+    var boundsX = opts.stageBoundsX || [];  // per-stage [leftFrac,rightFrac] — the fill sweeps this span
+    var clips = '', row = '', xs = [];
+    /* fill goes LEFT→RIGHT: the clip is a big rect whose RIGHT edge is a vertical wavy line
+       (humps bulge toward the unfilled side); it slides across the figure by progress and the
+       wave pattern drifts vertically for the slosh. SPAN covers box + drift period. */
+    var lw = 26, SPAN = S + 112;
     for (var i = 0; i < N; i++) {
-      var bt = bounds[i] || [0, 1];
+      var bt = bounds[i] || [0, 1], xb = boundsX[i] || [0, 1];
       var bx = X0 + i * (S + GAP), by = GROUND - S * bt[1];   // seat the CONTENT (not the canvas) on the ground
-      tops.push(GROUND - S * (bt[1] - bt[0]));                 // the content's top edge — fill spans feet→head only
-      /* per-stage liquid clip: wavy top edge, sized to the stage box (shapes only — no <g> in clipPath) */
-      var lw = 26, lx = bx - 40, hn = Math.ceil((S + 80) / lw), d = 'M' + lx + ',0';
-      for (var h = 0; h < hn; h++) d += ' A' + (lw / 2) + ' 4 0 0 1 ' + (lx + (h + 1) * lw) + ',0';
-      d += ' L' + (lx + hn * lw) + ',' + (S + 60) + ' L' + lx + ',' + (S + 60) + ' Z';
-      clips += '<clipPath id="jjevo' + i + '" clipPathUnits="userSpaceOnUse"><path class="evoclip" transform="translate(0,' + (GROUND + 6) + ')" d="' + d + '"/></clipPath>';
+      xs.push([bx + S * xb[0] - 6, bx + S * xb[1] + 6]);       // content left→right edges of the sweep
+      var hn = Math.ceil(SPAN / lw), d = 'M0,0';
+      for (var h = 0; h < hn; h++) d += ' A4 ' + (lw / 2) + ' 0 0 1 0,' + ((h + 1) * lw);   // vertical chord → rx is the 4px bulge, ry the half-chord
+      d += ' L' + (-S - 160) + ',' + (hn * lw) + ' L' + (-S - 160) + ',0 Z';
+      clips += '<clipPath id="jjevo' + i + '" clipPathUnits="userSpaceOnUse"><path class="evoclip" transform="translate(' + xs[i][0] + ',' + (GROUND - S - 60) + ')" d="' + d + '"/></clipPath>';
       row +=
         '<image href="' + grey[i] + '" x="' + bx + '" y="' + by.toFixed(1) + '" width="' + S + '" height="' + S + '"/>' +
         '<g clip-path="url(#jjevo' + i + ')"><image href="' + colour[i] + '" x="' + bx + '" y="' + by.toFixed(1) + '" width="' + S + '" height="' + S + '"/></g>';
@@ -254,11 +258,11 @@
     var pct = el.querySelector('.pct');
     var clipEls = Array.prototype.slice.call(el.querySelectorAll('.evoclip'));
     return { el: el, joe: null, render: function (p) {
-      var sx = -((performance.now() / 26) % 52);   // shared slosh (52 = 2 hump periods)
+      var sy = (GROUND - S - 60) - ((performance.now() / 26) % 52);   // wave pattern drifts vertically (52 = 2 hump periods)
       for (var i = 0; i < clipEls.length; i++) {
         var local = Math.max(0, Math.min(1, p * N - i));         // stage i fills during its 1/N slice of the load
-        var y = (GROUND + 6) + local * ((tops[i] - 6) - (GROUND + 6));   // feet → head of the actual figure
-        clipEls[i].setAttribute('transform', 'translate(' + sx.toFixed(1) + ',' + y.toFixed(1) + ')');
+        var x = xs[i][0] + local * (xs[i][1] - xs[i][0]);        // sweep the wavy edge left → right across the figure
+        clipEls[i].setAttribute('transform', 'translate(' + x.toFixed(1) + ',' + sy.toFixed(1) + ')');
       }
       pct.textContent = Math.round(p * 100) + '%';
     }};

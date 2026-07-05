@@ -31,10 +31,10 @@
   </div>
   <div id="log"></div>
 
-  <script src="./jj-loader.js?v=9"></script>
+  <script src="./jj-loader.js?v=10"></script>
   <script>
     function log(m){ document.getElementById('log').textContent = m; }
-    var AV = '?v=9';   // bump when frames are re-uploaded (busts the githack cache)
+    var AV = '?v=10';   // bump when frames are re-uploaded (busts the githack cache)
     var TROT = ['./joe-trot-1.png'+AV,'./joe-trot-2.png'+AV,'./joe-trot-3.png'+AV,'./joe-trot-4.png'+AV];
     var GALLOP = [], GREY = [], EVO = [], EVOG = [];
     for (var g=1; g<=15; g++) { GALLOP.push('./joe-gallop-'+g+'.webp'+AV); GREY.push('./joe-grey-'+g+'.webp'+AV); }   // colour + grey 15-frame loops
@@ -47,6 +47,7 @@
         fillFrames: isScroll ? GREY : null,       // paint-fill: grey Joe fills with colour by real %
         stages: isEvo ? EVO : null, stagesGrey: isEvo ? EVOG : null,   // evolution row fills stage by stage
         stageBounds: isEvo ? [[0.390,0.590],[0.292,0.655],[0.278,0.740],[0.165,0.780],[0.163,0.805],[0.090,0.880],[0.115,0.838]] : null,   // measured content top/bottom per stage
+        stageBoundsX: isEvo ? [[0.393,0.632],[0.268,0.733],[0.350,0.685],[0.237,0.750],[0.360,0.757],[0.212,0.757],[0.372,0.728]] : null,  // measured content left/right — fill sweeps this span
         fps: isScroll ? 14 : 8,
         frameAR: isScroll ? 400/358 : 200/175,   // gallop frames are 400x358
         footFrac: isScroll ? 0.963 : 150/175,     // hooves sit near the bottom of the crop

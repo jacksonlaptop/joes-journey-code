@@ -291,24 +291,35 @@
     var anims = opts.stageAnims || [];
     function animClass(i) { var a = anims[i] || (i === 0 ? 'squish' : (i === 1 ? 'swim' : 'walk'));
       return a === 'squish' ? 'evoSquish' : (a === 'swim' ? 'evoSwim' : 'evoWalk'); }
-    var states = [], poseFr = [];                                // 0 frozen · 1 filling (shiver) · 2 alive (step + idle + pose cycle)
+    /* only ONE character is animated at a time — the latest to be painted. Earlier ones settle
+       into a still coloured stance (keeping their stepped-forward spot). Modes per stage:
+       frozen (grey) · fill (shiver) · walk (step hop + idle + pose A/B cycle) · done (still). */
+    var modes = [], poseFr = [];
     return { el: el, joe: null, render: function (p) {
       var now = performance.now();
       var sy = (GROUND - S - 60) - ((now / 26) % 52);            // wave pattern drifts vertically (52 = 2 hump periods)
-      for (var i = 0; i < clipEls.length; i++) {
-        var local = Math.max(0, Math.min(1, p * N - i));         // stage i fills during its 1/N slice of the load
+      var locals = [], aliveIdx = -1;
+      for (var i = 0; i < N; i++) {
+        locals[i] = Math.max(0, Math.min(1, p * N - i));         // stage i fills during its 1/N slice of the load
+        if (locals[i] >= 1) aliveIdx = i;                        // highest completed stage = the one that walks
+      }
+      for (i = 0; i < clipEls.length; i++) {
+        var local = locals[i];
         var x = local >= 1 ? xs[i][1] + 24                       // done → park the edge clear of the step-forward hop
                            : xs[i][0] + local * (xs[i][1] - xs[i][0]);   // else sweep left → right across the figure
         clipEls[i].setAttribute('transform', 'translate(' + x.toFixed(1) + ',' + sy.toFixed(1) + ')');
-        var st = local <= 0 ? 0 : (local < 1 ? 1 : 2);
-        if (st !== states[i]) {                                  // update classes only on state change
-          states[i] = st;
-          stageEls[i].setAttribute('class', 'evoStage' + (st === 2 ? ' evoStepped' : ''));          // one-shot hop forward
-          innerEls[i].setAttribute('class', 'evoInner' + (st === 1 ? ' evoFillin' : (st === 2 ? ' ' + animClass(i) : '')));
-          if (hasB && gEls[i]) gEls[i].style.display = st === 2 ? 'none' : '';   // alive → hide grey so pose B's different silhouette can't expose it
+        var mode = local <= 0 ? 'frozen' : (local < 1 ? 'fill' : (i === aliveIdx ? 'walk' : 'done'));
+        if (mode !== modes[i]) {
+          modes[i] = mode;
+          stageEls[i].setAttribute('class', 'evoStage' + (local >= 1 ? ' evoStepped' : ''));   // hop persists once done (forwards fill)
+          innerEls[i].setAttribute('class', 'evoInner' + (mode === 'fill' ? ' evoFillin' : (mode === 'walk' ? ' ' + animClass(i) : '')));
+          if (hasB) {
+            if (gEls[i]) gEls[i].style.display = local >= 1 ? 'none' : '';
+            if (mode !== 'walk') { poseFr[i] = 0; aEls[i].style.display = ''; bEls[i].style.display = 'none'; }   // settled → rest on pose A
+          }
         }
-        if (hasB && st === 2) {                                  // alive → alternate pose A/B at step cadence (staggered)
-          var fr = Math.floor(now / 320 + i * 0.5) % 2;
+        if (hasB && mode === 'walk') {                           // the current one steps: alternate pose A/B
+          var fr = Math.floor(now / 320) % 2;
           if (fr !== poseFr[i]) { poseFr[i] = fr; aEls[i].style.display = fr ? 'none' : ''; bEls[i].style.display = fr ? '' : 'none'; }
         }
       }

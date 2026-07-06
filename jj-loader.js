@@ -94,7 +94,8 @@
   var CSS =
     '#jjld{position:fixed;inset:0;z-index:2147483000;background:#05070d;display:flex;align-items:center;justify-content:center;transition:opacity .6s ease;font-family:"Joes Journey Headline",Georgia,serif;}' +
     '#jjld.hide{opacity:0;pointer-events:none;}' +
-    '#jjld svg{width:min(88vw,1000px);height:auto;overflow:visible;}' +
+    '#jjld svg{width:100vw;height:100vh;display:block;overflow:visible;}' +   // full-bleed: scene art extends past the viewBox to cover any screen
+    '#jjld::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(0,0,0,.42) 100%);}' +
     '#jjld .wp{opacity:.34;transition:opacity .45s ease,filter .45s ease;}' +
     '#jjld .wp.lit{opacity:1;filter:drop-shadow(0 0 7px rgba(255,45,149,.75));}' +
     '#jjld .pct{fill:#f0e4c4;font-size:30px;}#jjld .cap{fill:rgba(240,228,196,.55);font-size:13px;letter-spacing:4px;}' +
@@ -114,11 +115,11 @@
     '@keyframes jjsquish{0%,100%{transform:scale(1,1);}50%{transform:scale(1.07,0.9);}}' +
     '@keyframes jjtwinkle{0%,100%{opacity:.12;}50%{opacity:.75;}}' +
     '#jjld .jjtw{animation:jjtwinkle 3s ease-in-out infinite;}' +
-    /* the intro-style parallax: swirl board drifts one way, starfield the other, very slowly */
-    '@keyframes jjparS{from{transform:translateX(0);}to{transform:translateX(-60px);}}' +
-    '@keyframes jjparT{from{transform:translateX(0);}to{transform:translateX(24px);}}' +
-    '#jjld .jjparSwirl{animation:jjparS 34s ease-in-out infinite alternate;}' +
-    '#jjld .jjparStars{animation:jjparT 34s ease-in-out infinite alternate;}' +
+    /* the intro-style parallax: swirl board drifts one way, starfield the other — like the homepage */
+    '@keyframes jjparS{from{transform:translateX(0);}to{transform:translateX(-130px);}}' +
+    '@keyframes jjparT{from{transform:translateX(0);}to{transform:translateX(44px);}}' +
+    '#jjld .jjparSwirl{animation:jjparS 38s ease-in-out infinite alternate;}' +
+    '#jjld .jjparStars{animation:jjparT 38s ease-in-out infinite alternate;}' +
     '#jjld .evoFillin{animation:jjshiver .18s linear infinite;}' +
     '#jjld .evoWalk{animation:jjwalk .9s ease-in-out infinite;}' +
     '#jjld .evoSwim{animation:jjswim 1.4s ease-in-out infinite;}' +
@@ -292,24 +293,30 @@
     var SF = [[-62, 28, 1.4, .7], [18, 96, 1.0, .5], [64, 190, 1.2, .45], [142, 52, 1.8, .8], [212, 150, 1.0, .5], [286, 22, 1.3, .6],
       [352, 118, 1.6, .75], [420, 208, 1.0, .4], [498, 66, 1.2, .55], [556, 172, 1.9, .8], [640, 34, 1.1, .5], [700, 132, 1.4, .65],
       [788, 84, 1.0, .45], [846, 196, 1.6, .7], [922, 44, 1.2, .55], [1004, 148, 1.8, .8], [1082, 96, 1.1, .5], [1148, 30, 1.4, .6],
-      [248, 236, 0.9, .35], [672, 232, 1.0, .4], [960, 226, 1.1, .4], [92, 128, 0.9, .4], [520, 20, 0.9, .45], [1120, 200, 0.9, .35]];
+      [248, 236, 0.9, .35], [672, 232, 1.0, .4], [960, 226, 1.1, .4], [92, 128, 0.9, .4], [520, 20, 0.9, .45], [1120, 200, 0.9, .35],
+      /* extra stars above/beside the viewBox — visible on tall/wide screens in full-bleed */
+      [-220, -160, 1.4, .6], [80, -320, 1.2, .5], [340, -110, 1.6, .7], [610, -260, 1.1, .5], [872, -180, 1.4, .6],
+      [1140, -300, 1.2, .5], [1290, -80, 1.3, .55], [-280, 140, 1.1, .5], [1260, 190, 1.2, .5], [470, -400, 1.0, .4]];
     for (var s = 0; s < SF.length; s++)
       starfield += '<circle cx="' + SF[s][0] + '" cy="' + SF[s][1] + '" r="' + SF[s][2] + '" fill="#e6ecf6" opacity="' + SF[s][3] + '"/>';
     var el = mount(
       '<svg viewBox="0 0 1000 320">' + DEFS +
-        '<radialGradient id="jjvig" cx="50%" cy="42%" r="78%"><stop offset="62%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".38"/></radialGradient>' +
-        '<rect x="-50" y="-50" width="1100" height="420" fill="#0e1f33"/>' +                                    // board base colour while it loads
-        '<g class="jjparSwirl"><image href="' + BOARD + '" x="-2432" y="-70" width="4582" height="420"/></g>' + // the intro swirl board, big spiral in view
+        /* full-bleed: everything extends far past the viewBox (symmetric about its centre) */
+        '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#0e1f33"/>' +                               // board base colour / deep space
+        '<g class="jjparSwirl"><image href="' + BOARD + '" x="-3131" y="-160" width="5672" height="520"/></g>' + // the intro swirl board, big spiral in view
+        /* dissolve the board's hard top edge into deep space (tall screens would otherwise see it) */
+        '<linearGradient id="jjfade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0e1f33" stop-opacity="1"/><stop offset="1" stop-color="#0e1f33" stop-opacity="0"/></linearGradient>' +
+        '<rect x="-3500" y="-1440" width="8000" height="1300" fill="#0e1f33"/>' +
+        '<rect x="-3500" y="-140" width="8000" height="120" fill="url(#jjfade)"/>' +
         '<g class="jjparStars">' + starfield + twinkles + '</g>' +
-        '<rect x="-50" y="' + GROUND + '" width="1100" height="60" fill="#131b2c"/>' +
-        '<line x1="-50" y1="' + GROUND + '" x2="1050" y2="' + GROUND + '" stroke="#232e44" stroke-width="3"/>' +
+        '<rect x="-3500" y="' + GROUND + '" width="8000" height="1600" fill="#131b2c"/>' +
+        '<line x1="-3500" y1="' + GROUND + '" x2="4500" y2="' + GROUND + '" stroke="#232e44" stroke-width="3"/>' +
         /* the road they walk — a soft lighter band with a few pebbles */
         '<rect x="' + (X0 - 34) + '" y="' + (GROUND + 8) + '" width="' + (total + 68) + '" height="12" rx="6" fill="#1a2438" opacity=".85"/>' +
         '<circle cx="' + (X0 + 40) + '" cy="' + (GROUND + 26) + '" r="2" fill="#222e48"/><circle cx="' + (X0 + 205) + '" cy="' + (GROUND + 30) + '" r="1.6" fill="#222e48"/>' +
         '<circle cx="' + (X0 + 420) + '" cy="' + (GROUND + 25) + '" r="2.2" fill="#222e48"/><circle cx="' + (X0 + 610) + '" cy="' + (GROUND + 31) + '" r="1.5" fill="#222e48"/>' +
         '<circle cx="' + (X0 + 812) + '" cy="' + (GROUND + 27) + '" r="2" fill="#222e48"/>' +
         clips + row +
-        '<rect x="-50" y="-50" width="1100" height="420" fill="url(#jjvig)" pointer-events="none"/>' +
         '<text class="pct" x="500" y="306" text-anchor="middle" style="font-size:22px">0%</text>' +
       '</svg>');
     var pct = el.querySelector('.pct');

@@ -112,6 +112,8 @@
     '@keyframes jjwalk{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-3px) rotate(-1.2deg);}50%{transform:translateY(0) rotate(0deg);}75%{transform:translateY(-3px) rotate(1.2deg);}}' +
     '@keyframes jjswim{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-4px) rotate(2deg);}}' +
     '@keyframes jjsquish{0%,100%{transform:scale(1,1);}50%{transform:scale(1.07,0.9);}}' +
+    '@keyframes jjtwinkle{0%,100%{opacity:.12;}50%{opacity:.75;}}' +
+    '#jjld .jjtw{animation:jjtwinkle 3s ease-in-out infinite;}' +
     '#jjld .evoFillin{animation:jjshiver .18s linear infinite;}' +
     '#jjld .evoWalk{animation:jjwalk .9s ease-in-out infinite;}' +
     '#jjld .evoSwim{animation:jjswim 1.4s ease-in-out infinite;}' +
@@ -272,12 +274,31 @@
           '</g>' +
         '</g></g>';
     }
+    /* polished "journey night" scene — the template look for the per-page loaders */
+    var twinkles = '';
+    var TW = [[85, 42, 1.6, 2.6], [235, 88, 1.2, 3.4], [388, 30, 1.8, 2.9], [530, 96, 1.1, 3.8], [655, 48, 1.5, 2.4],
+      [762, 112, 1.2, 3.1], [905, 34, 1.7, 2.7], [968, 150, 1.1, 3.6], [160, 140, 1.2, 3.2], [468, 165, 1.0, 2.8]];
+    for (var t = 0; t < TW.length; t++)
+      twinkles += '<circle class="jjtw" cx="' + TW[t][0] + '" cy="' + TW[t][1] + '" r="' + TW[t][2] + '" fill="#dfe6f2" style="animation-duration:' + TW[t][3] + 's;animation-delay:-' + (t * 0.4).toFixed(1) + 's"/>';
     var el = mount(
       '<svg viewBox="0 0 1000 320">' + DEFS +
-        '<rect x="-50" y="-50" width="1100" height="420" fill="url(#jjsky)"/>' + SWIRLS + STARS + MOON +
+        '<radialGradient id="jjvig" cx="50%" cy="42%" r="78%"><stop offset="62%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".38"/></radialGradient>' +
+        '<rect x="-50" y="-50" width="1100" height="420" fill="url(#jjsky)"/>' +
+        /* one grand swirl sweeping the sky + the smaller site swirls */
+        '<path d="M-80,168 C180,54 420,36 620,82 S920,146 1080,92" fill="none" stroke="#0a1120" stroke-width="54" stroke-linecap="round" opacity=".5"/>' +
+        SWIRLS + STARS + twinkles + MOON +
+        /* layered dunes for depth, then the ground */
+        '<path d="M-50,252 Q170,236 360,248 T740,244 T1050,250 L1050,330 L-50,330 Z" fill="#0e1728"/>' +
+        '<path d="M-50,262 Q240,250 520,260 T1050,258 L1050,330 L-50,330 Z" fill="#111b30"/>' +
         '<rect x="-50" y="' + GROUND + '" width="1100" height="60" fill="#131b2c"/>' +
         '<line x1="-50" y1="' + GROUND + '" x2="1050" y2="' + GROUND + '" stroke="#232e44" stroke-width="3"/>' +
+        /* the road they walk — a soft lighter band with a few pebbles */
+        '<rect x="' + (X0 - 34) + '" y="' + (GROUND + 8) + '" width="' + (total + 68) + '" height="12" rx="6" fill="#1a2438" opacity=".85"/>' +
+        '<circle cx="' + (X0 + 40) + '" cy="' + (GROUND + 26) + '" r="2" fill="#222e48"/><circle cx="' + (X0 + 205) + '" cy="' + (GROUND + 30) + '" r="1.6" fill="#222e48"/>' +
+        '<circle cx="' + (X0 + 420) + '" cy="' + (GROUND + 25) + '" r="2.2" fill="#222e48"/><circle cx="' + (X0 + 610) + '" cy="' + (GROUND + 31) + '" r="1.5" fill="#222e48"/>' +
+        '<circle cx="' + (X0 + 812) + '" cy="' + (GROUND + 27) + '" r="2" fill="#222e48"/>' +
         clips + row +
+        '<rect x="-50" y="-50" width="1100" height="420" fill="url(#jjvig)" pointer-events="none"/>' +
         '<text class="pct" x="500" y="306" text-anchor="middle" style="font-size:22px">0%</text>' +
       '</svg>');
     var pct = el.querySelector('.pct');

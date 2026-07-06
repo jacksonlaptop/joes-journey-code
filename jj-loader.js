@@ -115,11 +115,15 @@
     '@keyframes jjsquish{0%,100%{transform:scale(1,1);}50%{transform:scale(1.07,0.9);}}' +
     '@keyframes jjtwinkle{0%,100%{opacity:.12;}50%{opacity:.75;}}' +
     '#jjld .jjtw{animation:jjtwinkle 3s ease-in-out infinite;}' +
-    /* the intro-style parallax: swirl board drifts one way, starfield the other — like the homepage */
+    /* the intro-style parallax: swirl board drifts one way, starfield + decor the other — like the homepage */
     '@keyframes jjparS{from{transform:translateX(0);}to{transform:translateX(-130px);}}' +
     '@keyframes jjparT{from{transform:translateX(0);}to{transform:translateX(44px);}}' +
+    '@keyframes jjparD{from{transform:translateX(0);}to{transform:translateX(-56px);}}' +
     '#jjld .jjparSwirl{animation:jjparS 38s ease-in-out infinite alternate;}' +
     '#jjld .jjparStars{animation:jjparT 38s ease-in-out infinite alternate;}' +
+    '#jjld .jjparDeco{animation:jjparD 38s ease-in-out infinite alternate;}' +
+    '@keyframes jjspin{to{transform:rotate(360deg);}}' +
+    '#jjld .jjsp{transform-box:fill-box;transform-origin:50% 50%;}' +
     '#jjld .evoFillin{animation:jjshiver .18s linear infinite;}' +
     '#jjld .evoWalk{animation:jjwalk .9s ease-in-out infinite;}' +
     '#jjld .evoSwim{animation:jjswim 1.4s ease-in-out infinite;}' +
@@ -283,7 +287,10 @@
     /* the "journey night" scene — the SITE'S OWN intro parallax boards: the swirl-cloud board
        drifts slowly one way while a starfield drifts the other (like the homepage intro). */
     var BOARD = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0c964e79a06e8151f7f16b_Starry%20Board%20-%20Foreground2.svg';
-    var pre = new Image(); pre.src = BOARD;                     // warm the board immediately
+    var SCDN = 'https://cdn.prod.website-files.com/615edb5c549d52cd108ed268/';
+    var SPRITES = { whirl: SCDN + '67212bf05ed02917043863f5_whirl-star.svg', x: SCDN + '67212bf05ed02917043863f9_x-star.svg',
+      target: SCDN + '67212bf072ae1d89db07fec6_target-star.svg', star: SCDN + '67212bf0d1377a501ae28dc4_star-star.svg' };
+    [BOARD, SPRITES.whirl, SPRITES.x, SPRITES.target, SPRITES.star].forEach(function (u) { var im = new Image(); im.src = u; });
     var twinkles = '';
     var TW = [[85, 42, 1.6, 2.6], [235, 88, 1.2, 3.4], [388, 30, 1.8, 2.9], [530, 96, 1.1, 3.8], [655, 48, 1.5, 2.4],
       [762, 112, 1.2, 3.1], [905, 34, 1.7, 2.7], [968, 150, 1.1, 3.6], [160, 140, 1.2, 3.2], [468, 165, 1.0, 2.8]];
@@ -299,6 +306,23 @@
       [1140, -300, 1.2, .5], [1290, -80, 1.3, .55], [-280, 140, 1.1, .5], [1260, 190, 1.2, .5], [470, -400, 1.0, .4]];
     for (var s = 0; s < SF.length; s++)
       starfield += '<circle cx="' + SF[s][0] + '" cy="' + SF[s][1] + '" r="' + SF[s][2] + '" fill="#e6ecf6" opacity="' + SF[s][3] + '"/>';
+    /* homepage-intro decor: glowing orbs, a big crescent moon, and the site's own star sprites */
+    var deco = '<radialGradient id="jjglow"><stop offset="0%" stop-color="#fff" stop-opacity=".5"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>';
+    var ORBS = [[390, -150, 5], [790, 30, 6], [170, 20, 4], [1120, -220, 5], [545, 120, 4]];
+    for (var o = 0; o < ORBS.length; o++)
+      deco += '<circle cx="' + ORBS[o][0] + '" cy="' + ORBS[o][1] + '" r="' + (ORBS[o][2] * 3.2) + '" fill="url(#jjglow)"/>' +
+              '<circle cx="' + ORBS[o][0] + '" cy="' + ORBS[o][1] + '" r="' + ORBS[o][2] + '" fill="#f2f5fa" opacity=".95"/>';
+    deco += '<mask id="jjcres"><rect x="-70" y="-70" width="140" height="140" fill="#fff"/><circle cx="-20" cy="-10" r="40" fill="#000"/></mask>' +
+            '<g transform="translate(742,-64)"><circle r="62" fill="url(#jjglow)" opacity=".8"/>' +
+            '<circle r="44" fill="#d6dbe4" opacity=".92" mask="url(#jjcres)"/></g>';
+    var WH = [[130, -40, 24, 14], [520, -210, 20, 20], [905, 120, 26, 17], [-140, 80, 18, 22], [1180, -120, 22, 19]];
+    for (var w2 = 0; w2 < WH.length; w2++)
+      deco += '<image class="jjsp" href="' + SPRITES.whirl + '" x="' + WH[w2][0] + '" y="' + WH[w2][1] + '" width="' + WH[w2][2] + '" height="' + WH[w2][2] + '" style="animation:jjspin ' + WH[w2][3] + 's linear infinite" opacity=".85"/>';
+    var XS = [[320, 60, 16, 2.8, 'x'], [705, -80, 14, 3.4, 'x'], [1060, 40, 18, 2.4, 'x'], [60, -250, 14, 3.8, 'x'], [840, -300, 16, 3.0, 'x'],
+      [230, -140, 18, 3.2, 'star'], [615, 170, 16, 2.6, 'star'], [985, -200, 14, 3.5, 'star'], [-220, -60, 14, 3.0, 'star'],
+      [430, -30, 16, 4.2, 'target'], [80, 180, 14, 5.0, 'target'], [1240, 150, 14, 4.4, 'target']];
+    for (var x2 = 0; x2 < XS.length; x2++)
+      deco += '<image class="jjsp jjtw" href="' + SPRITES[XS[x2][4]] + '" x="' + XS[x2][0] + '" y="' + XS[x2][1] + '" width="' + XS[x2][2] + '" height="' + XS[x2][2] + '" style="animation-duration:' + XS[x2][3] + 's;animation-delay:-' + (x2 * 0.3).toFixed(1) + 's"/>';
     var el = mount(
       '<svg viewBox="0 0 1000 320">' + DEFS +
         /* full-bleed: everything extends far past the viewBox (symmetric about its centre) */
@@ -308,7 +332,11 @@
         '<linearGradient id="jjfade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0e1f33" stop-opacity="1"/><stop offset="1" stop-color="#0e1f33" stop-opacity="0"/></linearGradient>' +
         '<rect x="-3500" y="-1440" width="8000" height="1300" fill="#0e1f33"/>' +
         '<rect x="-3500" y="-140" width="8000" height="120" fill="url(#jjfade)"/>' +
+        /* the intro's purple galaxy wash, upper right */
+        '<radialGradient id="jjpur" gradientUnits="userSpaceOnUse" cx="850" cy="-60" r="900"><stop offset="0%" stop-color="#6b55a0" stop-opacity=".36"/><stop offset="55%" stop-color="#4a3a75" stop-opacity=".15"/><stop offset="100%" stop-color="#4a3a75" stop-opacity="0"/></radialGradient>' +
+        '<rect x="-3500" y="-1440" width="8000" height="3200" fill="url(#jjpur)"/>' +
         '<g class="jjparStars">' + starfield + twinkles + '</g>' +
+        '<g class="jjparDeco">' + deco + '</g>' +
         '<rect x="-3500" y="' + GROUND + '" width="8000" height="1600" fill="#131b2c"/>' +
         '<line x1="-3500" y1="' + GROUND + '" x2="4500" y2="' + GROUND + '" stroke="#232e44" stroke-width="3"/>' +
         /* the road they walk — a soft lighter band with a few pebbles */

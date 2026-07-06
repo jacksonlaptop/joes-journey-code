@@ -114,6 +114,11 @@
     '@keyframes jjsquish{0%,100%{transform:scale(1,1);}50%{transform:scale(1.07,0.9);}}' +
     '@keyframes jjtwinkle{0%,100%{opacity:.12;}50%{opacity:.75;}}' +
     '#jjld .jjtw{animation:jjtwinkle 3s ease-in-out infinite;}' +
+    /* the intro-style parallax: swirl board drifts one way, starfield the other, very slowly */
+    '@keyframes jjparS{from{transform:translateX(0);}to{transform:translateX(-60px);}}' +
+    '@keyframes jjparT{from{transform:translateX(0);}to{transform:translateX(24px);}}' +
+    '#jjld .jjparSwirl{animation:jjparS 34s ease-in-out infinite alternate;}' +
+    '#jjld .jjparStars{animation:jjparT 34s ease-in-out infinite alternate;}' +
     '#jjld .evoFillin{animation:jjshiver .18s linear infinite;}' +
     '#jjld .evoWalk{animation:jjwalk .9s ease-in-out infinite;}' +
     '#jjld .evoSwim{animation:jjswim 1.4s ease-in-out infinite;}' +
@@ -274,22 +279,28 @@
           '</g>' +
         '</g></g>';
     }
-    /* polished "journey night" scene — the template look for the per-page loaders */
+    /* the "journey night" scene — the SITE'S OWN intro parallax boards: the swirl-cloud board
+       drifts slowly one way while a starfield drifts the other (like the homepage intro). */
+    var BOARD = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0c964e79a06e8151f7f16b_Starry%20Board%20-%20Foreground2.svg';
+    var pre = new Image(); pre.src = BOARD;                     // warm the board immediately
     var twinkles = '';
     var TW = [[85, 42, 1.6, 2.6], [235, 88, 1.2, 3.4], [388, 30, 1.8, 2.9], [530, 96, 1.1, 3.8], [655, 48, 1.5, 2.4],
       [762, 112, 1.2, 3.1], [905, 34, 1.7, 2.7], [968, 150, 1.1, 3.6], [160, 140, 1.2, 3.2], [468, 165, 1.0, 2.8]];
     for (var t = 0; t < TW.length; t++)
       twinkles += '<circle class="jjtw" cx="' + TW[t][0] + '" cy="' + TW[t][1] + '" r="' + TW[t][2] + '" fill="#dfe6f2" style="animation-duration:' + TW[t][3] + 's;animation-delay:-' + (t * 0.4).toFixed(1) + 's"/>';
+    var starfield = '';
+    var SF = [[-62, 28, 1.4, .7], [18, 96, 1.0, .5], [64, 190, 1.2, .45], [142, 52, 1.8, .8], [212, 150, 1.0, .5], [286, 22, 1.3, .6],
+      [352, 118, 1.6, .75], [420, 208, 1.0, .4], [498, 66, 1.2, .55], [556, 172, 1.9, .8], [640, 34, 1.1, .5], [700, 132, 1.4, .65],
+      [788, 84, 1.0, .45], [846, 196, 1.6, .7], [922, 44, 1.2, .55], [1004, 148, 1.8, .8], [1082, 96, 1.1, .5], [1148, 30, 1.4, .6],
+      [248, 236, 0.9, .35], [672, 232, 1.0, .4], [960, 226, 1.1, .4], [92, 128, 0.9, .4], [520, 20, 0.9, .45], [1120, 200, 0.9, .35]];
+    for (var s = 0; s < SF.length; s++)
+      starfield += '<circle cx="' + SF[s][0] + '" cy="' + SF[s][1] + '" r="' + SF[s][2] + '" fill="#e6ecf6" opacity="' + SF[s][3] + '"/>';
     var el = mount(
       '<svg viewBox="0 0 1000 320">' + DEFS +
         '<radialGradient id="jjvig" cx="50%" cy="42%" r="78%"><stop offset="62%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".38"/></radialGradient>' +
-        '<rect x="-50" y="-50" width="1100" height="420" fill="url(#jjsky)"/>' +
-        /* one grand swirl sweeping the sky + the smaller site swirls */
-        '<path d="M-80,168 C180,54 420,36 620,82 S920,146 1080,92" fill="none" stroke="#0a1120" stroke-width="54" stroke-linecap="round" opacity=".5"/>' +
-        SWIRLS + STARS + twinkles + MOON +
-        /* layered dunes for depth, then the ground */
-        '<path d="M-50,252 Q170,236 360,248 T740,244 T1050,250 L1050,330 L-50,330 Z" fill="#0e1728"/>' +
-        '<path d="M-50,262 Q240,250 520,260 T1050,258 L1050,330 L-50,330 Z" fill="#111b30"/>' +
+        '<rect x="-50" y="-50" width="1100" height="420" fill="#0e1f33"/>' +                                    // board base colour while it loads
+        '<g class="jjparSwirl"><image href="' + BOARD + '" x="-2432" y="-70" width="4582" height="420"/></g>' + // the intro swirl board, big spiral in view
+        '<g class="jjparStars">' + starfield + twinkles + '</g>' +
         '<rect x="-50" y="' + GROUND + '" width="1100" height="60" fill="#131b2c"/>' +
         '<line x1="-50" y1="' + GROUND + '" x2="1050" y2="' + GROUND + '" stroke="#232e44" stroke-width="3"/>' +
         /* the road they walk — a soft lighter band with a few pebbles */

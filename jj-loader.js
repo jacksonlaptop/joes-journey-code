@@ -350,7 +350,7 @@
         '<circle cx="' + (X0 + 40) + '" cy="' + (GROUND + 26) + '" r="2" fill="#222e48"/><circle cx="' + (X0 + 205) + '" cy="' + (GROUND + 30) + '" r="1.6" fill="#222e48"/>' +
         '<circle cx="' + (X0 + 420) + '" cy="' + (GROUND + 25) + '" r="2.2" fill="#222e48"/><circle cx="' + (X0 + 610) + '" cy="' + (GROUND + 31) + '" r="1.5" fill="#222e48"/>' +
         '<circle cx="' + (X0 + 812) + '" cy="' + (GROUND + 27) + '" r="2" fill="#222e48"/>' +
-        (SPOT ? '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#000" opacity=".5"/>' : '') +   // house lights down
+        (SPOT ? '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#000" opacity=".93"/>' : '') +  // house lights down — a true black stage, only light and shadow remain
         clips + row +
         (SPOT ?
           '<filter id="jjblur" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7"/></filter>' +
@@ -420,21 +420,67 @@
     }};
   }
 
+  /* ---------- VARIANT E — Trogdor flies to the wizard (contact) — black stage + tracking spotlight ---------- */
+  function Trogdor(opts) {
+    var frames = (opts.flyFrames || []).filter(Boolean), WIZ = opts.wizard;
+    var GROUND = 272, DW = 180, DH = 180, FLY_X0 = -60, FLY_X1 = 830, FLY_Y = 96;
+    var WX = 880, WW = 96, WH = 150;
+    frames.concat([WIZ]).forEach(function (u) { var im = new Image(); im.src = u; });
+    var stack = '';
+    for (var i = 0; i < frames.length; i++)
+      stack += '<image href="' + frames[i] + '" x="0" y="0" width="' + DW + '" height="' + DH + '"' + (i ? ' style="display:none"' : '') + '/>';
+    var el = mount(
+      '<svg viewBox="0 0 1000 320">' +
+        '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#04060c"/>' +                       // the dark stage
+        '<rect x="-3500" y="' + GROUND + '" width="8000" height="1600" fill="#0a0f1c"/>' +
+        '<line x1="-3500" y1="' + GROUND + '" x2="4500" y2="' + GROUND + '" stroke="#1a2334" stroke-width="2"/>' +
+        '<image class="wiz" href="' + WIZ + '" x="' + WX + '" y="' + (GROUND - WH) + '" width="' + WW + '" height="' + WH + '" style="filter:brightness(.2) saturate(.35);transition:filter 1s ease"/>' +
+        '<g class="trogW" style="will-change:transform">' + stack + '</g>' +
+        '<filter id="jjblur" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7"/></filter>' +
+        '<linearGradient id="jjbeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8e8" stop-opacity="0"/><stop offset=".3" stop-color="#fff8e8" stop-opacity=".09"/><stop offset="1" stop-color="#fff8e8" stop-opacity=".22"/></linearGradient>' +
+        '<radialGradient id="jjpool"><stop offset="0" stop-color="#fff6dd" stop-opacity=".28"/><stop offset="1" stop-color="#fff6dd" stop-opacity="0"/></radialGradient>' +
+        '<g class="jjspot" style="transition:transform .4s cubic-bezier(.4,0,.3,1)"><g class="jjbeams">' +
+          '<path d="M-230,-430 L-176,-430 L96,' + (GROUND + 6) + ' L-116,' + (GROUND + 6) + ' Z" fill="url(#jjbeam)" filter="url(#jjblur)" style="mix-blend-mode:screen"/>' +
+          '<path d="M176,-430 L230,-430 L116,' + (GROUND + 6) + ' L-96,' + (GROUND + 6) + ' Z" fill="url(#jjbeam)" filter="url(#jjblur)" style="mix-blend-mode:screen"/>' +
+        '</g><ellipse cx="0" cy="' + (GROUND + 6) + '" rx="130" ry="18" fill="url(#jjpool)" style="mix-blend-mode:screen"/></g>' +
+        '<text class="pct" x="500" y="306" text-anchor="middle" style="font-size:22px">0%</text>' +
+      '</svg>');
+    var trog = el.querySelector('.trogW'), wiz = el.querySelector('.wiz'), spot = el.querySelector('.jjspot'), pct = el.querySelector('.pct');
+    var imgs = Array.prototype.slice.call(trog.querySelectorAll('image'));
+    var fi = 0, lastF = 0, wizLit = false;
+    return { el: el, joe: null, render: function (p) {
+      var now = performance.now();
+      var tx = FLY_X0 + p * (FLY_X1 - FLY_X0 - DW * 0.4);
+      var ty = FLY_Y + Math.sin(now / 480) * 13 + Math.sin(now / 1370) * 7;   // layered bob = organic hover
+      trog.style.transform = 'translate(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px)';
+      if (now - lastF > 1000 / (opts.fps || 12)) {               // wing flap: display toggle, never href swaps
+        lastF = now; var nf = (fi + 1) % imgs.length;
+        imgs[fi].style.display = 'none'; imgs[nf].style.display = ''; fi = nf;
+      }
+      spot.style.transform = 'translate(' + (tx + DW / 2).toFixed(1) + 'px,0)';   // the beams chase him (CSS-eased lag)
+      if (!wizLit && p > 0.9) { wizLit = true; wiz.style.filter = 'none'; }       // the wizard lights up as Trogdor arrives
+      pct.textContent = Math.round(p * 100) + '%';
+    }};
+  }
+
   /* ---------- RUN ---------- */
   JJ.start = function (opts) {
     opts = opts || {};
-    if (document.getElementById('jjld')) return;
+    var prev = document.getElementById('jjld');                  // starting anew replaces a running loader
+    if (prev) prev.remove();                                     // (its rAF loop exits via the isConnected check)
     var frames = (opts.frames || []).filter(Boolean);
     frames.concat(opts.fillFrames || [], opts.stages || [], opts.stagesGrey || [], opts.stagesB || []).forEach(function (u) {   // preload + decode all art up front
       var im = new Image(); im.src = u; if (im.decode) im.decode().catch(function () {});
     });
-    var scene = (opts.variant === 'evolution' ? Evolution(opts)
+    var scene = (opts.variant === 'trogdor' ? Trogdor(opts)
+      : opts.variant === 'evolution' ? Evolution(opts)
       : (opts.variant === 'scroll' ? Scroll : Journey)(opts, frames));
     var startT = performance.now(), minTime = opts.minTime != null ? opts.minTime : 900;
     var fps = opts.fps || 8, fi = 0, lastF = 0;
     var target = 0, shown = 0, revealed = false, downloaded = false, decoded = !opts.decode;
 
     (function loop(now) {
+      if (!scene.el.isConnected) return;                         // replaced by a newer start — stop this orphaned loop
       shown += (target - shown) * 0.12; if (target - shown < 0.001) shown = target;
       scene.render(shown);
       if (frames.length && now - lastF > 1000 / fps) {

@@ -23,6 +23,7 @@
       <button onclick="run('scroll')">Run B · Scrolling world</button>
       <button onclick="run('evolution')">Run C · Evolution</button>
       <button onclick="run('evolution',false,true)">Run D · Spotlight</button>
+      <button onclick="run('trogdor')">Run E · Trogdor</button>
     </div>
     <div class="btns">
       <button class="alt" onclick="run('journey',true)">A · real assets</button>
@@ -41,6 +42,7 @@
     var GALLOP = [], GREY = [], EVO = [], EVOG = [], EVOB = [];
     for (var g=1; g<=15; g++) { GALLOP.push('./joe-gallop-'+g+'.webp'+AV); GREY.push('./joe-grey-'+g+'.webp'+AV); }   // colour + grey 15-frame loops
     for (var e=1; e<=7; e++) { EVO.push('./joe-evo-'+e+'.webp'+AV); EVOG.push('./joe-evo-grey-'+e+'.webp'+AV); EVOB.push('./joe-evo-'+e+'b.webp'+AV); }   // evolution stages (+2nd step pose)
+    var TROGF = []; for (var tf=1; tf<=16; tf++) TROGF.push('./trog-fly-'+tf+'.webp'+AV);   // Trogdor wing cycle
 
     function run(variant, real, spot){
       var isScroll = variant === 'scroll', isEvo = variant === 'evolution';
@@ -49,6 +51,7 @@
         fillFrames: isScroll ? GREY : null,       // paint-fill: grey Joe fills with colour by real %
         stages: isEvo ? EVO : null, stagesGrey: isEvo ? EVOG : null,   // evolution row fills stage by stage
         stagesB: isEvo ? EVOB : null,                                   // 2nd pose → real steps once painted
+        flyFrames: variant==='trogdor' ? TROGF : null, wizard: variant==='trogdor' ? './story-cas-designer-2.webp'+AV : null,
         stageBounds: isEvo ? [[0.390,0.590],[0.292,0.655],[0.278,0.740],[0.165,0.780],[0.163,0.805],[0.090,0.880],[0.115,0.838]] : null,   // measured content top/bottom per stage
         stageBoundsX: isEvo ? [[0.393,0.632],[0.268,0.733],[0.350,0.685],[0.237,0.750],[0.360,0.757],[0.212,0.757],[0.372,0.728]] : null,  // measured content left/right — fill sweeps this span
         fps: isScroll ? 14 : 8,

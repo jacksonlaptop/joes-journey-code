@@ -124,6 +124,11 @@
     '#jjld .jjparDeco{animation:jjparD 38s ease-in-out infinite alternate;}' +
     '@keyframes jjspin{to{transform:rotate(360deg);}}' +
     '#jjld .jjsp{transform-box:fill-box;transform-origin:50% 50%;}' +
+    /* spotlight mode: the beam pair sways gently and glides between figures */
+    '@keyframes jjsway{0%,100%{transform:rotate(-1.4deg);}50%{transform:rotate(1.4deg);}}' +
+    '#jjld .jjbeams{transform-box:fill-box;transform-origin:50% 0;animation:jjsway 5.5s ease-in-out infinite;}' +
+    '#jjld .jjspot{transition:transform 1s cubic-bezier(.5,0,.2,1);}' +
+    '#jjld .evoStage{transition:filter .8s ease;}' +
     '#jjld .evoFillin{animation:jjshiver .18s linear infinite;}' +
     '#jjld .evoWalk{animation:jjwalk .9s ease-in-out infinite;}' +
     '#jjld .evoSwim{animation:jjswim 1.4s ease-in-out infinite;}' +
@@ -254,6 +259,7 @@
     var colour = (opts.stages || []).filter(Boolean), grey = (opts.stagesGrey || []).filter(Boolean);
     var colourB = (opts.stagesB || []).filter(Boolean);          // optional 2nd pose per stage → real steps once alive
     var N = colour.length, S = 128, GAP = 8, GROUND = 272, hasB = colourB.length === N;
+    var SPOT = !!opts.spotlight;                                 // movie-premiere mode: shadows + roaming spotlights
     var total = N * S + (N - 1) * GAP, X0 = (1000 - total) / 2;
     var bounds = opts.stageBounds || [];    // per-stage [topFrac,botFrac] of the art's content (for seating)
     var boundsX = opts.stageBoundsX || [];  // per-stage [leftFrac,rightFrac] — the fill sweeps this span
@@ -344,7 +350,18 @@
         '<circle cx="' + (X0 + 40) + '" cy="' + (GROUND + 26) + '" r="2" fill="#222e48"/><circle cx="' + (X0 + 205) + '" cy="' + (GROUND + 30) + '" r="1.6" fill="#222e48"/>' +
         '<circle cx="' + (X0 + 420) + '" cy="' + (GROUND + 25) + '" r="2.2" fill="#222e48"/><circle cx="' + (X0 + 610) + '" cy="' + (GROUND + 31) + '" r="1.5" fill="#222e48"/>' +
         '<circle cx="' + (X0 + 812) + '" cy="' + (GROUND + 27) + '" r="2" fill="#222e48"/>' +
+        (SPOT ? '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#000" opacity=".5"/>' : '') +   // house lights down
         clips + row +
+        (SPOT ?
+          '<filter id="jjblur" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7"/></filter>' +
+          '<linearGradient id="jjbeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8e8" stop-opacity="0"/><stop offset=".3" stop-color="#fff8e8" stop-opacity=".09"/><stop offset="1" stop-color="#fff8e8" stop-opacity=".22"/></linearGradient>' +
+          '<radialGradient id="jjpool"><stop offset="0" stop-color="#fff6dd" stop-opacity=".3"/><stop offset="1" stop-color="#fff6dd" stop-opacity="0"/></radialGradient>' +
+          '<g class="jjspot"><g class="jjbeams">' +
+            '<path d="M-200,-430 L-152,-430 L70,' + (GROUND + 6) + ' L-86,' + (GROUND + 6) + ' Z" fill="url(#jjbeam)" filter="url(#jjblur)" style="mix-blend-mode:screen"/>' +
+            '<path d="M152,-430 L200,-430 L86,' + (GROUND + 6) + ' L-70,' + (GROUND + 6) + ' Z" fill="url(#jjbeam)" filter="url(#jjblur)" style="mix-blend-mode:screen"/>' +
+          '</g>' +
+          '<ellipse cx="0" cy="' + (GROUND + 6) + '" rx="100" ry="16" fill="url(#jjpool)" style="mix-blend-mode:screen"/></g>'
+        : '') +
         '<text class="pct" x="500" y="306" text-anchor="middle" style="font-size:22px">0%</text>' +
       '</svg>');
     var pct = el.querySelector('.pct');
@@ -362,6 +379,8 @@
        into a still coloured stance (keeping their stepped-forward spot). Modes per stage:
        frozen (grey) · fill (shiver) · walk (step hop + idle + pose A/B cycle) · done (still). */
     var modes = [], poseFr = [];
+    var spotEl = el.querySelector('.jjspot'), curSpot = -1;
+    var LIGHT = { fill: 'none', walk: 'none', done: 'brightness(.5) saturate(.8)', frozen: 'brightness(.18) saturate(.35)' };
     return { el: el, joe: null, render: function (p) {
       var now = performance.now();
       var sy = (GROUND - S - 60) - ((now / 26) % 52);            // wave pattern drifts vertically (52 = 2 hump periods)
@@ -369,6 +388,12 @@
       for (var i = 0; i < N; i++) {
         locals[i] = Math.max(0, Math.min(1, p * N - i));         // stage i fills during its 1/N slice of the load
         if (locals[i] >= 1) aliveIdx = i;                        // highest completed stage = the one that walks
+      }
+      if (spotEl) {                                              // glide the beams to the figure whose moment it is
+        var act = 0;
+        for (i = 0; i < N; i++) if (locals[i] > 0 && locals[i] < 1) { act = i; break; }
+        if (locals[N - 1] >= 1) act = N - 1; else if (aliveIdx >= 0 && locals[aliveIdx + 1] === 0) act = aliveIdx;
+        if (act !== curSpot) { curSpot = act; spotEl.style.transform = 'translate(' + ((xs[act][0] + xs[act][1]) / 2).toFixed(1) + 'px,0)'; }   // CSS transform → the .jjspot transition tweens the glide
       }
       for (i = 0; i < clipEls.length; i++) {
         var local = locals[i];
@@ -380,6 +405,7 @@
           modes[i] = mode;
           stageEls[i].setAttribute('class', 'evoStage' + (local >= 1 ? ' evoStepped' : ''));   // hop persists once done (forwards fill)
           innerEls[i].setAttribute('class', 'evoInner' + (mode === 'fill' ? ' evoFillin' : (mode === 'walk' ? ' ' + animClass(i) : '')));
+          if (SPOT) stageEls[i].style.filter = LIGHT[mode];      // lit in the beam, half-shadow when done, silhouette while waiting
           if (hasB) {
             if (gEls[i]) gEls[i].style.display = local >= 1 ? 'none' : '';
             if (mode !== 'walk') { poseFr[i] = 0; aEls[i].style.display = ''; bEls[i].style.display = 'none'; }   // settled → rest on pose A

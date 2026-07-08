@@ -22,6 +22,7 @@
       <button onclick="run('journey')">Run A · The Journey</button>
       <button onclick="run('scroll')">Run B · Scrolling world</button>
       <button onclick="run('evolution')">Run C · Evolution</button>
+      <button onclick="run('evolution',false,true)">Run D · Spotlight</button>
     </div>
     <div class="btns">
       <button class="alt" onclick="run('journey',true)">A · real assets</button>
@@ -41,9 +42,9 @@
     for (var g=1; g<=15; g++) { GALLOP.push('./joe-gallop-'+g+'.webp'+AV); GREY.push('./joe-grey-'+g+'.webp'+AV); }   // colour + grey 15-frame loops
     for (var e=1; e<=7; e++) { EVO.push('./joe-evo-'+e+'.webp'+AV); EVOG.push('./joe-evo-grey-'+e+'.webp'+AV); EVOB.push('./joe-evo-'+e+'b.webp'+AV); }   // evolution stages (+2nd step pose)
 
-    function run(variant, real){
+    function run(variant, real, spot){
       var isScroll = variant === 'scroll', isEvo = variant === 'evolution';
-      var base = { variant:variant, minTime:600,
+      var base = { variant:variant, minTime:600, spotlight: !!spot,
         frames: isEvo ? [] : (isScroll ? GALLOP : TROT),
         fillFrames: isScroll ? GREY : null,       // paint-fill: grey Joe fills with colour by real %
         stages: isEvo ? EVO : null, stagesGrey: isEvo ? EVOG : null,   // evolution row fills stage by stage

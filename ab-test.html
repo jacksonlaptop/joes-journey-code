@@ -24,6 +24,7 @@
       <button onclick="run('evolution')">Run C · Evolution</button>
       <button onclick="run('evolution',false,true)">Run D · Spotlight</button>
       <button onclick="run('trogdor')">Run E · Trogdor</button>
+      <button onclick="run('juggle')">Run F · BBC Juggle</button>
     </div>
     <div class="btns">
       <button class="alt" onclick="run('journey',true)">A · real assets</button>
@@ -51,7 +52,8 @@
         fillFrames: isScroll ? GREY : null,       // paint-fill: grey Joe fills with colour by real %
         stages: isEvo ? EVO : null, stagesGrey: isEvo ? EVOG : null,   // evolution row fills stage by stage
         stagesB: isEvo ? EVOB : null,                                   // 2nd pose → real steps once painted
-        flyFrames: variant==='trogdor' ? TROGF : null, wizard: variant==='trogdor' ? './story-cas-designer-2.webp'+AV : null,
+        sheet: variant==='trogdor' ? './dragon-sprite.png'+AV : null, wizard: variant==='trogdor' ? './story-cas-designer-2.webp'+AV : null,
+        joe: variant==='juggle' ? './bbc-joe.webp'+AV : null,
         stageBounds: isEvo ? [[0.390,0.590],[0.292,0.655],[0.278,0.740],[0.165,0.780],[0.163,0.805],[0.090,0.880],[0.115,0.838]] : null,   // measured content top/bottom per stage
         stageBoundsX: isEvo ? [[0.393,0.632],[0.268,0.733],[0.350,0.685],[0.237,0.750],[0.360,0.757],[0.212,0.757],[0.372,0.728]] : null,  // measured content left/right — fill sweeps this span
         fps: isScroll ? 14 : 8,

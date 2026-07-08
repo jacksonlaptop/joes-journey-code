@@ -22,7 +22,9 @@
    ============================================================================ */
 (function () {
   var JJ = (window.JJLoader = window.JJLoader || {});
-  JJ.version = 'jjloader-2';
+  JJ.version = 'L7 · BBC juggle variant (Joe + B/B/C tiles in the spotlight)';   // bump every edit — verify in console
+  window.JJ_LOADER_BUILD = JJ.version;
+  try { console.log('%c[JJ] jj-loader.js build: ' + JJ.version, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   /* ---------- 1. MEASURE: true byte progress of a known asset set ---------- */
   function measure(urls, onProgress, onReady) {
@@ -422,20 +424,23 @@
 
   /* ---------- VARIANT E — Trogdor flies to the wizard (contact) — black stage + tracking spotlight ---------- */
   function Trogdor(opts) {
-    var frames = (opts.flyFrames || []).filter(Boolean), WIZ = opts.wizard;
-    var GROUND = 272, DW = 180, DH = 180, FLY_X0 = -60, FLY_X1 = 830, FLY_Y = 96;
+    /* the dragon = the CONTACT PAGE's own sprite sheet (9×8 grid, 72 frames @ 12fps), stepped by
+       moving the sheet under a fixed clip window — the exact animation the user knows from the game */
+    var SHEET = opts.sheet, WIZ = opts.wizard, COLS = 9, ROWS = 8, NF = 72;
+    var DW = 200, DH = 104;                                      // one cell, at display size (cell aspect 340:177)
+    var GROUND = 272, FLY_X0 = -80, FLY_X1 = 830, FLY_Y = 128;
     var WX = 880, WW = 96, WH = 150;
-    frames.concat([WIZ]).forEach(function (u) { var im = new Image(); im.src = u; });
-    var stack = '';
-    for (var i = 0; i < frames.length; i++)
-      stack += '<image href="' + frames[i] + '" x="0" y="0" width="' + DW + '" height="' + DH + '"' + (i ? ' style="display:none"' : '') + '/>';
+    [SHEET, WIZ].forEach(function (u) { var im = new Image(); im.src = u; });
     var el = mount(
       '<svg viewBox="0 0 1000 320">' +
         '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#04060c"/>' +                       // the dark stage
         '<rect x="-3500" y="' + GROUND + '" width="8000" height="1600" fill="#0a0f1c"/>' +
         '<line x1="-3500" y1="' + GROUND + '" x2="4500" y2="' + GROUND + '" stroke="#1a2334" stroke-width="2"/>' +
         '<image class="wiz" href="' + WIZ + '" x="' + WX + '" y="' + (GROUND - WH) + '" width="' + WW + '" height="' + WH + '" style="filter:brightness(.2) saturate(.35);transition:filter 1s ease"/>' +
-        '<g class="trogW" style="will-change:transform">' + stack + '</g>' +
+        '<clipPath id="jjtcell" clipPathUnits="userSpaceOnUse"><rect x="0" y="0" width="' + DW + '" height="' + DH + '"/></clipPath>' +
+        '<g class="trogW" style="will-change:transform"><g clip-path="url(#jjtcell)">' +
+          '<image class="sheet" href="' + SHEET + '" x="0" y="0" width="' + (DW * COLS) + '" height="' + (DH * ROWS) + '"/>' +
+        '</g></g>' +
         '<filter id="jjblur" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7"/></filter>' +
         '<linearGradient id="jjbeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8e8" stop-opacity="0"/><stop offset=".3" stop-color="#fff8e8" stop-opacity=".09"/><stop offset="1" stop-color="#fff8e8" stop-opacity=".22"/></linearGradient>' +
         '<radialGradient id="jjpool"><stop offset="0" stop-color="#fff6dd" stop-opacity=".28"/><stop offset="1" stop-color="#fff6dd" stop-opacity="0"/></radialGradient>' +
@@ -445,20 +450,70 @@
         '</g><ellipse cx="0" cy="' + (GROUND + 6) + '" rx="130" ry="18" fill="url(#jjpool)" style="mix-blend-mode:screen"/></g>' +
         '<text class="pct" x="500" y="306" text-anchor="middle" style="font-size:22px">0%</text>' +
       '</svg>');
-    var trog = el.querySelector('.trogW'), wiz = el.querySelector('.wiz'), spot = el.querySelector('.jjspot'), pct = el.querySelector('.pct');
-    var imgs = Array.prototype.slice.call(trog.querySelectorAll('image'));
+    var trog = el.querySelector('.trogW'), sheet = el.querySelector('.sheet'), wiz = el.querySelector('.wiz'),
+        spot = el.querySelector('.jjspot'), pct = el.querySelector('.pct');
     var fi = 0, lastF = 0, wizLit = false;
     return { el: el, joe: null, render: function (p) {
       var now = performance.now();
       var tx = FLY_X0 + p * (FLY_X1 - FLY_X0 - DW * 0.4);
       var ty = FLY_Y + Math.sin(now / 480) * 13 + Math.sin(now / 1370) * 7;   // layered bob = organic hover
       trog.style.transform = 'translate(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px)';
-      if (now - lastF > 1000 / (opts.fps || 12)) {               // wing flap: display toggle, never href swaps
-        lastF = now; var nf = (fi + 1) % imgs.length;
-        imgs[fi].style.display = 'none'; imgs[nf].style.display = ''; fi = nf;
+      if (now - lastF > 1000 / (opts.fps || 12)) {               // step the sheet under the clip window — like the game
+        lastF = now; fi = (fi + 1) % NF;
+        sheet.setAttribute('x', String(-(fi % COLS) * DW)); sheet.setAttribute('y', String(-Math.floor(fi / COLS) * DH));
       }
       spot.style.transform = 'translate(' + (tx + DW / 2).toFixed(1) + 'px,0)';   // the beams chase him (CSS-eased lag)
       if (!wizLit && p > 0.9) { wizLit = true; wiz.style.filter = 'none'; }       // the wizard lights up as Trogdor arrives
+      pct.textContent = Math.round(p * 100) + '%';
+    }};
+  }
+
+  /* ---------- VARIANT F — Joe juggles the BBC blocks (BBC case studies) — fixed spotlight ---------- */
+  var TILE_B = 'M3.11662 95.7805C0.558848 96.8213 -0.67092 99.7385 0.369871 102.296L92.7113 329.228C93.7521 331.786 96.6693 333.016 99.2271 331.975L333.701 236.564C336.259 235.524 337.489 232.606 336.448 230.049L244.107 3.11674C243.066 0.558968 240.149 -0.67079 237.591 0.370001L3.11662 95.7805ZM236.275 195.231C234.414 202.656 230.275 209.394 223.84 215.669C217.404 221.944 208.769 227.178 197.915 231.595L147.896 251.948C145.339 252.989 142.421 251.759 141.381 249.201L91.0875 125.605C90.0467 123.047 91.2765 120.13 93.8342 119.089L140.616 100.053C155.755 93.8927 168.762 92.0412 179.448 94.5755C190.134 97.1098 197.74 103.801 202.245 114.873C204.798 121.147 205.527 127.302 204.453 133.116C204.078 135.141 203.474 137.13 202.647 139.078C200.877 143.249 203.858 149.33 208.301 150.217C212.307 151.017 215.982 152.409 219.32 154.382C225.895 158.266 230.863 164.203 234.167 172.322C237.453 180.126 238.137 187.806 236.275 195.231ZM174.998 144.457C177.567 139.862 177.745 134.843 175.53 129.4C171.25 118.882 161.683 116.645 146.926 122.65L130.516 129.327C127.958 130.368 126.728 133.285 127.769 135.843L137.44 159.611C138.481 162.168 141.398 163.398 143.956 162.357L160.366 155.68C167.602 152.736 172.428 149.051 174.998 144.457ZM172.374 175.098L152.441 183.209C149.883 184.25 148.653 187.167 149.694 189.725L160.529 216.353C161.57 218.91 164.487 220.14 167.045 219.099L186.692 211.105C194.976 207.734 200.849 203.623 204.085 198.758C207.321 193.892 207.746 188.665 205.419 182.945C200.33 170.712 189.416 168.163 172.374 175.098Z';
+  var TILE_C = 'M1.2739 184.248C-0.56744 186.306 -0.391882 189.466 1.66602 191.308L190.316 360.105C192.374 361.946 195.535 361.771 197.376 359.713L360.744 177.132C362.585 175.074 362.409 171.913 360.352 170.071L171.702 1.27398C169.644 -0.567354 166.483 -0.391803 164.642 1.66609L1.2739 184.248ZM184.052 263.46C182.821 264.836 180.927 265.435 179.153 264.921C173.272 263.217 167.225 260.676 161.014 257.298C153.7 253.294 146.755 248.416 140.09 242.453C131.281 234.57 124.443 226.18 119.588 217.425C114.799 208.595 112.012 199.686 111.294 190.622C110.576 181.559 112.013 172.553 115.519 163.394C118.959 154.308 124.498 145.497 132.136 136.96C139.576 128.646 147.663 122.383 156.322 118.101C164.981 113.819 174.002 111.599 183.375 111.297C192.681 111.07 202.131 112.842 211.513 116.692C220.895 120.543 229.991 126.409 238.8 134.291C244.928 139.774 250.142 145.509 254.529 151.706C258.27 156.882 261.343 162.242 263.748 167.785C264.497 169.511 264.123 171.505 262.868 172.907L252.409 184.596C249.774 187.541 244.849 186.423 243.302 182.787C241.835 179.339 240.082 176.003 238.03 172.765C234.313 166.9 229.768 161.496 224.253 156.562C216.669 149.776 209.039 145.355 201.219 143.303C193.4 141.252 185.819 141.554 178.259 144.145C170.775 146.806 163.674 151.813 157.032 159.236C150.39 166.659 146.123 174.203 144.165 181.941C142.273 189.604 142.67 197.177 145.422 204.585C148.173 211.992 153.335 219.017 160.842 225.734C170.017 233.943 180.321 239.795 191.68 243.291C195.383 244.431 196.918 249.081 194.335 251.968L184.052 263.46Z';
+  function Juggle(opts) {
+    var JOE = opts.joe, GROUND = 272;
+    var JH = 200, JY = GROUND - JH * 0.843, JX = 500 - JH * 0.528;   // seat his feet on the ground, centre stage
+    var CX = 505, CY = JY - 6, RX = 132, RY = 90;                    // the juggle loop — low point lands at his hands, not his face
+    var im = new Image(); im.src = JOE;
+    /* three tiles: B, B, C — each centred on its own origin so it can spin while orbiting */
+    var tiles = [
+      { d: TILE_B, s: 0.255, cx: 168.5, cy: 166.5 },
+      { d: TILE_B, s: 0.225, cx: 168.5, cy: 166.5 },
+      { d: TILE_C, s: 0.24, cx: 181.5, cy: 181 }
+    ];
+    var tileHtml = '';
+    for (var i = 0; i < 3; i++)
+      tileHtml += '<g class="jtile" style="opacity:0;transition:opacity .6s ease"><path d="' + tiles[i].d + '" fill="#f4f6fa"/></g>';
+    var el = mount(
+      '<svg viewBox="0 0 1000 320">' +
+        '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#04060c"/>' +
+        '<rect x="-3500" y="' + GROUND + '" width="8000" height="1600" fill="#0a0f1c"/>' +
+        '<line x1="-3500" y1="' + GROUND + '" x2="4500" y2="' + GROUND + '" stroke="#1a2334" stroke-width="2"/>' +
+        '<filter id="jjblur" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7"/></filter>' +
+        '<linearGradient id="jjbeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8e8" stop-opacity="0"/><stop offset=".3" stop-color="#fff8e8" stop-opacity=".09"/><stop offset="1" stop-color="#fff8e8" stop-opacity=".22"/></linearGradient>' +
+        '<radialGradient id="jjpool"><stop offset="0" stop-color="#fff6dd" stop-opacity=".28"/><stop offset="1" stop-color="#fff6dd" stop-opacity="0"/></radialGradient>' +
+        '<g class="jjspot" transform="translate(505,0)"><g class="jjbeams">' +
+          '<path d="M-230,-430 L-176,-430 L96,' + (GROUND + 6) + ' L-116,' + (GROUND + 6) + ' Z" fill="url(#jjbeam)" filter="url(#jjblur)" style="mix-blend-mode:screen"/>' +
+          '<path d="M176,-430 L230,-430 L116,' + (GROUND + 6) + ' L-96,' + (GROUND + 6) + ' Z" fill="url(#jjbeam)" filter="url(#jjblur)" style="mix-blend-mode:screen"/>' +
+        '</g><ellipse cx="0" cy="' + (GROUND + 6) + '" rx="130" ry="18" fill="url(#jjpool)" style="mix-blend-mode:screen"/></g>' +
+        '<image class="joe" href="' + JOE + '" x="' + JX.toFixed(1) + '" y="' + JY.toFixed(1) + '" width="' + JH + '" height="' + JH + '"/>' +
+        tileHtml +
+        '<text class="pct" x="500" y="306" text-anchor="middle" style="font-size:22px">0%</text>' +
+      '</svg>');
+    var tileEls = Array.prototype.slice.call(el.querySelectorAll('.jtile')), pct = el.querySelector('.pct');
+    var shown = [false, false, false];
+    return { el: el, joe: null, render: function (p) {
+      var now = performance.now();
+      var inPlay = 1 + (p > 1 / 3 ? 1 : 0) + (p > 2 / 3 ? 1 : 0);   // blocks join the juggle as loading advances
+      for (var k = 0; k < 3; k++) {
+        if (k < inPlay && !shown[k]) { shown[k] = true; tileEls[k].style.opacity = '1'; }
+        var ph = now / 1500 * 2 * Math.PI / 3 + k * 2.094;           // one lap ~4.5s, evenly phased
+        var x = CX + RX * Math.cos(ph), y = CY - RY * Math.sin(ph);
+        var rot = Math.sin(now / 700 + k * 2.1) * 26;            // jaunty tilt, letters stay readable (like the mock)
+        var t = tiles[k];
+        tileEls[k].setAttribute('transform', 'translate(' + x.toFixed(1) + ',' + y.toFixed(1) + ') rotate(' + rot.toFixed(1) + ') scale(' + t.s + ') translate(' + (-t.cx) + ',' + (-t.cy) + ')');
+      }
       pct.textContent = Math.round(p * 100) + '%';
     }};
   }
@@ -472,7 +527,8 @@
     frames.concat(opts.fillFrames || [], opts.stages || [], opts.stagesGrey || [], opts.stagesB || []).forEach(function (u) {   // preload + decode all art up front
       var im = new Image(); im.src = u; if (im.decode) im.decode().catch(function () {});
     });
-    var scene = (opts.variant === 'trogdor' ? Trogdor(opts)
+    var scene = (opts.variant === 'juggle' ? Juggle(opts)
+      : opts.variant === 'trogdor' ? Trogdor(opts)
       : opts.variant === 'evolution' ? Evolution(opts)
       : (opts.variant === 'scroll' ? Scroll : Journey)(opts, frames));
     var startT = performance.now(), minTime = opts.minTime != null ? opts.minTime : 900;

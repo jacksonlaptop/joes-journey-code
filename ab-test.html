@@ -47,7 +47,7 @@
 
     function run(variant, real, spot){
       var isScroll = variant === 'scroll', isEvo = variant === 'evolution';
-      var base = { variant:variant, minTime:600, spotlight: !!spot,
+      var base = { variant:variant, minTime:5000, spotlight: !!spot,   // the show always runs ≥5s
         frames: isEvo ? [] : (isScroll ? GALLOP : TROT),
         fillFrames: isScroll ? GREY : null,       // paint-fill: grey Joe fills with colour by real %
         stages: isEvo ? EVO : null, stagesGrey: isEvo ? EVOG : null,   // evolution row fills stage by stage

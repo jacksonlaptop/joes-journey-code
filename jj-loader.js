@@ -22,7 +22,7 @@
    ============================================================================ */
 (function () {
   var JJ = (window.JJLoader = window.JJLoader || {});
-  JJ.version = 'L7 · BBC juggle variant (Joe + B/B/C tiles in the spotlight)';   // bump every edit — verify in console
+  JJ.version = 'L9 · paced progress: the show always runs the full minTime';   // bump every edit — verify in console
   window.JJ_LOADER_BUILD = JJ.version;
   try { console.log('%c[JJ] jj-loader.js build: ' + JJ.version, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
@@ -474,7 +474,10 @@
   function Juggle(opts) {
     var JOE = opts.joe, GROUND = 272;
     var JH = 200, JY = GROUND - JH * 0.843, JX = 500 - JH * 0.528;   // seat his feet on the ground, centre stage
-    var CX = 505, CY = JY - 6, RX = 132, RY = 90;                    // the juggle loop — low point lands at his hands, not his face
+    /* the juggle loop is ANCHORED TO HIS RAISED PALM (content ~x .72, y .42 of his canvas):
+       the ellipse's lowest point = the palm, so tiles visibly leave from and return to the hand */
+    var PALMX = JX + JH * 0.72, PALMY = JY + JH * 0.42;
+    var RX = 118, RY = 88, CX = PALMX - 6, CY = PALMY - RY;
     var im = new Image(); im.src = JOE;
     /* three tiles: B, B, C — each centred on its own origin so it can spin while orbiting */
     var tiles = [
@@ -497,11 +500,14 @@
           '<path d="M-230,-430 L-176,-430 L96,' + (GROUND + 6) + ' L-116,' + (GROUND + 6) + ' Z" fill="url(#jjbeam)" filter="url(#jjblur)" style="mix-blend-mode:screen"/>' +
           '<path d="M176,-430 L230,-430 L116,' + (GROUND + 6) + ' L-96,' + (GROUND + 6) + ' Z" fill="url(#jjbeam)" filter="url(#jjblur)" style="mix-blend-mode:screen"/>' +
         '</g><ellipse cx="0" cy="' + (GROUND + 6) + '" rx="130" ry="18" fill="url(#jjpool)" style="mix-blend-mode:screen"/></g>' +
-        '<image class="joe" href="' + JOE + '" x="' + JX.toFixed(1) + '" y="' + JY.toFixed(1) + '" width="' + JH + '" height="' + JH + '"/>' +
+        '<image href="' + JOE + '" x="' + JX.toFixed(1) + '" y="' + JY.toFixed(1) + '" width="' + JH + '" height="' + JH + '"/>' +   // still — no bob (user request)
         tileHtml +
-        '<text class="pct" x="500" y="306" text-anchor="middle" style="font-size:22px">0%</text>' +
+        '<rect x="390" y="288" width="220" height="6" rx="3" fill="rgba(255,255,255,.14)"/>' +
+        '<rect class="bar" x="390" y="288" width="0" height="6" rx="3" fill="#FF00F5"/>' +
+        '<text class="pct" x="500" y="312" text-anchor="middle" style="font-size:18px">0%</text>' +
       '</svg>');
     var tileEls = Array.prototype.slice.call(el.querySelectorAll('.jtile')), pct = el.querySelector('.pct');
+    var bar = el.querySelector('.bar');
     var shown = [false, false, false];
     return { el: el, joe: null, render: function (p) {
       var now = performance.now();
@@ -514,6 +520,7 @@
         var t = tiles[k];
         tileEls[k].setAttribute('transform', 'translate(' + x.toFixed(1) + ',' + y.toFixed(1) + ') rotate(' + rot.toFixed(1) + ') scale(' + t.s + ') translate(' + (-t.cx) + ',' + (-t.cy) + ')');
       }
+      bar.setAttribute('width', (220 * p).toFixed(1));
       pct.textContent = Math.round(p * 100) + '%';
     }};
   }
@@ -537,7 +544,11 @@
 
     (function loop(now) {
       if (!scene.el.isConnected) return;                         // replaced by a newer start — stop this orphaned loop
-      shown += (target - shown) * 0.12; if (target - shown < 0.001) shown = target;
+      /* pace the show: displayed progress may never outrun the minTime ramp, so even an instant
+         load plays the full story — but it still can't outrun the REAL progress either */
+      var ramp = Math.min(1, (now - startT) / minTime);
+      var capped = Math.min(target, ramp);
+      shown += (capped - shown) * 0.12; if (capped - shown < 0.001) shown = capped;
       scene.render(shown);
       if (frames.length && now - lastF > 1000 / fps) {
         lastF = now; fi = (fi + 1) % frames.length;

@@ -1,0 +1,46 @@
+<!-- ============================================================
+  JJ LOADER — BBC case studies (bbc-mobile + BBC CTV Design System)
+  Webflow → Page Settings on EACH BBC case-study page.
+  Served via jsDelivr (fast CDN, like contact.js). After every
+  jj-loader.js re-upload: purge jsDelivr, then hard-refresh:
+    https://purge.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/jj-loader.js
+  Verify in console: [JJ] jj-loader.js build: L8 · juggle …
+============================================================= -->
+
+<!-- ── BOX 1 · Inside <head> ─────────────────────────────────── -->
+<link rel="preload" as="script" href="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/jj-loader.js" crossorigin>
+<link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/bbc-joe.webp" crossorigin>
+<style id="jj-hide">body{visibility:hidden!important}</style>
+<style>.white-load-in,.white-load-in-reveal,.loading-text{display:none!important}</style>
+<script>setTimeout(function(){var s=document.getElementById('jj-hide');if(s)s.remove();},3000);</script>
+
+<!-- ── BOX 2 · Before </body> ────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/jj-loader.js" crossorigin="anonymous"></script>
+<script>
+(function(){
+  var GB='https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
+  function assets(){                                     /* gate on this page's real images (first 12) */
+    var a=[],im=document.images;
+    for(var i=0;i<im.length&&a.length<12;i++){var s=im[i].currentSrc||im[i].src;if(s&&a.indexOf(s)<0)a.push(s);}
+    return a;
+  }
+  function go(){
+    try{
+      JJLoader.start({ variant:'juggle', joe:GB+'bbc-joe.webp',
+        assets:assets(), decode:true, minTime:4500, maxWait:12000 });   /* minTime = how long the show runs — one number to taste */
+    }catch(e){}
+    var s=document.getElementById('jj-hide'); if(s) s.remove();   /* overlay covers now — show the page under it */
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
+  /* back/forward restores must be instant content — clear any stuck overlay (ours or the old intro) */
+  window.addEventListener('pageshow',function(e){
+    if(!e.persisted) return;
+    var o=document.getElementById('jjld'); if(o) o.remove();
+    var s=document.getElementById('jj-hide'); if(s) s.remove();
+    var k=document.querySelectorAll('.white-load-in,.white-load-in-reveal'); for(var i=0;i<k.length;i++) k[i].style.display='none';
+  });
+})();
+</script>
+
+<!-- ── OPTIONAL · SITE-WIDE Footer Code (fixes the stuck white intro on /case-studies etc. on Back) ── -->
+<script>window.addEventListener('pageshow',function(e){if(!e.persisted)return;var k=document.querySelectorAll('.white-load-in,.white-load-in-reveal,#jjld');for(var i=0;i<k.length;i++)k[i].style.display='none';var s=document.getElementById('jj-hide');if(s)s.remove();});</script>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Story — timeline demo</title>
+<style>
+  html,body{margin:0;background:#0a1020;color:#e8eef5;font-family:Georgia,serif;}
+  section{min-height:160vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:0 12vw;border-bottom:1px dashed rgba(255,255,255,.06);}
+  .era{font-size:34px;font-weight:700;margin:0 0 4px;}
+  .ages{opacity:.55;margin:0 0 26px;font-size:15px;}
+  .cap{font-size:22px;max-width:640px;line-height:1.4;opacity:.92;}
+  .intro,.outro{min-height:120vh;display:flex;align-items:center;justify-content:center;opacity:.5;}
+</style>
+</head>
+<body>
+  <div class="intro">(storytime intro ends here — scroll on)</div>
+
+  <section data-story-era="Precambrian Era" data-story-years="1996-2008">
+    <h2 class="era">Precambrian Era</h2><p class="ages">Ages 1 – 12</p>
+    <p class="cap">And the lord said “Let there be Joe!” … games, a huuuuuge PC, leading raids at 7.</p>
+  </section>
+  <section data-story-era="Prehistoric Age" data-story-years="2009-2014">
+    <h2 class="era">Prehistoric Age</h2><p class="ages">Ages 13 – 18</p>
+    <p class="cap">Sports instead of games, then films became the passion — 1700+ titles rated.</p>
+  </section>
+  <section data-story-era="Ancient Era" data-story-years="2015-2016">
+    <h2 class="era">Ancient Era</h2><p class="ages">Ages 19 – 20</p>
+    <p class="cap">Travelled the world, volunteered, met people building websites…</p>
+  </section>
+  <section data-story-era="Medieval Era" data-story-years="2017-2020">
+    <h2 class="era">Medieval Era</h2><p class="ages">Ages 21 – 24</p>
+    <p class="cap">Brighton — Digital Media. Taiwan scholarship. Back for COVID + final year.</p>
+  </section>
+  <section data-story-era="Renaissance Period" data-story-years="2021-2025">
+    <h2 class="era">Renaissance Period</h2><p class="ages">Ages 25 – 29</p>
+    <p class="cap">Design agencies in London. BIMA award along the way.</p>
+  </section>
+  <section data-story-era="Information Age" data-story-years="2026"      >
+    <h2 class="era">Information Age</h2><p class="ages">Age 30+</p>
+    <p class="cap">Leading design for Super Reel Travel — plus AI, space, history &amp; this site.</p>
+  </section>
+
+  <div class="outro">(the end)</div>
+  <script src="./story-timeline.js"></script>
+</body>
+</html>

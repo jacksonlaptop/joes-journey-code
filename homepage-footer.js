@@ -22,10 +22,10 @@
   var SPEECH_PART2_HOLD = 4000;
   var POST_CLICK_DELAY = 1000;
   var ALIEN_HIDE_AFTER_CLICK = 1500;
-  var STICKY_REVEAL_AT = 17000;
-  var NEXT_SCENE_AT = 20000;
-  var TYPEWRITER_AT = 20500;
-  var UNLOCK_SCROLL_AT = 20500;
+  var STICKY_REVEAL_AT = 25400;
+  var NEXT_SCENE_AT = 28400;
+  var TYPEWRITER_AT = 28900;
+  var UNLOCK_SCROLL_AT = 28900;
   var SPEECH_PART_1 = "It’d be great if you kept the sound on…";
   var SPEECH_PART_2 = "We spent a lot of time on that";
   var SPEECH_PART_3 = "Whenever you’re ready";
@@ -450,7 +450,7 @@
     } catch (e) {}
     subtitle.style.setProperty(
       'transition',
-      'opacity 0.3s ease, font-size 21s cubic-bezier(0.42, 0, 0.58, 1), bottom 21s cubic-bezier(0.42, 0, 0.58, 1)',
+      'opacity 0.3s ease, font-size 29s cubic-bezier(0.42, 0, 0.58, 1), bottom 29s cubic-bezier(0.42, 0, 0.58, 1)',
       'important'
     );
     requestAnimationFrame(function () {
@@ -1210,15 +1210,21 @@
   // rest of the sequence (blink stars, aliens, star field) still runs.
   var PHIL_BASE     = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a200195245a88910104f066_Sprite%20philios.svg';                    // shocked face, no bubble
   var PHIL_THINKING = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a2001955bebd2a24a80cc47_sprite%20philosopher%20-%20thinking.svg'; // thinking, bubble up-right
+  // Timed to the wizard speech (see experiments/speech-swap/README.md).
+  // The voice starts right at the click; each beat lands on its line:
   var BB = {
-    PHIL_IN:      4000,   // philosopher (thinking, bubble) fades in on the left
-    PHIL_RESOLVE: 11500,  // dissolves to the shocked base face
-    PHIL_OUT:     15000,  // philosopher fades out
-    STARS_AT:     7000,   // blink stars fade in...
-    STARS_HOLD:   3000,   // ...visible ~3s then fade out
-    ALIENS_AT:    11500,  // 3 top aliens peek in fast...
-    ALIENS_HOLD:  2500,   // ...hold then retreat
-    HSTARS_AT:    16000   // horizontal-scroll star field appears (stays)
+    FLASH_AT:     6500,   // "all things were born in a single flash of light" — a point of
+                          // light appears, swells, and bursts on the word "flash" (~8.8s)
+    STARS_AT:     9300,   // blink stars are born out of the flash...
+    STARS_HOLD:   6000,   // ...and linger into the gaze-at-the-stars line
+    PHIL_IN:      10600,  // "and from it, a wizard came to be" — wizard fades in, thinking
+    HSTARS_AT:    16300,  // "turn his gaze to the stars" — persistent star field appears
+    GALAXIES_AT:  19000,  // "doorways into another world" — galaxies drift in, then out
+    ALIENS_AT:    22900,  // "Poetic, indeed." — the trio peeks in for the comic beat
+    ALIENS_HOLD:  2500,
+    PHIL_RESOLVE: 27100,  // "what if something beyond them" — dissolves to the shocked face
+    EYES_AT:      28100,  // "gazed back upon us?" — two eyes open in the sky and blink
+    PHIL_OUT:     30200   // wizard fades out as the scroll unlocks
   };
   var BB_Z = 9990;
   function bbTimer(fn, t) { return setTimeout(fn, t); }
@@ -1256,8 +1262,11 @@
       }, BB.PHIL_OUT + 1200);
     }
 
+    bbTimer(function () { bigBangFlash(layer); }, BB.FLASH_AT);
     bbTimer(function () { spawnBlinkStars(layer); }, BB.STARS_AT);
+    bbTimer(function () { spawnGalaxies(layer); }, BB.GALAXIES_AT);
     bbTimer(function () { bigBangAliens(); }, BB.ALIENS_AT);
+    bbTimer(function () { spawnGazingEyes(layer); }, BB.EYES_AT);
     bbTimer(function () {
       if (animStarsWrap) {
         animStarsWrap._jjForceVisible = true;
@@ -1265,6 +1274,82 @@
         animStarsWrap.style.opacity = '1';
       }
     }, BB.HSTARS_AT);
+  }
+
+  // "…a single flash of light": a point of light fades in, swells for ~2s, then bursts —
+  // a white wash peaks on the word "light" and washes out as the blink stars are born.
+  function bigBangFlash(layer) {
+    var core = document.createElement('div');
+    core.style.cssText = 'position:absolute;left:50%;top:45%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%) scale(0.2);opacity:0;background:radial-gradient(circle,#fff 0%,rgba(255,255,255,0.85) 30%,rgba(190,215,255,0.35) 60%,rgba(190,215,255,0) 75%);filter:drop-shadow(0 0 30px rgba(210,230,255,0.9));transition:opacity 0.6s ease,transform 2.2s cubic-bezier(0.4,0,0.7,0.4);';
+    var wash = document.createElement('div');
+    wash.style.cssText = 'position:absolute;inset:0;background:#fff;opacity:0;transition:opacity 0.25s ease;';
+    layer.appendChild(core); layer.appendChild(wash);
+    requestAnimationFrame(function () {
+      core.style.opacity = '1';
+      core.style.transform = 'translate(-50%,-50%) scale(3)';   // slow swell over the line
+    });
+    setTimeout(function () {                                     // burst on "flash"
+      core.style.transition = 'transform 0.6s cubic-bezier(0.6,0,0.9,0.5),opacity 0.9s ease';
+      core.style.transform = 'translate(-50%,-50%) scale(70)';
+    }, 2200);
+    setTimeout(function () { wash.style.opacity = '0.85'; }, 2550);  // peaks on "light"
+    setTimeout(function () {
+      wash.style.transition = 'opacity 1.3s ease';
+      wash.style.opacity = '0';
+      core.style.opacity = '0';
+    }, 2850);
+    setTimeout(function () {
+      if (core.parentNode) core.parentNode.removeChild(core);
+      if (wash.parentNode) wash.parentNode.removeChild(wash);
+    }, 4600);
+  }
+
+  // "…doorways into another world": a few galaxies drift in while the wizard wonders,
+  // then slip away during "Poetic, indeed."
+  function spawnGalaxies(layer) {
+    var cfgs = [
+      { left: 14, top: 18, size: 95 },
+      { left: 72, top: 12, size: 130 },
+      { left: 60, top: 60, size: 85 }
+    ];
+    cfgs.forEach(function (cfg, i) {
+      var g = document.createElement('img');
+      g.src = ASSET_GALAXY;
+      g.style.cssText = 'position:absolute;left:' + cfg.left + 'vw;top:' + cfg.top + 'vh;width:' + cfg.size + 'px;height:auto;opacity:0;transform:scale(0.4) rotate(-25deg);transition:opacity 2s ease,transform 6s ease;filter:drop-shadow(0 0 14px rgba(170,140,255,0.5));';
+      layer.appendChild(g);
+      setTimeout(function () { g.style.opacity = '0.9'; g.style.transform = 'scale(1) rotate(8deg)'; }, i * 500);
+      setTimeout(function () {
+        g.style.transition = 'opacity 1.6s ease,transform 2.2s ease';
+        g.style.opacity = '0';
+        g.style.transform = 'scale(0.7) rotate(25deg)';
+      }, 5200 + i * 400);
+      setTimeout(function () { if (g.parentNode) g.parentNode.removeChild(g); }, 7400 + i * 400);
+    });
+  }
+
+  // "…gazed back upon us?": two eyes open in the sky where the wizard is looking,
+  // pupils down toward him, blink twice, linger just past the unlock, then slip away.
+  function spawnGazingEyes(layer) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute;left:70vw;top:16vh;display:flex;gap:26px;opacity:0;transition:opacity 0.8s ease;filter:drop-shadow(0 0 12px rgba(200,225,255,0.9));';
+    var eyes = [];
+    for (var i = 0; i < 2; i++) {
+      var e = document.createElement('div');
+      e.style.cssText = 'width:20px;height:30px;border-radius:50%;background:radial-gradient(circle at 50% 60%, #0a1024 0 26%, rgba(255,255,255,0.98) 34%, rgba(255,255,255,0.7) 70%, rgba(255,255,255,0) 100%);transform:scaleY(0);transition:transform 0.45s cubic-bezier(0.34,1.56,0.64,1);';
+      wrap.appendChild(e); eyes.push(e);
+    }
+    layer.appendChild(wrap);
+    function setEyes(sy) { eyes.forEach(function (e) { e.style.transform = 'scaleY(' + sy + ')'; }); }
+    requestAnimationFrame(function () {
+      wrap.style.opacity = '1';
+      setTimeout(function () { setEyes(1); }, 60);
+    });
+    setTimeout(function () { setEyes(0.08); }, 1500);
+    setTimeout(function () { setEyes(1); }, 1700);
+    setTimeout(function () { setEyes(0.08); }, 2100);
+    setTimeout(function () { setEyes(1); }, 2300);
+    setTimeout(function () { wrap.style.opacity = '0'; }, 4200);
+    setTimeout(function () { if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }, 5200);
   }
 
   function spawnBlinkStars(layer) {

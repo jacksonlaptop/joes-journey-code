@@ -187,13 +187,14 @@ document.addEventListener("DOMContentLoaded", function () {
   function clearSubs() { subTimers.forEach(clearTimeout); subTimers = []; }
 
   var subCues = [
-    { time: 0,     text: 'A philosopher once asked…' },
-    { time: 5000,  text: '“Are we human because we gaze at the stars,' },
-    { time: 8500,  text: 'or do we gaze at them because we are human?”' },
-    { time: 12500, text: 'Pointless, really.' },
-    { time: 15500, text: 'Do the stars gaze back?' },
-    { time: 18500, text: 'Now, that’s a question…' },
-    { time: 23500, text: null }
+    { time: 0,     text: 'Long, long ago, in a land far away…' },
+    { time: 5950,  text: 'all things were born in a single flash of light,' },
+    { time: 9950,  text: 'and from it, a wizard came to be.' },
+    { time: 14900, text: 'Often he would turn his gaze to the stars,' },
+    { time: 18550, text: 'wondering if they were doorways into another world.' },
+    { time: 22950, text: 'Poetic, indeed.' },
+    { time: 25000, text: 'But what if something beyond them gazed back upon us?' },
+    { time: 29900, text: null }
 
   ];
 
@@ -201,8 +202,9 @@ document.addEventListener("DOMContentLoaded", function () {
   if (audioTrigger) {
     audioTrigger.addEventListener('click', function playAudio() {
       // Cross the seek under a fade so there's no audible jump: fade the current loop out over 5s, then
-      // (silently) seek to 0:45.5 and fade back in over 16.5s — the track reaches 1:02 at full volume
-      // exactly when the scroll unlocks (~21.5s after click).  45.5 + 16.5 = 62s;  5 + 16.5 = 21.5s.
+      // (silently) seek to 0:37.1 and fade back in over 24.9s — the track reaches 1:02 at full volume
+      // exactly when the scroll unlocks (~29.9s after click, end of the wizard speech).
+      // 37.1 + 24.9 = 62s;  5 + 24.9 = 29.9s.
       var amb = window.jjAudio.ambient;
       var ambBack = window.jjAudio.ambientTarget || 0.6;
       window.jjAudio.takeover = true; // we drive the ambient from here — stop the autoplay-fallback touching it
@@ -211,8 +213,8 @@ document.addEventListener("DOMContentLoaded", function () {
         amb.fade(amb.volume(), 0, 5000);
         setTimeout(function () {
           amb.volume(0);             // force silence FIRST so the seek (and any seek-pop) is inaudible
-          try { amb.seek(45.5); } catch (e) {}
-          amb.fade(0, ambBack, 16500);
+          try { amb.seek(37.1); } catch (e) {}
+          amb.fade(0, ambBack, 24900);
         }, 5000);
       }
       // Fade out / stop any OTHER active sounds, but leave the ambient running.
@@ -224,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       const speech = new Howl({
-        src: ['https://cdn.prod.website-files.com/671911bb2d628244234f434e/69c2d642cdd2945eb0730842_stardust-speech.mp3'],
+        src: ['https://raw.githack.com/jacksonlaptop/joes-journey-code/main/wizard-speech.mp3'],
         volume: 0,
                onend: function () {
           speech.fade(0.8, 0, 1500);
@@ -239,8 +241,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
       activeSounds.push(speech);
+      // Short fade — this take starts speaking immediately, so a 3s ramp would swallow "Long, long ago".
       const speechId = speech.play();
-      speech.fade(0, 0.8, 3000, speechId);
+      speech.fade(0, 0.8, 1200, speechId);
 
       document.dispatchEvent(new CustomEvent('jj:audio:start'));
 
@@ -620,6 +623,9 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
    On /contact itself, contact.js does the richer wiring (launch credits in place), so we stay out of its way there. */
 (function () {
   function onContactPage() { return /(^|\/)contact\/?$/.test(location.pathname); }
+  function labelOf(el) { return (el.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase(); }
+  function isCredits(t) { return /\bcredits\b/.test(t); }   // "Credits", "View Credits", etc.
+
   function wireMenuLinks() {
     if (onContactPage()) return;
     try {
@@ -627,8 +633,8 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
       for (var i = 0; i < links.length; i++) {
         var a = links[i];
         if (a._jjMenuWired) continue;
-        var t = (a.textContent || '').trim().toLowerCase();
-        if (t === 'credits') {
+        var t = labelOf(a);
+        if (isCredits(t)) {
           a._jjMenuWired = 1;
           a.setAttribute('href', '/contact?credits=1');
         } else if (t === 'contact') {
@@ -638,6 +644,16 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
       }
     } catch (e) {}
   }
+
+  // Bulletproof: whatever the Credits control's tag or href, a plain left-click forces the param through
+  // (so the contact page sees ?credits=1 and auto-plays the sequence). Cmd/middle-click still uses the href above.
+  document.addEventListener('click', function (e) {
+    if (onContactPage()) return;
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var el = e.target && e.target.closest ? e.target.closest('a, button, [role="button"], .w-inline-block, .w-nav-link') : null;
+    if (el && isCredits(labelOf(el))) { e.preventDefault(); location.href = '/contact?credits=1'; }
+  }, true);
+
   function run() { wireMenuLinks(); setTimeout(wireMenuLinks, 1200); setTimeout(wireMenuLinks, 3000); setTimeout(wireMenuLinks, 6000); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();

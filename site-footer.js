@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof THREE !== "undefined") {
-    let scene, camera, renderer, shapes = [], svgPositionX = 0, clock;
+    let scene, camera, renderer, shapes = [], svgPositionX = 0, clock, bgW = 0, bgH = 0;
     const container = document.getElementById("threejs-container");
     if (!container) return;
     container.style.overflow = "hidden";
@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     function init() {
       const { width, height } = container.getBoundingClientRect();
+      bgW = width; bgH = height;
       scene = new THREE.Scene();
       camera = new THREE.OrthographicCamera(width/-2, width/2, height/2, height/-2, 1, 1000);
       camera.position.z = 10;
@@ -74,7 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
     function animate() {
       requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
-      const { width, height } = container.getBoundingClientRect();
+      // Cached size — reading getBoundingClientRect here forced a layout every frame.
+      const width = bgW, height = bgH;
       shapes.forEach(shape => {
         shape.position.x += config.movementDirection.x * config.movementSpeed * shape.userData.speedFactor;
         shape.position.y += config.movementDirection.y * config.movementSpeed * shape.userData.speedFactor;
@@ -92,6 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     function onWindowResize() {
       const { width, height } = container.getBoundingClientRect();
+      bgW = width; bgH = height;
       renderer.setSize(width, height);
       camera.left = -width/2; camera.right = width/2; camera.top = height/2; camera.bottom = -height/2;
       camera.updateProjectionMatrix();
@@ -226,7 +229,8 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       const speech = new Howl({
-        src: ['https://raw.githack.com/jacksonlaptop/joes-journey-code/main/wizard-speech.mp3'],
+        // Hosted as a Webflow asset — raw.githack refuses to serve mp3s (403).
+        src: ['https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a7ce4c53f264355f46a1d4e_wizard-speech.mp3'],
         volume: 0,
                onend: function () {
           speech.fade(0.8, 0, 1500);

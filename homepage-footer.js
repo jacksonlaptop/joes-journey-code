@@ -434,28 +434,33 @@
   function startSubtitleGrowth() {
     var subtitle = document.getElementById('jj-subtitle');
     if (!subtitle) { setTimeout(startSubtitleGrowth, 100); return; }
-    var targetFontSize = 'clamp(50px, 6vw, 100px)';
-    var targetBottom   = '45vh';
+    var targetPx       = Math.min(Math.max(50, window.innerWidth * 0.06), 100);
+    var targetBottomPx = window.innerHeight * 0.45;
     try {
       var firstPanel = document.querySelector('.horizontal-scroll-content_wrapper');
       if (firstPanel) {
         var heading = firstPanel.querySelector('h1, h2, h3, h4, h5, h6, p, [class*="heading"]');
         if (heading) {
           var cs = getComputedStyle(heading);
-          if (cs.fontSize) targetFontSize = cs.fontSize;
+          if (cs.fontSize) targetPx = parseFloat(cs.fontSize) || targetPx;
           var rect = heading.getBoundingClientRect();
-          if (rect.height > 0) targetBottom = (window.innerHeight - rect.bottom) + 'px';
+          if (rect.height > 0) targetBottomPx = window.innerHeight - rect.bottom;
         }
       }
     } catch (e) {}
-    subtitle.style.setProperty(
-      'transition',
-      'opacity 0.3s ease, font-size 29s cubic-bezier(0.42, 0, 0.58, 1), bottom 29s cubic-bezier(0.42, 0, 0.58, 1)',
-      'important'
-    );
-    requestAnimationFrame(function () {
-      subtitle.style.setProperty('font-size', targetFontSize, 'important');
-      subtitle.style.setProperty('bottom', targetBottom, 'important');
+    // Grow in one step per subtitle line instead of a single 29s font-size transition —
+    // continuously animating font-size relayouts the stroked text every frame for the
+    // whole speech, which janks weaker machines.
+    var startPx       = parseFloat(getComputedStyle(subtitle).fontSize) || 24;
+    var startBottomPx = parseFloat(getComputedStyle(subtitle).bottom) || 110;
+    var steps = [4950, 8950, 13900, 17550, 21950, 24000, 26500]; // subCues times minus POST_CLICK_DELAY
+    subtitle.style.setProperty('transition', 'opacity 0.3s ease, font-size 0.8s ease, bottom 0.8s ease', 'important');
+    steps.forEach(function (t, i) {
+      setTimeout(function () {
+        var p = (i + 1) / steps.length;
+        subtitle.style.setProperty('font-size', (startPx + (targetPx - startPx) * p) + 'px', 'important');
+        subtitle.style.setProperty('bottom', (startBottomPx + (targetBottomPx - startBottomPx) * p) + 'px', 'important');
+      }, t);
     });
   }
   function fadeOutSubtitle() {
@@ -1279,8 +1284,10 @@
   // "…a single flash of light": a point of light fades in, swells for ~2s, then bursts —
   // a white wash peaks on the word "light" and washes out as the blink stars are born.
   function bigBangFlash(layer) {
+    // No filter on the core: a drop-shadow re-rasterizes the layer at every scale step of the
+    // burst, which janks weaker GPUs. The radial gradient provides its own glow.
     var core = document.createElement('div');
-    core.style.cssText = 'position:absolute;left:50%;top:45%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%) scale(0.2);opacity:0;background:radial-gradient(circle,#fff 0%,rgba(255,255,255,0.85) 30%,rgba(190,215,255,0.35) 60%,rgba(190,215,255,0) 75%);filter:drop-shadow(0 0 30px rgba(210,230,255,0.9));transition:opacity 0.6s ease,transform 2.2s cubic-bezier(0.4,0,0.7,0.4);';
+    core.style.cssText = 'position:absolute;left:50%;top:45%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%) scale(0.2);opacity:0;background:radial-gradient(circle,#fff 0%,rgba(255,255,255,0.85) 30%,rgba(190,215,255,0.35) 60%,rgba(190,215,255,0) 75%);will-change:transform,opacity;transition:opacity 0.6s ease,transform 2.2s cubic-bezier(0.4,0,0.7,0.4);';
     var wash = document.createElement('div');
     wash.style.cssText = 'position:absolute;inset:0;background:#fff;opacity:0;transition:opacity 0.25s ease;';
     layer.appendChild(core); layer.appendChild(wash);

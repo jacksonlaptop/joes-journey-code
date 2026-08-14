@@ -69,6 +69,18 @@
   try { history.scrollRestoration = 'manual'; } catch (e) {}
 
   // Homepage nav + logo: not shown on first load, then fade + drop in after 3s (matches the contact page)
+  // Entrance gate: when jj-loader.js is running (see site-footer.js), load-timed
+  // sequences wait for its jj:entrance event instead of counting from page load.
+  // Decision is deferred to DOMContentLoaded so script order can't race the check.
+  function jjWhenEntrance(fn) {
+    function decide() {
+      if (!window.JJLoader || window.__jjEntranceDone) { fn(); return; }
+      document.addEventListener('jj:entrance', function () { fn(); }, { once: true });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', decide);
+    else decide();
+  }
+
   (function jjNavDropIn(){
     var SEL = '.nav-logo-link, .nav-logo, .menu-container, .menu-button';
     function run(){
@@ -79,6 +91,7 @@
         el.style.transform = 'translateY(-20px)';
         el.style.willChange = 'opacity, transform';
       });
+      jjWhenEntrance(function () {
       setTimeout(function () {
         Array.prototype.forEach.call(els, function (el) {
           el.style.transition = 'opacity 0.9s ease, transform 0.9s cubic-bezier(0.34, 1.4, 0.64, 1)';
@@ -91,6 +104,7 @@
           });
         }, 1100);
       }, 3000);
+      });
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
   })();
@@ -785,8 +799,9 @@
     setupSittingAlien();
     initLandingAlien();
   }
-  if (document.readyState === 'complete') initSittingAlienFlow();
-  else window.addEventListener('load', initSittingAlienFlow);
+  function startAlienFlowGated() { jjWhenEntrance(initSittingAlienFlow); }
+  if (document.readyState === 'complete') startAlienFlowGated();
+  else window.addEventListener('load', startAlienFlowGated);
 
   function enablePoke(sprite, hiddenT) {
     sprite.classList.add('jj-poke-sprite');

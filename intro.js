@@ -54,15 +54,23 @@ document.addEventListener("DOMContentLoaded", function () {
  */
 // _____________________________________________________________________________________________________________________
 
+// Entrance gate: when jj-loader.js is on the page (homepage), hold the intro
+// animations until site-footer.js dispatches jj:entrance from the loader's
+// onReady. Without the loader (other pages, or if it fails to load) run now.
+function jjOnEntrance(fn) {
+  if (!window.JJLoader || window.__jjEntranceDone) { fn(); return; }
+  document.addEventListener("jj:entrance", function () { fn(); }, { once: true });
+}
+
 // Intro Reveal animations
 
 // Play the timeline after the DOM has finished loading
 document.addEventListener("DOMContentLoaded", function () {
-  blackscreenrevealtl.play();
+  jjOnEntrance(function () { blackscreenrevealtl.play(); });
 });
 
-// First timeline for animating assets
-const blackscreenrevealtl = gsap.timeline();
+// First timeline for animating assets (paused — played via the entrance gate above)
+const blackscreenrevealtl = gsap.timeline({ paused: true });
 
 blackscreenrevealtl
   .to(
@@ -123,36 +131,40 @@ gsap.to(".moonsvg", {
 // Character animayting in on svg path
 
 // Animate the .flying-character element along the #character-path with a 10-second delay
-gsap.to(".flying-character", {
-  delay: 3, // Delay the start by 10 seconds
-  duration: 5,
-  ease: CustomEase.create(
-    "custom",
-    "M0,0 C0.071,0.279 0.149,0.433 0.454,0.498 0.776,0.566 0.536,1 1,1 "
-  ),
-  motionPath: {
-    path: "#character-path",
-    align: "#character-path",
-    alignOrigin: [0.5, 0.5], // Center the element on the path
-    autoRotate: true,
-  },
+jjOnEntrance(function () {
+  gsap.to(".flying-character", {
+    delay: 3, // Delay the start by 10 seconds
+    duration: 5,
+    ease: CustomEase.create(
+      "custom",
+      "M0,0 C0.071,0.279 0.149,0.433 0.454,0.498 0.776,0.566 0.536,1 1,1 "
+    ),
+    motionPath: {
+      path: "#character-path",
+      align: "#character-path",
+      alignOrigin: [0.5, 0.5], // Center the element on the path
+      autoRotate: true,
+    },
+  });
 });
 
 // _____________________________________________________________________________________________________________________
 
 // CText hiding when character flys over
 
-// Create a new GSAP timeline
-const textrevealtl = gsap.timeline({ delay: 6.3 });
+// Create a new GSAP timeline (built at entrance so the 6.3s delay counts from reveal)
+jjOnEntrance(function () {
+  const textrevealtl = gsap.timeline({ delay: 6.3 });
 
-// Add animations to the timeline
-textrevealtl
-  .to(
-    ".text-alien_wrapper",
-    { x: "-100%", duration: 0.15, ease: "power4.out" },
-    0
-  ) // Start immediately after delay
-  .to(".text_container", { x: "100%", duration: 0.15, ease: "power4.out" }, 0); // Run simultaneously
+  // Add animations to the timeline
+  textrevealtl
+    .to(
+      ".text-alien_wrapper",
+      { x: "-100%", duration: 0.15, ease: "power4.out" },
+      0
+    ) // Start immediately after delay
+    .to(".text_container", { x: "100%", duration: 0.15, ease: "power4.out" }, 0); // Run simultaneously
+});
 
 // _____________________________________________________________________________________________________________________
 
@@ -211,8 +223,8 @@ function initAlienHeadingAnimation() {
   });
 }
 
-// Call initAlienHeadingAnimation in your existing document load event listener
-initAlienHeadingAnimation();
+// Call initAlienHeadingAnimation once the entrance is revealed
+jjOnEntrance(initAlienHeadingAnimation);
 
 // _____________________________________________________________________________________________________________________
 

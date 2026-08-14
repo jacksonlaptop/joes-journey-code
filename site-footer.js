@@ -383,16 +383,69 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
         var sticky = document.querySelector('.sticky-scroll-wrapper');
     if (sticky) gsap.set(sticky, { opacity: 0 });
 
-    if (topPanel && botPanel && typeof gsap !== 'undefined') {
-      gsap.to(topPanel, { y: -5000, duration: 1.4, ease: 'power2.inOut', delay: 0.2 });
-      gsap.to(botPanel, { y:  5000, duration: 1.4, ease: 'power2.inOut', delay: 0.2 });
-      if (introWrapper) {
-        gsap.to(introWrapper, { opacity: 0, duration: 0.3, delay: 1.3, onComplete: function () { introWrapper.style.display = 'none'; } });
-      }
-    }
-    setTimeout(jjStartIntroRive, 6000);
     if (btn) {
       btn.addEventListener('click', function (e) { e.preventDefault(); revealPage(); });
+    }
+
+    function runEntrance() {
+      // Everything gated on jj:entrance (intro.js timelines, the landing alien in
+      // homepage-footer.js) starts counting from here instead of page load.
+      window.__jjEntranceDone = true;
+      document.dispatchEvent(new CustomEvent('jj:entrance'));
+      if (topPanel && botPanel && typeof gsap !== 'undefined') {
+        gsap.to(topPanel, { y: -5000, duration: 1.4, ease: 'power2.inOut', delay: 0.2 });
+        gsap.to(botPanel, { y:  5000, duration: 1.4, ease: 'power2.inOut', delay: 0.2 });
+        if (introWrapper) {
+          gsap.to(introWrapper, { opacity: 0, duration: 0.3, delay: 1.3, onComplete: function () { introWrapper.style.display = 'none'; } });
+        }
+      }
+      setTimeout(jjStartIntroRive, 6000);
+    }
+
+    // First-entrance loader (jj-loader.js, 'scroll' variant — galloping knight-Joe).
+    // Measures the real bytes of everything that makes the intro stutter — the Rive
+    // files, the Big Bang cast (philosopher/wizard + alien sprites), the wizard
+    // speech — and reveals only when downloaded + decoded. No loader script = no gate.
+    var WF1 = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/';
+    var WF2 = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/';
+    var GH  = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
+    var HEAVY = [
+      WF1 + '6a19b8f4191d4fbca5325984_code-loop.riv',
+      WF1 + '6a19b8f4191d4fbca532593b_Waves.riv',
+      WF1 + '6a19b8f4191d4fbca532592c_rive-animation.riv',
+      WF1 + '6a19b8f4191d4fbca5325935_Bigbang.riv',
+      WF1 + '6a19b8f4191d4fbca5325938_rocket-2.riv',
+      WF1 + '6a19b8f4191d4fbca5325956_Roads-new.riv',
+      WF1 + '6a19b8f4191d4fbca532595e_mars-2.riv',
+      WF1 + '6a19b8f4191d4fbca532597d_fly-2.riv',
+      WF1 + '6a7ce4c53f264355f46a1d4e_wizard-speech.mp3',
+      WF1 + '6a200195245a88910104f066_Sprite%20philios.svg',
+      WF1 + '6a2001955bebd2a24a80cc47_sprite%20philosopher%20-%20thinking.svg',
+      WF2 + '6a0d815469fc93c75834b57d_Spright%20top%20right.svg',
+      WF2 + '6a0d8154cab30401d9e344dd_Sprite%20top%20left.svg',
+      WF2 + '6a0d8154e295fd12e49f8f0e_Sprite%20top%20middle.svg',
+      WF2 + '6a1020606c5b65a83f63a171_sassy%20boy%201.svg',
+      WF2 + '6a102060d6130fe4145e128e_happy%20boy.svg',
+      'https://cdn.prod.website-files.com/615edb5c549d52cd108ed268/6718f10874b12a196e30db11_Starry%20Board.svg'
+    ];
+    var gallop = [], grey = [];
+    for (var gi = 1; gi <= 15; gi++) {
+      gallop.push(GH + 'joe-gallop-' + gi + '.webp');
+      grey.push(GH + 'joe-grey-' + gi + '.webp');
+    }
+    if (window.JJLoader) {
+      JJLoader.start({
+        variant: 'scroll',
+        assets: HEAVY,
+        frames: gallop, fillFrames: grey,
+        fps: 14, frameAR: 400 / 358, footFrac: 0.963, joeH: 150,
+        minTime: 4500,   // the show always plays at least this long (anti-snap)
+        maxWait: 20000,  // hard safety — never traps the visitor
+        decode: true,
+        onReady: runEntrance
+      });
+    } else {
+      runEntrance();
     }
   }
 

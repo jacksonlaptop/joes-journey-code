@@ -1239,7 +1239,9 @@
     STARS_HOLD:   6000,   // ...and linger into the gaze-at-the-stars line
     PHIL_IN:      10600,  // "and from it, a wizard came to be" — wizard fades in, thinking
     HSTARS_AT:    16300,  // "turn his gaze to the stars" — persistent star field appears
-    GALAXIES_AT:  19000,  // "doorways into another world" — galaxies drift in, then out
+    DOOR_AT:      18800,  // "doorways into another world" — a doorway opens in the sky and
+                          // glimpses of the site's worlds drift out of it
+    GALAXIES_AT:  19000,  // galaxies drift in around the doorway, then out
     ALIENS_AT:    22900,  // "Poetic, indeed." — the trio peeks in for the comic beat
     ALIENS_HOLD:  2500,
     PHIL_RESOLVE: 27100,  // "what if something beyond them" — dissolves to the shocked face
@@ -1282,8 +1284,10 @@
       }, BB.PHIL_OUT + 1200);
     }
 
+    withLottie(function () {});   // warm the lottie runtime now so the doorway can't be late
     bbTimer(function () { bigBangFlash(layer); }, BB.FLASH_AT);
     bbTimer(function () { spawnBlinkStars(layer); }, BB.STARS_AT);
+    bbTimer(function () { spawnDoorway(layer); }, BB.DOOR_AT);
     bbTimer(function () { spawnGalaxies(layer); }, BB.GALAXIES_AT);
     bbTimer(function () { bigBangAliens(); }, BB.ALIENS_AT);
     bbTimer(function () { spawnGazingEyes(layer); }, BB.EYES_AT);
@@ -1326,7 +1330,68 @@
     }, 4600);
   }
 
-  // "…doorways into another world": a few galaxies drift in while the wizard wonders,
+  // Lottie runtime, loaded on demand (svg-only "light" build). Nothing else on the
+  // site uses lottie, so it's injected here rather than in the Footer Code box.
+  var lottieCbs = [], lottieLoading = false;
+  function withLottie(cb) {
+    if (window.lottie) { cb(window.lottie); return; }
+    lottieCbs.push(cb);
+    if (lottieLoading) return;
+    lottieLoading = true;
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie_light.min.js';
+    s.onload = function () { lottieCbs.forEach(function (f) { f(window.lottie); }); lottieCbs = []; };
+    document.head.appendChild(s);
+  }
+
+  // "…doorways into another world": a doorway opens in the sky (LottieFiles door,
+  // self-contained json in the GitHub repo) and three round glimpses of the site's
+  // own worlds — village, woods, castle — drift out of it, then everything slips
+  // away as "Poetic, indeed." lands. Degrades to nothing if lottie failed to load.
+  var DOORWAY_JSON = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/Flow%202%20(2).json';
+  var WORLD_GLIMPSES = [
+    'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/story-vil-bg.webp',
+    'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/story-wood-bg.webp',
+    'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/story-cas-bg.webp'
+  ];
+  function spawnDoorway(layer) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute;left:50%;top:12vh;width:min(34vh,300px);aspect-ratio:656/689;transform:translateX(-50%) scale(0.6);opacity:0;transition:opacity 1s ease,transform 1.2s cubic-bezier(0.34,1.56,0.64,1);';
+    layer.appendChild(wrap);
+    var anim = null;
+    withLottie(function (lottie) {
+      if (!wrap.parentNode) return;
+      anim = lottie.loadAnimation({ container: wrap, renderer: 'svg', loop: false, autoplay: true, path: DOORWAY_JSON });
+    });
+    requestAnimationFrame(function () {
+      wrap.style.opacity = '1';
+      wrap.style.transform = 'translateX(-50%) scale(1)';
+    });
+    WORLD_GLIMPSES.forEach(function (src, i) {
+      setTimeout(function () {
+        if (!wrap.parentNode) return;
+        var g = document.createElement('img');
+        var sz = 62 + i * 8;
+        var dx = [-120, 14, 132][i];
+        var dy = [-88, -150, -96][i];
+        g.src = src;
+        g.style.cssText = 'position:absolute;left:50%;top:58%;width:' + sz + 'px;height:' + sz + 'px;border-radius:50%;object-fit:cover;opacity:0;transform:translate(-50%,-50%) scale(0.15);box-shadow:0 0 18px rgba(255,220,140,0.6);transition:transform 2.6s ease,opacity 0.7s ease;';
+        wrap.appendChild(g);
+        requestAnimationFrame(function () {
+          g.style.opacity = '0.95';
+          g.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(1)';
+        });
+        setTimeout(function () { g.style.opacity = '0'; }, 2700);
+      }, 1500 + i * 600);
+    });
+    setTimeout(function () { wrap.style.opacity = '0'; }, 4000);
+    setTimeout(function () {
+      try { if (anim) anim.destroy(); } catch (e) {}
+      if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
+    }, 5100);
+  }
+
+  // Galaxies drift in around the doorway while the wizard wonders,
   // then slip away during "Poetic, indeed."
   function spawnGalaxies(layer) {
     var cfgs = [

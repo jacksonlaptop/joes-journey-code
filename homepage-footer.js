@@ -896,8 +896,11 @@
       setTimeout(peek, cfg.firstMin + Math.random() * cfg.firstSpread);
     });
   }
-  if (document.readyState === 'complete') setupIntroDecorations();
-  else window.addEventListener('load', setupIntroDecorations);
+  // Decorations wait for the loader's reveal — otherwise their fade-ins run behind the
+  // curtain and the stars are already lit when it lifts.
+  function startDecorationsGated() { jjWhenEntrance(setupIntroDecorations); }
+  if (document.readyState === 'complete') startDecorationsGated();
+  else window.addEventListener('load', startDecorationsGated);
 
   function alienReveal(chars) {
     if (!chars || !chars.length) return;

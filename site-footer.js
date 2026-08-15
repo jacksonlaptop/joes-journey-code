@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener('keydown', onInteract);
   }
 
-  function begin() {
+  function begin(delayMs) {
     setTimeout(function () {
       var suspended = (window.Howler && Howler.ctx && Howler.ctx.state === 'suspended');
       if (suspended) {
@@ -162,11 +162,22 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         }, 700);
       }
-    }, AUTO_START_DELAY);
+    }, delayMs);
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', begin);
-  else begin();
+  function scheduleBegin() {
+    // Homepage with the loader: hold the ambient until the loader reveals, so the
+    // sound button shown OVER the loader lets visitors mute before any audio starts.
+    var onHome = window.location.pathname.replace(/\/$/, '') === '';
+    if (onHome && window.JJLoader && !window.__jjEntranceDone) {
+      document.addEventListener('jj:entrance', function () { begin(800); }, { once: true });
+    } else {
+      begin(AUTO_START_DELAY);
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scheduleBegin);
+  else scheduleBegin();
 })();
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -426,19 +437,20 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
       WF2 + '6a0d8154e295fd12e49f8f0e_Sprite%20top%20middle.svg',
       WF2 + '6a1020606c5b65a83f63a171_sassy%20boy%201.svg',
       WF2 + '6a102060d6130fe4145e128e_happy%20boy.svg',
-      'https://cdn.prod.website-files.com/615edb5c549d52cd108ed268/6718f10874b12a196e30db11_Starry%20Board.svg'
+      'https://cdn.prod.website-files.com/615edb5c549d52cd108ed268/6718f10874b12a196e30db11_Starry%20Board.svg',
+      // doorway beat (homepage-footer.js spawnDoorway) — lottie json + world glimpses
+      GH + 'Flow%202%20(2).json',
+      GH + 'story-vil-bg.webp',
+      GH + 'story-wood-bg.webp',
+      GH + 'story-cas-bg.webp'
     ];
-    var gallop = [], grey = [];
-    for (var gi = 1; gi <= 15; gi++) {
-      gallop.push(GH + 'joe-gallop-' + gi + '.webp');
-      grey.push(GH + 'joe-grey-' + gi + '.webp');
-    }
     if (window.JJLoader) {
       JJLoader.start({
-        variant: 'scroll',
+        variant: 'precam',    // dark moon-window scene, rolling jelly precam guy (see page-loader README)
         assets: HEAVY,
-        frames: gallop, fillFrames: grey,
-        fps: 14, frameAR: 400 / 358, footFrac: 0.963, joeH: 150,
+        body:  GH + 'blob-body.webp',
+        eye:   GH + 'blob-eye.webp',
+        grass: GH + 'loader-grass.webp',
         minTime: 4500,   // the show always plays at least this long (anti-snap)
         maxWait: 20000,  // hard safety — never traps the visitor
         decode: true,

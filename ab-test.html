@@ -25,6 +25,7 @@
       <button onclick="run('evolution',false,true)">Run D · Spotlight</button>
       <button onclick="run('trogdor')">Run E · Trogdor</button>
       <button onclick="run('juggle')">Run F · BBC Juggle</button>
+      <button onclick="run('precam')">Run G · Precam Sound</button>
     </div>
     <div class="btns">
       <button class="alt" onclick="run('journey',true)">A · real assets</button>
@@ -33,6 +34,10 @@
     </div>
   </div>
   <div id="log"></div>
+  <!-- stand-in for the site's moon sound button, so the precam variant's z-raise is visible here -->
+  <button id="jj-sound-btn" onclick="this.classList.toggle('m')" style="position:fixed;bottom:32px;right:32px;width:64px;height:64px;border-radius:50%;border:none;cursor:pointer;z-index:9999;background:radial-gradient(circle at 34% 30%,#fff 0%,#e7f1fb 55%,#cfe0f2 100%);box-shadow:0 0 18px rgba(199,231,255,.5);display:flex;align-items:center;justify-content:center;gap:3px;">
+    <span style="width:3px;height:10px;background:#111;border-radius:2px;"></span><span style="width:3px;height:16px;background:#111;border-radius:2px;"></span><span style="width:3px;height:7px;background:#111;border-radius:2px;"></span>
+  </button>
 
   <!-- test harness loads everything with a TIMESTAMP so githack can never serve a stale build -->
   <script>document.write('<scr'+'ipt src="./jj-loader.js?t='+Date.now()+'"><\/scr'+'ipt>');</script>
@@ -54,6 +59,10 @@
         stagesB: isEvo ? EVOB : null,                                   // 2nd pose → real steps once painted
         sheet: variant==='trogdor' ? './dragon-sprite.png'+AV : null, wizard: variant==='trogdor' ? './story-cas-designer-2.webp'+AV : null,
         joe: variant==='juggle' ? './bbc-joe.webp'+AV : null,
+        guy: variant==='precam' ? './loader-guy.webp'+AV : null,
+        body: variant==='precam' ? './blob-body.webp'+AV : null,
+        eye: variant==='precam' ? './blob-eye.webp'+AV : null,
+        grass: variant==='precam' ? './loader-grass.webp'+AV : null,
         stageBounds: isEvo ? [[0.390,0.590],[0.292,0.655],[0.278,0.740],[0.165,0.780],[0.163,0.805],[0.090,0.880],[0.115,0.838]] : null,   // measured content top/bottom per stage
         stageBoundsX: isEvo ? [[0.393,0.632],[0.268,0.733],[0.350,0.685],[0.237,0.750],[0.360,0.757],[0.212,0.757],[0.372,0.728]] : null,  // measured content left/right — fill sweeps this span
         fps: isScroll ? 14 : 8,

@@ -371,11 +371,19 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     var introWrap = document.querySelector('.intro-reveal_wrapper');
     var sticky    = document.querySelector('.sticky-scroll-wrapper');
     var nextBtn   = document.querySelector('.next-section-button');
-    if (overlay)   gsap.to(overlay,   { opacity: 0, duration: 1.0, delay: 13.0, onComplete: function () { overlay.style.pointerEvents = 'none'; } });
-    if (introSec)  gsap.to(introSec,  { opacity: 0, duration: 1.0, delay: 13.0, onComplete: function () { introSec.style.pointerEvents = 'none'; } });
     if (introWrap) introWrap.style.display = 'none';
-    if (sticky)    gsap.to(sticky,    { opacity: 1, duration: 3.5, delay: 13.0 });
-    if (nextBtn)   gsap.to(nextBtn,   { opacity: 1, duration: 0.5, delay: 16.5 });
+    // setTimeout instead of gsap `delay`: gsap's delayed tweens ride the rAF ticker,
+    // which stalls when the tab is unfocused — the speech choreography (setTimeout-
+    // based) then runs while these fades never fire, leaving the JoesJourney overlay
+    // stuck over the revealed page. Wall-clock timers keep both on the same clock.
+    setTimeout(function () {
+      if (overlay)  gsap.to(overlay,  { opacity: 0, duration: 1.0, onComplete: function () { overlay.style.pointerEvents = 'none'; } });
+      if (introSec) gsap.to(introSec, { opacity: 0, duration: 1.0, onComplete: function () { introSec.style.pointerEvents = 'none'; } });
+      if (sticky)   gsap.to(sticky,   { opacity: 1, duration: 3.5 });
+    }, 13000);
+    setTimeout(function () {
+      if (nextBtn) gsap.to(nextBtn, { opacity: 1, duration: 0.5 });
+    }, 16500);
 
   }
 
@@ -728,3 +736,204 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
   else run();
 })();
 
+
+/* ===== Super menu: Storytime link + interactive overhaul =====
+   Site-wide. Takes over the open-menu behavior injected by the Webflow embed:
+   the original links are clone-replaced (strips the embed's listeners), a
+   Storytime link is added, each link gets its own preview image (repo art via
+   raw.githack), and the package gains: hieroglyph scramble on hover, magnetic
+   pull, staggered entrance + scramble sweep when the menu opens, and a peeking
+   alien. The Menu/Close button hover embed is left untouched. */
+(function () {
+  var GH = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
+  var IMGS = {
+    'work': GH + 'story-cas-designer-2.webp',
+    'storytime': GH + 'storybook.png',
+    'contact': GH + 'dragon-rest.png',
+    'credits': GH + 'philosopher.png'
+  };
+  var GLYPHS = 'abcdefghijklmnopqrstuvwxyz<>-_\\/[]{}=+*^?#'.split('');
+
+  function init() {
+    var wrap = document.querySelector('.menu-wrap');
+    var list = document.querySelector('.flex-down.left') || document.querySelector('.flex-down');
+    if (!wrap || !list || typeof gsap === 'undefined') return;
+    if (list._jjSuper) return;
+    list._jjSuper = true;
+
+    // Storytime link (after Work) + real hrefs on the dead ones
+    var orig = Array.prototype.slice.call(list.querySelectorAll('.menu-open-link'));
+    if (!orig.some(function (a) { return /storytime/i.test(a.textContent); })) {
+      var work = null;
+      orig.forEach(function (a) { if (/work/i.test(a.textContent)) work = a; });
+      var st = document.createElement('a');
+      st.href = '/storytime';
+      st.className = 'menu-open-link w-inline-block';
+      st.innerHTML = '<div>Storytime</div>';
+      if (work && work.nextSibling) list.insertBefore(st, work.nextSibling);
+      else list.appendChild(st);
+    }
+    Array.prototype.forEach.call(list.querySelectorAll('.menu-open-link'), function (a) {
+      var t = (a.textContent || '').trim().toLowerCase();
+      if (t === 'contact') a.setAttribute('href', '/contact');
+      if (t === 'credits') a.setAttribute('href', '/contact?credits=1');
+    });
+
+    // Clone-replace links: strips the Webflow embed's hover listeners so we own the show
+    var links = [];
+    Array.prototype.slice.call(list.querySelectorAll('.menu-open-link')).forEach(function (a) {
+      var c = a.cloneNode(true);
+      a.parentNode.replaceChild(c, a);
+      links.push(c);
+    });
+
+    // One preview image per link (the embed's old nodes are discarded with the row content)
+    var row = document.querySelector('.images-row');
+    var imgs = [];
+    if (row) {
+      var proto = row.querySelector('.menu-hover-image');
+      var defaultSrc = proto ? proto.getAttribute('src') : '';
+      row.innerHTML = '';
+      links.forEach(function (a) {
+        var im = document.createElement('img');
+        im.className = 'menu-hover-image';
+        im.alt = '';
+        var key = (a.textContent || '').trim().toLowerCase();
+        im.src = IMGS[key] || defaultSrc;
+        row.appendChild(im);
+        imgs.push(im);
+      });
+    }
+
+    // The luxury cascade, rebuilt for N links
+    function setActive(activeIdx) {
+      imgs.forEach(function (img, idx) {
+        var dist = Math.abs(idx - activeIdx);
+        var dir = idx < activeIdx ? -1 : 1;
+        gsap.to(img, {
+          opacity: idx === activeIdx ? 1 : 0.17,
+          y: idx === activeIdx ? 0 : dist * 140,
+          rotateZ: idx === activeIdx ? 0 : dist * 3 * dir,
+          scale: idx === activeIdx ? 1.08 : 0.94,
+          filter: 'blur(' + (idx === activeIdx ? 0 : Math.min(dist * 2, 8)) + 'px)',
+          duration: 0.8, delay: dist * 0.03, ease: 'power3.inOut', overwrite: 'auto'
+        });
+      });
+    }
+
+    // Hieroglyph scramble: letters flicker through alien glyphs, settle left to right
+    function prepChars(a) {
+      var d = a.querySelector('div');
+      if (!d) return null;
+      if (d._jjChars) return d._jjChars;
+      var text = d.textContent.trim();
+      d.textContent = '';
+      d._jjChars = text.split('').map(function (ch) {
+        var s = document.createElement('span');
+        s.textContent = ch;
+        s._orig = ch;
+        s.style.display = 'inline-block';
+        s.style.whiteSpace = 'pre';
+        d.appendChild(s);
+        return s;
+      });
+      return d._jjChars;
+    }
+    function scramble(a) {
+      var chars = prepChars(a);
+      if (!chars) return;
+      chars.forEach(function (s, idx) {
+        var flicks = 0, max = 2 + Math.round(Math.random() * 3);
+        clearInterval(s._t);
+        s._t = setInterval(function () {
+          if (flicks++ >= max) {
+            s.textContent = s._orig;
+            s.style.fontFamily = '';
+            clearInterval(s._t);
+            return;
+          }
+          s.textContent = GLYPHS[(Math.random() * GLYPHS.length) | 0];
+          s.style.fontFamily = 'var(--jj-alien-font, monospace)';
+        }, 45 + idx * 9);
+      });
+    }
+
+    links.forEach(function (a, i) {
+      a.style.willChange = 'transform';
+      a.addEventListener('mouseenter', function () {
+        if (row) gsap.to(row, { x: (-i * 42) + 'vw', duration: 1.0, ease: 'power3.inOut' });
+        setActive(i);
+        scramble(a);
+      });
+      // Magnetic pull toward the cursor; elastic snap home on leave
+      a.addEventListener('mousemove', function (e) {
+        var r = a.getBoundingClientRect();
+        gsap.to(a, {
+          x: (e.clientX - (r.left + r.width / 2)) * 0.18,
+          y: (e.clientY - (r.top + r.height / 2)) * 0.3,
+          duration: 0.4, ease: 'power2.out'
+        });
+      });
+      a.addEventListener('mouseleave', function () {
+        gsap.to(a, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.45)' });
+      });
+    });
+    setActive(0);
+
+    // Peeking alien: pops up from the bottom edge a beat after the menu opens
+    var SPRITE = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0d8154f8c9d157143146cf_Sprite%20bottom%20middle.svg';
+    var peeker = null;
+    function peek() {
+      if (peeker) return;
+      peeker = document.createElement('img');
+      peeker.src = SPRITE;
+      peeker.style.cssText = 'position:fixed;bottom:0;left:8vw;width:130px;height:auto;z-index:10000;pointer-events:auto;transform:translateY(100%);transition:transform 0.9s cubic-bezier(0.34,1.56,0.64,1);';
+      peeker.addEventListener('click', function () { hidePeek(); });
+      document.body.appendChild(peeker);
+      requestAnimationFrame(function () { peeker.style.transform = 'translateY(24%)'; });
+    }
+    function hidePeek() {
+      if (!peeker) return;
+      var p = peeker;
+      peeker = null;
+      p.style.transition = 'transform 0.45s cubic-bezier(0.5,0,0.75,0)';
+      p.style.transform = 'translateY(100%)';
+      setTimeout(function () { if (p.parentNode) p.parentNode.removeChild(p); }, 500);
+    }
+
+    // Menu-open detection: entrance stagger + scramble sweep + alien
+    var menuBtn = document.querySelector('.menu-container');
+    var isOpen = false;
+    function menuVisible() {
+      return wrap.offsetParent !== null && getComputedStyle(wrap).display !== 'none' && getComputedStyle(wrap).opacity !== '0';
+    }
+    if (menuBtn) {
+      menuBtn.addEventListener('click', function () {
+        setTimeout(function () {
+          var vis = menuVisible();
+          if (vis && !isOpen) {
+            isOpen = true;
+            gsap.fromTo(links,
+              { y: 46, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.7, stagger: 0.07, ease: 'power3.out', clearProps: 'opacity' });
+            links.forEach(function (a, i) { setTimeout(function () { scramble(a); }, 120 + i * 90); });
+            if (row && row.parentNode) {
+              gsap.fromTo(row.parentNode, { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.9, ease: 'power2.out' });
+            }
+            setTimeout(function () { if (isOpen) peek(); }, 900);
+          } else if (!vis) {
+            isOpen = false;
+            hidePeek();
+          }
+        }, 120);
+      });
+    }
+    // Safety: if the menu is closed by any other path, retire the alien and reset
+    setInterval(function () {
+      if (isOpen && !menuVisible()) { isOpen = false; hidePeek(); }
+    }, 700);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();

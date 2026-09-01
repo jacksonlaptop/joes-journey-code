@@ -19,6 +19,9 @@
 (function () {
   if (window.__jjCursor) return;                                   // init once
   window.__jjCursor = true;
+  // site-footer.js ships a simpler dot cursor (#jj-cursor) — this one replaces it
+  var legacy = document.getElementById('jj-cursor');
+  if (legacy) legacy.remove();
   // touch / no-hover devices: leave the native cursor alone
   try { if (window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches) return; } catch (e) {}
 

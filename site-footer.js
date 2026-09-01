@@ -481,6 +481,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
   };
   var el = document.createElement('div');
   el.id = 'jj-cursor';
+  if (window.__jjCursor) el.style.display = 'none';   // cursor.js (the stardust one) owns the pointer
   document.body.appendChild(el);
   var current = null;
   var mx = 0, my = 0, cx = 0, cy = 0;
@@ -507,7 +508,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     var t = e.target;
     if (t.closest('a[href*="/case-studies/"]')) { setState('caseStudy'); return; }
     if (t.closest('a[target="_blank"]') || t.closest('a[href^="http"]:not([href*="joes-journey"])')) { setState('external'); return; }
-    if (t.closest('a, button, [role="button"], [data-jj="cta"], [data-jj="btn"], .enter-link_wrapper, .jj-poke-sprite, #jj-sitting-alien, label, input, select, textarea')) { setState('hover'); return; }
+    if (t.closest('a, button, [role="button"], [data-cursor], [data-jj="cta"], [data-jj="btn"], .enter-link_wrapper, .jj-poke-sprite, #jj-sitting-alien, label, input, select, textarea')) { setState('hover'); return; }
     setState('def');
   });
   window.jjAudio = window.jjAudio || { sounds: [], muted: false, volume: 1.0 };

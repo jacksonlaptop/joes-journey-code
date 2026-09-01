@@ -12,7 +12,7 @@
    All copy/eras/years live in the CONFIG below.
    ============================================================================ */
 (function () {
-  window.JJ_MYSTORY_BUILD = 'M105 - the sound button no longer closes whatever is open';
+  window.JJ_MYSTORY_BUILD = 'M106 - the bang waits for the screen: edge-to-edge always';
   try { console.log('%c[JJ] mystory.js build: ' + window.JJ_MYSTORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -1811,6 +1811,7 @@
         pinY = finale.getBoundingClientRect().top + window.scrollY;     /* the exact edge-to-edge position */
         holdScroll(true);
         window.scrollTo(0, pinY);
+        if (snapToFinale._onPinned) { snapToFinale._onPinned(); snapToFinale._onPinned = null; }
       }, 620);
       setTimeout(function () { holdScroll(false); }, 620 + 4200);       /* the sequence runs ~4.2s */
     }
@@ -2689,16 +2690,20 @@
          own box stays in the flow, so reading its rect can never fight the class we set on it */
       var fr = finale.getBoundingClientRect();                   /* the Big Bang fires as the finale arrives */
       if (!banged && fr.top < window.innerHeight * 0.55) {
-        banged = true; finale.classList.add('go');
-        /* first bang only: once the flash has died the darkness asks its question, then it's exam time */
-        if (!teasePlayed) {
-          teasePlayed = true;
-          if (calmQ) setTimeout(function () { openQuiz(); }, 2400);
-          else setTimeout(runTease, 2300);
-        }
+        banged = true;
+        /* glide to edge-to-edge FIRST — the show only starts once the screen is filled, so the
+           bang can never play cut off mid-glide (which is what was happening on the live site) */
+        snapToFinale._onPinned = function () {
+          finale.classList.add('go');
+          if (!teasePlayed) {                        /* first bang only: darkness asks, then the exam */
+            teasePlayed = true;
+            if (calmQ) setTimeout(function () { openQuiz(); }, 2400);
+            else setTimeout(runTease, 2300);
+          }
+          setTimeout(function () { bg.classList.add('boom'); }, 1000);    /* the sky surges at detonation */
+          setTimeout(function () { bg.classList.remove('boom'); }, 2400);
+        };
         snapToFinale();                                                  /* fill the screen + hold it there for the show */
-        setTimeout(function () { bg.classList.add('boom'); }, 1000);      /* the whole sky surges at detonation */
-        setTimeout(function () { bg.classList.remove('boom'); }, 2400);
       }
       else if (banged && fr.top > window.innerHeight * 1.2) { banged = false; finale.classList.remove('go'); bg.classList.remove('boom'); }   /* re-arm on the way back up */
       var idx = curStep(), inStory = idx >= 0 && steps[0].getBoundingClientRect().top < window.innerHeight * 0.85;

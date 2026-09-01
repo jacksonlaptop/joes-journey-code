@@ -12,7 +12,7 @@
    All copy/eras/years live in the CONFIG below.
    ============================================================================ */
 (function () {
-  window.JJ_MYSTORY_BUILD = 'M104 - exam breathes; the secret video silences the music';
+  window.JJ_MYSTORY_BUILD = 'M105 - the sound button no longer closes whatever is open';
   try { console.log('%c[JJ] mystory.js build: ' + window.JJ_MYSTORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -2552,7 +2552,7 @@
     player.addEventListener('click', function (e) { e.stopPropagation(); });              /* clicks on the player itself stay put */
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAny(); });
     document.addEventListener('click', function (e) {
-      if (e.target.closest('#jjms-nav,#jjms-next,.cap')) return;   /* leave the chrome + headline alone */
+      if (e.target.closest('#jjms-nav,#jjms-next,.cap,#jj-sound-btn,#jj-sound-mist')) return;   /* chrome, headline and the sound moon stay out of it */
       var ph = photoUnder(e.clientX, e.clientY);
       var wasBlown = blownEl, wasPlaying = playing, wasColl = collOpen;
       closeAny();                                                    /* any click first puts the current one back */

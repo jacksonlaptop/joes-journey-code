@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's20 · left-typed captions, grounded villagers, woodland ride-off, snap pose cuts';
+  window.JJ_STORY_BUILD = 's21 · the evolution loader fronts the page';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -326,7 +326,10 @@
     PRELOAD.forEach(function (n) { var im = new Image(); im.src = F(n); });
     setComp('cavern');                                                           // first chapter up (hidden by the black)
 
-    preloadCritical(function () {
+    /* ---- the gate: the evolution loader (jj-loader.js, variant C) fronts the whole page when
+       it's available — real byte progress over the story's heaviest boards while the seven stages
+       of Joe paint themselves in. Falls back to the little built-in loader if jj-loader is absent. */
+    function beginStory() {
       var ld = document.getElementById('jjst-loader'); if (ld) ld.classList.add('hide');
       if (window.JJ_STORY_HOLD) {                      // preview mode: instant reveal, no typing/choreography
         var blk = document.getElementById('jjst-black'); blk.style.display = 'none';
@@ -343,7 +346,27 @@
         nav.forEach(function (n) { n.style.transition = 'transform .9s cubic-bezier(.22,1,.36,1), opacity .9s ease'; n.style.transform = 'translateY(0)'; n.style.opacity = '1'; });
       }, T.menuDropAt);
       setTimeout(function () { runScene(0); }, T.firstTypeAt);
-    });
+    }
+    if (window.JJLoader && window.JJLoader.start) {
+      var EVO = [], EVOG = [], EVOB = [];
+      for (var ev = 1; ev <= 7; ev++) {
+        EVO.push(GB + 'joe-evo-' + ev + '.webp');
+        EVOG.push(GB + 'joe-evo-grey-' + ev + '.webp');
+        EVOB.push(GB + 'joe-evo-' + ev + 'b.webp');
+      }
+      JJLoader.start({
+        variant: 'evolution',
+        assets: [F('cav-bg'), F('cav-dragon-1'), F('vil-bg'), F('tav-bg'), F('wood-bg'), F('cas-bg'), BANNER],
+        stages: EVO, stagesGrey: EVOG, stagesB: EVOB,
+        /* measured content boxes per stage (from the loader A/B page) — seats + fill spans */
+        stageBounds: [[0.390,0.590],[0.292,0.655],[0.278,0.740],[0.165,0.780],[0.163,0.805],[0.090,0.880],[0.115,0.838]],
+        stageBoundsX: [[0.393,0.632],[0.268,0.733],[0.350,0.685],[0.237,0.750],[0.360,0.757],[0.212,0.757],[0.372,0.728]],
+        minTime: 4500, maxWait: 18000, decode: true,
+        onReady: beginStory
+      });
+    } else {
+      preloadCritical(beginStory);
+    }
   }
   function preloadCritical(done){
     var urls = [F('cav-bg'), F('cav-dragon-1'), BANNER], left = urls.length, fired = false;

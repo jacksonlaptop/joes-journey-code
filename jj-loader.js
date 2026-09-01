@@ -22,7 +22,7 @@
    ============================================================================ */
 (function () {
   var JJ = (window.JJLoader = window.JJLoader || {});
-  JJ.version = 'L9 · paced progress: the show always runs the full minTime';   // bump every edit — verify in console
+  JJ.version = 'L10 · every loader wears the night: moon window dressing on the evolution row';   // bump every edit — verify in console
   window.JJ_LOADER_BUILD = JJ.version;
   try { console.log('%c[JJ] jj-loader.js build: ' + JJ.version, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
@@ -65,6 +65,29 @@
   function castle(c){ return '<rect x="-26" y="-6" width="52" height="40" fill="'+c+'"/><rect x="-26" y="-16" width="10" height="12" fill="'+c+'"/><rect x="-6" y="-16" width="12" height="12" fill="'+c+'"/><rect x="16" y="-16" width="10" height="12" fill="'+c+'"/><rect x="-4" y="14" width="10" height="20" fill="#2a2030"/><line x1="22" y1="-16" x2="22" y2="-42" stroke="'+c+'" stroke-width="3"/><polygon points="22,-42 44,-36 22,-30" fill="#FF00F5"/>'; }
   var STARS = '<circle cx="120" cy="50" r="2" fill="#fff" opacity=".5"/><circle cx="300" cy="35" r="1.5" fill="#fff" opacity=".4"/><circle cx="560" cy="60" r="2" fill="#fff" opacity=".5"/><circle cx="820" cy="40" r="1.5" fill="#fff" opacity=".4"/><circle cx="700" cy="85" r="1.5" fill="#fff" opacity=".35"/><circle cx="440" cy="80" r="1.3" fill="#fff" opacity=".3"/><circle cx="220" cy="140" r="1.4" fill="#aeb6c4" opacity=".35"/><circle cx="640" cy="150" r="1.3" fill="#aeb6c4" opacity=".3"/><circle cx="930" cy="120" r="1.5" fill="#aeb6c4" opacity=".35"/>';
   var DEFS = '<defs><linearGradient id="jjsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#101c34"/><stop offset="1" stop-color="#0a1222"/></linearGradient></defs>';
+
+  /* ---- shared night dressing (the landing-loader look): swirl clouds, star sprites, moon ---- */
+  var NIGHT_SCDN = 'https://cdn.prod.website-files.com/615edb5c549d52cd108ed268/';
+  var NIGHT_XSTAR = NIGHT_SCDN + '67212bf05ed02917043863f9_x-star.svg';
+  var NIGHT_WHIRL = NIGHT_SCDN + '67212bf05ed02917043863f5_whirl-star.svg';
+  var NIGHT_MOON = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0d67bbb86603f359ae1311_289a8c92ed8a9b7dd3efdae788f3d0ae_Moon.svg';
+  var NIGHT_SWIRLS = '<path d="M154.13 722.786C134.663 792.359 165.679 872.402 227.582 912.349C282.721 947.932 354.831 951.928 409.47 988.229C452.604 1016.88 481.494 1063.58 527.571 1087.54C582.4 1116.06 648.881 1106.53 710.776 1112.68C780.82 1119.65 847.293 1147.45 917.329 1154.52C1039.66 1166.88 1164.57 1115.37 1284.4 1142.26C1381.64 1164.08 1464.1 1235.61 1563.63 1242.87C1667.6 1250.45 1761.11 1186.59 1844.42 1125.82C1929.04 1064.09 2014.48 1001.62 2082.34 922.811C2150.21 843.994 2199.9 746.164 2200.46 643.502C2200.65 608.178 2195.07 573.054 2188.2 538.363C2183.39 514.085 2172.64 484.884 2147.36 481.655C2116.19 509.279 2130.73 558.094 2129.87 599.034C2129.19 630.988 2117.53 661.64 2106.01 691.583C2051.54 833.173 1986.58 986.761 1848.88 1057.57C1806.87 1079.17 1760.2 1091.62 1719.22 1114.99C1692.52 1130.22 1668.63 1149.88 1641.26 1163.92C1582.89 1193.85 1510.64 1195.54 1449.63 1171.05C1401.49 1151.73 1360.68 1117.55 1311.85 1099.97C1208.56 1062.78 1090.4 1105.98 984.137 1077.77C942.062 1066.6 903.998 1044.73 866.51 1023.11C820.175 996.389 773.841 969.666 727.506 942.935C683.408 917.497 639.019 891.867 600.533 858.97C534.206 802.279 488.017 725.907 458.18 645.213C443.034 604.24 430.142 559.363 395.632 531.513C377.112 516.571 353.867 507.986 335.2 493.219C273.581 444.487 279.244 345.897 221.042 293.369C186.549 262.241 131.943 254.199 89.4727 273.997C75.9699 280.287 63.3879 289.465 56.133 302.171C49.4634 313.851 47.7938 327.517 46.2447 340.783L4.22152 700.769C0.512325 732.573 -2.96451 766.079 10.1425 795.454" fill="#142846"/>' +
+      '<path d="M1505.77 382.415C1505.57 412.05 1463.29 429.37 1437.65 413.234C1412 397.107 1407.16 359.822 1421.98 333.9C1436.82 307.987 1466.44 292.702 1496.41 286.82C1601.58 266.171 1700.23 345.163 1760.98 430.913C1804.57 492.443 1839.18 570.718 1811.19 640.257C1787.34 699.493 1724.87 735.126 1688.93 788.313C1674.35 809.88 1664.2 834.267 1647.49 854.34C1617.62 890.207 1570.78 907.877 1525.74 922.653C1474.76 939.372 1418.22 954.223 1368.31 934.709C1333.65 921.159 1307.12 892.635 1272.83 878.234C1238.56 863.851 1199.9 864.836 1162.75 861.14C1008.02 845.722 861.913 727.442 846.285 577.401C844.874 563.86 844.392 549.902 838.849 537.404C828.445 513.935 803.074 500.961 782.902 484.526C739.613 449.26 717.608 391.033 727.143 337.004C736.283 285.227 770.991 241.643 804.58 200.42C835.691 162.242 866.793 124.064 897.904 85.8861C935.641 39.5738 975.565 -8.43214 1031.13 -32.5519C1064.27 -46.9437 1100.83 -51.7993 1136.82 -56.5048C1194.66 -64.072 1252.5 -71.6308 1310.34 -79.1979C1333.57 -82.2348 1364.85 -80.3243 1370.37 -58.2485C1375.75 -36.7401 1350.3 -21.1136 1329.4 -12.2032C1272.5 12.0417 1217.97 41.5011 1166.76 75.6492C1116.91 108.888 1066.15 154.066 1064.09 212.684C1062.77 250.52 1082.5 286.236 1085.43 323.98C1089.74 379.562 1057.43 433.399 1062.47 488.922C1069.31 564.344 1140.25 616.797 1204.87 659.313C1277.09 706.835 1357.31 756.468 1444.19 748.291C1498.11 743.219 1546.83 716.196 1593.66 689.782C1608.92 681.18 1624.55 672.253 1635.41 658.762C1650.08 640.549 1654.09 616.58 1657.62 593.728C1664.03 552.196 1670.29 508.837 1656.66 468.983C1643.03 429.128 1602.84 394.421 1560.04 400.92C1535.9 404.591 1503.9 417.222 1492.46 396.29" fill="#142846"/>' +
+      '<path d="M1389.13 1490.13C1536.66 1489.47 1693.44 1486.25 1817.01 1408.1C1854.86 1384.17 1888.31 1353.83 1927.75 1332.46C1968.62 1310.32 2014.45 1298.6 2058.25 1282.57C2158.75 1245.8 2249.9 1185.29 2321.61 1107.75C2373.87 1051.25 2417.21 981.481 2417.82 905.601C2418.45 827.41 2373.75 751.68 2385.71 674.348C2393.89 621.495 2427.39 576.167 2450.56 527.669C2494.32 436.07 2500.15 324.874 2452.27 235.236C2431.88 197.059 2401.62 160.616 2401.67 117.624C2401.74 45.0647 2485.2 1.45559 2558.5 -13.2449C2628.46 -27.2696 2709.41 -27.2779 2761.77 19.852C2822.98 74.9496 2819.19 167.382 2832.46 247.325C2851.95 364.771 2916.3 470.06 2957.18 582.224C2993.44 681.723 3011.21 786.812 3019.96 892.002C3027.75 985.577 3028.44 1080.51 3009.05 1172.49C2987.69 1273.75 2942.63 1368.62 2897.94 1462.46C2874.26 1512.18 2849.94 1562.84 2811.31 1602.8C2755.54 1660.47 2675.44 1690.07 2595.91 1707.58C2428.45 1744.45 2253.83 1735.67 2084.2 1761.62C1896.31 1790.37 1705.89 1861.62 1521.44 1816.54C1431.22 1794.49 1338.97 1728.71 1339 1638.51" fill="#142846"/>';
+  function nightStars() {
+    var stars = '';
+    var SPK = [[227, 183, 16, .85], [400, 178, 12, .75], [621, 62, 14, .8], [560, 172, 9, .65], [790, 120, 12, .7]];
+    for (var i = 0; i < SPK.length; i++)
+      stars += '<image href="' + NIGHT_XSTAR + '" x="' + SPK[i][0] + '" y="' + SPK[i][1] + '" width="' + SPK[i][2] + '" height="' + SPK[i][2] + '" opacity="' + SPK[i][3] + '"/>';
+    var WHR = [[272, 78, 22], [718, 176, 24], [488, -60, 18], [148, 150, 18]];
+    for (i = 0; i < WHR.length; i++)
+      stars += '<image href="' + NIGHT_WHIRL + '" x="' + WHR[i][0] + '" y="' + WHR[i][1] + '" width="' + WHR[i][2] + '" height="' + WHR[i][2] + '" opacity=".85"/>';
+    var DOTS = [[330, 96, 3, .7], [478, 33, 2.6, .65], [652, 118, 3.4, .6], [560, 5, 2.4, .6], [178, 40, 2.6, .55],
+      [814, 60, 2.8, .6], [872, 200, 2.4, .55], [140, 210, 2.6, .5], [700, -80, 2.4, .5], [250, -60, 2.4, .5]];
+    for (i = 0; i < DOTS.length; i++)
+      stars += '<circle cx="' + DOTS[i][0] + '" cy="' + DOTS[i][1] + '" r="' + DOTS[i][2] + '" fill="white" fill-opacity="' + DOTS[i][3] + '"/>';
+    return stars;
+  }
   /* the site's space swirls (darker strokes on the sky, like the homepage/game bg) + its grey moon */
   var SWIRLS = '<g fill="none" stroke="#0a1120" stroke-linecap="round" opacity=".85">' +
       '<path d="M120,140 q150,-100 340,-50 q170,45 260,-35" stroke-width="46"/>' +
@@ -273,7 +296,7 @@
   function Evolution(opts) {
     var colour = (opts.stages || []).filter(Boolean), grey = (opts.stagesGrey || []).filter(Boolean);
     var colourB = (opts.stagesB || []).filter(Boolean);          // optional 2nd pose per stage → real steps once alive
-    var N = colour.length, S = 128, GAP = 8, GROUND = 272, hasB = colourB.length === N;
+    var N = colour.length, S = 84, GAP = 8, GROUND = 243, hasB = colourB.length === N;
     var SPOT = !!opts.spotlight;                                 // movie-premiere mode: shadows + roaming spotlights
     var total = N * S + (N - 1) * GAP, X0 = (1000 - total) / 2;
     var bounds = opts.stageBounds || [];    // per-stage [topFrac,botFrac] of the art's content (for seating)
@@ -305,66 +328,39 @@
           '</g>' +
         '</g></g>';
     }
-    /* the "journey night" scene — the SITE'S OWN intro parallax boards: the swirl-cloud board
-       drifts slowly one way while a starfield drifts the other (like the homepage intro). */
-    var BOARD = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0c964e79a06e8151f7f16b_Starry%20Board%20-%20Foreground2.svg';
-    var SCDN = 'https://cdn.prod.website-files.com/615edb5c549d52cd108ed268/';
-    var SPRITES = { whirl: SCDN + '67212bf05ed02917043863f5_whirl-star.svg', x: SCDN + '67212bf05ed02917043863f9_x-star.svg',
-      target: SCDN + '67212bf072ae1d89db07fec6_target-star.svg', star: SCDN + '67212bf0d1377a501ae28dc4_star-star.svg' };
-    [BOARD, SPRITES.whirl, SPRITES.x, SPRITES.target, SPRITES.star].forEach(function (u) { var im = new Image(); im.src = u; });
-    var twinkles = '';
-    var TW = [[85, 42, 1.6, 2.6], [235, 88, 1.2, 3.4], [388, 30, 1.8, 2.9], [530, 96, 1.1, 3.8], [655, 48, 1.5, 2.4],
-      [762, 112, 1.2, 3.1], [905, 34, 1.7, 2.7], [968, 150, 1.1, 3.6], [160, 140, 1.2, 3.2], [468, 165, 1.0, 2.8]];
-    for (var t = 0; t < TW.length; t++)
-      twinkles += '<circle class="jjtw" cx="' + TW[t][0] + '" cy="' + TW[t][1] + '" r="' + TW[t][2] + '" fill="#dfe6f2" style="animation-duration:' + TW[t][3] + 's;animation-delay:-' + (t * 0.4).toFixed(1) + 's"/>';
-    var starfield = '';
-    var SF = [[-62, 28, 1.4, .7], [18, 96, 1.0, .5], [64, 190, 1.2, .45], [142, 52, 1.8, .8], [212, 150, 1.0, .5], [286, 22, 1.3, .6],
-      [352, 118, 1.6, .75], [420, 208, 1.0, .4], [498, 66, 1.2, .55], [556, 172, 1.9, .8], [640, 34, 1.1, .5], [700, 132, 1.4, .65],
-      [788, 84, 1.0, .45], [846, 196, 1.6, .7], [922, 44, 1.2, .55], [1004, 148, 1.8, .8], [1082, 96, 1.1, .5], [1148, 30, 1.4, .6],
-      [248, 236, 0.9, .35], [672, 232, 1.0, .4], [960, 226, 1.1, .4], [92, 128, 0.9, .4], [520, 20, 0.9, .45], [1120, 200, 0.9, .35],
-      /* extra stars above/beside the viewBox — visible on tall/wide screens in full-bleed */
-      [-220, -160, 1.4, .6], [80, -320, 1.2, .5], [340, -110, 1.6, .7], [610, -260, 1.1, .5], [872, -180, 1.4, .6],
-      [1140, -300, 1.2, .5], [1290, -80, 1.3, .55], [-280, 140, 1.1, .5], [1260, 190, 1.2, .5], [470, -400, 1.0, .4]];
-    for (var s = 0; s < SF.length; s++)
-      starfield += '<circle cx="' + SF[s][0] + '" cy="' + SF[s][1] + '" r="' + SF[s][2] + '" fill="#e6ecf6" opacity="' + SF[s][3] + '"/>';
-    /* homepage-intro decor: glowing orbs, a big crescent moon, and the site's own star sprites */
-    var deco = '<radialGradient id="jjglow"><stop offset="0%" stop-color="#fff" stop-opacity=".5"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>';
-    var ORBS = [[390, -150, 5], [790, 30, 6], [170, 20, 4], [1120, -220, 5], [545, 120, 4]];
-    for (var o = 0; o < ORBS.length; o++)
-      deco += '<circle cx="' + ORBS[o][0] + '" cy="' + ORBS[o][1] + '" r="' + (ORBS[o][2] * 3.2) + '" fill="url(#jjglow)"/>' +
-              '<circle cx="' + ORBS[o][0] + '" cy="' + ORBS[o][1] + '" r="' + ORBS[o][2] + '" fill="#f2f5fa" opacity=".95"/>';
-    deco += '<mask id="jjcres"><rect x="-70" y="-70" width="140" height="140" fill="#fff"/><circle cx="-20" cy="-10" r="40" fill="#000"/></mask>' +
-            '<g transform="translate(742,-64)"><circle r="62" fill="url(#jjglow)" opacity=".8"/>' +
-            '<circle r="44" fill="#d6dbe4" opacity=".92" mask="url(#jjcres)"/></g>';
-    var WH = [[130, -40, 24, 14], [520, -210, 20, 20], [905, 120, 26, 17], [-140, 80, 18, 22], [1180, -120, 22, 19]];
-    for (var w2 = 0; w2 < WH.length; w2++)
-      deco += '<image class="jjsp" href="' + SPRITES.whirl + '" x="' + WH[w2][0] + '" y="' + WH[w2][1] + '" width="' + WH[w2][2] + '" height="' + WH[w2][2] + '" style="animation:jjspin ' + WH[w2][3] + 's linear infinite" opacity=".85"/>';
-    var XS = [[320, 60, 16, 2.8, 'x'], [705, -80, 14, 3.4, 'x'], [1060, 40, 18, 2.4, 'x'], [60, -250, 14, 3.8, 'x'], [840, -300, 16, 3.0, 'x'],
-      [230, -140, 18, 3.2, 'star'], [615, 170, 16, 2.6, 'star'], [985, -200, 14, 3.5, 'star'], [-220, -60, 14, 3.0, 'star'],
-      [430, -30, 16, 4.2, 'target'], [80, 180, 14, 5.0, 'target'], [1240, 150, 14, 4.4, 'target']];
-    for (var x2 = 0; x2 < XS.length; x2++)
-      deco += '<image class="jjsp jjtw" href="' + SPRITES[XS[x2][4]] + '" x="' + XS[x2][0] + '" y="' + XS[x2][1] + '" width="' + XS[x2][2] + '" height="' + XS[x2][2] + '" style="animation-duration:' + XS[x2][3] + 's;animation-delay:-' + (x2 * 0.3).toFixed(1) + 's"/>';
+    /* the landing loader's night dressing: grass line, moon window, sound-on message */
+    var GRASS = opts.grass || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/loader-grass.webp';
+    var MSG1 = opts.msg1 || 'Please keep the sound on,';
+    var MSG2 = opts.msg2 || 'this is an audio enhanced journey\u2026';
+    var GRW = 1160, GRH = Math.round(627 / 2508 * 1160);
+    var GRTOP = GROUND - Math.round(165 / 627 * GRH);
+    [GRASS, NIGHT_MOON].forEach(function (u) { var im = new Image(); im.src = u; });
     var el = mount(
       '<svg viewBox="0 0 1000 320">' + DEFS +
-        /* full-bleed: everything extends far past the viewBox (symmetric about its centre) */
-        '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#0e1f33"/>' +                               // board base colour / deep space
-        '<g class="jjparSwirl"><image href="' + BOARD + '" x="-3131" y="-160" width="5672" height="520"/></g>' + // the intro swirl board, big spiral in view
-        /* dissolve the board's hard top edge into deep space (tall screens would otherwise see it) */
-        '<linearGradient id="jjfade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0e1f33" stop-opacity="1"/><stop offset="1" stop-color="#0e1f33" stop-opacity="0"/></linearGradient>' +
-        '<rect x="-3500" y="-1440" width="8000" height="1300" fill="#0e1f33"/>' +
-        '<rect x="-3500" y="-140" width="8000" height="120" fill="url(#jjfade)"/>' +
-        /* the intro's purple galaxy wash, upper right */
-        '<radialGradient id="jjpur" gradientUnits="userSpaceOnUse" cx="850" cy="-60" r="900"><stop offset="0%" stop-color="#6b55a0" stop-opacity=".36"/><stop offset="55%" stop-color="#4a3a75" stop-opacity=".15"/><stop offset="100%" stop-color="#4a3a75" stop-opacity="0"/></radialGradient>' +
-        '<rect x="-3500" y="-1440" width="8000" height="3200" fill="url(#jjpur)"/>' +
-        '<g class="jjparStars">' + starfield + twinkles + '</g>' +
-        '<g class="jjparDeco">' + deco + '</g>' +
-        '<rect x="-3500" y="' + GROUND + '" width="8000" height="1600" fill="#131b2c"/>' +
-        '<line x1="-3500" y1="' + GROUND + '" x2="4500" y2="' + GROUND + '" stroke="#232e44" stroke-width="3"/>' +
-        /* the road they walk — a soft lighter band with a few pebbles */
-        '<rect x="' + (X0 - 34) + '" y="' + (GROUND + 8) + '" width="' + (total + 68) + '" height="12" rx="6" fill="#1a2438" opacity=".85"/>' +
-        '<circle cx="' + (X0 + 40) + '" cy="' + (GROUND + 26) + '" r="2" fill="#222e48"/><circle cx="' + (X0 + 205) + '" cy="' + (GROUND + 30) + '" r="1.6" fill="#222e48"/>' +
-        '<circle cx="' + (X0 + 420) + '" cy="' + (GROUND + 25) + '" r="2.2" fill="#222e48"/><circle cx="' + (X0 + 610) + '" cy="' + (GROUND + 31) + '" r="1.5" fill="#222e48"/>' +
-        '<circle cx="' + (X0 + 812) + '" cy="' + (GROUND + 27) + '" r="2" fill="#222e48"/>' +
+        '<filter id="jjsoft" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="1.2"/></filter>' +
+        '<filter id="jjfeather" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="50"/></filter>' +
+        '<g filter="url(#jjsoft)">' +
+          '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#0E1F33"/>' +
+          '<g transform="translate(0,-152.5) scale(0.3472)">' + NIGHT_SWIRLS + '</g>' +
+          nightStars() +
+          '<image href="' + GRASS + '" x="-80" y="' + GRTOP + '" width="' + GRW + '" height="' + GRH + '" preserveAspectRatio="none"/>' +
+          '<rect x="-3500" y="' + (GRTOP + GRH - 6) + '" width="8000" height="1600" fill="#504438"/>' +
+        '</g>' +
+        '<rect class="jjdim" x="-3500" y="-1440" width="8000" height="3200" fill="#000"/>' +
+        '<mask id="jjveil"><rect x="-3500" y="-1440" width="8000" height="3200" fill="#fff"/>' +
+          '<rect x="150" y="-15" width="700" height="430" rx="160" fill="#000" filter="url(#jjfeather)"/></mask>' +
+        '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#000" opacity=".985" mask="url(#jjveil)"/>' +
+        '<radialGradient id="jjmoonl" gradientUnits="userSpaceOnUse" cx="500" cy="140" r="185"><stop offset="0" stop-color="#C5E7FF" stop-opacity=".22"/><stop offset=".55" stop-color="#C5E7FF" stop-opacity=".08"/><stop offset="1" stop-color="#C5E7FF" stop-opacity="0"/></radialGradient>' +
+        '<radialGradient id="jjmoonpool" gradientUnits="userSpaceOnUse" cx="500" cy="' + GROUND + '" r="230"><stop offset="0" stop-color="#eaf5ff" stop-opacity=".2"/><stop offset="1" stop-color="#eaf5ff" stop-opacity="0"/></radialGradient>' +
+        '<g class="jjmpulse"><ellipse cx="500" cy="' + (GROUND + 2) + '" rx="230" ry="24" fill="url(#jjmoonpool)"/></g>' +
+        '<g class="jjmoonw">' +
+          '<g class="jjmpulse"><circle cx="500" cy="140" r="185" fill="url(#jjmoonl)"/></g>' +
+          '<image href="' + NIGHT_MOON + '" x="445" y="85" width="110" height="110"/>' +
+        '</g>' +
+        '<text x="500" y="58" text-anchor="middle" fill="white" style="font-size:19px">' + MSG1 + '</text>' +
+        '<text x="500" y="79" text-anchor="middle" fill="rgba(255,255,255,.85)" style="font-size:12px">' + MSG2 + '</text>' +
+        '<rect x="335" y="272" width="339" height="2.6" rx="1.3" fill="rgba(255,255,255,.18)"/>' +
+        '<rect class="jjpbar" x="335" y="272" width="0" height="2.6" rx="1.3" fill="#FF00F5"/>' +
         (SPOT ? '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#000" opacity=".93"/>' : '') +  // house lights down — a true black stage, only light and shadow remain
         clips + row +
         (SPOT ?
@@ -377,9 +373,22 @@
           '</g>' +
           '<ellipse cx="0" cy="' + (GROUND + 6) + '" rx="100" ry="16" fill="url(#jjpool)" style="mix-blend-mode:screen"/></g>'
         : '') +
-        '<text class="pct" x="500" y="306" text-anchor="middle" style="font-size:22px">0%</text>' +
+        '<text class="pct" x="500" y="298" text-anchor="middle" style="font-size:13px">0%</text>' +
       '</svg>');
-    var pct = el.querySelector('.pct');
+    var sb = document.getElementById('jj-sound-btn'), sbPrev = null;
+    var sbMist = document.getElementById('jj-sound-mist'), sbMistPrev = null;
+    if (sb) { sbPrev = sb.style.zIndex; sb.style.zIndex = '2147483200'; }
+    if (sbMist) { sbMistPrev = sbMist.style.zIndex; sbMist.style.zIndex = '2147483190'; }
+    if (sb || sbMist) {
+      var zint = setInterval(function () {
+        if (!document.body.contains(el) || el.classList.contains('hide')) {
+          if (sb) sb.style.zIndex = sbPrev || '';
+          if (sbMist) sbMist.style.zIndex = sbMistPrev || '';
+          clearInterval(zint);
+        }
+      }, 400);
+    }
+    var pct = el.querySelector('.pct'), pbar = el.querySelector('.jjpbar');
     var clipEls = Array.prototype.slice.call(el.querySelectorAll('.evoclip'));
     var stageEls = Array.prototype.slice.call(el.querySelectorAll('.evoStage'));
     var innerEls = Array.prototype.slice.call(el.querySelectorAll('.evoInner'));
@@ -431,6 +440,7 @@
           if (fr !== poseFr[i]) { poseFr[i] = fr; aEls[i].style.display = fr ? 'none' : ''; bEls[i].style.display = fr ? '' : 'none'; }
         }
       }
+      pbar.setAttribute('width', Math.max(0, 339 * p).toFixed(1));
       pct.textContent = Math.round(p * 100) + '%';
     }};
   }
@@ -449,27 +459,10 @@
     var GRASS = opts.grass;                                      // loader-grass.webp (2508x627, grass line at row 165)
     var MSG1 = opts.msg1 || 'Please keep the sound on,';
     var MSG2 = opts.msg2 || 'this is an audio enhanced journey\u2026';
-    var SCDN = 'https://cdn.prod.website-files.com/615edb5c549d52cd108ed268/';
-    var XSTAR = SCDN + '67212bf05ed02917043863f9_x-star.svg';
-    var WHIRL = SCDN + '67212bf05ed02917043863f5_whirl-star.svg';
-    var MOON = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0d67bbb86603f359ae1311_289a8c92ed8a9b7dd3efdae788f3d0ae_Moon.svg';
+    var XSTAR = NIGHT_XSTAR, WHIRL = NIGHT_WHIRL, MOON = NIGHT_MOON;
     [GUY, BODY, EYE, GRASS, XSTAR, WHIRL, MOON].forEach(function (u) { if (u) { var im = new Image(); im.src = u; } });
-    var SWIRLS =
-      '<path d="M154.13 722.786C134.663 792.359 165.679 872.402 227.582 912.349C282.721 947.932 354.831 951.928 409.47 988.229C452.604 1016.88 481.494 1063.58 527.571 1087.54C582.4 1116.06 648.881 1106.53 710.776 1112.68C780.82 1119.65 847.293 1147.45 917.329 1154.52C1039.66 1166.88 1164.57 1115.37 1284.4 1142.26C1381.64 1164.08 1464.1 1235.61 1563.63 1242.87C1667.6 1250.45 1761.11 1186.59 1844.42 1125.82C1929.04 1064.09 2014.48 1001.62 2082.34 922.811C2150.21 843.994 2199.9 746.164 2200.46 643.502C2200.65 608.178 2195.07 573.054 2188.2 538.363C2183.39 514.085 2172.64 484.884 2147.36 481.655C2116.19 509.279 2130.73 558.094 2129.87 599.034C2129.19 630.988 2117.53 661.64 2106.01 691.583C2051.54 833.173 1986.58 986.761 1848.88 1057.57C1806.87 1079.17 1760.2 1091.62 1719.22 1114.99C1692.52 1130.22 1668.63 1149.88 1641.26 1163.92C1582.89 1193.85 1510.64 1195.54 1449.63 1171.05C1401.49 1151.73 1360.68 1117.55 1311.85 1099.97C1208.56 1062.78 1090.4 1105.98 984.137 1077.77C942.062 1066.6 903.998 1044.73 866.51 1023.11C820.175 996.389 773.841 969.666 727.506 942.935C683.408 917.497 639.019 891.867 600.533 858.97C534.206 802.279 488.017 725.907 458.18 645.213C443.034 604.24 430.142 559.363 395.632 531.513C377.112 516.571 353.867 507.986 335.2 493.219C273.581 444.487 279.244 345.897 221.042 293.369C186.549 262.241 131.943 254.199 89.4727 273.997C75.9699 280.287 63.3879 289.465 56.133 302.171C49.4634 313.851 47.7938 327.517 46.2447 340.783L4.22152 700.769C0.512325 732.573 -2.96451 766.079 10.1425 795.454" fill="#142846"/>' +
-      '<path d="M1505.77 382.415C1505.57 412.05 1463.29 429.37 1437.65 413.234C1412 397.107 1407.16 359.822 1421.98 333.9C1436.82 307.987 1466.44 292.702 1496.41 286.82C1601.58 266.171 1700.23 345.163 1760.98 430.913C1804.57 492.443 1839.18 570.718 1811.19 640.257C1787.34 699.493 1724.87 735.126 1688.93 788.313C1674.35 809.88 1664.2 834.267 1647.49 854.34C1617.62 890.207 1570.78 907.877 1525.74 922.653C1474.76 939.372 1418.22 954.223 1368.31 934.709C1333.65 921.159 1307.12 892.635 1272.83 878.234C1238.56 863.851 1199.9 864.836 1162.75 861.14C1008.02 845.722 861.913 727.442 846.285 577.401C844.874 563.86 844.392 549.902 838.849 537.404C828.445 513.935 803.074 500.961 782.902 484.526C739.613 449.26 717.608 391.033 727.143 337.004C736.283 285.227 770.991 241.643 804.58 200.42C835.691 162.242 866.793 124.064 897.904 85.8861C935.641 39.5738 975.565 -8.43214 1031.13 -32.5519C1064.27 -46.9437 1100.83 -51.7993 1136.82 -56.5048C1194.66 -64.072 1252.5 -71.6308 1310.34 -79.1979C1333.57 -82.2348 1364.85 -80.3243 1370.37 -58.2485C1375.75 -36.7401 1350.3 -21.1136 1329.4 -12.2032C1272.5 12.0417 1217.97 41.5011 1166.76 75.6492C1116.91 108.888 1066.15 154.066 1064.09 212.684C1062.77 250.52 1082.5 286.236 1085.43 323.98C1089.74 379.562 1057.43 433.399 1062.47 488.922C1069.31 564.344 1140.25 616.797 1204.87 659.313C1277.09 706.835 1357.31 756.468 1444.19 748.291C1498.11 743.219 1546.83 716.196 1593.66 689.782C1608.92 681.18 1624.55 672.253 1635.41 658.762C1650.08 640.549 1654.09 616.58 1657.62 593.728C1664.03 552.196 1670.29 508.837 1656.66 468.983C1643.03 429.128 1602.84 394.421 1560.04 400.92C1535.9 404.591 1503.9 417.222 1492.46 396.29" fill="#142846"/>' +
-      '<path d="M1389.13 1490.13C1536.66 1489.47 1693.44 1486.25 1817.01 1408.1C1854.86 1384.17 1888.31 1353.83 1927.75 1332.46C1968.62 1310.32 2014.45 1298.6 2058.25 1282.57C2158.75 1245.8 2249.9 1185.29 2321.61 1107.75C2373.87 1051.25 2417.21 981.481 2417.82 905.601C2418.45 827.41 2373.75 751.68 2385.71 674.348C2393.89 621.495 2427.39 576.167 2450.56 527.669C2494.32 436.07 2500.15 324.874 2452.27 235.236C2431.88 197.059 2401.62 160.616 2401.67 117.624C2401.74 45.0647 2485.2 1.45559 2558.5 -13.2449C2628.46 -27.2696 2709.41 -27.2779 2761.77 19.852C2822.98 74.9496 2819.19 167.382 2832.46 247.325C2851.95 364.771 2916.3 470.06 2957.18 582.224C2993.44 681.723 3011.21 786.812 3019.96 892.002C3027.75 985.577 3028.44 1080.51 3009.05 1172.49C2987.69 1273.75 2942.63 1368.62 2897.94 1462.46C2874.26 1512.18 2849.94 1562.84 2811.31 1602.8C2755.54 1660.47 2675.44 1690.07 2595.91 1707.58C2428.45 1744.45 2253.83 1735.67 2084.2 1761.62C1896.31 1790.37 1705.89 1861.62 1521.44 1816.54C1431.22 1794.49 1338.97 1728.71 1339 1638.51" fill="#142846"/>';
-    /* the site's own sprites — crisp, no halo (the drop-shadow glows read as white circles) */
-    var stars = '';
-    var SPK = [[227, 183, 16, .85], [400, 178, 12, .75], [621, 62, 14, .8], [560, 172, 9, .65], [790, 120, 12, .7]];
-    for (var i = 0; i < SPK.length; i++)
-      stars += '<image href="' + XSTAR + '" x="' + SPK[i][0] + '" y="' + SPK[i][1] + '" width="' + SPK[i][2] + '" height="' + SPK[i][2] + '" opacity="' + SPK[i][3] + '"/>';
-    var WHR = [[272, 78, 22], [718, 176, 24], [488, -60, 18], [148, 150, 18]];
-    for (i = 0; i < WHR.length; i++)
-      stars += '<image href="' + WHIRL + '" x="' + WHR[i][0] + '" y="' + WHR[i][1] + '" width="' + WHR[i][2] + '" height="' + WHR[i][2] + '" opacity=".85"/>';
-    var DOTS = [[330, 96, 3, .7], [478, 33, 2.6, .65], [652, 118, 3.4, .6], [560, 5, 2.4, .6], [178, 40, 2.6, .55],
-      [814, 60, 2.8, .6], [872, 200, 2.4, .55], [140, 210, 2.6, .5], [700, -80, 2.4, .5], [250, -60, 2.4, .5]];
-    for (i = 0; i < DOTS.length; i++)
-      stars += '<circle cx="' + DOTS[i][0] + '" cy="' + DOTS[i][1] + '" r="' + DOTS[i][2] + '" fill="white" fill-opacity="' + DOTS[i][3] + '"/>';
+    var SWIRLS = NIGHT_SWIRLS;
+    var stars = nightStars();
     /* layout */
     var LINE = 243;                                              // walkable grass line
     var GW2 = 53, GH2 = 40, GY2 = Math.round(LINE + 2 - GH2 * 0.919);   // fallback single-image seat

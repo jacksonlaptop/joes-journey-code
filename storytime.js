@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's21 · the evolution loader fronts the page';
+  window.JJ_STORY_BUILD = 's22 · read at your own pace: Next on every box, Skip the story, captions anchored top-left';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -166,9 +166,18 @@
   '#jjst-progress{position:absolute;left:0;top:0;width:100%;height:5px;background:rgba(255,255,255,.08);z-index:6;opacity:0;transition:opacity .6s ease;}'+
   '#jjst-progress.on{opacity:1;}'+
   '#jjst-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#FF00F5,#ff7df4);box-shadow:0 0 12px rgba(255,0,245,.7);transition:width .6s ease;}'+
-  '#jjst-cap{position:absolute;left:50%;bottom:7vh;transform:translateX(-50%);width:min(83vw,1350px);aspect-ratio:1295 / 200;z-index:5;opacity:0;transition:opacity .8s ease;background:url(\''+BANNER+'\') no-repeat center/contain;display:flex;align-items:center;justify-content:center;pointer-events:none;}'+
+  '#jjst-cap{position:absolute;left:50%;bottom:7vh;transform:translateX(-50%);width:min(83vw,1350px);aspect-ratio:1295 / 200;z-index:5;opacity:0;transition:opacity .8s ease;background:url(\''+BANNER+'\') no-repeat center/contain;display:flex;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer;}'+
   '#jjst-cap.on{opacity:1;}'+
-  '#jjst-cap-text{width:72%;text-align:left;color:#3a2a12;font-size:clamp(15px,1.6vw,27px);line-height:1.26;white-space:pre-wrap;}';   // left-aligned so typing doesn't re-centre every character
+  '#jjst-cap-text{width:72%;height:3.85em;overflow:visible;text-align:left;color:#3a2a12;font-size:clamp(15px,1.6vw,27px);line-height:1.26;white-space:pre-wrap;}'+   // FIXED 3-line block, top-anchored: line 1 never moves when the text wraps
+  /* the reader's own pace: a Next chip appears once the line has finished typing */
+  '#jjst-next{position:absolute;right:5.5%;bottom:14%;padding:5px 16px;border-radius:999px;border:1px solid rgba(58,42,18,.4);background:rgba(58,42,18,.10);color:#3a2a12;font-size:clamp(12px,1.05vw,17px);font-weight:700;opacity:0;transform:translateX(-5px);transition:opacity .35s ease,transform .35s ease,background .2s ease;pointer-events:auto;cursor:pointer;}'+
+  '#jjst-next.on{opacity:1;transform:none;}'+
+  '#jjst-next:hover{background:rgba(58,42,18,.24);}'+
+  '#jjst-skip{position:absolute;left:26px;bottom:26px;z-index:9;padding:8px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(6,10,18,.5);color:rgba(255,255,255,.85);font-family:inherit;font-size:13px;font-weight:600;letter-spacing:.06em;opacity:0;pointer-events:none;transition:opacity .5s ease,background .2s ease;cursor:pointer;}'+
+  '#jjst-skip.on{opacity:1;pointer-events:auto;}'+
+  '#jjst-skip:hover{background:rgba(255,0,245,.25);}'+
+  '@keyframes jjstNextNudge{0%,100%{translate:0 0;}50%{translate:4px 0;}}'+
+  '#jjst-next.on{animation:jjstNextNudge 1.6s ease-in-out .8s infinite;}';
 
   var style = document.createElement('style'); style.id = 'jj-storytime-style'; style.textContent = CSS; document.head.appendChild(style);
 
@@ -180,7 +189,8 @@
     '<div id="jjst-black"></div>'+
     '<div id="jjst-fade"></div>'+
     '<div id="jjst-progress"><div id="jjst-progress-fill"></div></div>'+
-    '<div id="jjst-cap"><div id="jjst-cap-text"></div></div>'+
+    '<div id="jjst-cap"><div id="jjst-cap-text"></div><div id="jjst-next" data-cursor="hover">Next \u25b8</div></div>'+
+    '<button id="jjst-skip" type="button" data-cursor="hover">Skip the story \u25b8\u25b8</button>'+
     '<div id="jjst-loader"><div class="ring"></div><div class="txt">Loading the tale…</div></div>';
 
   /* ---- composition: bg crossfade + character layers ---- */
@@ -279,13 +289,19 @@
   /* ---- typing + scene runner ---- */
   var textEl, capEl, prog, fill;
   function setProgress(i){ fill.style.width = Math.min(1, (i + 1) / SCENES.length) * 100 + '%'; }
+  var typeFF = null;                                       // while a line is typing: call to land it instantly
   function typeText(text, triggers, done){
     var trs = (triggers || []).map(function (tr) { var k = text.indexOf(tr.at); return { idx: k < 0 ? -1 : k + tr.at.length, comp: tr.comp, fired: false }; });
     textEl.textContent = ''; var i = 0; clearTimeout(textEl._tw);
+    var finished = false;
+    function fireTo(n){ for (var j = 0; j < trs.length; j++) { if (!trs[j].fired && trs[j].idx >= 0 && n >= trs[j].idx) { trs[j].fired = true; if (trs[j].comp) setComp(trs[j].comp); } } }
+    function finish(){ if (finished) return; finished = true; clearTimeout(textEl._tw); typeFF = null;
+      textEl.textContent = text; fireTo(text.length); if (done) done(); }
+    typeFF = finish;
     function step(){
       i++; textEl.textContent = text.slice(0, i);
-      for (var j = 0; j < trs.length; j++) { if (!trs[j].fired && trs[j].idx >= 0 && i >= trs[j].idx) { trs[j].fired = true; if (trs[j].comp) setComp(trs[j].comp); } }
-      if (i >= text.length) { if (done) done(); return; }
+      fireTo(i);
+      if (i >= text.length) { finish(); return; }
       var ch = text.charAt(i - 1), delay = T.typeSpeed;
       if (ch === '…') delay = T.pauseEllipsis;
       else if (ch === '.') { if (text.charAt(i) === '.') delay = T.typeSpeed; else if (text.charAt(i - 2) === '.') delay = T.pauseEllipsis; else delay = T.pauseDot; }
@@ -294,15 +310,31 @@
     }
     textEl._tw = setTimeout(step, T.typeSpeed);
   }
+  var advTimer = null, curAdvance = null;                  // the pending auto-advance + its manual twin
+  function chipShow(on){ var n = document.getElementById('jjst-next'); if (n) n.classList.toggle('on', !!on); }
   function runScene(i){
     if (i >= SCENES.length) return;
     var s = SCENES[i];
     setProgress(i);
     if (s.comp) setComp(s.comp);
+    chipShow(false); curAdvance = null;
     typeText(s.text, s.triggers, function () {
-      if (s.end) { setTimeout(function () { s.end.run(); }, s.end.delay); }
-      else { setTimeout(function () { runScene(i + 1); }, Math.max(T.readMin, s.text.length * T.readPerChar)); }
+      chipShow(true);                                        // read at your own pace — or let it roll on
+      var go = function () { advTimer = null; curAdvance = null; chipShow(false);
+        if (s.end) s.end.run(); else runScene(i + 1); };
+      curAdvance = go;
+      advTimer = setTimeout(go, s.end ? s.end.delay : Math.max(T.readMin, s.text.length * T.readPerChar));
     });
+  }
+  /* jump past the whole tale, straight to My Story waiting underneath */
+  function skipStory(){
+    clearTimeout(advTimer); advTimer = null; curAdvance = null;
+    if (textEl) clearTimeout(textEl._tw);
+    if (window.jjStory && window.jjStory.unlock) window.jjStory.unlock();
+    window.scrollTo(0, 0);
+    var w = document.getElementById('jjst');
+    if (w) { w.style.transition = 'opacity .9s ease'; w.style.opacity = '0'; w.style.pointerEvents = 'none';
+      setTimeout(function () { if (w.parentNode) w.remove(); }, 1000); }
   }
 
   /* ---- mount + choreography ---- */
@@ -321,6 +353,15 @@
     window.jjStory.hold = function (n) { setComp(n); clearPanels(); };   // jump + freeze (no village auto-advance)
     bgWrap = document.getElementById('jjst-bgwrap'); layersWrap = document.getElementById('jjst-layers');
     textEl = document.getElementById('jjst-cap-text'); capEl = document.getElementById('jjst-cap');
+    /* press the box: first press lands the typing line instantly, next press moves the story on */
+    capEl.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (typeFF) { typeFF(); return; }
+      if (advTimer !== null) { clearTimeout(advTimer); advTimer = null;
+        if (curAdvance) { var go = curAdvance; curAdvance = null; go(); } }
+    });
+    var skBtn = document.getElementById('jjst-skip');
+    if (skBtn) skBtn.addEventListener('click', function (e) { e.stopPropagation(); skipStory(); });
     prog = document.getElementById('jjst-progress'); fill = document.getElementById('jjst-progress-fill');
 
     PRELOAD.forEach(function (n) { var im = new Image(); im.src = F(n); });
@@ -338,7 +379,8 @@
         return;
       }
       setTimeout(revealFromBlack, T.revealAt);
-      setTimeout(function () { capEl.classList.add('on'); prog.classList.add('on'); }, T.boxFadeAt);
+      setTimeout(function () { capEl.classList.add('on'); prog.classList.add('on');
+        var sk = document.getElementById('jjst-skip'); if (sk) sk.classList.add('on'); }, T.boxFadeAt);
       setTimeout(function () {
         var nav = document.querySelectorAll('.nav-logo-link, .menu-container');
         nav.forEach(function (n) { n.style.transition = 'none'; n.style.transform = 'translateY(-42px)'; });

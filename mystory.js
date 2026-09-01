@@ -12,7 +12,7 @@
    All copy/eras/years live in the CONFIG below.
    ============================================================================ */
 (function () {
-  window.JJ_MYSTORY_BUILD = 'M102 - plays nicely with site-footer.js: one ambient, one moon button';
+  window.JJ_MYSTORY_BUILD = 'M103 - menu yields to modals, sound stays in the exam, video for all, cursor cues';
   try { console.log('%c[JJ] mystory.js build: ' + window.JJ_MYSTORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -196,7 +196,7 @@
       hot: 'awards',         /* gold in the headline, like the design — and it throws a party */
       sub: 'Silver British Interactive Media Award (BIMA) for Best Digital Transformation of the year…twice' },
     { era: 5, cap: 'I’m now leading the design for Super Reel Travel', sub: 'An AI integrated trip planning app where users search through reels for travel inspiration',
-      srp: { x: 81, y: 13, w: 10.5 } },          /* a drawn phone running a reels-style feed */
+      srp: { x: 81.5, y: 46, w: 10.5 } },          /* a drawn phone running a reels-style feed */
     { era: 5, cap: 'In my spare time I’m creating projects like this, travelling, playing sports, learning about AI, space & history & updating my iMDB', sub: 'I couldn’t decide between history or space theme but I love evolution so lucky you, an excuse for both!' }
   ];
   /* SHOW_JOBS spreads the ruler to the design's density (116px/year) so a whole job card fits between
@@ -1047,6 +1047,7 @@
   '#jjms .finale.go .fquiz{animation:jjmsDp .7s cubic-bezier(.34,1.56,.64,1) 3.35s both;}' +
   '#jjms .fquiz:hover{background:rgba(255,0,245,.22);border-color:rgba(255,0,245,.6);scale:1.05;}' +
   '#jjms-quiz{position:fixed;inset:0;z-index:412;display:flex;align-items:center;justify-content:center;' +
+    'background:radial-gradient(ellipse at 50% 46%,rgba(10,10,22,.72) 0%,rgba(4,6,12,.9) 75%);' +
     'opacity:0;pointer-events:none;transition:opacity .35s ease;}' +
   '#jjms-quiz.on{opacity:1;pointer-events:auto;}' +
   /* the card springs in from the right; .out throws it away left before the next one lands */
@@ -1152,9 +1153,15 @@
     'transition:opacity 2.5s ease;}' +
   '#jj-sound-mist.jjms-made.on{opacity:.55;}' +
   '#jj-sound-mist.jjms-made .jj-mist-bar{width:10px;background:#ffffff;border-radius:6px;height:18px;will-change:height;}' +
+  /* the SITE's own menu sits exactly where the modal close lives — it steps aside while any
+     lightbox is open, so the X is always reachable */
+  'html.jjms-lb .nav-container{opacity:0 !important;pointer-events:none !important;transition:opacity .35s ease;}' +
   /* the chrome fade while a lightbox is open takes the sound button with it */
   'html.jjms-lb #jj-sound-btn,html.jjms-lb #jj-sound-mist{opacity:0 !important;pointer-events:none !important;' +
     'transition:opacity .35s ease;}' +
+  /* the exam is long — the sound stays controllable inside it */
+  'html.jjms-lb.jjms-quiz #jj-sound-btn{opacity:1 !important;pointer-events:auto !important;}' +
+  'html.jjms-lb.jjms-quiz #jj-sound-mist{opacity:.55 !important;}' +
   /* the ✕ is an SVG, not a text glyph — a character carries its own side bearings and never sits dead
      centre in the circle however you align it; a stroked path is exactly centred by the viewBox */
   '#jjms-close{position:fixed;top:26px;right:30px;z-index:420;width:46px;height:46px;padding:0;border-radius:50%;' +
@@ -3187,10 +3194,10 @@
     }
     var QUIZ_SECRET = '3KxokmSclbE';                     /* full marks unlocks this */
     var qConfettiDone = false;
-    function quizSecret() {
+    function quizSecret(earned) {
       duckMusic();                                       /* the reward gets the room */
-      qSwap('<p class="qkick">Unlocked</p>' +
-        '<h3>For true historians only</h3>' +
+      qSwap('<p class="qkick">' + (earned ? 'Unlocked' : 'Fine, you can see it anyway') + '</p>' +
+        '<h3>' + (earned ? 'For true historians only' : 'Everyone deserves a little history') + '</h3>' +
         '<div class="qvid"><iframe src="https://www.youtube.com/embed/' + QUIZ_SECRET +
         '?autoplay=1&rel=0&modestbranding=1&playsinline=1&origin=' + encodeURIComponent(location.origin) +
         '" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="Secret video"></iframe></div>' +
@@ -3209,8 +3216,9 @@
         '<p class="qscore"><span class="qn">0</span> / ' + QUIZ_N + '</p>' +
         '<p class="qsub">' + esc(rank[2]) + '</p>' +
         '<button type="button" class="qagain" style="--qd:.85s">Sit it again</button>' +
-        (qScore === QUIZ_N ? '<button type="button" class="qsecret">Unlock the secret video</button>' : '') +
-        (qScore <= 1 ? '<button type="button" class="qtop" style="--qd:1s">Back to the beginning</button>' : ''),
+        (qScore === QUIZ_N ? '<button type="button" class="qsecret">Unlock the secret video</button>'
+                           : '<button type="button" class="qtop qsee" style="--qd:.95s">Watch the video anyway</button>') +
+        (qScore <= 1 ? '<button type="button" class="qtop" style="--qd:1.1s">Back to the beginning</button>' : ''),
         function () {
         /* the score ticks up while the rank stamps down */
         var qn = quiz.querySelector('.qn'), shown = 0;
@@ -3219,13 +3227,15 @@
           shown++; qn.textContent = shown;
         }, 140);
         quiz.querySelector('.qagain').addEventListener('click', function (e) { e.stopPropagation(); quizStart(); });
-        var top = quiz.querySelector('.qtop');
+        var top = quiz.querySelector('.qtop:not(.qsee)');
         if (top) top.addEventListener('click', function (e) {
           e.stopPropagation(); closeQuiz();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         });
         var sec = quiz.querySelector('.qsecret');
-        if (sec) sec.addEventListener('click', function (e) { e.stopPropagation(); quizSecret(); });
+        if (sec) sec.addEventListener('click', function (e) { e.stopPropagation(); quizSecret(true); });
+        var see = quiz.querySelector('.qsee');
+        if (see) see.addEventListener('click', function (e) { e.stopPropagation(); quizSecret(false); });
         if (qScore === QUIZ_N && !qConfettiDone) setTimeout(function () {
           qConfettiDone = true;
           party(quiz.querySelector('.qrank'), { sound: false,
@@ -3317,6 +3327,7 @@
     }
     function openQuiz() {
       quizOpen = true;
+      document.documentElement.classList.add('jjms-quiz');
       /* warm the whole evolution line so mid-hop swaps never pop in blank */
       for (var pi = 0; pi < SPRITES.length; pi++) { var im = new Image(); im.src = SPRITES[pi]; }
       quizIntro();
@@ -3325,12 +3336,19 @@
     function closeQuiz() {
       if (!quizOpen) return;
       quizOpen = false;
+      document.documentElement.classList.remove('jjms-quiz');
       if (quiz.querySelector('.qvid')) { quiz.innerHTML = ''; unduckMusic(); }   /* kills the iframe */
       quiz.classList.remove('on'); scrim.classList.remove('on'); closeBtn.classList.remove('on'); lightbox(false);
     }
     quiz.addEventListener('click', function (e) { e.stopPropagation(); });   /* clicks stay in the exam hall */
     var fquiz = document.getElementById('jjms-fquiz');
     if (fquiz) fquiz.addEventListener('click', function (e) { e.stopPropagation(); openQuiz(); });
+
+    /* cursor.js (site-wide) expands its bubble over <a>/<button>/[data-cursor] — most of the
+       timeline's clickables are divs, so they each get the attribute */
+    Array.prototype.forEach.call(wrap.querySelectorAll(
+      '.phw:not(.deco),.trav,.jjphone,.srphone,.phw.deco[data-tap],.phw.deco[data-alt],.sub .funk,.cap .hotword,.jjtrophy'
+    ), function (el) { if (!el.hasAttribute('data-cursor')) el.setAttribute('data-cursor', 'hover'); });
 
     window.jjMyStory = { land: land, genesis: genesis, stepTop: stepTop };
 

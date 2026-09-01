@@ -1,0 +1,14 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#mf)"><circle cx="100" cy="100" r="80" fill="#C5E7FF" fill-opacity="0.2"/></g>
+<circle cx="99.5" cy="99.5" r="56.5" fill="#C5E7FF" fill-opacity="0.2"/>
+<circle cx="99.5" cy="99.5" r="37.5" fill="white"/>
+<path d="M88.5 83.2441C88.5 85.7293 84.4853 87.744 82 87.744C79.5147 87.744 77.5 85.7293 77.5 83.244C77.5 80.7587 79.5147 78.744 82 78.744C84.4853 78.744 88.5 80.7588 88.5 83.2441Z" fill="#D9D9D9"/>
+<path d="M113 132.5C113 134.985 108.985 137 106.5 137C104.015 137 102 134.985 102 132.5C102 130.015 104.015 128 106.5 128C108.985 128 113 130.015 113 132.5Z" fill="#D9D9D9" fill-opacity="0.2"/>
+<path d="M119 102.5C119 106.09 116.09 109 112.5 109C108.91 109 107.5 106.09 107.5 102.5C107.5 98.9101 108.91 96 112.5 96C116.09 96 119 98.9101 119 102.5Z" fill="#D9D9D9"/>
+<path d="M126 74.5C126 77.5376 123.538 80 120.5 80C117.462 80 115 77.5376 115 74.5C115 71.4624 116.462 70 119.5 70C122.538 70 126 71.4624 126 74.5Z" fill="#D9D9D9" fill-opacity="0.4"/>
+<path d="M73.1514 113.922C74.1974 116.176 73.2178 118.852 70.9633 119.898C68.7089 120.944 67.394 119.333 66.348 117.078C65.3021 114.824 64.921 112.78 67.1755 111.734C69.4299 110.688 72.1054 111.667 73.1514 113.922Z" fill="#D9D9D9" fill-opacity="0.4"/>
+<defs>
+<filter id="mf" x="0" y="0" width="200" height="200" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="bg"/><feBlend mode="normal" in="SourceGraphic" in2="bg" result="shape"/><feGaussianBlur stdDeviation="10"/></filter>
+</defs>
+</svg>

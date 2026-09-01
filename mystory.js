@@ -12,7 +12,7 @@
    All copy/eras/years live in the CONFIG below.
    ============================================================================ */
 (function () {
-  window.JJ_MYSTORY_BUILD = 'M103 - menu yields to modals, sound stays in the exam, video for all, cursor cues';
+  window.JJ_MYSTORY_BUILD = 'M104 - exam breathes; the secret video silences the music';
   try { console.log('%c[JJ] mystory.js build: ' + window.JJ_MYSTORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -1059,13 +1059,13 @@
   '@keyframes jjqOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-70px) rotate(-1.5deg) scale(.95);}}' +
   /* the inner sheet carries the cursor tilt so it never fights the entrance animation */
   '#jjms-quiz .qtin{will-change:transform;transition:transform .18s ease-out;}' +
-  '#jjms-quiz .qkick{margin:0 0 6px;font-size:13px;font-weight:800;letter-spacing:.22em;color:#FFC93D;text-transform:uppercase;}' +
-  '#jjms-quiz h3{margin:0 0 10px;font-size:clamp(22px,2.6vw,36px);font-weight:800;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.7);' +
+  '#jjms-quiz .qkick{margin:0 0 12px;font-size:13px;font-weight:800;letter-spacing:.22em;color:#FFC93D;text-transform:uppercase;}' +
+  '#jjms-quiz h3{margin:0 0 28px;font-size:clamp(22px,2.6vw,36px);font-weight:800;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.7);' +
     'animation:jjqPop .55s cubic-bezier(.34,1.56,.64,1) .08s both;}' +
   '@keyframes jjqPop{from{opacity:0;transform:scale(.8) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}' +
-  '#jjms-quiz .qsub{margin:0 0 26px;font-size:clamp(13.5px,1.15vw,16.5px);font-weight:600;color:rgba(238,242,248,.75);line-height:1.5;}' +
-  '#jjms-quiz .qopts{display:flex;flex-direction:column;gap:12px;max-width:520px;margin:0 auto;}' +
-  '#jjms-quiz .qo{padding:14px 20px;border-radius:14px;border:1px solid rgba(255,255,255,.28);background:rgba(10,14,26,.66);' +
+  '#jjms-quiz .qsub{margin:0 0 30px;font-size:clamp(13.5px,1.15vw,16.5px);font-weight:600;color:rgba(238,242,248,.75);line-height:1.5;}' +
+  '#jjms-quiz .qopts{display:flex;flex-direction:column;gap:15px;max-width:520px;margin:0 auto;}' +
+  '#jjms-quiz .qo{padding:16px 26px;border-radius:14px;border:1px solid rgba(255,255,255,.28);background:rgba(10,14,26,.66);' +
     'color:#eef2f8;font:inherit;font-size:clamp(14px,1.15vw,17px);font-weight:600;cursor:pointer;' +
     'animation:jjqOpt .45s cubic-bezier(.34,1.56,.64,1) var(--qd,0s) both;' +
     'transition:background .2s ease,border-color .2s ease,transform .2s ease;}' +
@@ -1085,7 +1085,7 @@
     'animation:jjqFlash .55s ease both;}' +
   '@keyframes jjqFlash{0%{opacity:0;}25%{opacity:1;}100%{opacity:0;}}' +
   /* ---- the evolution track: answer well and you evolve ---- */
-  '#jjms-quiz .qtrack{position:relative;height:70px;max-width:470px;margin:30px auto 0;}' +
+  '#jjms-quiz .qtrack{position:relative;height:70px;max-width:470px;margin:52px auto 0;}' +
   '#jjms-quiz .qtrack::before{content:"";position:absolute;left:2%;right:2%;bottom:13px;height:2px;border-radius:2px;' +
     'background:linear-gradient(90deg,rgba(255,255,255,.28),rgba(255,0,245,.4));}' +
   '#jjms-quiz .qtick{position:absolute;bottom:9px;width:2px;height:10px;background:rgba(255,255,255,.3);transform:translateX(-50%);}' +
@@ -1107,14 +1107,14 @@
   '@keyframes jjqPlus{from{opacity:0;transform:translateY(6px) scale(.7);}25%{opacity:1;transform:translateY(-8px) scale(1.15);}' +
     'to{opacity:0;transform:translateY(-44px) scale(1);}}' +
   /* results: the rank stamps down, the score ticks up, your final form takes a bow */
-  '#jjms-quiz .qrank{margin:0 0 4px;font-size:clamp(26px,3vw,42px);font-weight:800;color:#FFC93D;' +
+  '#jjms-quiz .qrank{margin:0 0 10px;font-size:clamp(26px,3vw,42px);font-weight:800;color:#FFC93D;' +
     'text-shadow:0 0 26px rgba(255,201,61,.55),0 2px 14px rgba(0,0,0,.6);' +
     'animation:jjqStamp .5s cubic-bezier(.25,.9,.3,1.35) .35s both;}' +
   '@keyframes jjqStamp{from{opacity:0;transform:scale(2.6) rotate(-9deg);}to{opacity:1;transform:scale(1) rotate(-2deg);}}' +
   '#jjms-quiz .qsprbig{display:block;height:clamp(72px,9vw,104px);margin:0 auto 14px;' +
     'filter:drop-shadow(0 10px 26px rgba(0,0,0,.65));animation:jjmsDp .65s cubic-bezier(.34,1.56,.64,1) .12s both,' +
     'jjqBob 3.2s ease-in-out .8s infinite;}' +
-  '#jjms-quiz .qscore{margin:0 0 14px;font-size:clamp(15px,1.3vw,19px);font-weight:700;color:#fff;}' +
+  '#jjms-quiz .qscore{margin:0 0 20px;font-size:clamp(15px,1.3vw,19px);font-weight:700;color:#fff;}' +
   '#jjms-quiz .qgo,#jjms-quiz .qagain,#jjms-quiz .qtop{margin-top:26px;padding:13px 34px;border-radius:999px;border:0;' +
     'background:linear-gradient(100deg,#FF00F5,#8a2be2);color:#fff;font:inherit;font-size:16px;font-weight:800;cursor:pointer;' +
     'box-shadow:0 8px 30px rgba(255,0,245,.4);transition:scale .2s ease,box-shadow .2s ease;' +
@@ -2913,11 +2913,12 @@
       }, { passive: true });
     });
     /* videos and the celebration sfx would talk over it, so it steps aside and back */
-    function duckMusic() {
+    function duckMusic(hard) {                          /* hard=true silences it completely */
       if (ambDucked) return;
       ambDucked = true;
-      if (EXTA) { try { if (!EXTA.muted) EXTA.ambient.fade(EXTA.ambient.volume(), AMB_DUCK, 600); } catch (e) {} return; }
-      if (ambStarted && !userMuted) ambFadeTo(AMB_DUCK, 600);
+      var lvl = hard ? 0 : AMB_DUCK;
+      if (EXTA) { try { if (!EXTA.muted) EXTA.ambient.fade(EXTA.ambient.volume(), lvl, 600); } catch (e) {} return; }
+      if (ambStarted && !userMuted) ambFadeTo(lvl, 600);
     }
     function unduckMusic() {
       if (!ambDucked) return;
@@ -3195,7 +3196,7 @@
     var QUIZ_SECRET = '3KxokmSclbE';                     /* full marks unlocks this */
     var qConfettiDone = false;
     function quizSecret(earned) {
-      duckMusic();                                       /* the reward gets the room */
+      duckMusic(true);                                   /* the video gets total silence */
       qSwap('<p class="qkick">' + (earned ? 'Unlocked' : 'Fine, you can see it anyway') + '</p>' +
         '<h3>' + (earned ? 'For true historians only' : 'Everyone deserves a little history') + '</h3>' +
         '<div class="qvid"><iframe src="https://www.youtube.com/embed/' + QUIZ_SECRET +

@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's31 · the flame is the Seedance flicker loop, scaled out of the jaws in code';
+  window.JJ_STORY_BUILD = 's32 · the knight weaves up the woodland path; video layers can ride too';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -48,7 +48,7 @@
       { src:'tav-char-1', cls:'scared', css:'right:18%;bottom:22vh;width:min(19.5vw,390px)' }
     ]},
     woodland: { bg:'wood-bg', layers:[
-      { src:'wood-joe', css:'left:47%;bottom:26vh;width:min(18vw,360px)',            // rides off into the distance
+      { src:'wood-joe', cls:'gallop', css:'left:47%;bottom:26vh;width:min(18vw,360px)',   // rides off into the distance, weaving
         to:{ css:'left:48.5%;bottom:40vh;width:min(9vw,180px)', delay:1200, dur:6500 } },
       { src:'wood-char-1', cls:'idle', css:'left:29%;bottom:26vh;width:min(12vw,240px)' },
       { src:'wood-char-2', cls:'idle', css:'left:68%;bottom:26vh;width:min(13vw,260px)' }
@@ -159,6 +159,12 @@
     villagePanel:3000 };   // the village's 2nd shot lands this long after the 1st (equal timing, not word-driven)
 
   /* ---- styles ---- */
+  function gallopFrames(){                                   // 12 stops: a slow S-weave (x, tilt) with a stride bob (y) every 1/6
+    var k = '@keyframes jjst-gallop{';
+    for (var i = 0; i <= 12; i++) { var a = Math.sin(Math.PI * 2 * i / 12);
+      k += (i / 12 * 100).toFixed(2) + '%{transform:translate(' + (a * 7).toFixed(2) + '%,' + (i % 2 ? -2.2 : 0) + '%) rotate(' + (a * 2.4).toFixed(2) + 'deg);}'; }
+    return k + '}';
+  }
   var CSS =
   '#jjst{position:fixed;inset:0;z-index:2000;overflow:hidden;background:#0b1b2e;font-family:\'Joes Journey Headline\',sans-serif;}'+
   '#jjst-bgwrap{position:absolute;inset:0;overflow:hidden;}'+
@@ -197,6 +203,8 @@
   '.jjst-layer.scared{animation:jjst-scared .5s ease-in-out infinite;transform-origin:center bottom;}'+
   '@keyframes jjst-idle{0%,100%{transform:scaleX(var(--flip,1)) scaleY(1);}50%{transform:scaleX(var(--flip,1)) scaleY(.965);}}'+   // grounded squash bob (origin bottom) — nothing floats
   '.jjst-layer.idle{animation:jjst-idle 2.5s ease-in-out infinite;transform-origin:center bottom;}'+
+  '.jjst-layer.gallop{animation:jjst-gallop 2.8s ease-in-out infinite;transform-origin:center bottom;}'+
+  gallopFrames()+
   '.jjst-layer.morph{transition:left .8s cubic-bezier(.4,0,.2,1),right .8s cubic-bezier(.4,0,.2,1),bottom .8s cubic-bezier(.4,0,.2,1),width .8s cubic-bezier(.4,0,.2,1),opacity .55s ease;}'+
   '.jjst-layer.enter{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1);}'+
   '.jjst-layer.enter.in{opacity:1;transform:translateY(0);}'+
@@ -362,6 +370,14 @@
     el.style.transition = 'opacity .55s ease, scale ' + (L.scDur || 4500) + 'ms ease-in-out';
     el.style.scale = String(L.sc);
   }
+  function applyMove(el, L){                                 // slow secondary move within a shot (e.g. Joe rides into the distance)
+    if (!L.to) return; var t = L.to;
+    animTimers.push(setTimeout(function () {
+      var e = t.ease || 'ease-in-out', d = t.dur || 4000;
+      el.style.transition = ['left', 'right', 'bottom', 'width'].map(function (p) { return p + ' ' + d + 'ms ' + e; }).join(',');
+      t.css.split(';').forEach(function (decl) { var c = decl.indexOf(':'); if (c > 0) el.style.setProperty(decl.slice(0, c).trim(), decl.slice(c + 1).trim()); });
+    }, t.delay || 0));
+  }
   function buildLayers(layers){
     clearAnims(); layers = layers || [];
     var next = {}; layers.forEach(function (L, idx) { next[keyOf(L, idx)] = true; });
@@ -391,7 +407,7 @@
           rec.aura = makeAura(L, el);
           if (L.snd) attachSound(el, L.snd);
         }
-        applyScale(el, L, prevSc);
+        applyScale(el, L, prevSc); applyMove(el, L);
         return;                                                // the img branches below don't apply
       }
       if (rec && rec.src !== first) {                        // ART CHANGE = a pose cut: ghost of the OLD art at the
@@ -448,13 +464,7 @@
       if (L.anim) { var i = 0; (function (r, arr, intv) {
         animTimers.push(setInterval(function () { i = (i + 1) % arr.length; r.el.src = F(arr[i]); r.src = F(arr[i]); }, intv || 400));
       })(rec, L.anim, L.int); }
-      if (L.to) { (function (element, t) {                   // slow secondary move within a shot (e.g. Joe rides into the distance)
-        animTimers.push(setTimeout(function () {
-          var e = t.ease || 'ease-in-out', d = t.dur || 4000;
-          element.style.transition = ['left', 'right', 'bottom', 'width'].map(function (p) { return p + ' ' + d + 'ms ' + e; }).join(',');
-          t.css.split(';').forEach(function (decl) { var c = decl.indexOf(':'); if (c > 0) element.style.setProperty(decl.slice(0, c).trim(), decl.slice(c + 1).trim()); });
-        }, t.delay || 0));
-      })(el, L.to); }
+      applyMove(el, L);
     });
   }
   var panelTimers = [];

@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's28 · brisker pace, centred captions, two-shot village, tappable chest, snore off';
+  window.JJ_STORY_BUILD = 's31 · the flame is the Seedance flicker loop, scaled out of the jaws in code';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -102,8 +102,15 @@
          terrified drop-guy + v7 remain. Panels advance on an equal timer (see runVillageSeq). ---- */
   var VIL_DRAGON = 'right:13%;bottom:21vh;width:min(62vw,1240px)';   // Trogdor — body 25vw; nudged 1% left so the tail clears the old man's window
   function vil(dragon, p){
-    /* kept simple on purpose: just the pitchfork guy and the scared curly kid */
-    var L = [ { key:'dragon', src:dragon, css:VIL_DRAGON },
+    /* kept simple on purpose: just the pitchfork guy and the scared curly kid.
+       The dragon is the AI huff-and-puff loop (mouth opens ~2.8s in, then stays angry); the flame is
+       its own layer on the SAME canvas geometry, scaled from the mouth — 0 in shot 1, growing to
+       full in shot 2. Both use VIL_DRAGON. The flicker clip is registered so its thin neck sits in the mouth
+       wedge and its pointed base hides inside the head; the origin (58.4% 46%) is the mouth interior. */
+    var L = [
+      { key:'flame', vid:'vil-flame-loop', ar:1400/900, css:VIL_DRAGON, sc:(p.flame == null ? 0 : p.flame), so:'58.4% 46%', scDur:4500 },
+      { key:'vildragon', vid:'vil-dragon-loop', ar:1400/900, css:VIL_DRAGON,
+        fx:[ { type:'smoke', at:[55, 36] } ] },
       { key:'pitch', src:'vil-char-4', cls:'idle', css:p.pitch },    // pitchfork guy — mid-left
       { key:'v5', src:'vil-char-5', cls:'idle', css:p.v5 }           // curly — beside him
     ];
@@ -113,7 +120,8 @@
     pitch:'left:19%;bottom:31vh;width:min(11vw,220px)', v5:'left:27%;bottom:33vh;width:min(10vw,200px)',
     v3:'left:37%;bottom:37vh;width:min(8vw,160px)',     v1:'left:75%;bottom:49vh;width:min(10vw,200px)',
     v2:'left:85%;bottom:33vh;width:min(16vw,320px)' });
-  COMP.village2 = vil('vil-dragon-2', {        // small flame — v7 runs in, bonnet flees off right, old man shrinks back into the window
+  COMP.village2 = vil('vil-dragon-2', {        // the fire comes: flame grows from the mouth to full over ~4.5s
+    flame:1,
     pitch:'left:21%;bottom:31vh;width:min(9.5vw,190px)', v5:'left:27%;bottom:33vh;width:min(10vw,200px)',
     v3:'left:43%;bottom:43vh;width:min(6vw,120px)',      v1:'left:76%;bottom:51vh;width:min(8vw,160px)',
     v7:'left:34%;bottom:24vh;width:min(10vw,200px)',     v2:'left:91%;bottom:27vh;width:min(15vw,300px)' });
@@ -346,12 +354,21 @@
     el.style.transition = 'opacity .5s ease'; el.style.opacity = '0';
     setTimeout(function () { if (el.parentNode) el.remove(); }, 560); }
   function keyOf(L, idx){ return L.key || (L.anim ? 'anim:' + L.anim[0] : L.src) || ('i' + idx); }
+  function applyScale(el, L, prevSc){                        // a layer that scales between shots (the flame)
+    if (L.sc == null) return;
+    el.style.transformOrigin = L.so || '50% 50%';
+    el.style.scale = prevSc === '' ? String(L.sc) : prevSc;      // start from where it was (cssText just wiped it)
+    void el.offsetWidth;
+    el.style.transition = 'opacity .55s ease, scale ' + (L.scDur || 4500) + 'ms ease-in-out';
+    el.style.scale = String(L.sc);
+  }
   function buildLayers(layers){
     clearAnims(); layers = layers || [];
     var next = {}; layers.forEach(function (L, idx) { next[keyOf(L, idx)] = true; });
     Object.keys(layerRecs).forEach(function (k) { if (!next[k]) { fadeRemove(layerRecs[k].el); if (layerRecs[k].aura) fadeRemove(layerRecs[k].aura); delete layerRecs[k]; } });
     layers.forEach(function (L, idx) {
       var k = keyOf(L, idx), first = F(L.anim ? L.anim[0] : L.src), rec = layerRecs[k], el;
+      var prevSc = (rec && rec.el && rec.el.style) ? rec.el.style.scale : '';
       if (rec && ((rec.el.tagName === 'VIDEO') !== !!L.vid)) {   // kind changed under the same key: start fresh
         fadeRemove(rec.el); if (rec.aura) fadeRemove(rec.aura); delete layerRecs[k]; rec = null;
       }
@@ -374,6 +391,7 @@
           rec.aura = makeAura(L, el);
           if (L.snd) attachSound(el, L.snd);
         }
+        applyScale(el, L, prevSc);
         return;                                                // the img branches below don't apply
       }
       if (rec && rec.src !== first) {                        // ART CHANGE = a pose cut: ghost of the OLD art at the
@@ -405,6 +423,7 @@
         rec = layerRecs[k] = { el: el, src: first };
         if (L.aura || L.hero) rec.aura = makeAura(L, el);
       }
+      applyScale(el, L, prevSc);
       if (L.cls && /\b(idle|scared)\b/.test(L.cls)) {        // each character on its own beat + tempo
         var trem = /\bscared\b/.test(L.cls);
         el.style.animationDelay = '-' + ((idx * 0.83) % 2.5).toFixed(2) + 's';
@@ -537,7 +556,7 @@
   }
 
   /* ---- mount + choreography ---- */
-  var PRELOAD = ['cav-bg','cav-dragon-loop-poster','cav-chest-closed','cav-chest-open','tav-joe-loop-poster','cav-dragon-1','vil-bg','vil-dragon-1','vil-dragon-2','vil-dragon-3','vil-dragon-4',
+  var PRELOAD = ['cav-bg','cav-dragon-loop-poster','cav-chest-closed','cav-chest-open','tav-joe-loop-poster','vil-dragon-loop-poster','vil-flame-loop-poster','cav-dragon-1','vil-bg','vil-dragon-1','vil-dragon-2','vil-dragon-3','vil-dragon-4',
     'vil-char-1','vil-char-2','vil-char-3','vil-char-4','vil-char-5','vil-char-7','vil-pitch-drop','tav-bg','tav-joe','tav-char-1','tav-char-2','tav-char-3',
     'wood-bg','wood-joe','wood-char-1','wood-char-2','cas-bg','cas-joe-1','cas-joe-2','cas-joe-3',
     'cas-dragon-1','cas-dragon-2','cas-dragon-3','cas-dragon-4','cas-designer-1','cas-designer-2','cas-smoke-1','cas-smoke-2'];

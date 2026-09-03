@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's27 · dragon stays in the cave; labels hug the art; ambient waits for the handoff';
+  window.JJ_STORY_BUILD = 's28 · brisker pace, centred captions, two-shot village, tappable chest, snore off';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -31,10 +31,10 @@
       /* the treasure chest: closed still, swaps to the open art on the word "jewels" with a gold
          bloom + sparkle burst, then shuts again (see runFx). Faces right, per the mockup. */
       { key:'chest', src:'cav-chest-closed', css:'left:16.3%;bottom:28.9vh;width:min(20.6vw,420px)',
-        aura:{ glow:'rgba(255,214,120,.65)' } },
+        aura:{ glow:'rgba(255,214,120,.65)' }, tap:'chest' },
       { key:'dragonloop', vid:'cav-dragon-loop', ar:1400/1276, css:'right:7%;bottom:8vh;width:min(57vw,1140px)',
         hero:{ label:'Trogdor the Burninator', glow:'rgba(255,96,120,.55)', lt:25 },
-        snd:{ src:'cav-dragon-loop', vol:.35 },
+        /* snd: the Seedance breathing had a music pad under it — a proper snore is coming from the user */
         fx:[ { type:'smoke', at:[28, 46] }, { type:'glint', at:[[46,70],[58,74],[66,66],[52,78]] } ] }
     ]},
     /* tavern per the "3 - Tavern 1" mockup: Joe mid-left on the floor, grandma back-right,
@@ -42,7 +42,7 @@
     tavern: { bg:'tav-bg', layers:[
       { key:'joe', vid:'tav-joe-loop', ar:1, css:'left:10%;bottom:24vh;width:min(26vw,520px)',
         hero:{ label:'Joe the Righteous', glow:'rgba(255,214,120,.6)', seekTo:3.0, lt:4 },
-        snd:{ src:'tav-joe-loop', vol:.28 } },
+        snd:{ src:'tav-joe-loop', vol:.15 } },
       { src:'tav-char-3', cls:'scared', css:'right:15%;bottom:50vh;width:min(14vw,280px)' },
       { src:'tav-char-2', cls:'scared', css:'right:3%;bottom:30vh;width:min(16vw,320px)' },
       { src:'tav-char-1', cls:'scared', css:'right:18%;bottom:22vh;width:min(19.5vw,390px)' }
@@ -102,13 +102,11 @@
          terrified drop-guy + v7 remain. Panels advance on an equal timer (see runVillageSeq). ---- */
   var VIL_DRAGON = 'right:13%;bottom:21vh;width:min(62vw,1240px)';   // Trogdor — body 25vw; nudged 1% left so the tail clears the old man's window
   function vil(dragon, p){
+    /* kept simple on purpose: just the pitchfork guy and the scared curly kid */
     var L = [ { key:'dragon', src:dragon, css:VIL_DRAGON },
       { key:'pitch', src:'vil-char-4', cls:'idle', css:p.pitch },    // pitchfork guy — mid-left
-      { key:'v5', src:'vil-char-5', cls:'idle', css:p.v5 },          // curly — beside him
-      { key:'v3', src:'vil-char-3', cls:'idle', css:p.v3 },          // redhead — RUNS up the path, shrinking
+      { key:'v5', src:'vil-char-5', cls:'idle', css:p.v5 }           // curly — beside him
     ];
-    if (p.v7) L.push({ key:'v7', src:'vil-char-7', cls:'idle', css:p.v7 });   // mustache kid (enters P2)
-    if (p.v2) L.push({ key:'v2', src:'vil-char-2', cls:'idle', css:p.v2 });   // bonnet girl (gone after P2)
     return { bg:'vil-bg', layers:L };
   }
   COMP.village1 = vil('vil-dragon-1', {        // smoke puff — old man at the LIT WINDOW (grounded, not floating on the wall)
@@ -149,8 +147,8 @@
 
   /* ---- timings (ms) ---- */
   var T = { revealAt:700, revealDur:2200, boxFadeAt:2700, menuDropAt:3000, firstTypeAt:3500,
-    typeSpeed:24, pauseDot:280, pauseEllipsis:620, readPerChar:32, readMin:1700, bgFade:600, endFade:1500,
-    villagePanel:3600 };   // each of the 4 village dragon 'shots' holds this long (equal timing, not word-driven)
+    typeSpeed:30, pauseDot:200, pauseEllipsis:400, readPerChar:10, readMin:1200, bgFade:600, endFade:1500,
+    villagePanel:3000 };   // the village's 2nd shot lands this long after the 1st (equal timing, not word-driven)
 
   /* ---- styles ---- */
   var CSS =
@@ -206,9 +204,9 @@
   '#jjst-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#FF00F5,#ff7df4);box-shadow:0 0 12px rgba(255,0,245,.7);transition:width .6s ease;}'+
   '#jjst-cap{position:absolute;left:50%;bottom:7vh;transform:translateX(-50%);width:min(83vw,1350px);aspect-ratio:1295 / 200;z-index:5;opacity:0;transition:opacity .8s ease;background:url(\''+BANNER+'\') no-repeat center/contain;display:flex;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer;}'+
   '#jjst-cap.on{opacity:1;}'+
-  '#jjst-cap-text{width:72%;height:3.85em;overflow:visible;text-align:left;color:#3a2a12;font-size:clamp(15px,1.6vw,27px);line-height:1.26;white-space:pre-wrap;}'+   // FIXED 3-line block, top-anchored: line 1 never moves when the text wraps
+  '#jjst-cap-text{width:72%;overflow:visible;text-align:left;color:#3a2a12;font-size:clamp(15px,1.6vw,27px);line-height:1.26;white-space:pre-wrap;}'+   // height is set per line to its FINISHED size (see typeText) — centred in the box, line 1 never moves
   /* the reader's own pace: a Next chip appears once the line has finished typing */
-  '#jjst-next{position:absolute;right:5.5%;bottom:14%;padding:5px 16px;border-radius:999px;border:1px solid rgba(58,42,18,.4);background:rgba(58,42,18,.10);color:#3a2a12;font-size:clamp(12px,1.05vw,17px);font-weight:700;opacity:0;transform:translateX(-5px);transition:opacity .35s ease,transform .35s ease,background .2s ease;pointer-events:auto;cursor:pointer;}'+
+  '#jjst-next{position:absolute;right:11%;bottom:17%;padding:5px 16px;border-radius:999px;border:1px solid rgba(58,42,18,.4);background:rgba(58,42,18,.10);color:#3a2a12;font-size:clamp(12px,1.05vw,17px);font-weight:700;opacity:0;transform:translateX(-5px);transition:opacity .35s ease,transform .35s ease,background .2s ease;pointer-events:auto;cursor:pointer;}'+
   '#jjst-next.on{opacity:1;transform:none;}'+
   '#jjst-next:hover{background:rgba(58,42,18,.24);}'+
   '#jjst-skip{position:absolute;left:26px;bottom:26px;z-index:9;padding:8px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(6,10,18,.5);color:rgba(255,255,255,.85);font-family:inherit;font-size:13px;font-weight:600;letter-spacing:.06em;opacity:0;pointer-events:none;transition:opacity .5s ease,background .2s ease;cursor:pointer;}'+
@@ -268,7 +266,7 @@
         if (d) h.seek(video.currentTime % d, id);
       } catch (e) {}
     }
-    video.addEventListener('playing', sync);
+    video.addEventListener('playing', function () { if (!started) sync(); });
     video.addEventListener('seeked', sync);
     video.addEventListener('pause', function () { try { if (id != null) h.pause(id); } catch (e) {} });
     video.addEventListener('timeupdate', function () { var t = video.currentTime; if (t < lastT - 0.8) sync(); lastT = t; });   // the loop wrapped
@@ -407,6 +405,16 @@
         rec = layerRecs[k] = { el: el, src: first };
         if (L.aura || L.hero) rec.aura = makeAura(L, el);
       }
+      if (L.cls && /\b(idle|scared)\b/.test(L.cls)) {        // each character on its own beat + tempo
+        var trem = /\bscared\b/.test(L.cls);
+        el.style.animationDelay = '-' + ((idx * 0.83) % 2.5).toFixed(2) + 's';
+        el.style.animationDuration = trem ? (0.42 + (idx % 3) * 0.09).toFixed(2) + 's' : (2.2 + (idx % 3) * 0.4).toFixed(1) + 's';
+      }
+      if (L.tap && !el._tapWired) {                              // a pressable prop (e.g. the chest)
+        el._tapWired = true;
+        el.style.pointerEvents = 'auto'; el.style.cursor = 'pointer'; el.setAttribute('data-cursor', 'hover');
+        el.addEventListener('click', function (e) { e.stopPropagation(); runFx(L.tap); });
+      }
       if (L.cls && L.cls.indexOf('joehero') >= 0 && !el._heroWired) {
         el._heroWired = true;
         el.setAttribute('data-cursor', 'hover');
@@ -434,7 +442,7 @@
   function clearPanels(){ panelTimers.forEach(function (t) { clearTimeout(t); }); panelTimers = []; }
   function runVillageSeq(){                          // village1 is up — advance 2→3→4 at equal intervals
     clearPanels();
-    ['village2','village3','village4'].forEach(function (name, i) {
+    ['village2'].forEach(function (name, i) {                 // shots 3 + 4 retired — two is plenty
       panelTimers.push(setTimeout(function () { setComp(name); }, T.villagePanel * (i + 1)));
     });
   }
@@ -468,6 +476,10 @@
   var typeFF = null;                                       // while a line is typing: call to land it instantly
   function typeText(text, triggers, done){
     var trs = (triggers || []).map(function (tr) { var k = text.indexOf(tr.at); return { idx: k < 0 ? -1 : k + tr.at.length, comp: tr.comp, fx: tr.fx, fired: false }; });
+    /* measure the finished line first, then lock the block to that height: the banner centres a
+       block of the final size, so the text ends up in the middle and nothing shifts while typing */
+    textEl.style.height = 'auto'; textEl.style.visibility = 'hidden'; textEl.textContent = text;
+    textEl.style.height = textEl.offsetHeight + 'px'; textEl.style.visibility = '';
     textEl.textContent = ''; var i = 0; clearTimeout(textEl._tw);
     var finished = false;
     function fireTo(n){ for (var j = 0; j < trs.length; j++) { if (!trs[j].fired && trs[j].idx >= 0 && n >= trs[j].idx) { trs[j].fired = true; if (trs[j].comp) setComp(trs[j].comp); if (trs[j].fx) runFx(trs[j].fx); } } }

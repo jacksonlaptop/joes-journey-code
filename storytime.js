@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's24 · the dragon breathes: transparent video layer, code smoke + glints, hover aura';
+  window.JJ_STORY_BUILD = 's26 · Joe loops in the tavern; the clips keep their own sound';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -28,14 +28,21 @@
       /* the AI-made loop (breathing, eye opens halfway) — transparent video over the static cave.
          The smoke, the coin glints and the hover glow/label are all drawn in code on an 'aura'
          box that sits exactly over the video. */
+      /* the treasure chest: closed still, swaps to the open art on the word "jewels" with a gold
+         bloom + sparkle burst, then shuts again (see runFx). Faces right, per the mockup. */
+      { key:'chest', src:'cav-chest-closed', css:'left:16.3%;bottom:28.9vh;width:min(20.6vw,420px)',
+        aura:{ glow:'rgba(255,214,120,.65)' } },
       { key:'dragon', vid:'cav-dragon-loop', ar:1400/1276, css:'right:7%;bottom:8vh;width:min(57vw,1140px)',
         hero:{ label:'Trogdor the Burninator', glow:'rgba(255,96,120,.55)' },
+        snd:{ src:'cav-dragon-loop', vol:.35 },
         fx:[ { type:'smoke', at:[28, 46] }, { type:'glint', at:[[46,70],[58,74],[66,66],[52,78]] } ] }
     ]},
     /* tavern per the "3 - Tavern 1" mockup: Joe mid-left on the floor, grandma back-right,
        hooded guy far right, the old man BIG in the foreground (so he's last = on top). */
     tavern: { bg:'tav-bg', layers:[
-      { src:'tav-joe', cls:'enter joehero', css:'left:10%;bottom:24vh;width:min(26vw,520px)' },
+      { key:'joe', vid:'tav-joe-loop', ar:1, css:'left:10%;bottom:24vh;width:min(26vw,520px)',
+        hero:{ label:'Joe the Righteous', glow:'rgba(255,214,120,.6)', seekTo:3.0 },
+        snd:{ src:'tav-joe-loop', vol:.7 } },
       { src:'tav-char-3', cls:'scared', css:'right:15%;bottom:50vh;width:min(14vw,280px)' },
       { src:'tav-char-2', cls:'scared', css:'right:3%;bottom:30vh;width:min(16vw,320px)' },
       { src:'tav-char-1', cls:'scared', css:'right:18%;bottom:22vh;width:min(19.5vw,390px)' }
@@ -126,7 +133,7 @@
   var SCENES = [
     { text:"Many moons ago in a mysterious land there lived a cunning and evil beast who dwelled deep in the darkness....", comp:'cavern' },
     { text:"He had a fascination for gold, jewels, treasures and anything that sparkled...but also something more sinister...the local villagers!",
-      comp:'cavern', triggers:[ { at:'more sinister', comp:'village1' } ] },
+      comp:'cavern', triggers:[ { at:'jewels', fx:'chest' }, { at:'more sinister', comp:'village1' } ] },
     { text:"He had many names, Beast, Dragon, Death, but the one that put fear into the hearts of the locals was...Trogdor! Trogdor The Burninator...",
       comp:'village1' },   // village1→2→3→4 now advance on an equal timer (see runVillageSeq), not on these words
     { text:"Luckily one day a brave young man appeared to try and best this beast! His goal? To save the villagers and stop this evil...",
@@ -166,6 +173,9 @@
     'background:rgba(10,14,26,.72);border:1px solid rgba(255,255,255,.28);color:#fff;font-size:clamp(12px,1.05vw,17px);font-weight:700;letter-spacing:.04em;white-space:nowrap;'+
     'opacity:0;transition:opacity .35s ease,transform .35s cubic-bezier(.34,1.56,.64,1);}'+
   '#jjst-layers .jjst-aura.hov .alabel{opacity:1;transform:translate(-50%,0);}'+
+  '#jjst-layers .jjst-aura.lit .aglow{opacity:1;transform:scale(1);}'+
+  '#jjst-layers .jjst-layer.pop{animation:jjstPop .55s cubic-bezier(.34,1.56,.64,1);transform-origin:50% 100%;}'+
+  '@keyframes jjstPop{0%{scale:1;}40%{scale:1.07 .95;}70%{scale:.98 1.03;}100%{scale:1;}}'+
   /* nostril smoke: a soft puff that drifts up-left, grows and thins */
   '#jjst-layers .jjst-aura .puff{position:absolute;width:5.5%;aspect-ratio:1;border-radius:50%;margin:-2.75% 0 0 -2.75%;'+
     'background:radial-gradient(circle,rgba(226,232,240,.85) 0%,rgba(200,208,220,.55) 45%,rgba(200,208,220,0) 70%);'+
@@ -238,6 +248,74 @@
     curBgLayer = incoming;
   }
   function clearAnims(){ animTimers.forEach(function (t) { clearInterval(t); }); animTimers = []; }
+  /* ---- a video layer's soundtrack: the clip's own audio, extracted to mp3 and played through Howler
+     (the site's mute button rules it), kept in step with the muted <video>'s clock ---- */
+  function attachSound(video, snd){
+    if (!window.Howl) return;
+    var h = new Howl({ src: [GB + 'story-' + snd.src + '.mp3' + AV], volume: snd.vol == null ? .5 : snd.vol, preload: true });
+    window.jjAudio = window.jjAudio || { sounds: [], muted: false, volume: 1.0 };
+    window.jjAudio.sounds.push(h);
+    var id = null, lastT = 0;
+    function sync(){
+      if (video.paused || !video.isConnected) return;
+      try {
+        if (id == null || !h.playing(id)) id = h.play();
+        var d = h.duration() || 0;
+        if (d) h.seek(video.currentTime % d, id);
+      } catch (e) {}
+    }
+    video.addEventListener('playing', sync);
+    video.addEventListener('seeked', sync);
+    video.addEventListener('pause', function () { try { if (id != null) h.pause(id); } catch (e) {} });
+    video.addEventListener('timeupdate', function () { var t = video.currentTime; if (t < lastT - 0.8) sync(); lastT = t; });   // the loop wrapped
+    h.once('load', sync);
+    h.once('unlock', sync);                               // first gesture: fall into step with the picture
+    video._howl = h;
+  }
+  /* ---- the aura: a box exactly over a layer that carries its glow, label and code effects ---- */
+  function makeAura(L, el){
+    var aura = document.createElement('div'); aura.className = 'jjst-aura';
+    aura.style.cssText = L.css + ';aspect-ratio:' + (L.ar || 1) + ';';
+    var h = L.hero || L.aura || {};
+    aura.style.setProperty('--gc', h.glow || 'rgba(255,255,255,.4)');
+    aura.innerHTML = '<div class="aglow"></div>' + (h.label ? '<div class="alabel">' + h.label + '</div>' : '');
+    if (L.hero) {
+      el.setAttribute('data-cursor', 'hover');
+      el.addEventListener('pointerenter', function () { el.classList.add('hov'); aura.classList.add('hov'); });
+      el.addEventListener('pointerleave', function () { el.classList.remove('hov'); aura.classList.remove('hov'); });
+      if (L.hero.seekTo != null && el.tagName === 'VIDEO') el.addEventListener('click', function (e) {
+        e.stopPropagation();
+        try { el.currentTime = L.hero.seekTo; var p = el.play(); if (p && p.catch) p.catch(function () {}); } catch (err) {}
+        aura.classList.add('lit'); clearTimeout(aura._litT);
+        aura._litT = setTimeout(function () { aura.classList.remove('lit'); }, 1800);
+      });
+    }
+    layersWrap.insertBefore(aura, el);                    // glow sits BEHIND the art
+    (L.fx || []).forEach(function (fx) { startFx(aura, fx); });
+    return aura;
+  }
+  function sparkleBurst(aura, n){
+    for (var i = 0; i < n; i++) (function (i) { setTimeout(function () {
+      if (!aura.isConnected) return;
+      var g = document.createElement('i'); g.className = 'glint';
+      g.style.left = (28 + Math.random() * 46) + '%'; g.style.top = (14 + Math.random() * 40) + '%';
+      aura.appendChild(g); setTimeout(function () { g.remove(); }, 1000);
+    }, i * 110); })(i);
+  }
+  /* named one-shot effects fired from caption words (triggers: { at:'jewels', fx:'chest' }) */
+  function runFx(name){
+    if (name === 'chest') {
+      var rec = layerRecs['chest']; if (!rec) return;
+      var el = rec.el, aura = rec.aura;
+      el.src = F('cav-chest-open'); el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+      if (aura) { aura.classList.add('lit'); sparkleBurst(aura, 10); }
+      clearTimeout(rec.fxT);
+      rec.fxT = setTimeout(function () {
+        el.src = F('cav-chest-closed'); el.classList.remove('pop');
+        if (aura) aura.classList.remove('lit');
+      }, 3200);
+    }
+  }
   /* ---- code-drawn effects on an aura box: nostril smoke, coin glints ---- */
   function startFx(aura, fx){
     var t;
@@ -262,7 +340,7 @@
     }
     animTimers.push(t);
   }
-  function fadeRemove(el){ if (el.tagName === 'VIDEO') { try { el.pause(); } catch (e) {} }
+  function fadeRemove(el){ if (el.tagName === 'VIDEO') { try { el.pause(); } catch (e) {} if (el._howl) { var hw = el._howl; setTimeout(function () { try { hw.unload(); } catch (e2) {} }, 700); } }
     el.style.transition = 'opacity .5s ease'; el.style.opacity = '0';
     setTimeout(function () { if (el.parentNode) el.remove(); }, 560); }
   function keyOf(L, idx){ return L.key || (L.anim ? 'anim:' + L.anim[0] : L.src) || ('i' + idx); }
@@ -288,19 +366,8 @@
           requestAnimationFrame(function () { el.style.opacity = '1'; });
           var pr = el.play(); if (pr && pr.catch) pr.catch(function () {});   // blocked → the poster stands in
           rec = layerRecs[k] = { el: el, src: first };
-          /* the aura: same box as the video, carries the glow, the label and the code-drawn effects */
-          var aura = document.createElement('div'); aura.className = 'jjst-aura';
-          aura.style.cssText = L.css + ';aspect-ratio:' + (L.ar || 1) + ';';
-          if (L.hero) {
-            aura.style.setProperty('--gc', L.hero.glow || 'rgba(255,255,255,.4)');
-            aura.innerHTML = '<div class="aglow"></div>' + (L.hero.label ? '<div class="alabel">' + L.hero.label + '</div>' : '');
-            el.setAttribute('data-cursor', 'hover');
-            el.addEventListener('pointerenter', function () { el.classList.add('hov'); aura.classList.add('hov'); });
-            el.addEventListener('pointerleave', function () { el.classList.remove('hov'); aura.classList.remove('hov'); });
-          }
-          layersWrap.insertBefore(aura, el);                  // glow sits BEHIND the character
-          rec.aura = aura;
-          (L.fx || []).forEach(function (fx) { startFx(aura, fx); });
+          rec.aura = makeAura(L, el);
+          if (L.snd) attachSound(el, L.snd);
         }
         return;                                                // the img branches below don't apply
       }
@@ -331,6 +398,7 @@
         el.style.cssText = L.css + ';opacity:0'; el.src = first; layersWrap.appendChild(el);
         requestAnimationFrame(function () { el.style.opacity = '1'; });
         rec = layerRecs[k] = { el: el, src: first };
+        if (L.aura || L.hero) rec.aura = makeAura(L, el);
       }
       if (L.cls && L.cls.indexOf('joehero') >= 0 && !el._heroWired) {
         el._heroWired = true;
@@ -391,10 +459,10 @@
   function setProgress(i){ fill.style.width = Math.min(1, (i + 1) / SCENES.length) * 100 + '%'; }
   var typeFF = null;                                       // while a line is typing: call to land it instantly
   function typeText(text, triggers, done){
-    var trs = (triggers || []).map(function (tr) { var k = text.indexOf(tr.at); return { idx: k < 0 ? -1 : k + tr.at.length, comp: tr.comp, fired: false }; });
+    var trs = (triggers || []).map(function (tr) { var k = text.indexOf(tr.at); return { idx: k < 0 ? -1 : k + tr.at.length, comp: tr.comp, fx: tr.fx, fired: false }; });
     textEl.textContent = ''; var i = 0; clearTimeout(textEl._tw);
     var finished = false;
-    function fireTo(n){ for (var j = 0; j < trs.length; j++) { if (!trs[j].fired && trs[j].idx >= 0 && n >= trs[j].idx) { trs[j].fired = true; if (trs[j].comp) setComp(trs[j].comp); } } }
+    function fireTo(n){ for (var j = 0; j < trs.length; j++) { if (!trs[j].fired && trs[j].idx >= 0 && n >= trs[j].idx) { trs[j].fired = true; if (trs[j].comp) setComp(trs[j].comp); if (trs[j].fx) runFx(trs[j].fx); } } }
     function finish(){ if (finished) return; finished = true; clearTimeout(textEl._tw); typeFF = null;
       textEl.textContent = text; fireTo(text.length); if (done) done(); }
     typeFF = finish;
@@ -438,7 +506,7 @@
   }
 
   /* ---- mount + choreography ---- */
-  var PRELOAD = ['cav-bg','cav-dragon-loop-poster','cav-dragon-1','vil-bg','vil-dragon-1','vil-dragon-2','vil-dragon-3','vil-dragon-4',
+  var PRELOAD = ['cav-bg','cav-dragon-loop-poster','cav-chest-closed','cav-chest-open','tav-joe-loop-poster','cav-dragon-1','vil-bg','vil-dragon-1','vil-dragon-2','vil-dragon-3','vil-dragon-4',
     'vil-char-1','vil-char-2','vil-char-3','vil-char-4','vil-char-5','vil-char-7','vil-pitch-drop','tav-bg','tav-joe','tav-char-1','tav-char-2','tav-char-3',
     'wood-bg','wood-joe','wood-char-1','wood-char-2','cas-bg','cas-joe-1','cas-joe-2','cas-joe-3',
     'cas-dragon-1','cas-dragon-2','cas-dragon-3','cas-dragon-4','cas-designer-1','cas-designer-2','cas-smoke-1','cas-smoke-2'];

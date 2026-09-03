@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's26 · Joe loops in the tavern; the clips keep their own sound';
+  window.JJ_STORY_BUILD = 's27 · dragon stays in the cave; labels hug the art; ambient waits for the handoff';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -32,8 +32,8 @@
          bloom + sparkle burst, then shuts again (see runFx). Faces right, per the mockup. */
       { key:'chest', src:'cav-chest-closed', css:'left:16.3%;bottom:28.9vh;width:min(20.6vw,420px)',
         aura:{ glow:'rgba(255,214,120,.65)' } },
-      { key:'dragon', vid:'cav-dragon-loop', ar:1400/1276, css:'right:7%;bottom:8vh;width:min(57vw,1140px)',
-        hero:{ label:'Trogdor the Burninator', glow:'rgba(255,96,120,.55)' },
+      { key:'dragonloop', vid:'cav-dragon-loop', ar:1400/1276, css:'right:7%;bottom:8vh;width:min(57vw,1140px)',
+        hero:{ label:'Trogdor the Burninator', glow:'rgba(255,96,120,.55)', lt:25 },
         snd:{ src:'cav-dragon-loop', vol:.35 },
         fx:[ { type:'smoke', at:[28, 46] }, { type:'glint', at:[[46,70],[58,74],[66,66],[52,78]] } ] }
     ]},
@@ -41,8 +41,8 @@
        hooded guy far right, the old man BIG in the foreground (so he's last = on top). */
     tavern: { bg:'tav-bg', layers:[
       { key:'joe', vid:'tav-joe-loop', ar:1, css:'left:10%;bottom:24vh;width:min(26vw,520px)',
-        hero:{ label:'Joe the Righteous', glow:'rgba(255,214,120,.6)', seekTo:3.0 },
-        snd:{ src:'tav-joe-loop', vol:.7 } },
+        hero:{ label:'Joe the Righteous', glow:'rgba(255,214,120,.6)', seekTo:3.0, lt:4 },
+        snd:{ src:'tav-joe-loop', vol:.28 } },
       { src:'tav-char-3', cls:'scared', css:'right:15%;bottom:50vh;width:min(14vw,280px)' },
       { src:'tav-char-2', cls:'scared', css:'right:3%;bottom:30vh;width:min(16vw,320px)' },
       { src:'tav-char-1', cls:'scared', css:'right:18%;bottom:22vh;width:min(19.5vw,390px)' }
@@ -256,10 +256,14 @@
     window.jjAudio = window.jjAudio || { sounds: [], muted: false, volume: 1.0 };
     window.jjAudio.sounds.push(h);
     var id = null, lastT = 0;
+    var started = false;
     function sync(){
       if (video.paused || !video.isConnected) return;
       try {
-        if (id == null || !h.playing(id)) id = h.play();
+        if (id == null || !h.playing(id)) {
+          id = h.play();
+          if (!started) { started = true; h.volume(0, id); h.fade(0, snd.vol == null ? .5 : snd.vol, 2500, id); }   // ease in
+        }
         var d = h.duration() || 0;
         if (d) h.seek(video.currentTime % d, id);
       } catch (e) {}
@@ -278,7 +282,7 @@
     aura.style.cssText = L.css + ';aspect-ratio:' + (L.ar || 1) + ';';
     var h = L.hero || L.aura || {};
     aura.style.setProperty('--gc', h.glow || 'rgba(255,255,255,.4)');
-    aura.innerHTML = '<div class="aglow"></div>' + (h.label ? '<div class="alabel">' + h.label + '</div>' : '');
+    aura.innerHTML = '<div class="aglow"></div>' + (h.label ? '<div class="alabel" style="top:' + (h.lt == null ? -4 : h.lt) + '%">' + h.label + '</div>' : '');
     if (L.hero) {
       el.setAttribute('data-cursor', 'hover');
       el.addEventListener('pointerenter', function () { el.classList.add('hov'); aura.classList.add('hov'); });
@@ -350,6 +354,9 @@
     Object.keys(layerRecs).forEach(function (k) { if (!next[k]) { fadeRemove(layerRecs[k].el); if (layerRecs[k].aura) fadeRemove(layerRecs[k].aura); delete layerRecs[k]; } });
     layers.forEach(function (L, idx) {
       var k = keyOf(L, idx), first = F(L.anim ? L.anim[0] : L.src), rec = layerRecs[k], el;
+      if (rec && ((rec.el.tagName === 'VIDEO') !== !!L.vid)) {   // kind changed under the same key: start fresh
+        fadeRemove(rec.el); if (rec.aura) fadeRemove(rec.aura); delete layerRecs[k]; rec = null;
+      }
       if (L.vid) {                                           // ---- a transparent looping video layer ----
         first = L.vid;
         if (rec && rec.src === first) { el = rec.el; el.style.cssText = L.css; }
@@ -448,6 +455,7 @@
   function fadeToBlack(){ var f = document.getElementById('jjst-fade'); void f.offsetWidth; f.style.opacity = '1';
     setTimeout(function () {
       if (window.jjStory && window.jjStory.unlock) window.jjStory.unlock();
+      releaseAmbient();
       window.scrollTo(0, 0);
       var w = document.getElementById('jjst');                 // lift the black away → My Story is revealed beneath
       if (w) { w.style.transition = 'opacity 1.4s ease'; w.style.opacity = '0';
@@ -494,8 +502,19 @@
       advTimer = setTimeout(go, s.end ? s.end.delay : Math.max(T.readMin, s.text.length * T.readPerChar));
     });
   }
+  /* the ambient music returns (My Story is about to appear) */
+  function releaseAmbient(){
+    try {
+      var A = window.jjAudio; if (!A) return;
+      A.takeover = false;
+      var amb = A.ambient; if (!amb) return;
+      if (!amb.playing()) amb.play();
+      amb.volume(0); amb.fade(0, A.ambientTarget || 0.6, 4000);
+    } catch (e) {}
+  }
   /* jump past the whole tale, straight to My Story waiting underneath */
   function skipStory(){
+    releaseAmbient();
     clearTimeout(advTimer); advTimer = null; curAdvance = null;
     if (textEl) clearTimeout(textEl._tw);
     if (window.jjStory && window.jjStory.unlock) window.jjStory.unlock();
@@ -517,6 +536,11 @@
     var docEl = document.documentElement;
     docEl.style.overflow = 'hidden'; document.body.style.overflow = 'hidden';
     window.jjStory = window.jjStory || {}; window.jjStory.unlock = function () { docEl.style.overflow = ''; document.body.style.overflow = ''; };
+    /* the tale has its own sound (and a narration to come): the site's ambient track waits until the
+       story hands over to My Story (or is skipped). site-footer.js honours jjAudio.takeover. */
+    window.jjAudio = window.jjAudio || { sounds: [], muted: false, volume: 1.0 };
+    window.jjAudio.takeover = true;
+    try { var amb0 = window.jjAudio.ambient; if (amb0 && amb0.playing()) { amb0.fade(amb0.volume(), 0, 600); setTimeout(function () { try { amb0.pause(); } catch (e) {} }, 650); } } catch (e) {}
     window.jjStory.setComp = setComp;                  // debug hooks — jump straight to a comp (used by the local preview)
     window.jjStory.hold = function (n) { setComp(n); clearPanels(); };   // jump + freeze (no village auto-advance)
     bgWrap = document.getElementById('jjst-bgwrap'); layersWrap = document.getElementById('jjst-layers');
@@ -566,7 +590,7 @@
       }
       JJLoader.start({
         variant: 'evolution',
-        assets: [F('cav-bg'), F('cav-dragon-1'), F('vil-bg'), F('tav-bg'), F('wood-bg'), F('cas-bg'), BANNER],
+        assets: [F('cav-bg'), F('cav-dragon-1'), F('vil-bg'), F('tav-bg'), F('wood-bg'), F('cas-bg'), BANNER].concat(EVO, EVOG, EVOB),
         stages: EVO, stagesGrey: EVOG, stagesB: EVOB,
         /* measured content boxes per stage (from the loader A/B page) — seats + fill spans */
         stageBounds: [[0.390,0.590],[0.292,0.655],[0.278,0.740],[0.165,0.780],[0.163,0.805],[0.090,0.880],[0.115,0.838]],

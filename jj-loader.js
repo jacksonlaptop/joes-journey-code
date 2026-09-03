@@ -22,7 +22,7 @@
    ============================================================================ */
 (function () {
   var JJ = (window.JJLoader = window.JJLoader || {});
-  JJ.version = 'L10 · every loader wears the night: moon window dressing on the evolution row';   // bump every edit — verify in console
+  JJ.version = 'L11 · figures fade in as they arrive; capital T';   // bump every edit — verify in console
   window.JJ_LOADER_BUILD = JJ.version;
   try { console.log('%c[JJ] jj-loader.js build: ' + JJ.version, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
@@ -331,7 +331,7 @@
     /* the landing loader's night dressing: grass line, moon window, sound-on message */
     var GRASS = opts.grass || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/loader-grass.webp';
     var MSG1 = opts.msg1 || 'Please keep the sound on,';
-    var MSG2 = opts.msg2 || 'this is an audio enhanced journey\u2026';
+    var MSG2 = opts.msg2 || 'This is an audio enhanced journey\u2026';
     var GRW = 1160, GRH = Math.round(627 / 2508 * 1160);
     var GRTOP = GROUND - Math.round(165 / 627 * GRH);
     [GRASS, NIGHT_MOON].forEach(function (u) { var im = new Image(); im.src = u; });
@@ -395,6 +395,17 @@
     var aEls = Array.prototype.slice.call(el.querySelectorAll('.evoA'));
     var bEls = Array.prototype.slice.call(el.querySelectorAll('.evoB'));
     var gEls = Array.prototype.slice.call(el.querySelectorAll('.evoG'));
+    /* the art arrives over 21 separate CDN fetches — each figure fades in once BOTH its grey and
+       colour layers exist, so the row never shows half-loaded */
+    stageEls.forEach(function (st) { st.style.opacity = '0'; st.style.transition = 'opacity .5s ease'; });
+    (function () {
+      for (var si = 0; si < N; si++) (function (si) {
+        var left = 2, done = false;
+        function one() { if (done || --left > 0) return; done = true; stageEls[si].style.opacity = '1'; }
+        [grey[si], colour[si]].forEach(function (u) { var im = new Image(); im.onload = im.onerror = one; im.src = u; });
+        setTimeout(function () { if (!done) { done = true; stageEls[si].style.opacity = '1'; } }, 6000);   // never stay blank
+      })(si);
+    })();
     /* per-stage idle animation once alive: amoeba squishes, fish swims, the rest walk (overridable) */
     var anims = opts.stageAnims || [];
     function animClass(i) { var a = anims[i] || (i === 0 ? 'squish' : (i === 1 ? 'swim' : 'walk'));
@@ -458,7 +469,7 @@
     var BODY = opts.body, EYE = opts.eye;                        // split sprite: body rolls, eye stays level
     var GRASS = opts.grass;                                      // loader-grass.webp (2508x627, grass line at row 165)
     var MSG1 = opts.msg1 || 'Please keep the sound on,';
-    var MSG2 = opts.msg2 || 'this is an audio enhanced journey\u2026';
+    var MSG2 = opts.msg2 || 'This is an audio enhanced journey\u2026';
     var XSTAR = NIGHT_XSTAR, WHIRL = NIGHT_WHIRL, MOON = NIGHT_MOON;
     [GUY, BODY, EYE, GRASS, XSTAR, WHIRL, MOON].forEach(function (u) { if (u) { var im = new Image(); im.src = u; } });
     var SWIRLS = NIGHT_SWIRLS;

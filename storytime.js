@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's32 · the knight weaves up the woodland path; video layers can ride too';
+  window.JJ_STORY_BUILD = 's33 · knight gallops on video; village keeps its dragon through box 4; hero hover only over real pixels';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -33,7 +33,7 @@
       { key:'chest', src:'cav-chest-closed', css:'left:16.3%;bottom:28.9vh;width:min(20.6vw,420px)',
         aura:{ glow:'rgba(255,214,120,.65)' }, tap:'chest' },
       { key:'dragonloop', vid:'cav-dragon-loop', ar:1400/1276, css:'right:7%;bottom:8vh;width:min(57vw,1140px)',
-        hero:{ label:'Trogdor the Burninator', glow:'rgba(255,96,120,.55)', lt:25 },
+        hero:{ label:'Trogdor the Burninator', glow:'rgba(255,96,120,.55)', lt:25, hit:[.27,.31,.84,.8] },
         /* snd: the Seedance breathing had a music pad under it — a proper snore is coming from the user */
         fx:[ { type:'smoke', at:[28, 46] }, { type:'glint', at:[[46,70],[58,74],[66,66],[52,78]] } ] }
     ]},
@@ -41,14 +41,14 @@
        hooded guy far right, the old man BIG in the foreground (so he's last = on top). */
     tavern: { bg:'tav-bg', layers:[
       { key:'joe', vid:'tav-joe-loop', ar:1, css:'left:10%;bottom:24vh;width:min(26vw,520px)',
-        hero:{ label:'Joe the Righteous', glow:'rgba(255,214,120,.6)', seekTo:3.0, lt:4 },
+        hero:{ label:'Joe the Righteous', glow:'rgba(255,214,120,.6)', seekTo:3.0, lt:4, hit:[.22,.14,.72,.82] },
         snd:{ src:'tav-joe-loop', vol:.15 } },
       { src:'tav-char-3', cls:'scared', css:'right:15%;bottom:50vh;width:min(14vw,280px)' },
       { src:'tav-char-2', cls:'scared', css:'right:3%;bottom:30vh;width:min(16vw,320px)' },
       { src:'tav-char-1', cls:'scared', css:'right:18%;bottom:22vh;width:min(19.5vw,390px)' }
     ]},
     woodland: { bg:'wood-bg', layers:[
-      { src:'wood-joe', cls:'gallop', css:'left:47%;bottom:26vh;width:min(18vw,360px)',   // rides off into the distance, weaving
+      { key:'joe', vid:'wood-joe-loop', ar:1400/1520, cls:'gallop', css:'left:47%;bottom:26vh;width:min(18vw,360px)',   // gallop loop; rides off into the distance, weaving
         to:{ css:'left:48.5%;bottom:40vh;width:min(9vw,180px)', delay:1200, dur:6500 } },
       { src:'wood-char-1', cls:'idle', css:'left:29%;bottom:26vh;width:min(12vw,240px)' },
       { src:'wood-char-2', cls:'idle', css:'left:68%;bottom:26vh;width:min(13vw,260px)' }
@@ -108,7 +108,7 @@
        full in shot 2. Both use VIL_DRAGON. The flicker clip is registered so its thin neck sits in the mouth
        wedge and its pointed base hides inside the head; the origin (58.4% 46%) is the mouth interior. */
     var L = [
-      { key:'flame', vid:'vil-flame-loop', ar:1400/900, css:VIL_DRAGON, sc:(p.flame == null ? 0 : p.flame), so:'58.4% 46%', scDur:4500 },
+      { key:'flame', vid:'vil-flame-loop', ar:1400/900, css:VIL_DRAGON, sc:(p.flame == null ? 0 : p.flame), so:'58.4% 46%', scDur:3000 },
       { key:'vildragon', vid:'vil-dragon-loop', ar:1400/900, css:VIL_DRAGON,
         fx:[ { type:'smoke', at:[55, 36] } ] },
       { key:'pitch', src:'vil-char-4', cls:'idle', css:p.pitch },    // pitchfork guy — mid-left
@@ -125,11 +125,13 @@
     pitch:'left:21%;bottom:31vh;width:min(9.5vw,190px)', v5:'left:27%;bottom:33vh;width:min(10vw,200px)',
     v3:'left:43%;bottom:43vh;width:min(6vw,120px)',      v1:'left:76%;bottom:51vh;width:min(8vw,160px)',
     v7:'left:34%;bottom:24vh;width:min(10vw,200px)',     v2:'left:91%;bottom:27vh;width:min(15vw,300px)' });
-  COMP.village3 = vil('vil-dragon-3', {        // medium flame — curly bolts far left, redhead tiny up the path
-    pitch:'left:20%;bottom:33vh;width:min(10vw,200px)',  v5:'left:8%;bottom:40vh;width:min(10vw,200px)',
-    v3:'left:42%;bottom:49vh;width:min(4.4vw,88px)',     v1:'left:76%;bottom:51vh;width:min(8vw,160px)',
-    v7:'left:17%;bottom:29vh;width:min(7vw,140px)' });
-  COMP.village4 = { bg:'vil-bg', layers:[   // big flame — everyone's fled except the drop-guy + v7
+  /* village3/4 = the same shot held: caption 4 still says comp:'village4', and it must NOT swap the video
+     dragon for the static frame-4 art (that was the 'jumps up at the end' bug) — same keys, same art, flame stays full. */
+  COMP.village3 = vil('vil-dragon-3', { flame:1,
+    pitch:'left:21%;bottom:31vh;width:min(9.5vw,190px)', v5:'left:27%;bottom:33vh;width:min(10vw,200px)' });
+  COMP.village4 = vil('vil-dragon-4', { flame:1,
+    pitch:'left:21%;bottom:31vh;width:min(9.5vw,190px)', v5:'left:27%;bottom:33vh;width:min(10vw,200px)' });
+  COMP._village4_old = { bg:'vil-bg', layers:[   // (unused) the traced frame-4 design, kept for reference
     { key:'dragon', src:'vil-dragon-4', css:VIL_DRAGON },
     { key:'pitchdrop', src:'vil-pitch-drop', cls:'idle', css:'left:12%;bottom:26vh;width:min(13.5vw,270px)' },
     { key:'v7', src:'vil-char-7', cls:'idle', css:'left:1%;bottom:26vh;width:min(10vw,200px)' }
@@ -156,13 +158,13 @@
   /* ---- timings (ms) ---- */
   var T = { revealAt:700, revealDur:2200, boxFadeAt:2700, menuDropAt:3000, firstTypeAt:3500,
     typeSpeed:30, pauseDot:200, pauseEllipsis:400, readPerChar:10, readMin:1200, bgFade:600, endFade:1500,
-    villagePanel:3000 };   // the village's 2nd shot lands this long after the 1st (equal timing, not word-driven)
+    villagePanel:2200 };   // the village's 2nd shot lands this long after the 1st (equal timing, not word-driven)
 
   /* ---- styles ---- */
-  function gallopFrames(){                                   // 12 stops: a slow S-weave (x, tilt) with a stride bob (y) every 1/6
+  function gallopFrames(){                                   // 12 stops: a slow S-weave (x, tilt); the stride bob lives in the clip
     var k = '@keyframes jjst-gallop{';
     for (var i = 0; i <= 12; i++) { var a = Math.sin(Math.PI * 2 * i / 12);
-      k += (i / 12 * 100).toFixed(2) + '%{transform:translate(' + (a * 7).toFixed(2) + '%,' + (i % 2 ? -2.2 : 0) + '%) rotate(' + (a * 2.4).toFixed(2) + 'deg);}'; }
+      k += (i / 12 * 100).toFixed(2) + '%{transform:translate(' + (a * 7).toFixed(2) + '%,0) rotate(' + (a * 2.4).toFixed(2) + 'deg);}'; }
     return k + '}';
   }
   var CSS =
@@ -298,10 +300,26 @@
     aura.style.setProperty('--gc', h.glow || 'rgba(255,255,255,.4)');
     aura.innerHTML = '<div class="aglow"></div>' + (h.label ? '<div class="alabel" style="top:' + (h.lt == null ? -4 : h.lt) + '%">' + h.label + '</div>' : '');
     if (L.hero) {
-      el.setAttribute('data-cursor', 'hover');
-      el.addEventListener('pointerenter', function () { el.classList.add('hov'); aura.classList.add('hov'); });
-      el.addEventListener('pointerleave', function () { el.classList.remove('hov'); aura.classList.remove('hov'); });
+      var hit = null;                                       // poster alpha map: hover/click only over the character, not the empty canvas
+      if (el.tagName === 'VIDEO') { var pim = new Image(); pim.crossOrigin = 'anonymous';
+        pim.onload = function () { try { var c = document.createElement('canvas'), cx = c.getContext('2d'); c.width = 160; c.height = Math.max(1, Math.round(160 / (L.ar || 1)));
+          cx.drawImage(pim, 0, 0, c.width, c.height); hit = { w: c.width, h: c.height, d: cx.getImageData(0, 0, c.width, c.height).data }; } catch (e) {} };
+        pim.src = el.poster; }
+      function over(e){
+        var r = el.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
+        if (hit) { var x = Math.floor(fx * hit.w), y = Math.floor(fy * hit.h); return x >= 0 && y >= 0 && x < hit.w && y < hit.h && hit.d[(y * hit.w + x) * 4 + 3] > 40; }
+        var b = h.hit; return !b || (fx >= b[0] && fy >= b[1] && fx <= b[2] && fy <= b[3]);   // fallback: a box round the character
+      }
+      var isHov = false;
+      function setHov(on){ if (on === isHov) return; isHov = on;
+        el.classList.toggle('hov', on); aura.classList.toggle('hov', on);
+        if (on) el.setAttribute('data-cursor', 'hover'); else el.removeAttribute('data-cursor');
+        try { el.dispatchEvent(new MouseEvent('mouseover', { bubbles: true })); } catch (e) {}   // the site cursor re-reads data-cursor on mouseover
+      }
+      el.addEventListener('pointermove', function (e) { setHov(over(e)); });
+      el.addEventListener('pointerleave', function () { setHov(false); });
       if (L.hero.seekTo != null && el.tagName === 'VIDEO') el.addEventListener('click', function (e) {
+        if (!over(e)) return;
         e.stopPropagation();
         try { el.currentTime = L.hero.seekTo; var p = el.play(); if (p && p.catch) p.catch(function () {}); } catch (err) {}
         aura.classList.add('lit'); clearTimeout(aura._litT);
@@ -568,7 +586,7 @@
   /* ---- mount + choreography ---- */
   var PRELOAD = ['cav-bg','cav-dragon-loop-poster','cav-chest-closed','cav-chest-open','tav-joe-loop-poster','vil-dragon-loop-poster','vil-flame-loop-poster','cav-dragon-1','vil-bg','vil-dragon-1','vil-dragon-2','vil-dragon-3','vil-dragon-4',
     'vil-char-1','vil-char-2','vil-char-3','vil-char-4','vil-char-5','vil-char-7','vil-pitch-drop','tav-bg','tav-joe','tav-char-1','tav-char-2','tav-char-3',
-    'wood-bg','wood-joe','wood-char-1','wood-char-2','cas-bg','cas-joe-1','cas-joe-2','cas-joe-3',
+    'wood-bg','wood-joe-loop-poster','wood-char-1','wood-char-2','cas-bg','cas-joe-1','cas-joe-2','cas-joe-3',
     'cas-dragon-1','cas-dragon-2','cas-dragon-3','cas-dragon-4','cas-designer-1','cas-designer-2','cas-smoke-1','cas-smoke-2'];
   function mount(){
     if (document.getElementById('jjst')) return;

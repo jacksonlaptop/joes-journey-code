@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's33 · knight gallops on video; village keeps its dragon through box 4; hero hover only over real pixels';
+  window.JJ_STORY_BUILD = 's34 · Trogdor growls in the village; the tavern fireplace crackles';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -39,7 +39,7 @@
     ]},
     /* tavern per the "3 - Tavern 1" mockup: Joe mid-left on the floor, grandma back-right,
        hooded guy far right, the old man BIG in the foreground (so he's last = on top). */
-    tavern: { bg:'tav-bg', layers:[
+    tavern: { bg:'tav-bg', snd:{ src:'tav-fire', vol:.3 }, layers:[       // fireplace crackle bed for the whole shot
       { key:'joe', vid:'tav-joe-loop', ar:1, css:'left:10%;bottom:24vh;width:min(26vw,520px)',
         hero:{ label:'Joe the Righteous', glow:'rgba(255,214,120,.6)', seekTo:3.0, lt:4, hit:[.22,.14,.72,.82] },
         snd:{ src:'tav-joe-loop', vol:.15 } },
@@ -110,6 +110,7 @@
     var L = [
       { key:'flame', vid:'vil-flame-loop', ar:1400/900, css:VIL_DRAGON, sc:(p.flame == null ? 0 : p.flame), so:'58.4% 46%', scDur:3000 },
       { key:'vildragon', vid:'vil-dragon-loop', ar:1400/900, css:VIL_DRAGON,
+        snd:{ src:'vil-dragon-loop', vol:.55 },                           // the clip's own growl, rebuilt along the 22s picture sequence
         fx:[ { type:'smoke', at:[55, 36] } ] },
       { key:'pitch', src:'vil-char-4', cls:'idle', css:p.pitch },    // pitchfork guy — mid-left
       { key:'v5', src:'vil-char-5', cls:'idle', css:p.v5 }           // curly — beside him
@@ -493,12 +494,24 @@
       panelTimers.push(setTimeout(function () { setComp(name); }, T.villagePanel * (i + 1)));
     });
   }
+  /* a looping bed tied to a shot (the tavern fireplace): fades in on mount, out when the shot changes */
+  var compHowl = null, compSrc = null;
+  function setCompSound(snd){
+    var src = snd ? snd.src : null; if (src === compSrc) return; compSrc = src;
+    if (compHowl) { (function (old) { try { old.fade(old.volume(), 0, 800); } catch (e) {} setTimeout(function () { try { old.unload(); } catch (e2) {} }, 900); })(compHowl); compHowl = null; }
+    if (!snd || !window.Howl) return;
+    var v = snd.vol == null ? .4 : snd.vol;
+    var h = compHowl = new Howl({ src: [GB + 'story-' + snd.src + '.mp3' + AV], loop: true, volume: 0, preload: true });
+    window.jjAudio = window.jjAudio || { sounds: [], muted: false, volume: 1.0 }; window.jjAudio.sounds.push(h);
+    function go(){ if (compHowl !== h) return; try { if (!h.playing()) { h.play(); h.fade(0, v, 1500); } } catch (e) {} }
+    h.once('load', go); h.once('unlock', go);
+  }
   function setComp(name){
     if (name === curComp) return;
     if (name === 'village1' && typeof curComp === 'string' && curComp.indexOf('village') === 0) return; // don't restart the village once it's running (2nd caption keeps comp:'village1')
     curComp = name;
     var c = COMP[name]; if (!c) return;
-    showBg(c.bg); buildLayers(c.layers);
+    showBg(c.bg); buildLayers(c.layers); setCompSound(c.snd);
     if (name === 'village1') runVillageSeq();        // start the equal-timed dragon-fire sequence
     else if (name.indexOf('village') !== 0) clearPanels();  // left the village → cancel any pending shots
   }
@@ -510,7 +523,7 @@
   function fadeToBlack(){ var f = document.getElementById('jjst-fade'); void f.offsetWidth; f.style.opacity = '1';
     setTimeout(function () {
       if (window.jjStory && window.jjStory.unlock) window.jjStory.unlock();
-      releaseAmbient();
+      setCompSound(null); releaseAmbient();
       window.scrollTo(0, 0);
       var w = document.getElementById('jjst');                 // lift the black away → My Story is revealed beneath
       if (w) { w.style.transition = 'opacity 1.4s ease'; w.style.opacity = '0';
@@ -572,7 +585,7 @@
     } catch (e) {}
   }
   /* jump past the whole tale, straight to My Story waiting underneath */
-  function skipStory(){
+  function skipStory(){ setCompSound(null);
     releaseAmbient();
     clearTimeout(advTimer); advTimer = null; curAdvance = null;
     if (textEl) clearTimeout(textEl._tw);

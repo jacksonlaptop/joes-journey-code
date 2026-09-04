@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's34 · Trogdor growls in the village; the tavern fireplace crackles';
+  window.JJ_STORY_BUILD = 's35 · night sky dressing behind the scenery; loader warms its figures first; Previous / Next Scene; rolling progress; flame in front; ta-da once per loop';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -19,6 +19,36 @@
   function F(name){ return GB + 'story-' + name + '.webp' + AV; }
   var BANNER = GB + 'story-banner.webp' + AV;             // J-swirl caption frame
   var SKY = GB + 'story-nightsky.svg' + AV;
+  /* the loader's night dressing, reused behind the transparent scene boards (moon + whirls + dot stars).
+     Coordinates live in a 1000x560 sky (slice-fitted), chosen per board to sit in clear sky. */
+  var NSC = 'https://cdn.prod.website-files.com/615edb5c549d52cd108ed268/';
+  var N_XSTAR = NSC + '67212bf05ed02917043863f9_x-star.svg', N_WHIRL = NSC + '67212bf05ed02917043863f5_whirl-star.svg';
+  var N_MOON = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0d67bbb86603f359ae1311_289a8c92ed8a9b7dd3efdae788f3d0ae_Moon.svg';
+  var NIGHT = {
+    'cav-bg':  { moon:[300,150,50], whirls:[[120,105,20],[720,70,17]], xs:[[560,120,12],[840,150,10]], stars:[[80,60],[180,190],[420,60],[640,40],[900,60],[470,230],[240,40],[760,240],[990,200],[360,120]] },
+    'vil-bg':  { moon:[430,100,48], whirls:[[150,80,18],[830,60,20]], xs:[[300,40,12],[700,160,10]], stars:[[60,50],[230,150],[400,190],[620,70],[900,110],[960,40],[280,220],[580,220],[760,40],[120,220]] },
+    'wood-bg': { moon:[400,80,44], whirls:[[250,150,16],[600,40,18]], xs:[[300,120,11],[520,40,10]], stars:[[230,50],[360,190],[480,160],[640,110],[700,180],[170,230],[560,200],[330,20]] },
+    'cas-bg':  { moon:[220,110,52], whirls:[[90,50,18],[440,60,20]], xs:[[330,40,12],[520,120,10]], stars:[[40,150],[130,200],[400,170],[600,40],[720,90],[300,240],[480,220],[560,20]] }
+  };
+  function nightSvg(c){
+    var m = c.moon, r = m[2], h = '';
+    (c.stars || []).forEach(function (st, i) { h += '<circle class="jjst-tw" style="--d:' + (2.6 + (i % 4) * .7).toFixed(1) + 's;--o:-' + (i * .53 % 3).toFixed(2) + 's" cx="' + st[0] + '" cy="' + st[1] + '" r="' + (2.2 + (i % 3) * .5) + '" fill="#eaf5ff"/>'; });
+    (c.xs || []).forEach(function (x, i) { h += '<image class="jjst-tw" style="--d:' + (3.4 + i) + 's;--o:-' + i + 's" href="' + N_XSTAR + '" x="' + (x[0] - x[2] / 2) + '" y="' + (x[1] - x[2] / 2) + '" width="' + x[2] + '" height="' + x[2] + '"/>'; });
+    (c.whirls || []).forEach(function (w) { h += '<image href="' + N_WHIRL + '" x="' + (w[0] - w[2] / 2) + '" y="' + (w[1] - w[2] / 2) + '" width="' + w[2] + '" height="' + w[2] + '" opacity=".85"/>'; });
+    h += '<g class="jjst-moonw"><g class="jjst-mpulse"><circle cx="' + m[0] + '" cy="' + m[1] + '" r="' + (r * 1.75) + '" fill="url(#jjstml)"/></g>' +
+         '<image href="' + N_MOON + '" x="' + (m[0] - r) + '" y="' + (m[1] - r) + '" width="' + (r * 2) + '" height="' + (r * 2) + '"/></g>';
+    return '<svg viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="jjstml" gradientUnits="userSpaceOnUse" cx="' + m[0] + '" cy="' + m[1] + '" r="' + (r * 1.75) + '">' +
+           '<stop offset="0" stop-color="#C5E7FF" stop-opacity=".22"/><stop offset=".55" stop-color="#C5E7FF" stop-opacity=".08"/><stop offset="1" stop-color="#C5E7FF" stop-opacity="0"/></radialGradient></defs>' + h + '</svg>';
+  }
+  var nightEl = null, nightCur = null;
+  function setNight(bg){
+    if (!nightEl || bg === nightCur) return; var had = !!nightCur; nightCur = bg;
+    nightEl.classList.remove('on');
+    setTimeout(function () { if (nightCur !== bg) return; var c = NIGHT[bg];
+      nightEl.innerHTML = c ? nightSvg(c) : '';
+      if (c) setTimeout(function () { nightEl.classList.add('on'); }, 30);     // timeout, not rAF: rAF pauses in a hidden tab
+    }, had ? 500 : 0);
+  }
 
   /* ---- compositions: each chapter = a transparent bg + character layers (src OR anim).
          `css` is the layer's position/size — tweak freely. Dragons use right/bottom anchoring
@@ -42,7 +72,7 @@
     tavern: { bg:'tav-bg', snd:{ src:'tav-fire', vol:.3 }, layers:[       // fireplace crackle bed for the whole shot
       { key:'joe', vid:'tav-joe-loop', ar:1, css:'left:10%;bottom:24vh;width:min(26vw,520px)',
         hero:{ label:'Joe the Righteous', glow:'rgba(255,214,120,.6)', seekTo:3.0, lt:4, hit:[.22,.14,.72,.82] },
-        snd:{ src:'tav-joe-loop', vol:.15 } },
+        snd:{ src:'tav-joe-loop-8s', vol:.15 } },
       { src:'tav-char-3', cls:'scared', css:'right:15%;bottom:50vh;width:min(14vw,280px)' },
       { src:'tav-char-2', cls:'scared', css:'right:3%;bottom:30vh;width:min(16vw,320px)' },
       { src:'tav-char-1', cls:'scared', css:'right:18%;bottom:22vh;width:min(19.5vw,390px)' }
@@ -108,10 +138,10 @@
        full in shot 2. Both use VIL_DRAGON. The flicker clip is registered so its thin neck sits in the mouth
        wedge and its pointed base hides inside the head; the origin (58.4% 46%) is the mouth interior. */
     var L = [
-      { key:'flame', vid:'vil-flame-loop', ar:1400/900, css:VIL_DRAGON, sc:(p.flame == null ? 0 : p.flame), so:'58.4% 46%', scDur:3000 },
       { key:'vildragon', vid:'vil-dragon-loop', ar:1400/900, css:VIL_DRAGON,
         snd:{ src:'vil-dragon-loop', vol:.55 },                           // the clip's own growl, rebuilt along the 22s picture sequence
         fx:[ { type:'smoke', at:[55, 36] } ] },
+      { key:'flame', vid:'vil-flame-loop', ar:1400/900, css:VIL_DRAGON, sc:(p.flame == null ? 0 : p.flame), so:'58.4% 46%', scDur:3000 },   // listed AFTER the dragon → paints in front of him
       { key:'pitch', src:'vil-char-4', cls:'idle', css:p.pitch },    // pitchfork guy — mid-left
       { key:'v5', src:'vil-char-5', cls:'idle', css:p.v5 }           // curly — beside him
     ];
@@ -172,6 +202,14 @@
   '#jjst{position:fixed;inset:0;z-index:2000;overflow:hidden;background:#0b1b2e;font-family:\'Joes Journey Headline\',sans-serif;}'+
   '#jjst-bgwrap{position:absolute;inset:0;overflow:hidden;}'+
   '#jjst-sky{position:absolute;top:0;left:0;width:100%;height:auto;display:block;}'+
+  '#jjst-night{position:absolute;inset:0;opacity:0;transition:opacity .9s ease;pointer-events:none;}'+   // sits between the sky and the boards (DOM order)
+  '#jjst-night.on{opacity:1;}#jjst-night svg{width:100%;height:100%;display:block;}'+
+  '#jjst-night .jjst-moonw{transform-box:fill-box;transform-origin:50% 50%;animation:jjstMoonW 7s ease-in-out infinite;}'+
+  '#jjst-night .jjst-mpulse{animation:jjstMPulse 7s ease-in-out infinite;}'+
+  '#jjst-night .jjst-tw{animation:jjstTw var(--d,3s) ease-in-out var(--o,0s) infinite;}'+
+  '@keyframes jjstMoonW{0%,100%{transform:scale(.94);}50%{transform:scale(1.1);}}'+
+  '@keyframes jjstMPulse{0%,100%{opacity:.3;}50%{opacity:1;}}'+
+  '@keyframes jjstTw{0%,100%{opacity:.35;}50%{opacity:1;}}'+
   '#jjst .jjst-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:opacity;}'+
   '#jjst-layers{position:absolute;inset:0;z-index:3;pointer-events:none;}'+
   '#jjst-layers .jjst-layer{position:absolute;height:auto;display:block;will-change:transform,opacity;}'+
@@ -225,31 +263,33 @@
   '#jjst-cap.on{opacity:1;}'+
   '#jjst-cap-text{width:72%;overflow:visible;text-align:left;color:#3a2a12;font-size:clamp(15px,1.6vw,27px);line-height:1.26;white-space:pre-wrap;}'+   // height is set per line to its FINISHED size (see typeText) — centred in the box, line 1 never moves
   /* the reader's own pace: a Next chip appears once the line has finished typing */
-  '#jjst-next{position:absolute;right:11%;bottom:17%;padding:5px 16px;border-radius:999px;border:1px solid rgba(58,42,18,.4);background:rgba(58,42,18,.10);color:#3a2a12;font-size:clamp(12px,1.05vw,17px);font-weight:700;opacity:0;transform:translateX(-5px);transition:opacity .35s ease,transform .35s ease,background .2s ease;pointer-events:auto;cursor:pointer;}'+
-  '#jjst-next.on{opacity:1;transform:none;}'+
-  '#jjst-next:hover{background:rgba(58,42,18,.24);}'+
-  '#jjst-skip{position:absolute;left:26px;bottom:26px;z-index:9;padding:8px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(6,10,18,.5);color:rgba(255,255,255,.85);font-family:inherit;font-size:13px;font-weight:600;letter-spacing:.06em;opacity:0;pointer-events:none;transition:opacity .5s ease,background .2s ease;cursor:pointer;}'+
-  '#jjst-skip.on{opacity:1;pointer-events:auto;}'+
-  '#jjst-skip:hover{background:rgba(255,0,245,.25);}'+
+  /* Previous / Next scene — always there under the banner (per the Figma frame) */
+  '#jjst-nav{position:absolute;left:50%;transform:translateX(-50%);width:min(83vw,1350px);bottom:max(8px,calc(7vh - 46px));display:flex;justify-content:space-between;padding:0 8%;box-sizing:border-box;z-index:6;opacity:0;pointer-events:none;transition:opacity .6s ease;}'+
+  '#jjst-nav.on{opacity:1;pointer-events:auto;}'+
+  '#jjst-nav button{display:flex;align-items:center;gap:10px;padding:0 16px;height:36px;border-radius:6px;border:1px solid rgba(255,255,255,.4);background:rgba(6,10,18,.55);color:#fff;font-family:inherit;font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;transition:background .2s ease,opacity .3s ease;}'+
+  '#jjst-nav button:hover{background:rgba(255,0,245,.28);}'+
+  '#jjst-nav button .arr{font-size:15px;line-height:1;}'+
+  '#jjst-nav button[disabled]{opacity:.35;pointer-events:none;}'+
   /* tavern Joe is a character you can prod: grows on hover, a warm glow blooms behind on press */
   '.jjst-layer.joehero{pointer-events:auto;cursor:pointer;transform-origin:50% 100%;transition:scale .35s cubic-bezier(.34,1.56,.64,1),filter .45s ease;}'+
   '.jjst-layer.joehero:hover{scale:1.07;}'+
   '.jjst-layer.joehero.lit{filter:drop-shadow(0 0 26px rgba(255,214,120,.95)) drop-shadow(0 0 80px rgba(255,180,60,.55));}'+
   '@keyframes jjstNextNudge{0%,100%{translate:0 0;}50%{translate:4px 0;}}'+
-  '#jjst-next.on{animation:jjstNextNudge 1.6s ease-in-out .8s infinite;}';
+  '';
 
   var style = document.createElement('style'); style.id = 'jj-storytime-style'; style.textContent = CSS; document.head.appendChild(style);
 
   /* ---- markup ---- */
   var wrap = document.createElement('div'); wrap.id = 'jjst';
   wrap.innerHTML =
-    '<div id="jjst-bgwrap"><img id="jjst-sky" alt=""></div>'+
+    '<div id="jjst-bgwrap"><img id="jjst-sky" alt=""><div id="jjst-night"></div></div>'+
     '<div id="jjst-layers"></div>'+
     '<div id="jjst-black"></div>'+
     '<div id="jjst-fade"></div>'+
     '<div id="jjst-progress"><div id="jjst-progress-fill"></div></div>'+
-    '<div id="jjst-cap"><div id="jjst-cap-text"></div><div id="jjst-next" data-cursor="hover">Next \u25b8</div></div>'+
-    '<button id="jjst-skip" type="button" data-cursor="hover">Skip the story \u25b8\u25b8</button>'+
+    '<div id="jjst-cap"><div id="jjst-cap-text"></div></div>'+
+    '<div id="jjst-nav"><button id="jjst-prev" type="button" data-cursor="hover"><span class="arr">\u2190</span>Previous</button>'+
+    '<button id="jjst-nextsc" type="button" data-cursor="hover">Next scene<span class="arr">\u2192</span></button></div>'+
     '<div id="jjst-loader"><div class="ring"></div><div class="txt">Loading the tale…</div></div>';
 
   /* ---- composition: bg crossfade + character layers ---- */
@@ -511,7 +551,7 @@
     if (name === 'village1' && typeof curComp === 'string' && curComp.indexOf('village') === 0) return; // don't restart the village once it's running (2nd caption keeps comp:'village1')
     curComp = name;
     var c = COMP[name]; if (!c) return;
-    showBg(c.bg); buildLayers(c.layers); setCompSound(c.snd);
+    showBg(c.bg); setNight(c.bg); buildLayers(c.layers); setCompSound(c.snd);
     if (name === 'village1') runVillageSeq();        // start the equal-timed dragon-fire sequence
     else if (name.indexOf('village') !== 0) clearPanels();  // left the village → cancel any pending shots
   }
@@ -532,7 +572,18 @@
 
   /* ---- typing + scene runner ---- */
   var textEl, capEl, prog, fill;
-  function setProgress(i){ fill.style.width = Math.min(1, (i + 1) / SCENES.length) * 100 + '%'; }
+  /* the bar rolls continuously: it eases to the scene's start, then runs linearly to its end over the
+     scene's expected length (typing + reading), like a video's playhead — no jumps between captions */
+  function typeDuration(text){ var d = 0;
+    for (var i = 1; i <= text.length; i++) { var ch = text.charAt(i - 1), t = T.typeSpeed;
+      if (ch === '…') t = T.pauseEllipsis;
+      else if (ch === '.') { if (text.charAt(i) === '.') t = T.typeSpeed; else if (text.charAt(i - 2) === '.') t = T.pauseEllipsis; else t = T.pauseDot; }
+      else if (ch === '!' || ch === '?') t = T.pauseDot;
+      d += t; } return d; }
+  var progT = null;
+  function rollProgress(i, ms){ var N = SCENES.length; clearTimeout(progT);
+    fill.style.transition = 'width .35s ease'; fill.style.width = (i / N * 100) + '%';           // ease to the scene's start (matters on Previous)
+    progT = setTimeout(function () { fill.style.transition = 'width ' + ms + 'ms linear'; fill.style.width = ((i + 1) / N * 100) + '%'; }, 380); }
   var typeFF = null;                                       // while a line is typing: call to land it instantly
   function typeText(text, triggers, done){
     var trs = (triggers || []).map(function (tr) { var k = text.indexOf(tr.at); return { idx: k < 0 ? -1 : k + tr.at.length, comp: tr.comp, fx: tr.fx, fired: false }; });
@@ -558,21 +609,29 @@
     }
     textEl._tw = setTimeout(step, T.typeSpeed);
   }
-  var advTimer = null, curAdvance = null;                  // the pending auto-advance + its manual twin
-  function chipShow(on){ var n = document.getElementById('jjst-next'); if (n) n.classList.toggle('on', !!on); }
+  var advTimer = null, curAdvance = null, curScene = 0;    // the pending auto-advance + its manual twin
+  function navState(){ var pv = document.getElementById('jjst-prev'); if (pv) pv.disabled = curScene <= 0; }
   function runScene(i){
     if (i >= SCENES.length) return;
-    var s = SCENES[i];
-    setProgress(i);
+    var s = SCENES[i]; curScene = i; navState();
+    var readMs = s.end ? s.end.delay : Math.max(T.readMin, s.text.length * T.readPerChar);
+    rollProgress(i, typeDuration(s.text) + readMs);
     if (s.comp) setComp(s.comp);
-    chipShow(false); curAdvance = null;
+    curAdvance = null;
     typeText(s.text, s.triggers, function () {
-      chipShow(true);                                        // read at your own pace — or let it roll on
-      var go = function () { advTimer = null; curAdvance = null; chipShow(false);
+      var go = function () { advTimer = null; curAdvance = null;
         if (s.end) s.end.run(); else runScene(i + 1); };
       curAdvance = go;
-      advTimer = setTimeout(go, s.end ? s.end.delay : Math.max(T.readMin, s.text.length * T.readPerChar));
+      advTimer = setTimeout(go, readMs);
     });
+  }
+  /* Previous / Next scene: drop whatever is pending (typing, auto-advance, village timer) and run caption i */
+  function jumpScene(i){
+    if (i < 0) return;
+    clearTimeout(advTimer); advTimer = null; curAdvance = null; typeFF = null;
+    if (textEl) clearTimeout(textEl._tw); clearPanels();
+    if (i >= SCENES.length) { var last = SCENES[SCENES.length - 1]; if (last.end) last.end.run(); return; }
+    runScene(i);
   }
   /* the ambient music returns (My Story is about to appear) */
   function releaseAmbient(){
@@ -615,7 +674,7 @@
     try { var amb0 = window.jjAudio.ambient; if (amb0 && amb0.playing()) { amb0.fade(amb0.volume(), 0, 600); setTimeout(function () { try { amb0.pause(); } catch (e) {} }, 650); } } catch (e) {}
     window.jjStory.setComp = setComp;                  // debug hooks — jump straight to a comp (used by the local preview)
     window.jjStory.hold = function (n) { setComp(n); clearPanels(); };   // jump + freeze (no village auto-advance)
-    bgWrap = document.getElementById('jjst-bgwrap'); layersWrap = document.getElementById('jjst-layers');
+    bgWrap = document.getElementById('jjst-bgwrap'); layersWrap = document.getElementById('jjst-layers'); nightEl = document.getElementById('jjst-night');
     textEl = document.getElementById('jjst-cap-text'); capEl = document.getElementById('jjst-cap');
     /* press the box: first press lands the typing line instantly, next press moves the story on */
     capEl.addEventListener('click', function (e) {
@@ -624,18 +683,17 @@
       if (advTimer !== null) { clearTimeout(advTimer); advTimer = null;
         if (curAdvance) { var go = curAdvance; curAdvance = null; go(); } }
     });
-    var skBtn = document.getElementById('jjst-skip');
-    if (skBtn) skBtn.addEventListener('click', function (e) { e.stopPropagation(); skipStory(); });
+    document.getElementById('jjst-prev').addEventListener('click', function (e) { e.stopPropagation(); jumpScene(curScene - 1); });
+    document.getElementById('jjst-nextsc').addEventListener('click', function (e) { e.stopPropagation(); jumpScene(curScene + 1); });
     prog = document.getElementById('jjst-progress'); fill = document.getElementById('jjst-progress-fill');
 
-    PRELOAD.forEach(function (n) { var im = new Image(); im.src = F(n); });
-    setComp('cavern');                                                           // first chapter up (hidden by the black)
 
     /* ---- the gate: the evolution loader (jj-loader.js, variant C) fronts the whole page when
        it's available — real byte progress over the story's heaviest boards while the seven stages
        of Joe paint themselves in. Falls back to the little built-in loader if jj-loader is absent. */
     function beginStory() {
       var ld = document.getElementById('jjst-loader'); if (ld) ld.classList.add('hide');
+      PRELOAD.forEach(function (n) { var im = new Image(); im.src = F(n); });   // the rest of the boards — AFTER the loader, so they never race it
       if (window.JJ_STORY_HOLD) {                      // preview mode: instant reveal, no typing/choreography
         var blk = document.getElementById('jjst-black'); blk.style.display = 'none';
         capEl.classList.add('on'); prog.classList.add('on');
@@ -644,7 +702,7 @@
       }
       setTimeout(revealFromBlack, T.revealAt);
       setTimeout(function () { capEl.classList.add('on'); prog.classList.add('on');
-        var sk = document.getElementById('jjst-skip'); if (sk) sk.classList.add('on'); }, T.boxFadeAt);
+        document.getElementById('jjst-nav').classList.add('on'); navState(); }, T.boxFadeAt);
       setTimeout(function () {
         var nav = document.querySelectorAll('.nav-logo-link, .menu-container');
         nav.forEach(function (n) { n.style.transition = 'none'; n.style.transform = 'translateY(-42px)'; });
@@ -660,6 +718,12 @@
         EVOG.push(GB + 'joe-evo-grey-' + ev + '.webp');
         EVOB.push(GB + 'joe-evo-' + ev + 'b.webp');
       }
+      document.getElementById('jjst-loader').classList.add('hide');            // plain dark page while the figures warm
+      /* the seven figures used to lose the download race against ~40 scene fetches and turn up at 50%+.
+         Warm their grey+colour art first (14 small files, dark page, ≤3s), THEN raise the loader and
+         start the cavern — the loader's own list hits cache for them, so the row is there from frame one. */
+      warmImages(EVO.concat(EVOG), 3000, function () {
+      setComp('cavern');                                                     // first chapter up (hidden by the black)
       JJLoader.start({
         variant: 'evolution',
         assets: [F('cav-bg'), F('cav-dragon-1'), F('vil-bg'), F('tav-bg'), F('wood-bg'), F('cas-bg'), BANNER].concat(EVO, EVOG, EVOB),
@@ -670,9 +734,17 @@
         minTime: 4500, maxWait: 18000, decode: true,
         onReady: beginStory
       });
+      });
     } else {
+      setComp('cavern');
       preloadCritical(beginStory);
     }
+  }
+  function warmImages(urls, ms, done){
+    var left = urls.length, fired = false; function fin(){ if (!fired) { fired = true; done(); } }
+    if (!left) return fin();
+    urls.forEach(function (u) { var im = new Image(); im.onload = im.onerror = function () { if (--left <= 0) fin(); }; im.src = u; });
+    setTimeout(fin, ms);
   }
   function preloadCritical(done){
     var urls = [F('cav-bg'), F('cav-dragon-1'), BANNER], left = urls.length, fired = false;

@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's35 · night sky dressing behind the scenery; loader warms its figures first; Previous / Next Scene; rolling progress; flame in front; ta-da once per loop';
+  window.JJ_STORY_BUILD = 's36 · snore from the loader, one roar, shouting villagers, hooves + a cheer; Trogdor and the tavern crowd 25% smaller';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -54,7 +54,7 @@
          `css` is the layer's position/size — tweak freely. Dragons use right/bottom anchoring
          (their image has transparent smoke/fire room at the top-left). ---- */
   var COMP = {
-    cavern: { bg:'cav-bg', layers:[
+    cavern: { bg:'cav-bg', snd:{ src:'dragon-snore', vol:.45, pre:.08, fadeIn:3000 }, layers:[   // snore: barely there under the loader, swells when the cave is revealed, fades before the village
       /* the AI-made loop (breathing, eye opens halfway) — transparent video over the static cave.
          The smoke, the coin glints and the hover glow/label are all drawn in code on an 'aura'
          box that sits exactly over the video. */
@@ -73,11 +73,11 @@
       { key:'joe', vid:'tav-joe-loop', ar:1, css:'left:10%;bottom:24vh;width:min(26vw,520px)',
         hero:{ label:'Joe the Righteous', glow:'rgba(255,214,120,.6)', seekTo:3.0, lt:4, hit:[.22,.14,.72,.82] },
         snd:{ src:'tav-joe-loop-8s', vol:.15 } },
-      { src:'tav-char-3', cls:'scared', css:'right:15%;bottom:50vh;width:min(14vw,280px)' },
-      { src:'tav-char-2', cls:'scared', css:'right:3%;bottom:30vh;width:min(16vw,320px)' },
-      { src:'tav-char-1', cls:'scared', css:'right:18%;bottom:22vh;width:min(19.5vw,390px)' }
+      { src:'tav-char-3', cls:'scared', css:'right:16%;bottom:50vh;width:min(10.5vw,210px)' },      // the crowd at 75%
+      { src:'tav-char-2', cls:'scared', css:'right:4%;bottom:30vh;width:min(12vw,240px)' },
+      { src:'tav-char-1', cls:'scared', css:'right:19%;bottom:22vh;width:min(14.6vw,292px)' }
     ]},
-    woodland: { bg:'wood-bg', layers:[
+    woodland: { bg:'wood-bg', snd:{ src:'horse-gallop', vol:.4, fadeIn:1500 }, cue:{ src:'villager-cheer', vol:.45 }, layers:[   // hooves under the ride; one cheer centred in whatever time the shot has
       { key:'joe', vid:'wood-joe-loop', ar:1400/1520, cls:'gallop', css:'left:47%;bottom:26vh;width:min(18vw,360px)',   // gallop loop; rides off into the distance, weaving
         to:{ css:'left:48.5%;bottom:40vh;width:min(9vw,180px)', delay:1200, dur:6500 } },
       { src:'wood-char-1', cls:'idle', css:'left:29%;bottom:26vh;width:min(12vw,240px)' },
@@ -130,7 +130,7 @@
          window; the bonnet girl (v2) starts by the right house and flees off right in P2; the
          mustache kid (v7) runs in from bottom-centre in P2 and flees left; in P4 only the
          terrified drop-guy + v7 remain. Panels advance on an equal timer (see runVillageSeq). ---- */
-  var VIL_DRAGON = 'right:13%;bottom:21vh;width:min(62vw,1240px)';   // Trogdor — body 25vw; nudged 1% left so the tail clears the old man's window
+  var VIL_DRAGON = 'right:17%;bottom:21vh;width:min(46.5vw,930px)';   // 25% smaller than the traced size (the 1400px loop went soft at full width); right nudged so the mouth stays put   // Trogdor — body 25vw; nudged 1% left so the tail clears the old man's window
   function vil(dragon, p){
     /* kept simple on purpose: just the pitchfork guy and the scared curly kid.
        The dragon is the AI huff-and-puff loop (mouth opens ~2.8s in, then stays angry); the flame is
@@ -139,13 +139,13 @@
        wedge and its pointed base hides inside the head; the origin (58.4% 46%) is the mouth interior. */
     var L = [
       { key:'vildragon', vid:'vil-dragon-loop', ar:1400/900, css:VIL_DRAGON,
-        snd:{ src:'vil-dragon-loop', vol:.55 },                           // the clip's own growl, rebuilt along the 22s picture sequence
+        snd:{ src:'vil-dragon-roar', vol:.55, once:true, fadeIn:1200 },     // the clip's own growl up to the first roar, then out — never loops
         fx:[ { type:'smoke', at:[55, 36] } ] },
       { key:'flame', vid:'vil-flame-loop', ar:1400/900, css:VIL_DRAGON, sc:(p.flame == null ? 0 : p.flame), so:'58.4% 46%', scDur:3000 },   // listed AFTER the dragon → paints in front of him
       { key:'pitch', src:'vil-char-4', cls:'idle', css:p.pitch },    // pitchfork guy — mid-left
       { key:'v5', src:'vil-char-5', cls:'idle', css:p.v5 }           // curly — beside him
     ];
-    return { bg:'vil-bg', layers:L };
+    return { bg:'vil-bg', snd:{ src:'villagers-shouting', vol:.35, loop:false, fadeIn:2000 }, layers:L };   // same bed across the village shots → it carries on
   }
   COMP.village1 = vil('vil-dragon-1', {        // smoke puff — old man at the LIT WINDOW (grounded, not floating on the wall)
     pitch:'left:19%;bottom:31vh;width:min(11vw,220px)', v5:'left:27%;bottom:33vh;width:min(10vw,200px)',
@@ -172,9 +172,9 @@
   var SCENES = [
     { text:"Many moons ago in a mysterious land there lived a cunning and evil beast who dwelled deep in the darkness....", comp:'cavern' },
     { text:"He had a fascination for gold, jewels, treasures and anything that sparkled...but also something more sinister...the local villagers!",
-      comp:'cavern', triggers:[ { at:'jewels', fx:'chest' }, { at:'more sinister', comp:'village1' } ] },
+      comp:'cavern', triggers:[ { at:'jewels', fx:'chest' }, { at:'sparkled', fx:'bedOut' }, { at:'more sinister', comp:'village1' } ] },
     { text:"He had many names, Beast, Dragon, Death, but the one that put fear into the hearts of the locals was...Trogdor! Trogdor The Burninator...",
-      comp:'village1' },   // village1→2→3→4 now advance on an equal timer (see runVillageSeq), not on these words
+      comp:'village1', triggers:[ { at:'Trogdor!', fx:'bedOut' } ] },   // shots advance on a timer (runVillageSeq); the shouting fades before the tavern
     { text:"Luckily one day a brave young man appeared to try and best this beast! His goal? To save the villagers and stop this evil...",
       comp:'village4', triggers:[ { at:'Luckily one day', comp:'tavern' } ] },
     { text:"“Joe the Righteous” they called! He set off a journey to find the beast, searching through forests, rolling hills and treacherous mountains...",
@@ -313,16 +313,17 @@
     window.jjAudio = window.jjAudio || { sounds: [], muted: false, volume: 1.0 };
     window.jjAudio.sounds.push(h);
     var id = null, lastT = 0;
-    var started = false;
+    var started = false, vol = snd.vol == null ? .5 : snd.vol, fin = snd.fadeIn == null ? 2500 : snd.fadeIn;
     function sync(){
       if (video.paused || !video.isConnected) return;
+      if (snd.once && started) return;                    // a one-shot: plays with the first pass of the picture, then stays quiet
       try {
         if (id == null || !h.playing(id)) {
           id = h.play();
-          if (!started) { started = true; h.volume(0, id); h.fade(0, snd.vol == null ? .5 : snd.vol, 2500, id); }   // ease in
+          if (!started) { started = true; h.volume(0, id); h.fade(0, vol, fin, id); }   // ease in
         }
         var d = h.duration() || 0;
-        if (d) h.seek(video.currentTime % d, id);
+        if (d && !snd.once) h.seek(video.currentTime % d, id);
       } catch (e) {}
     }
     video.addEventListener('playing', function () { if (!started) sync(); });
@@ -381,6 +382,7 @@
   }
   /* named one-shot effects fired from caption words (triggers: { at:'jewels', fx:'chest' }) */
   function runFx(name){
+    if (name === 'bedOut') { fadeBed(2500); return; }
     if (name === 'chest') {
       var rec = layerRecs['chest']; if (!rec) return;
       var el = rec.el, aura = rec.aura;
@@ -535,23 +537,41 @@
     });
   }
   /* a looping bed tied to a shot (the tavern fireplace): fades in on mount, out when the shot changes */
-  var compHowl = null, compSrc = null;
+  var compHowl = null, compSrc = null, compVol = 0, storyLive = false;
+  function dropHowl(h, ms){ if (!h) return; try { h.fade(h.volume(), 0, ms); } catch (e) {} setTimeout(function () { try { h.unload(); } catch (e2) {} }, ms + 100); }
   function setCompSound(snd){
     var src = snd ? snd.src : null; if (src === compSrc) return; compSrc = src;
-    if (compHowl) { (function (old) { try { old.fade(old.volume(), 0, 800); } catch (e) {} setTimeout(function () { try { old.unload(); } catch (e2) {} }, 900); })(compHowl); compHowl = null; }
+    dropHowl(compHowl, 800); compHowl = null;
     if (!snd || !window.Howl) return;
-    var v = snd.vol == null ? .4 : snd.vol;
-    var h = compHowl = new Howl({ src: [GB + 'story-' + snd.src + '.mp3' + AV], loop: true, volume: 0, preload: true });
+    compVol = snd.vol == null ? .4 : snd.vol;
+    var v0 = (!storyLive && snd.pre != null) ? snd.pre : compVol;      // `pre` = the level while the loader is still up
+    var h = compHowl = new Howl({ src: [GB + 'story-' + snd.src + '.mp3' + AV], loop: snd.loop !== false, volume: 0, preload: true });
     window.jjAudio = window.jjAudio || { sounds: [], muted: false, volume: 1.0 }; window.jjAudio.sounds.push(h);
-    function go(){ if (compHowl !== h) return; try { if (!h.playing()) { h.play(); h.fade(0, v, 1500); } } catch (e) {} }
+    function go(){ if (compHowl !== h) return; try { if (!h.playing()) { h.play(); h.fade(0, v0, snd.fadeIn == null ? 1500 : snd.fadeIn); } } catch (e) {} }
     h.once('load', go); h.once('unlock', go);
+  }
+  function fadeBed(ms){ if (!compHowl) return; try { compHowl.fade(compHowl.volume(), 0, ms); } catch (e) {} }   // ease the bed out ahead of a shot change
+  function bedLive(){ storyLive = true; if (compHowl && compHowl.volume() < compVol) { try { compHowl.fade(compHowl.volume(), compVol, 3000); } catch (e) {} } }
+  /* a one-shot centred in whatever time the shot has left (the woodland cheer): if the clip is longer than
+     the shot it simply starts now and the shot change fades it; if shorter it waits (R - D) / 2 first */
+  var cueHowl = null, cueT = null;
+  function playCue(cue){
+    clearTimeout(cueT); dropHowl(cueHowl, 800); cueHowl = null;
+    if (!cue || !window.Howl) return;
+    var v = cue.vol == null ? .4 : cue.vol, t0 = performance.now();
+    var h = cueHowl = new Howl({ src: [GB + 'story-' + cue.src + '.mp3' + AV], loop: false, volume: 0, preload: true });
+    window.jjAudio.sounds.push(h);
+    function arm(){ if (cueHowl !== h) return;
+      var R = Math.max(0, boxEnd - performance.now()), D = (h.duration() || 0) * 1000, wait = Math.max(0, (R - D) / 2 - (performance.now() - t0));
+      cueT = setTimeout(function () { if (cueHowl !== h) return; try { h.play(); h.fade(0, v, 500); } catch (e) {} }, wait); }
+    h.once('load', arm);
   }
   function setComp(name){
     if (name === curComp) return;
     if (name === 'village1' && typeof curComp === 'string' && curComp.indexOf('village') === 0) return; // don't restart the village once it's running (2nd caption keeps comp:'village1')
     curComp = name;
     var c = COMP[name]; if (!c) return;
-    showBg(c.bg); setNight(c.bg); buildLayers(c.layers); setCompSound(c.snd);
+    showBg(c.bg); setNight(c.bg); buildLayers(c.layers); setCompSound(c.snd); playCue(c.cue);
     if (name === 'village1') runVillageSeq();        // start the equal-timed dragon-fire sequence
     else if (name.indexOf('village') !== 0) clearPanels();  // left the village → cancel any pending shots
   }
@@ -563,7 +583,7 @@
   function fadeToBlack(){ var f = document.getElementById('jjst-fade'); void f.offsetWidth; f.style.opacity = '1';
     setTimeout(function () {
       if (window.jjStory && window.jjStory.unlock) window.jjStory.unlock();
-      setCompSound(null); releaseAmbient();
+      setCompSound(null); playCue(null); releaseAmbient();
       window.scrollTo(0, 0);
       var w = document.getElementById('jjst');                 // lift the black away → My Story is revealed beneath
       if (w) { w.style.transition = 'opacity 1.4s ease'; w.style.opacity = '0';
@@ -609,12 +629,13 @@
     }
     textEl._tw = setTimeout(step, T.typeSpeed);
   }
-  var advTimer = null, curAdvance = null, curScene = 0;    // the pending auto-advance + its manual twin
+  var advTimer = null, curAdvance = null, curScene = 0, boxEnd = 0;    // the pending auto-advance + its manual twin; boxEnd = when this caption is due to end
   function navState(){ var pv = document.getElementById('jjst-prev'); if (pv) pv.disabled = curScene <= 0; }
   function runScene(i){
     if (i >= SCENES.length) return;
     var s = SCENES[i]; curScene = i; navState();
     var readMs = s.end ? s.end.delay : Math.max(T.readMin, s.text.length * T.readPerChar);
+    boxEnd = performance.now() + typeDuration(s.text) + readMs;
     rollProgress(i, typeDuration(s.text) + readMs);
     if (s.comp) setComp(s.comp);
     curAdvance = null;
@@ -644,7 +665,7 @@
     } catch (e) {}
   }
   /* jump past the whole tale, straight to My Story waiting underneath */
-  function skipStory(){ setCompSound(null);
+  function skipStory(){ setCompSound(null); playCue(null);
     releaseAmbient();
     clearTimeout(advTimer); advTimer = null; curAdvance = null;
     if (textEl) clearTimeout(textEl._tw);
@@ -700,7 +721,7 @@
         textEl.textContent = 'Preview — jjStory.hold(\'tavern\') to jump comps';
         return;
       }
-      setTimeout(revealFromBlack, T.revealAt);
+      setTimeout(function () { revealFromBlack(); bedLive(); }, T.revealAt);
       setTimeout(function () { capEl.classList.add('on'); prog.classList.add('on');
         document.getElementById('jjst-nav').classList.add('on'); navState(); }, T.boxFadeAt);
       setTimeout(function () {

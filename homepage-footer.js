@@ -83,6 +83,8 @@
 
   (function jjNavDropIn(){
     var SEL = '.nav-logo-link, .nav-logo, .menu-container, .menu-button';
+    /* hard hide until the drop-in (beats Webflow's nav styles; the page head carries the same rule for the pre-script moment) */
+    (function () { var st = document.createElement('style'); st.textContent = 'html:not(.jj-nav-in) .nav-logo-link,html:not(.jj-nav-in) .menu-container{opacity:0!important}'; (document.head || document.documentElement).appendChild(st); })();
     function run(){
       var els = document.querySelectorAll(SEL);
       if (!els.length) { setTimeout(run, 150); return; }
@@ -93,6 +95,7 @@
       });
       jjWhenEntrance(function () {
       setTimeout(function () {
+        document.documentElement.classList.add('jj-nav-in');
         Array.prototype.forEach.call(els, function (el) {
           el.style.transition = 'opacity 0.9s ease, transform 0.9s cubic-bezier(0.34, 1.4, 0.64, 1)';
           el.style.opacity = '1';

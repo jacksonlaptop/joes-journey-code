@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's42 · Skip CTA + pause-everything confirm; seamless gallop;  every sound at half; castle clips silent bar the roar; smaller puzzled Trogdor; flame deeper in the mouth; bigger hearth fire; grounded tavern crowd; villagers run longer; headroom for the jump; quick ending';
+  window.JJ_STORY_BUILD = 's43 · clips prefetched in scene order while the tale plays;  Skip CTA + pause-everything confirm; seamless gallop;  every sound at half; castle clips silent bar the roar; smaller puzzled Trogdor; flame deeper in the mouth; bigger hearth fire; grounded tavern crowd; villagers run longer; headroom for the jump; quick ending';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -785,6 +785,7 @@
     function beginStory() {
       var ld = document.getElementById('jjst-loader'); if (ld) ld.classList.add('hide');
       PRELOAD.forEach(function (n) { var im = new Image(); im.src = F(n); });   // the rest of the boards — AFTER the loader, so they never race it
+      warmClips();                                                            // and the video clips, one at a time, in the order the tale needs them
       if (window.JJ_STORY_HOLD) {                      // preview mode: instant reveal, no typing/choreography
         var blk = document.getElementById('jjst-black'); blk.style.display = 'none';
         capEl.classList.add('on'); prog.classList.add('on');
@@ -830,6 +831,19 @@
       setComp('cavern');
       preloadCritical(beginStory);
     }
+  }
+  /* The clips are the only heavy assets not covered by the loader. Fetch them sequentially in story order
+     (one format only — whichever this browser will actually play) so each sits in the HTTP cache before its
+     scene mounts; the <video> then loads instantly instead of showing its poster while it buffers. */
+  function warmClips(){
+    var probe = document.createElement('video'), hevc = !!probe.canPlayType('video/mp4; codecs="hvc1"');
+    var seen = {}, order = [];
+    ['cavern','village1','village2','tavern','tavern2','woodland','castle1','castle2','castle3','castle4','castle5','castle6'].forEach(function (n) {
+      ((COMP[n] || {}).layers || []).forEach(function (L) { if (L.vid && !seen[L.vid]) { seen[L.vid] = true; order.push(L.vid); } }); });
+    var i = 0;
+    function next(){ if (i >= order.length || !window.fetch) return; var u = GB + 'story-' + order[i++] + (hevc ? '.mov' : '.webm') + AV;
+      fetch(u, { priority: 'low' }).then(function (r) { return r.blob(); }).catch(function () {}).then(next); }
+    next();
   }
   function warmImages(urls, ms, done){
     var left = urls.length, fired = false; function fin(){ if (!fired) { fired = true; done(); } }

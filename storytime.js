@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's38 · Trogdor at the window: smaller, no smoke, only for the last two seconds';
+  window.JJ_STORY_BUILD = 's40 · the castle on video: sword, shield + fire, both confused, Trogdor shrinks in smoke, two costume poofs, the hurrah';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -54,6 +54,11 @@
   /* ---- compositions: each chapter = a transparent bg + character layers (src OR anim).
          `css` is the layer's position/size — tweak freely. Dragons use right/bottom anchoring
          (their image has transparent smoke/fire room at the top-left). ---- */
+  var CAS_JOE = 'left:20%;bottom:25vh;width:min(16vw,320px)';            // the knight (700² canvas = cas-joe-1/2 geometry)
+  var CAS_JOE2 = 'left:21.5%;bottom:26vh;width:min(13vw,260px)';         // pants + designer (cas-designer-1 geometry) — feet level with the knight's
+  var CAS_DRAGON = 'right:6vw;bottom:19vh;width:52vw';                   // the village huff-and-puff loop + flame, same canvas geometry as the village
+  var CAS_DRAGON2 = 'right:10%;bottom:24vh;width:min(32vw,640px)';       // the puzzled clip (cas-dragon-3 geometry)
+  var CAS_POOFJ = 'left:15vw;bottom:24vh;width:26vw';                    // smoke column centred on Joe
   var COMP = {
     cavern: { bg:'cav-bg', snd:{ src:'dragon-snore', vol:.45, pre:.08, fadeIn:3000 }, layers:[   // snore: barely there under the loader, swells when the cave is revealed, fades before the village
       /* the AI-made loop (breathing, eye opens halfway) — transparent video over the static cave.
@@ -71,6 +76,7 @@
     /* tavern per the "3 - Tavern 1" mockup: Joe mid-left on the floor, grandma back-right,
        hooded guy far right, the old man BIG in the foreground (so he's last = on top). */
     tavern: { bg:'tav-bg-2', snd:{ src:'tav-fire', vol:.3 }, layers:[     // fireplace crackle bed for the whole shot; the board's window is a real hole onto the sky
+      { key:'hearth', vid:'tav-fire-loop', ar:1, css:'left:12.9vw;bottom:53vh;width:5.4vw' },   // Seedance flame on the logs (listed first → behind Joe)
       { key:'joe', vid:'tav-joe-loop', ar:1, css:'left:10%;bottom:24vh;width:min(26vw,520px)',
         hero:{ label:'Joe the Righteous', glow:'rgba(255,214,120,.6)', seekTo:3.0, lt:4, hit:[.22,.14,.72,.82] },
         snd:{ src:'tav-joe-loop-8s', vol:.15 } },
@@ -89,37 +95,42 @@
        swap happens while `joecloud` covers him); `dragon` crossfades pose → then SHRINKS via a
        width/position morph in castle6 → gone by castle13 (only the `wisp` remains). Smoke clouds
        are the cas-smoke assets; a --flip:-1 on a cloud mirrors it (the idle keyframe reads it). */
-    castle1: { bg:'cas-bg', layers:[          // standoff — sword drawn, dragon huffs
-      { key:'joe', src:'cas-joe-2', css:'left:21%;bottom:25vh;width:min(16vw,320px)' },
-      { key:'dragon', src:'cas-dragon-2', css:'right:10%;bottom:23vh;width:min(38vw,760px)' }
+    /* ---- CASTLE on video. One-shot clips hold their last frame (hold:true → no loop). Joe's shield clip
+       carries on across castle2→3→4 (same key + src → never restarted): braced for 2s, then straightens and
+       looks confused at the camera — landing right on 'Wait a minute'. Costume changes = a smoke clip that
+       pops over him (pop:true, now:true) with the comp's swapAt delaying the actual swap under the cloud. ---- */
+    castle1: { bg:'cas-bg', layers:[          // standoff — sword swings, Trogdor huffs
+      { key:'joe', vid:'cas-joe-sword', ar:1, hold:true, snd:{ src:'cas-sword', vol:.35, once:true, fadeIn:150 }, css:CAS_JOE },
+      { key:'cdragon', vid:'vil-dragon-loop', ar:1400/900, css:CAS_DRAGON, snd:{ src:'vil-dragon-roar', vol:.45, once:true, fadeIn:1200 } },
+      { key:'cflame', vid:'vil-flame-loop', ar:1400/900, css:CAS_DRAGON, sc:0, so:'58.4% 46%', scDur:900 }
     ]},
-    castle2: { bg:'cas-bg', layers:[          // fire vs shield
-      { key:'joe', src:'cas-joe-1', css:'left:18%;bottom:24vh;width:min(17vw,340px)' },
-      { key:'dragon', src:'cas-dragon-1', css:'right:9%;bottom:17vh;width:min(65vw,1300px)' }
+    castle2: { bg:'cas-bg', layers:[          // fire vs shield — the flame reaches the shield in under a second
+      { key:'joe', vid:'cas-joe-shield', ar:1, hold:true, snd:{ src:'cas-shield', vol:.35, once:true, fadeIn:150 }, css:CAS_JOE },
+      { key:'cdragon', vid:'vil-dragon-loop', ar:1400/900, css:CAS_DRAGON },
+      { key:'cflame', vid:'vil-flame-loop', ar:1400/900, css:CAS_DRAGON, sc:1.2, so:'58.4% 46%', scDur:900 }
     ]},
-    castle3: { bg:'cas-bg', layers:[          // both suddenly unsure
-      { key:'joe', src:'cas-joe-3', css:'left:19%;bottom:25vh;width:min(16vw,320px)' },
-      { key:'dragon', src:'cas-dragon-3', css:'right:10%;bottom:24vh;width:min(32vw,640px)' }
+    castle3: { bg:'cas-bg', layers:[          // both suddenly unsure — flame sucked back in, Trogdor crossfades to the puzzled clip
+      { key:'joe', vid:'cas-joe-shield', ar:1, hold:true, css:CAS_JOE },
+      { key:'cdragon2', vid:'cas-dragon-conf', ar:1, hold:true, css:CAS_DRAGON2 },
+      { key:'cflame', vid:'vil-flame-loop', ar:1400/900, css:CAS_DRAGON, sc:0, so:'58.4% 46%', scDur:600 }
     ]},
-    castle4: { bg:'cas-bg', layers:[          // Joe POOFS — knight key dropped, cloud takes his spot
-      { key:'dragon', src:'cas-dragon-4', css:'right:10%;bottom:24vh;width:min(32vw,640px)' },
-      { key:'joecloud', src:'cas-smoke-1', cls:'idle', css:'left:20%;bottom:24vh;width:min(10vw,200px)' }
+    castle4: { bg:'cas-bg', layers:[          // 'Ah yes, sorry.' — Trogdor shrinks into a puff and is gone
+      { key:'joe', vid:'cas-joe-shield', ar:1, hold:true, css:CAS_JOE },
+      { key:'cdragon2', vid:'cas-dragon-conf', ar:1, hold:true, css:CAS_DRAGON2, sc:0, so:'62% 94%', scDur:1100 },
+      { key:'poofD', vid:'cas-smoke', ar:1, hold:true, pop:true, now:true, snd:{ src:'cas-smoke', vol:.4, once:true, fadeIn:60 }, css:'left:56vw;bottom:22vh;width:36vw' }
     ]},
-    castle5: { bg:'cas-bg', layers:[          // designer Joe revealed — now the DRAGON poofs
-      { key:'joe', src:'cas-designer-1', css:'left:19%;bottom:26vh;width:min(13vw,260px)' },
-      { key:'dragon', src:'cas-dragon-4', css:'right:10%;bottom:24vh;width:min(32vw,640px)' },
-      { key:'drcloud', src:'cas-smoke-1', cls:'idle', css:'left:63%;bottom:22vh;width:min(14vw,280px)' },
-      { key:'drcloud2', src:'cas-smoke-1', cls:'idle', css:'left:72%;bottom:22vh;width:min(13vw,260px);--flip:-1' }
+    castle5: { bg:'cas-bg', swapAt:450, layers:[   // 'that's a different Joe' — poof: knight → the man in his pants
+      { key:'joe2', vid:'cas-pants', ar:1, hold:true, snd:{ src:'cas-pants', vol:.25, once:true, fadeIn:100 }, css:CAS_JOE2 },
+      { key:'poofD', vid:'cas-smoke', ar:1, hold:true, css:'left:56vw;bottom:22vh;width:36vw' },
+      { key:'poofJ1', vid:'cas-smoke', ar:1, hold:true, pop:true, now:true, snd:{ src:'cas-smoke', vol:.4, once:true, fadeIn:60 }, css:CAS_POOFJ }
     ]},
-    castle6: { bg:'cas-bg', layers:[          // dragon SHRINKS in the dissipating smoke
-      { key:'joe', src:'cas-designer-1', css:'left:19%;bottom:26vh;width:min(13vw,260px)' },
-      { key:'dragon', src:'cas-dragon-4', css:'right:25%;bottom:27vh;width:min(9vw,180px)' },
-      { key:'joecloud', src:'cas-smoke-1', cls:'idle', css:'left:20.5%;bottom:25vh;width:min(8vw,160px)' },
-      { key:'drcloud', src:'cas-smoke-1', cls:'idle', css:'left:63.5%;bottom:23vh;width:min(10vw,200px)' }
+    castle6: { bg:'cas-bg', swapAt:450, layers:[   // 'yet still…' — poof: pants → the Designer, who cheers with his brush
+      { key:'joe3', vid:'cas-hurrah', ar:1, hold:true, css:CAS_JOE2 },
+      { key:'poofJ1', vid:'cas-smoke', ar:1, hold:true, css:CAS_POOFJ },
+      { key:'poofJ2', vid:'cas-smoke', ar:1, hold:true, pop:true, now:true, snd:{ src:'cas-smoke', vol:.4, once:true, fadeIn:60 }, css:CAS_POOFJ }
     ]},
-    castle13: { bg:'cas-bg', layers:[         // the Designer, and a wisp where the beast stood
-      { key:'joe', src:'cas-designer-2', css:'left:19%;bottom:27vh;width:min(14vw,280px)' },
-      { key:'wisp', src:'cas-smoke-2', cls:'idle', css:'left:68%;bottom:27vh;width:min(5.5vw,110px)' }
+    castle13: { bg:'cas-bg', layers:[         // the Designer holds his pose while the tale fades out
+      { key:'joe3', vid:'cas-hurrah', ar:1, hold:true, css:CAS_JOE2 }
     ]}
   };
 
@@ -148,8 +159,10 @@
         snd:{ src:'vil-dragon-roar', vol:.55, once:true, fadeIn:1200 },     // the clip's own growl up to the first roar, then out — never loops
         fx:[ { type:'smoke', at:[55, 36] } ] },
       { key:'flame', vid:'vil-flame-loop', ar:1400/900, css:VIL_DRAGON, sc:(p.flame == null ? 0 : p.flame), so:'58.4% 46%', scDur:3000 },   // listed AFTER the dragon → paints in front of him
-      { key:'pitch', src:'vil-char-4', cls:'idle', css:p.pitch },    // pitchfork guy — mid-left
-      { key:'v5', src:'vil-char-5', cls:'idle', css:p.v5 }           // curly — beside him
+      /* both are Seedance one-shots (turn-back at the very end trimmed, last stride held): the class in `run` lands on
+         the first 'playing' event and drives the travel — pitchfork charges 3.1s then turns and flees; curly bolts at 1.45s */
+      { key:'pitch', vid:'vil-pitch-run', ar:1, run:'chargeP', css:p.pitch },
+      { key:'v5', vid:'vil-curly-run', ar:1, run:'fleeC', snd:{ src:'vil-curly', vol:.2, once:true, fadeIn:300 }, css:p.v5 }   // his own yelp, kept quiet
     ];
     return { bg:'vil-bg', snd:{ src:'villagers-shouting', vol:.35, loop:false, fadeIn:2000 }, layers:L };   // same bed across the village shots → it carries on
   }
@@ -159,15 +172,15 @@
     v2:'left:85%;bottom:33vh;width:min(16vw,320px)' });
   COMP.village2 = vil('vil-dragon-2', {        // the fire comes: flame grows from the mouth to full over ~4.5s
     flame:1,
-    pitch:'left:21%;bottom:31vh;width:min(9.5vw,190px)', v5:'left:27%;bottom:33vh;width:min(10vw,200px)',
+    pitch:'left:19%;bottom:31vh;width:min(11vw,220px)', v5:'left:27%;bottom:33vh;width:min(10vw,200px)',
     v3:'left:43%;bottom:43vh;width:min(6vw,120px)',      v1:'left:76%;bottom:51vh;width:min(8vw,160px)',
     v7:'left:34%;bottom:24vh;width:min(10vw,200px)',     v2:'left:91%;bottom:27vh;width:min(15vw,300px)' });
   /* village3/4 = the same shot held: caption 4 still says comp:'village4', and it must NOT swap the video
      dragon for the static frame-4 art (that was the 'jumps up at the end' bug) — same keys, same art, flame stays full. */
   COMP.village3 = vil('vil-dragon-3', { flame:1,
-    pitch:'left:21%;bottom:31vh;width:min(9.5vw,190px)', v5:'left:27%;bottom:33vh;width:min(10vw,200px)' });
+    pitch:'left:19%;bottom:31vh;width:min(11vw,220px)', v5:'left:27%;bottom:33vh;width:min(10vw,200px)' });
   COMP.village4 = vil('vil-dragon-4', { flame:1,
-    pitch:'left:21%;bottom:31vh;width:min(9.5vw,190px)', v5:'left:27%;bottom:33vh;width:min(10vw,200px)' });
+    pitch:'left:19%;bottom:31vh;width:min(11vw,220px)', v5:'left:27%;bottom:33vh;width:min(10vw,200px)' });
   COMP._village4_old = { bg:'vil-bg', layers:[   // (unused) the traced frame-4 design, kept for reference
     { key:'dragon', src:'vil-dragon-4', css:VIL_DRAGON },
     { key:'pitchdrop', src:'vil-pitch-drop', cls:'idle', css:'left:12%;bottom:26vh;width:min(13.5vw,270px)' },
@@ -188,7 +201,7 @@
     { text:"He went toe to toe with the beast in an epic battle lasting for days, facing fire and all his might and...Wait a minute...I think this is the wrong story...",
       comp:'castle1', triggers:[ { at:'facing fire', comp:'castle2' }, { at:'Wait a minute', comp:'castle3' } ] },
     { text:"Ah yes, sorry. Oops, that's a different Joe. This one is the story of a Designer...yet still an all great and powerful Designer...",
-      comp:'castle4', triggers:[ { at:'different Joe', comp:'castle5' }, { at:'story of a Designer', comp:'castle6' } ],
+      comp:'castle4', triggers:[ { at:'different Joe', comp:'castle5' }, { at:'yet still', comp:'castle6' } ],
       end:{ delay:1600, run:function(){ setComp('castle13'); setTimeout(fadeToBlack, 3200); } } }
   ];
 
@@ -251,6 +264,12 @@
   '@keyframes jjst-idle{0%,100%{transform:scaleX(var(--flip,1)) scaleY(1);}50%{transform:scaleX(var(--flip,1)) scaleY(.965);}}'+   // grounded squash bob (origin bottom) — nothing floats
   '.jjst-layer.idle{animation:jjst-idle 2.5s ease-in-out infinite;transform-origin:center bottom;}'+
   '.jjst-layer.gallop{animation:jjst-gallop 2.8s ease-in-out infinite;transform-origin:center bottom;}'+
+  '.jjst-layer.chargeP{animation:jjstChargeP 6.6s linear forwards;transform-origin:50% 100%;}'+     // 0–3.1s charge right, then turn + flee up the path, gone by 6.6s
+  '@keyframes jjstChargeP{0%{transform:translate(0,0) scale(1);opacity:1;}47%{transform:translate(4vw,0) scale(1);opacity:1;}82%{opacity:1;}100%{transform:translate(16vw,-15vh) scale(.3);opacity:0;}}'+
+  '.jjst-layer.fleeC{animation:jjstFleeC 5s linear forwards;transform-origin:50% 100%;}'+
+  '#jjst .jjst-layer.poof{animation:jjstPoof 2.6s ease-out forwards;transform-origin:50% 100%;}'+   // smoke: bursts up, hangs, drifts off (the chest owns .pop)
+  '@keyframes jjstPoof{0%{transform:scale(.15);opacity:0;}14%{transform:scale(1.06);opacity:1;}22%{transform:scale(1);}60%{transform:scale(1) translateY(0);opacity:1;}100%{transform:scale(.7) translateY(-25%);opacity:0;}}'+           // frozen 1.45s, then bolts first
+  '@keyframes jjstFleeC{0%,29%{transform:translate(0,0) scale(1);opacity:1;}80%{opacity:1;}100%{transform:translate(12vw,-15vh) scale(.3);opacity:0;}}'+
   gallopFrames()+
   '.jjst-layer.morph{transition:left .8s cubic-bezier(.4,0,.2,1),right .8s cubic-bezier(.4,0,.2,1),bottom .8s cubic-bezier(.4,0,.2,1),width .8s cubic-bezier(.4,0,.2,1),opacity .55s ease;}'+
   '.jjst-layer.enter{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1);}'+
@@ -448,13 +467,18 @@
   function mountLayer(el, L){                                // behind:true → under the scene board (over the sky): shows only through holes like the tavern window
     if (L.behind) bgWrap.insertBefore(el, bgWrap.querySelector('.jjst-bg')); else layersWrap.appendChild(el);
   }
+  var swapAt = 0;                                            // set per comp: costume changes happen this long after the comp lands (under the poof)
+  function reveal(el, L){ setTimeout(function () { el.style.opacity = '1'; }, (swapAt && !L.now) ? swapAt : 16); }
   function buildLayers(layers){
     clearAnims(); layers = layers || [];
     var next = {}; layers.forEach(function (L, idx) { next[keyOf(L, idx)] = true; });
-    Object.keys(layerRecs).forEach(function (k) { if (!next[k]) { fadeRemove(layerRecs[k].el); if (layerRecs[k].aura) fadeRemove(layerRecs[k].aura); delete layerRecs[k]; } });
+    Object.keys(layerRecs).forEach(function (k) { if (!next[k]) { var gone = layerRecs[k]; delete layerRecs[k];
+      var drop = function () { fadeRemove(gone.el); if (gone.aura) fadeRemove(gone.aura); };
+      if (swapAt) setTimeout(drop, swapAt); else drop(); } });                 // swapAt: the old art stays until the smoke covers it
     layers.forEach(function (L, idx) {
       var k = keyOf(L, idx), first = F(L.anim ? L.anim[0] : L.src), rec = layerRecs[k], el;
       var prevSc = (rec && rec.el && rec.el.style) ? rec.el.style.scale : '';
+      var startSc = rec ? (prevSc || '1') : prevSc;            // a layer that was already up but never scaled starts from 1, not from the target
       if (rec && ((rec.el.tagName === 'VIDEO') !== !!L.vid)) {   // kind changed under the same key: start fresh
         fadeRemove(rec.el); if (rec.aura) fadeRemove(rec.aura); delete layerRecs[k]; rec = null;
       }
@@ -464,20 +488,21 @@
         else {
           if (rec) { fadeRemove(rec.el); if (rec.aura) fadeRemove(rec.aura); }
           el = document.createElement('video');
-          el.className = 'jjst-layer' + (L.cls ? ' ' + L.cls : '') + (L.hero ? ' hero' : '');
-          el.muted = true; el.loop = true; el.playsInline = true; el.autoplay = true; el.preload = 'auto';
+          el.className = 'jjst-layer' + (L.cls ? ' ' + L.cls : '') + (L.hero ? ' hero' : '') + (L.pop ? ' poof' : '');
+          el.muted = true; el.loop = !L.hold; el.playsInline = true; el.autoplay = true; el.preload = 'auto';   // hold:true → one-shot, freezes on its last frame
           el.setAttribute('muted', ''); el.setAttribute('playsinline', '');
           el.poster = GB + 'story-' + L.vid + '-poster.webp' + AV;
           el.innerHTML = '<source src="' + GB + 'story-' + L.vid + '.mov' + AV + '" type=\'video/mp4; codecs="hvc1"\'>' +
                          '<source src="' + GB + 'story-' + L.vid + '.webm' + AV + '" type="video/webm">';
           el.style.cssText = L.css + ';opacity:0'; mountLayer(el, L);
-          requestAnimationFrame(function () { el.style.opacity = '1'; });
+          reveal(el, L);
           var pr = el.play(); if (pr && pr.catch) pr.catch(function () {});   // blocked → the poster stands in
           rec = layerRecs[k] = { el: el, src: first };
           rec.aura = makeAura(L, el);
           if (L.snd) attachSound(el, L.snd);
+          if (L.run) el.addEventListener('playing', function onPlay(){ el.classList.add(L.run); el.removeEventListener('playing', onPlay); });
         }
-        applyScale(el, L, prevSc); applyMove(el, L);
+        applyScale(el, L, startSc); applyMove(el, L);
         return;                                                // the img branches below don't apply
       }
       if (rec && rec.src !== first) {                        // ART CHANGE = a pose cut: ghost of the OLD art at the
@@ -505,11 +530,11 @@
         el = document.createElement('img'); el.alt = '';
         el.className = 'jjst-layer morph' + (L.cls ? ' ' + L.cls : '');
         el.style.cssText = L.css + ';opacity:0'; el.src = first; mountLayer(el, L);
-        requestAnimationFrame(function () { el.style.opacity = '1'; });
+        reveal(el, L);
         rec = layerRecs[k] = { el: el, src: first };
         if (L.aura || L.hero) rec.aura = makeAura(L, el);
       }
-      applyScale(el, L, prevSc);
+      applyScale(el, L, startSc);
       if (L.cls && /\b(idle|scared)\b/.test(L.cls)) {        // each character on its own beat + tempo
         var trem = /\bscared\b/.test(L.cls);
         el.style.animationDelay = '-' + ((idx * 0.83) % 2.5).toFixed(2) + 's';
@@ -580,6 +605,7 @@
     if (name === 'village1' && typeof curComp === 'string' && curComp.indexOf('village') === 0) return; // don't restart the village once it's running (2nd caption keeps comp:'village1')
     curComp = name;
     var c = COMP[name]; if (!c) return;
+    swapAt = c.swapAt || 0;
     showBg(c.bg); setNight(c.bg); buildLayers(c.layers); setCompSound(c.snd); playCue(c.cue);
     if (name === 'village1') runVillageSeq();        // start the equal-timed dragon-fire sequence
     else if (name.indexOf('village') !== 0) clearPanels();  // left the village → cancel any pending shots
@@ -688,8 +714,8 @@
   /* ---- mount + choreography ---- */
   var PRELOAD = ['cav-bg','cav-dragon-loop-poster','cav-chest-closed','cav-chest-open','tav-joe-loop-poster','vil-dragon-loop-poster','vil-flame-loop-poster','cav-dragon-1','vil-bg','vil-dragon-1','vil-dragon-2','vil-dragon-3','vil-dragon-4',
     'vil-char-1','vil-char-2','vil-char-3','vil-char-4','vil-char-5','vil-char-7','vil-pitch-drop','tav-bg-2','tav-joe','tav-char-1','tav-char-2','tav-char-3',
-    'wood-bg','wood-joe-loop-poster','wood-char-1-loop-poster','wood-char-2-loop-poster','cas-bg','cas-joe-1','cas-joe-2','cas-joe-3',
-    'cas-dragon-1','cas-dragon-2','cas-dragon-3','cas-dragon-4','cas-designer-1','cas-designer-2','cas-smoke-1','cas-smoke-2'];
+    'wood-bg','wood-joe-loop-poster','wood-char-1-loop-poster','wood-char-2-loop-poster','cas-bg','cas-joe-sword-poster','cas-joe-shield-poster',
+    'cas-dragon-conf-poster','cas-pants-poster','cas-hurrah-poster','cas-smoke-poster'];
   function mount(){
     if (document.getElementById('jjst')) return;
     document.body.appendChild(wrap);

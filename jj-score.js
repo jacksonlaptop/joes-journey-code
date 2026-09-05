@@ -1,4 +1,4 @@
-/* jj-score.js — site-wide stars + coins (build k3).
+/* jj-score.js — site-wide stars + coins (build k4).
    window.jjScore.award(id, {part, x, y})  →  ticks an achievement; pays out ONCE when it reaches its target (a star, or coins).
    State persists in localStorage ('jjScore'). HUD pill sits left of the Menu (right-anchored, so it grows leftwards).
    Anything in Webflow can award by attribute: <div data-jj-score="alien"> (+ optional data-jj-part="a").
@@ -49,13 +49,14 @@
   /* ---- styles ---- */
   var css = document.createElement('style'); css.textContent =
     /* HUD pill — the Score design: 49px tall, black 50% + blur, 1px white 80% */
-    '#jj-score{position:fixed;top:32px;right:180px;transform:translateY(-50%);height:49px;padding:0 22px 0 17px;border-radius:24.5px;background:rgba(0,0,0,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.8);color:#fff;font-family:' + FONT + ';font-size:17px;line-height:1;display:flex;align-items:center;cursor:pointer;z-index:9999;opacity:0;pointer-events:none;transition:opacity .8s ease,background .25s ease;box-sizing:border-box;margin:0;outline:none;-webkit-appearance:none;}' +
-    '#jj-score.on{opacity:1;pointer-events:auto;}#jj-score:hover{background:rgba(0,0,0,.72);}' +
-    '#jj-score .n{min-width:1ch;text-align:right;display:inline-block;transition:transform .2s ease;}#jj-score .n.up{transform:scale(1.35);}' +
-    '#jj-score .ic{width:24px;height:22px;object-fit:contain;display:block;margin:0 13px 0 6px;transform-origin:50% 50%;}#jj-score .ic.coin{width:23px;}' +
-    '#jj-score .chev{width:12px;height:6px;display:block;margin-left:1px;transition:transform .3s ease;}#jj-score.open .chev{transform:rotate(180deg);}' +
-    '#jj-score .ic.jiggle{animation:jjScJiggle .7s ease;}@keyframes jjScJiggle{0%{transform:rotate(0) scale(1);}20%{transform:rotate(-18deg) scale(1.3);}40%{transform:rotate(16deg) scale(1.3);}60%{transform:rotate(-10deg) scale(1.2);}80%{transform:rotate(6deg) scale(1.1);}100%{transform:rotate(0) scale(1);}}' +
-    '#jj-score .ic.shine{animation:jjScShine 1s ease;}@keyframes jjScShine{0%{transform:scale(1);filter:none;}30%{transform:scale(1.45) rotate(15deg);filter:brightness(1.6) drop-shadow(0 0 10px #fff);}60%{transform:scale(1.2) rotate(-8deg);filter:brightness(1.3) drop-shadow(0 0 14px #ffe36b);}100%{transform:scale(1);filter:none;}}' +
+    '#jj-sc-hud{position:fixed;top:32px;right:180px;transform:translateY(-50%);height:49px;padding:0 22px 0 17px;border-radius:24.5px;background:rgba(0,0,0,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.8);color:#fff;font-family:' + FONT + ';font-size:17px;line-height:1;display:flex;align-items:center;cursor:pointer;z-index:9999;opacity:0;pointer-events:none;transition:opacity .8s ease,background .25s ease;box-sizing:border-box;margin:0;outline:none;-webkit-appearance:none;}' +
+    '#jj-sc-hud.on{opacity:1;pointer-events:auto;}#jj-sc-hud:hover{background:rgba(0,0,0,.72);}' +
+    '#jj-sc-hud.innav{position:relative;top:auto;right:auto;transform:none;margin:0 24px 0 0;align-self:center;flex:0 0 auto;}' +
+    '#jj-sc-hud .n{min-width:1ch;text-align:right;display:inline-block;transition:transform .2s ease;}#jj-sc-hud .n.up{transform:scale(1.35);}' +
+    '#jj-sc-hud .ic{width:24px;height:22px;object-fit:contain;display:block;margin:0 13px 0 6px;transform-origin:50% 50%;}#jj-sc-hud .ic.coin{width:23px;}' +
+    '#jj-sc-hud .chev{width:12px;height:6px;display:block;margin-left:1px;transition:transform .3s ease;}#jj-sc-hud.open .chev{transform:rotate(180deg);}' +
+    '#jj-sc-hud .ic.jiggle{animation:jjScJiggle .7s ease;}@keyframes jjScJiggle{0%{transform:rotate(0) scale(1);}20%{transform:rotate(-18deg) scale(1.3);}40%{transform:rotate(16deg) scale(1.3);}60%{transform:rotate(-10deg) scale(1.2);}80%{transform:rotate(6deg) scale(1.1);}100%{transform:rotate(0) scale(1);}}' +
+    '#jj-sc-hud .ic.shine{animation:jjScShine 1s ease;}@keyframes jjScShine{0%{transform:scale(1);filter:none;}30%{transform:scale(1.45) rotate(15deg);filter:brightness(1.6) drop-shadow(0 0 10px #fff);}60%{transform:scale(1.2) rotate(-8deg);filter:brightness(1.3) drop-shadow(0 0 14px #ffe36b);}100%{transform:scale(1);filter:none;}}' +
     /* floating "+10" at the click point, and the flying icon */
     '.jj-sc-float{position:fixed;z-index:10001;pointer-events:none;display:flex;align-items:center;gap:6px;font-family:' + FONT + ';font-weight:700;color:#fff;font-size:22px;text-shadow:0 2px 6px rgba(0,0,0,.6);transform:translate(-50%,-50%);animation:jjScFloat 1.3s ease-out forwards;white-space:nowrap;}' +
     '.jj-sc-float img{width:26px;height:26px;object-fit:contain;}.jj-sc-float.part{font-size:16px;opacity:.95;}.jj-sc-float.part img{width:20px;height:20px;filter:grayscale(.3);}' +
@@ -69,18 +70,18 @@
     '#jj-ach.on{opacity:1;pointer-events:auto;}' +
     '#jj-ach .card{position:relative;width:min(900px,92vw);height:min(720px,84vh);--sw:36px;display:flex;flex-direction:column;transform:translateY(16px) scale(.98);transition:transform .45s cubic-bezier(.22,1,.36,1);}' +
     '#jj-ach.on .card{transform:none;}' +
-    '#jj-ach .flag{position:absolute;top:-22px;width:64px;height:auto;pointer-events:none;z-index:2;}#jj-ach .flag.l{left:-14px;}#jj-ach .flag.r{right:-14px;}' +
-    '#jj-ach .head{display:flex;align-items:center;justify-content:space-between;padding:2px 34px 0 46px;flex:0 0 auto;}' +
+    '#jj-ach .flag{position:absolute;top:calc(-1 * var(--sw) - 6px);width:clamp(80px,9vw,132px);height:auto;pointer-events:none;z-index:2;filter:drop-shadow(0 8px 14px rgba(0,0,0,.35));}#jj-ach .flag.l{left:calc(-1 * clamp(80px,9vw,132px) * .62);}#jj-ach .flag.r{right:calc(-1 * clamp(80px,9vw,132px) * .62);}' +
+    '#jj-ach .head{display:flex;align-items:center;justify-content:space-between;padding:2px 44px 0 52px;flex:0 0 auto;}' +
     '#jj-ach h2{margin:0;font-size:clamp(22px,2.4vw,32px);font-weight:700;letter-spacing:.02em;}' +
     '#jj-ach .tot{display:flex;align-items:center;gap:18px;font-size:18px;font-weight:700;}#jj-ach .tot span{display:flex;align-items:center;gap:6px;}#jj-ach .tot img{width:26px;height:24px;object-fit:contain;}' +
     '#jj-ach .x{width:40px;height:40px;border:0;background:none;cursor:pointer;color:#3a2a12;font-size:30px;line-height:1;font-family:' + FONT + ';padding:0;margin-left:18px;transition:transform .2s ease;}#jj-ach .x:hover{transform:rotate(90deg);}' +
     '#jj-ach .tabs{display:flex;gap:8px;padding:12px 34px 0 46px;flex:0 0 auto;flex-wrap:wrap;}' +
-    '#jj-ach .tab{--bw:12px;background:none;cursor:pointer;color:#fff;font-family:' + FONT + ';font-weight:700;font-size:15px;letter-spacing:.04em;padding:2px 14px;min-height:38px;position:relative;text-shadow:0 1px 2px rgba(0,0,0,.6);opacity:.78;transition:opacity .2s ease,transform .2s ease;}' +
+    '#jj-ach .tab{--bw:12px;background:none;cursor:pointer;user-select:none;outline:none;display:flex;align-items:center;color:#fff;font-family:' + FONT + ';font-weight:700;font-size:15px;letter-spacing:.04em;padding:2px 14px;min-height:38px;position:relative;text-shadow:0 1px 2px rgba(0,0,0,.6);opacity:.78;transition:opacity .2s ease,transform .2s ease;}' +
     '#jj-ach .tab:hover{opacity:1;transform:translateY(-1px);}#jj-ach .tab.on{opacity:1;color:#FF00F5;text-shadow:0 0 10px rgba(255,0,245,.55),0 1px 2px rgba(0,0,0,.6);}' +
-    '#jj-ach .list{flex:1 1 auto;overflow:auto;padding:14px 26px 8px 38px;margin:0 8px 0 0;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:#8a8a8a transparent;}' +
+    '#jj-ach .list{flex:1 1 auto;overflow:auto;overscroll-behavior:contain;padding:14px 26px 8px 38px;margin:0 8px 0 0;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:#8a8a8a transparent;}' +
     '#jj-ach .row{--sw:22px;display:grid;grid-template-columns:1fr auto;gap:0 18px;align-items:center;padding:2px 6px 4px 8px;min-height:74px;flex:0 0 auto;}' +
     '#jj-ach .row .nm{font-size:18px;font-weight:700;line-height:1.15;}#jj-ach .row .ds{font-size:14px;line-height:1.3;margin-top:2px;color:#6b5535;}' +
-    '#jj-ach .row .bar{--bw:6px;height:18px;margin-top:8px;position:relative;width:min(100%,360px);}' +
+    '#jj-ach .row .bar{--bw:6px;height:20px;margin-top:10px;position:relative;width:100%;}' +
     '#jj-ach .row .bar i{position:absolute;inset:0;background:linear-gradient(90deg,#FF00F5,#ff7df4);border-radius:3px;transform-origin:left center;transform:scaleX(var(--p,0));transition:transform .6s cubic-bezier(.22,1,.36,1);box-shadow:0 0 10px rgba(255,0,245,.45);}' +
     '#jj-ach .row .bar b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.7);letter-spacing:.06em;}' +
     '#jj-ach .row .rw{display:flex;align-items:center;gap:8px;font-size:22px;font-weight:700;padding-right:6px;}#jj-ach .row .rw img{width:38px;height:36px;object-fit:contain;transition:filter .4s ease,opacity .4s ease;}' +
@@ -103,10 +104,12 @@
   var hud, nStar, nCoin, icStar, icCoin, mounted = false;
   function mount() {
     if (mounted || !document.body) return; mounted = true;
-    hud = document.createElement('button'); hud.id = 'jj-score'; hud.type = 'button'; hud.setAttribute('aria-label', 'Score and achievements'); hud.setAttribute('data-cursor', 'hover');
+    hud = document.createElement('button'); hud.id = 'jj-sc-hud'; hud.type = 'button'; hud.setAttribute('aria-label', 'Score and achievements'); hud.setAttribute('data-cursor', 'hover');
     hud.innerHTML = '<span class="n" id="jj-sc-stars">0</span><img class="ic star" src="' + IMG.star + '" alt=""><span class="n" id="jj-sc-coins">0</span><img class="ic coin" src="' + IMG.coin + '" alt="">' +
       '<svg class="chev" viewBox="0 0 12 6" fill="none"><path d="M1 1l5 4 5-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    document.body.appendChild(hud);
+    var ml = document.querySelector('.menu-links'), mc = ml && ml.querySelector('.menu-container');
+    if (ml && mc) { hud.classList.add('innav'); if (getComputedStyle(ml).display.indexOf('flex') < 0) { ml.style.display = 'flex'; ml.style.alignItems = 'center'; } ml.insertBefore(hud, mc); }
+    else document.body.appendChild(hud);
     nStar = hud.querySelector('#jj-sc-stars'); nCoin = hud.querySelector('#jj-sc-coins'); icStar = hud.querySelector('.ic.star'); icCoin = hud.querySelector('.ic.coin');
     nStar.textContent = stars(); nCoin.textContent = coins();
     hud.addEventListener('click', function (e) { e.stopPropagation(); if (panelOpen) closePanel(); else openPanel(); });
@@ -121,7 +124,7 @@
   }
   /* left of the Menu, centred on it — layout position (transforms ignored, so the nav's drop-in doesn't skew it) */
   function place() {
-    if (!hud) return;
+    if (!hud || hud.classList.contains('innav')) return;
     var m = document.querySelector('.menu-container') || document.querySelector('.w-nav-button') || document.querySelector('.menu');
     if (!m) { hud.style.top = '56px'; hud.style.right = '32px'; return; }
     var x = 0, y = 0, n = m; while (n) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
@@ -193,16 +196,18 @@
   function resume() { if (!paused) return; paused = false; try { window.dispatchEvent(new Event('jj:score:resume')); } catch (e) {} }
   function buildPanel() {
     if (panel) return;
-    panel = document.createElement('div'); panel.id = 'jj-ach';
+    panel = document.createElement('div'); panel.id = 'jj-ach'; panel.setAttribute('data-lenis-prevent', '');
     panel.innerHTML = '<div class="card jj-stone"><img class="flag l" src="' + IMG.flagL + '" alt=""><img class="flag r" src="' + IMG.flagR + '" alt="">' +
       '<div class="head"><h2>Achievements</h2><div class="tot"><span><img src="' + IMG.star + '" alt=""><span class="ts"></span></span><span><img src="' + IMG.coin + '" alt=""><span class="tc"></span></span><button class="x" type="button" aria-label="Close" data-cursor="hover">&times;</button></div></div>' +
-      '<div class="tabs">' + TABS.map(function (t) { return '<button type="button" class="tab jj-block" data-tab="' + t[0] + '" data-cursor="hover">' + t[1] + '</button>'; }).join('') + '</div>' +
-      '<div class="list"></div></div>';
+      '<div class="tabs">' + TABS.map(function (t) { return '<div class="tab jj-block" role="tab" tabindex="0" data-tab="' + t[0] + '" data-cursor="hover">' + t[1] + '</div>'; }).join('') + '</div>' +
+      '<div class="list" data-lenis-prevent></div></div>';
     document.body.appendChild(panel);
     listEl = panel.querySelector('.list'); totEl = panel.querySelector('.tot');
     panel.querySelector('.x').addEventListener('click', closePanel);
     panel.addEventListener('click', function (e) { if (e.target === panel) closePanel(); });
-    panel.querySelectorAll('.tab').forEach(function (b) { b.addEventListener('click', function () { curTab = b.getAttribute('data-tab'); renderRows(); }); });
+    panel.querySelectorAll('.tab').forEach(function (b) { var go = function (e) { e.preventDefault(); e.stopPropagation(); curTab = b.getAttribute('data-tab'); renderRows(); };
+      b.addEventListener('click', go); b.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') go(e); }); });
+    panel.addEventListener('wheel', function (e) { e.stopPropagation(); }, { passive: true });   // the list scrolls, not the page behind (Lenis / the horizontal scroll)
   }
   function renderRows() {
     if (!panel) return;

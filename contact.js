@@ -15,7 +15,7 @@
 (function () {
   /* Build marker — to confirm the browser is running the latest file, open the console and look for this
      line (or type window.JJ_CONTACT_BUILD). If it's missing/old, you're on a cached copy → bump ?v in Webflow. */
-  window.JJ_CONTACT_BUILD = 'r5 · jjScore hooks · linkedin opens profile · name-svg-icon · duck-ambient · tut-centre+line-behind';
+  window.JJ_CONTACT_BUILD = 'r6 · score pill fades with the nav · jjScore hooks · linkedin opens profile · name-svg-icon · duck-ambient · tut-centre+line-behind';
   try { console.log('%c[JJ] contact.js build: ' + window.JJ_CONTACT_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
   /* ---- 1. styles: uses the site's OWN Webflow brand fonts (already served) ---- */
   var CSS = `
@@ -1095,7 +1095,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     lockScroll();
     // hide the site nav (J logo + Menu) during the opening, fade it in a few seconds later
     try {
-      var nav = document.querySelectorAll('.nav-logo-link, .nav-logo, .menu-container');
+      var nav = document.querySelectorAll('.nav-logo-link, .nav-logo, .menu-container, #jj-sc-hud');
       nav.forEach(function (n) { n.style.transition = 'opacity .9s ease'; n.style.opacity = '0'; });
       setTimeout(function () { nav.forEach(function (n) { n.style.opacity = '1'; }); }, 3500);
     } catch (e) {}

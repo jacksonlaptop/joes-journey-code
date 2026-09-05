@@ -82,7 +82,7 @@
   }
 
   (function jjNavDropIn(){
-    var SEL = '.nav-logo-link, .nav-logo, .menu-container, .menu-button';
+    var SEL = '.nav-logo-link, .nav-logo, .menu-container, .menu-button, #jj-sc-hud';
     /* hard hide until the drop-in (beats Webflow's nav styles; the page head carries the same rule for the pre-script moment) */
     (function () { var st = document.createElement('style'); st.textContent = 'html:not(.jj-nav-in) .nav-logo-link,html:not(.jj-nav-in) .menu-container{opacity:0!important}'; (document.head || document.documentElement).appendChild(st); })();
     function run(){

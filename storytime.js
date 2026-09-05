@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's55 · one shivering chicken + its bones by the house (tap: twitch, squawk, hop); bones piles are the rattle clip (hover = rattle, click = collect); pressable pixels from baked masks (Joe/Trogdor/window hole — every browser); hearth swells + crackle +40% on hover; loader copy = interactive journey; sound-off ask before the first line; gentler hero hover grow; window Trogdor catchable through the hole (Catch Trogdor!); cave darkness + moody sky on \'darkness\'; bone rattle hook; chickens by the village house (tap = squawk + hop); bones in the cavern + castle (Bone Collector); score pause hooks; +1 star on finishing (jjScore); Skip CTA bottom-left, 32px like the sound moon; hover fill + pink press on Skip/Back/Skip-this-part; Skip = the exact NEXT SCENE element above the banner; glass confirm buttons; brighter sky dressing + bigger tavern moon; quicker pants→Designer; ta-da once and trimmed; Joe off the fire; smaller window Trogdor; pitchfork man in front;  Skip CTA = the horizontal-scroll Next Scene button with the skip icon; progress bar along the bottom; village flame in front of the fleeing villagers;  tavern crowd = one full-body Seedance clip on the floorboards;  castle Trogdor is ONE clip too (huff → fire on \'facing fire\' → puzzled turn to camera → shrinks in smoke);  village Trogdor is ONE Seedance clip (huff, then fire from 2.2s, held);  CTA = the homepage button; hearth fire on the logs; puzzled Trogdor lands where the fire-breather stood; sword + pitchfork clips uncut; villagers stay on the land; SFX at a quarter; gait-matched gallop seam;  nav held back until its drop-in (jj-nav-in gate);  clips prefetched in scene order while the tale plays;  Skip CTA + pause-everything confirm; seamless gallop;  every sound at half; castle clips silent bar the roar; smaller puzzled Trogdor; flame deeper in the mouth; bigger hearth fire; grounded tavern crowd; villagers run longer; headroom for the jump; quick ending';
+  window.JJ_STORY_BUILD = 's56 · lone chicken + bones in the cave, the three back by the village house; bones further back; score pill drops in with the nav; one shivering chicken + its bones by the house (tap: twitch, squawk, hop); bones piles are the rattle clip (hover = rattle, click = collect); pressable pixels from baked masks (Joe/Trogdor/window hole — every browser); hearth swells + crackle +40% on hover; loader copy = interactive journey; sound-off ask before the first line; gentler hero hover grow; window Trogdor catchable through the hole (Catch Trogdor!); cave darkness + moody sky on \'darkness\'; bone rattle hook; chickens by the village house (tap = squawk + hop); bones in the cavern + castle (Bone Collector); score pause hooks; +1 star on finishing (jjScore); Skip CTA bottom-left, 32px like the sound moon; hover fill + pink press on Skip/Back/Skip-this-part; Skip = the exact NEXT SCENE element above the banner; glass confirm buttons; brighter sky dressing + bigger tavern moon; quicker pants→Designer; ta-da once and trimmed; Joe off the fire; smaller window Trogdor; pitchfork man in front;  Skip CTA = the horizontal-scroll Next Scene button with the skip icon; progress bar along the bottom; village flame in front of the fleeing villagers;  tavern crowd = one full-body Seedance clip on the floorboards;  castle Trogdor is ONE clip too (huff → fire on \'facing fire\' → puzzled turn to camera → shrinks in smoke);  village Trogdor is ONE Seedance clip (huff, then fire from 2.2s, held);  CTA = the homepage button; hearth fire on the logs; puzzled Trogdor lands where the fire-breather stood; sword + pitchfork clips uncut; villagers stay on the land; SFX at a quarter; gait-matched gallop seam;  nav held back until its drop-in (jj-nav-in gate);  clips prefetched in scene order while the tale plays;  Skip CTA + pause-everything confirm; seamless gallop;  every sound at half; castle clips silent bar the roar; smaller puzzled Trogdor; flame deeper in the mouth; bigger hearth fire; grounded tavern crowd; villagers run longer; headroom for the jump; quick ending';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -86,7 +86,8 @@
         hero:{ label:'Trogdor the Burninator', glow:'rgba(255,96,120,.55)', lt:25, hit:[.27,.31,.84,.8] },
         /* snd: the Seedance breathing had a music pad under it — a proper snore is coming from the user */
         fx:[ { type:'smoke', at:[28, 46] }, { type:'glint', at:[[46,70],[58,74],[66,66],[52,78]] } ] },
-      { key:'bones1', vid:'bones-rattle', ar:722/424, idle:true, hoverPlay:true, cls:'prop', tap:'bones', hoverSnd:'bone-jiggle', css:'left:39.5%;bottom:27vh;width:min(9.5vw,190px)' }   // Bone Collector 1/2 — still until hovered (rattles + glows), whisks away on click
+      { key:'bones1', vid:'bones-rattle', ar:722/424, idle:true, hoverPlay:true, cls:'prop', tap:'bones', hoverSnd:'bone-jiggle', css:'left:41%;bottom:33vh;width:min(6.5vw,130px)' },   // Bone Collector 1/2 — further back on the cave floor; still until hovered, whisks away on click
+      { key:'chick', vid:'vil-chicken', ar:548/646, seg:[0.1, 3.5], hop:[3.6, 6.0], tap:'chick', cls:'prop', css:'left:49%;bottom:27.5vh;width:min(6.5vw,130px)' }   // the lone chicken by its friend's bones: shivers on a loop; tap → bones twitch, squawk, hop
     ]},
     /* tavern per the "3 - Tavern 1" mockup: Joe mid-left on the floor, grandma back-right,
        hooded guy far right, the old man BIG in the foreground (so he's last = on top). */
@@ -144,7 +145,7 @@
     ]}
   };
   Object.keys(COMP).forEach(function (n) { if (/^castle/.test(n)) COMP[n].layers.push(   // Bone Collector 2/2 — mid-ground between Joe and Trogdor, every castle shot
-    { key:'bones2', vid:'bones-rattle', ar:722/424, idle:true, hoverPlay:true, cls:'prop', tap:'bones', hoverSnd:'bone-jiggle', now:true, css:'left:41%;bottom:22vh;width:min(8.5vw,170px)' }); });
+    { key:'bones2', vid:'bones-rattle', ar:722/424, idle:true, hoverPlay:true, cls:'prop', tap:'bones', hoverSnd:'bone-jiggle', now:true, css:'left:44%;bottom:27vh;width:min(6vw,120px)' }); });
   var taken = {};                                            // props the reader has picked up — never rebuilt
 
   /* ---- VILLAGE = 4-panel storyboard, sizes + positions traced from the "2 - Village 1..4"
@@ -170,7 +171,7 @@
        wedge and its pointed base hides inside the head; the origin (58.4% 46%) is the mouth interior. */
     var L = [
       /* the three chickens by the house: a Seedance one-shot that waits on its first frame — tap → squawk + a little hop, and they stay worried */
-      { key:'chick', vid:'vil-chicken', ar:548/646, seg:[0.1, 3.5], hop:[3.6, 6.0], tap:'chick', cls:'prop', css:'left:6%;bottom:21vh;width:min(12vw,240px)' },   // shivers on a loop (0.1–3.5s); tap → bones twitch + squawk + hop (3.6–6s), then back to shivering
+      { key:'chicks', vid:'vil-chickens', ar:898/592, hold:true, idle:true, tap:'chicks', cls:'prop', css:'left:4%;bottom:21vh;width:min(23vw,460px)' },   // the three by the house: wait on frame 0; tap → squawk + hop, they stay worried
       /* one Seedance clip does it all now: he huffs (his own smoke puffs), the fire starts at 2.2s — the same beat the
          old two-layer flame used to grow on — and the blaze is held by a swung tail. Body sits where the old loop's did. */
       /* both are Seedance one-shots (turn-back at the very end trimmed, last stride held): the class in `run` lands on
@@ -526,10 +527,18 @@
     if (name === 'bedOut') { fadeBed(2500); return; }
     if (name === 'dark' || name === 'darkOff') { var on = name === 'dark'; document.getElementById('jjst-dark').classList.toggle('on', on); document.getElementById('jjst').classList.toggle('moody', on); return; }
     if (name === 'chick') {                                    // the bones twitch, the chicken squawks and hops, then it's back to shivering (wireSeg)
-      var cr = layerRecs['chick']; if (!cr || cr.el._hop) return; var v = cr.el, hl = v._segL;
+      var cr = layerRecs[key]; if (!cr || cr.el._hop) return; var v = cr.el, hl = v._segL;
       v._hop = true; try { v.currentTime = hl.hop[0]; } catch (x) {}
       var pv = v.play(); if (pv && pv.catch) pv.catch(function () {});
       setTimeout(function () { oneShot('chicken-squawk', .45); }, 350);
+      return;
+    }
+    if (name === 'chicks') {                                   // the village three: squawk + hop, once through; a second prod replays from the calm still
+      var gr = layerRecs[key]; if (!gr || gr.el._busy) return; var gv = gr.el; gv._busy = true;
+      try { gv.currentTime = (gv.ended || gv.currentTime > 4) ? 1.3 : 0; } catch (x) {}
+      oneShot('chickens-squawk', .45);
+      var gp = gv.play(); if (gp && gp.catch) gp.catch(function () {});
+      var gfree = function () { gv._busy = false; }; gv.addEventListener('ended', gfree, { once: true }); setTimeout(gfree, 5500);
       return;
     }
     if (name === 'bones') {                                    // whisk the pile away; Bone Collector ticks up (jjScore)
@@ -918,7 +927,7 @@
       }, T.boxFadeAt);
     }
     function navDrop() {
-      var nav = document.querySelectorAll('.nav-logo-link, .menu-container');
+      var nav = document.querySelectorAll('.nav-logo-link, .menu-container, #jj-sc-hud');   // the score pill rides in with the menu
       nav.forEach(function (n) { n.style.transition = 'none'; n.style.transform = 'translateY(-42px)'; n.style.opacity = '0'; });
       void document.body.offsetWidth;
       document.documentElement.classList.add('jj-nav-in');           // lifts the !important hide (page head + the rule injected below)

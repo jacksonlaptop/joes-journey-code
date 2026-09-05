@@ -1523,7 +1523,8 @@
     function tick() {
       var e = Date.now() - start;
       if (e < FILL_UNTIL) bar.style.width = Math.min(100, (e / FILL_UNTIL) * 100) + '%';
-      else bar.style.width = (jjScrollProgress() * 100) + '%';
+      else { var p = jjScrollProgress(); bar.style.width = (p * 100) + '%';
+        if (p >= 0.98 && window.jjScore) window.jjScore.award('scroll'); }   // +1 star — made it through the journey
       requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
@@ -1729,4 +1730,50 @@
 
   if (document.readyState === 'complete') initParallax();
   else window.addEventListener('load', initParallax);
+})();
+
+/* ===== Planet Hunter: the "mars" Rive (which holds BOTH planets) rebuilt in code — the user has no Rive access. Traced from the
+   .riv: a 10s loop on a 16:9 artboard. Jupiter (11.5% of the width) enters top-right at 0.7s, swoops through the bottom and leaves
+   top-left at 8.3s; Mars (6.4%) enters top-right at 3.5s and slides down to leave bottom-left at 8.3s. We hide the Rive canvas, fit a
+   16:9 box inside the element exactly like Rive's contain/center, and fly the outline art along the same paths. A click pops the
+   FILLED art in (the flight carries on) and ticks Planet Hunter. The element keeps its Webflow box and reveal. ===== */
+(function () {
+  var PGB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
+  var ART = { jupiter: { line: PGB + 'score-jupiter-line.webp', fill: PGB + 'score-jupiter.webp', w: 11.5 },
+              mars:    { line: PGB + 'score-mars-line.webp',    fill: PGB + 'score-mars.webp',    w: 6.4 } };
+  var st = document.createElement('style');
+  st.textContent = '.jj-planets>canvas{display:none!important;}.jj-planets{position:relative;}' +
+    '.jj-planets .jj-pl-box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);aspect-ratio:16/9;width:100%;max-height:100%;pointer-events:none;}' +
+    '@supports not (aspect-ratio:16/9){.jj-planets .jj-pl-box{height:100%;}}' +
+    '.jj-planets .jj-pl{position:absolute;left:0;top:0;translate:-50% -50%;pointer-events:none;animation:10s linear infinite;cursor:pointer;}' +
+    '.jj-planets .jj-pl.jupiter{width:11.5%;animation-name:jjPlJupiter;}.jj-planets .jj-pl.mars{width:6.4%;animation-name:jjPlMars;}' +
+    '.jj-planets .jj-pl img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:auto;transition:opacity .5s ease,transform .7s cubic-bezier(.34,1.56,.64,1),filter .3s ease;}' +
+    '.jj-planets .jj-pl img.spin{animation:jjPlSpin 70s linear infinite;}' +
+    '.jj-planets .jj-pl img.fill{opacity:0;transform:scale(.55);pointer-events:none;}.jj-planets .jj-pl.lit img.fill{opacity:1;transform:scale(1);}.jj-planets .jj-pl.lit img.line{opacity:0;pointer-events:none;}' +
+    '.jj-planets .jj-pl:not(.lit):hover img.line{filter:drop-shadow(0 0 14px rgba(199,231,255,.95));}' +
+    '.jj-planets .jj-pl .box{position:relative;width:100%;aspect-ratio:1;}' +
+    '@keyframes jjPlSpin{to{rotate:360deg;}}' +
+    /* left/top are % of the 16:9 box, straight from the trace (centre points) */
+    '@keyframes jjPlJupiter{0%,6.9%{left:106%;top:19%;opacity:0;}7%{left:103%;top:17%;opacity:1;}20%{left:79.7%;top:32%;}30%{left:68.9%;top:57%;}40%{left:57.7%;top:83%;}47%{left:46%;top:86.6%;}50%{left:38%;top:86.6%;}60%{left:21.4%;top:68%;}70%{left:11.9%;top:41%;}80%{left:3%;top:17.5%;}83%{left:-4%;top:12%;opacity:1;}83.1%,100%{left:-6%;top:10%;opacity:0;}}' +
+    '@keyframes jjPlMars{0%,34.9%{left:104%;top:19%;opacity:0;}35%{left:98%;top:19%;opacity:1;}40%{left:88.3%;top:15%;}45%{left:75.3%;top:15%;}50%{left:60.7%;top:23%;}55%{left:49.3%;top:41%;}60%{left:40.7%;top:59%;}65%{left:31.1%;top:71.6%;}70%{left:19.3%;top:79%;}75%{left:8.4%;top:83%;}80%{left:2.4%;top:85%;}83%{left:-4%;top:87%;opacity:1;}83.1%,100%{left:-6%;top:88%;opacity:0;}}';
+  document.head.appendChild(st);
+  function planet(name) {
+    var a = ART[name], el = document.createElement('div'); el.className = 'jj-pl ' + name; el.setAttribute('data-cursor', 'hover');
+    el.innerHTML = '<div class="box"><img class="line spin" src="' + a.line + '" alt=""><img class="fill" src="' + a.fill + '" alt=""></div>';
+    el.addEventListener('click', function (e) {
+      if (el.classList.contains('lit')) return; el.classList.add('lit');
+      if (window.jjScore) window.jjScore.award('planets', { part: name, x: e.clientX, y: e.clientY });
+    });
+    return el;
+  }
+  function wire(host) {
+    if (host._jjPlanets) return; host._jjPlanets = true; host.classList.add('jj-planets');
+    var box = document.createElement('div'); box.className = 'jj-pl-box'; box.appendChild(planet('jupiter')); box.appendChild(planet('mars')); host.appendChild(box);
+    /* contain/center like Rive: the 16:9 box is as big as the host allows */
+    function fit() { var w = host.clientWidth, h = host.clientHeight; if (!w || !h) return; var bw = Math.min(w, h * 16 / 9); box.style.width = bw + 'px'; box.style.height = (bw * 9 / 16) + 'px'; }
+    fit(); if (window.ResizeObserver) new ResizeObserver(fit).observe(host); window.addEventListener('resize', fit);
+  }
+  function scan() { document.querySelectorAll('.mars, [data-jj-planets]').forEach(wire); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan); else scan();
+  setTimeout(scan, 3000);
 })();

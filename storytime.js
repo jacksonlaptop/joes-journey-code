@@ -11,12 +11,25 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's50 · Skip = the exact NEXT SCENE element above the banner; glass confirm buttons; brighter sky dressing + bigger tavern moon; quicker pants→Designer; ta-da once and trimmed; Joe off the fire; smaller window Trogdor; pitchfork man in front;  Skip CTA = the horizontal-scroll Next Scene button with the skip icon; progress bar along the bottom; village flame in front of the fleeing villagers;  tavern crowd = one full-body Seedance clip on the floorboards;  castle Trogdor is ONE clip too (huff → fire on \'facing fire\' → puzzled turn to camera → shrinks in smoke);  village Trogdor is ONE Seedance clip (huff, then fire from 2.2s, held);  CTA = the homepage button; hearth fire on the logs; puzzled Trogdor lands where the fire-breather stood; sword + pitchfork clips uncut; villagers stay on the land; SFX at a quarter; gait-matched gallop seam;  nav held back until its drop-in (jj-nav-in gate);  clips prefetched in scene order while the tale plays;  Skip CTA + pause-everything confirm; seamless gallop;  every sound at half; castle clips silent bar the roar; smaller puzzled Trogdor; flame deeper in the mouth; bigger hearth fire; grounded tavern crowd; villagers run longer; headroom for the jump; quick ending';
+  window.JJ_STORY_BUILD = 's55 · one shivering chicken + its bones by the house (tap: twitch, squawk, hop); bones piles are the rattle clip (hover = rattle, click = collect); pressable pixels from baked masks (Joe/Trogdor/window hole — every browser); hearth swells + crackle +40% on hover; loader copy = interactive journey; sound-off ask before the first line; gentler hero hover grow; window Trogdor catchable through the hole (Catch Trogdor!); cave darkness + moody sky on \'darkness\'; bone rattle hook; chickens by the village house (tap = squawk + hop); bones in the cavern + castle (Bone Collector); score pause hooks; +1 star on finishing (jjScore); Skip CTA bottom-left, 32px like the sound moon; hover fill + pink press on Skip/Back/Skip-this-part; Skip = the exact NEXT SCENE element above the banner; glass confirm buttons; brighter sky dressing + bigger tavern moon; quicker pants→Designer; ta-da once and trimmed; Joe off the fire; smaller window Trogdor; pitchfork man in front;  Skip CTA = the horizontal-scroll Next Scene button with the skip icon; progress bar along the bottom; village flame in front of the fleeing villagers;  tavern crowd = one full-body Seedance clip on the floorboards;  castle Trogdor is ONE clip too (huff → fire on \'facing fire\' → puzzled turn to camera → shrinks in smoke);  village Trogdor is ONE Seedance clip (huff, then fire from 2.2s, held);  CTA = the homepage button; hearth fire on the logs; puzzled Trogdor lands where the fire-breather stood; sword + pitchfork clips uncut; villagers stay on the land; SFX at a quarter; gait-matched gallop seam;  nav held back until its drop-in (jj-nav-in gate);  clips prefetched in scene order while the tale plays;  Skip CTA + pause-everything confirm; seamless gallop;  every sound at half; castle clips silent bar the roar; smaller puzzled Trogdor; flame deeper in the mouth; bigger hearth fire; grounded tavern crowd; villagers run longer; headroom for the jump; quick ending';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
   var AV = '?a=6';
   function F(name){ return GB + 'story-' + name + '.webp' + AV; }
+  /* pressable-pixel masks, precomputed from the posters / the tavern board (96px wide, 1 bit per pixel) — so hover and click land
+     only on the character in EVERY browser, with no canvas read of a cross-origin image (that read silently failed for some visitors → box fallback) */
+  var MASK = {
+    'cav-dragon-loop': '96,87,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//AAAAAAAAAAAAOD//8AAAAAAAAAAAcB///AAAAAAAAAAA4A//8AAAAAAAAAAH4M//4AAAAAAAAAAf48f/wAAAAAAAAAA//4f/wAAAAAAAAAB//wf/gAAAAAAAAAB//gf4AAAAAAAAAAD//gfxwAAAAAAAAAD//wf/xAAAAAAAAAH//////gAAAAAAAAH//////gAAAAAAAAP//////wAAAAAAAD///////+AAAAAAAH///////+AAAAAAAH///////+AAAAAAAH///////+AAAAAAAH///////+AAAAAAAH////////gAAAAAAB/H//////wAAAAAAAYP//////gAAAAAAAAP//////gAAAAAAAAH//////gAAAAAAAAz//////wAAAAAAAAz//////wAAAAAAAA7////+/wAAAAAAAB8////+/gAAAAAAAB8P//+A/gAAAAAAAB+f///g/gAAAAAAAB8f///w/gAAAAAAAAOD///5/gAAAAAAAAHg///7+AAAAAAAAAD4////+AAAAAAAAAB/B///8AAAAAAAAAA/+f//4AAAAAAAAAAP////wAAAAAAAAAAD////gAAAAAAAAAAA////AAAAAAAAAAAAH//8AAAAAAAAAAAAA//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    'tav-joe-loop': '96,96,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf8AAAAAAAAAAAAAAf/AAAAAAAAAAAAAB//wAAAAAAAAAAAAH//8AAAAAAAAAAAAP//+AAAAAAAAAAAA////AAAAAAAAAAAB////gAAAAAAAAAAD////wAAAAAAAAAAH////wAAAAAAAAAAH////4AAAAAAAAAAP////8AAAAAAAAAAf////8AAAAAAAAAAf////+AAAAAAAAAAf////+AAAAAAAAAA/////+QAAAAAAAAA//////wAAAAAAAAA//////gAAAAAAAAB//////AAAAAAAAAB//////AAAAAAAAAB//////AAAAAAAAAD//////AAAAAAAAAD//////AAAAAAAAAD//////gAAAAAAAAD//////gAAAAAAAAB//////gAAAAAAAAA//////gAAAAAAAAAf/////gAAAAAAAAAf/////AAAAAAAAAAf/////AAAAAAAAAHf/////AAAAAAAAAH/////+AAAAAAAAAH/////+AAAAAAAAADn////8AAAAAAAAAAx////4AAAAAAAAAAwf///wAAAAAAAAAAYH///AAAAAAAAAAAdv//+AAAAAAAAAAAP////AAAAAAAAAAAP////AAAAAAAAAAAf////gAAAAAAAAAAf////gAAAAAAAAAAH////gAAAAAAAAAAP////gAAAAAAAAAAf////wAAAAAAAAAA/////4AAAAAAAAAB/////8AAAAAAAAAB/////8AAAAAAAAAD/////+AAAAAAAAAH/////+AAAAAAAAAH//////AAAAAAAAAP//////AAAAAAAAAf//////gAAAAAAAA///////gAAAAAAAA///////wAAAAAAAB///////wAAAAAAAB///////wAAAAAAAD///////4AAAAAAAD///////4AAAAAAAA///////4AAAAAAAAB/////AAAAAAAAAAAP////AAAAAAAAAAAB/gB/gAAAAAAAAAAB/gB/wAAAAAAAAAAD/AB/wAAAAAAAAAAA4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    'vil-dragon-loop': '96,62,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAPgAAAAAAAAAAAAAAfgAAAAAAAAAAAAAA/+AAAAAAAAAAAAA5/4AAAAAAAAAAAAA//wAAAAAAAAAAAAA//wAAAAAAAAAAAAA3/wAAAAAAAAAAAAAf/gAAAAAAAAAAAAADfgAAAAAAAAAAAAAAPAEAAAAAAAAAAAAAHAcAAAAAAAAAAAAAHD8AAAAAAAAAAAAAHD8ACAAAAAAAAAAAHjwAHAAAAAAAAAAAHjwAHAAAAAAAAAAAHjkAGAAAAAAAAAAAHkH4CAAAAAAAAAAAP0PwCAAAAAAAAAAAP4/gCAAAAAAAAAAAP5/gCAAAAAAAAAAAP8MACAAAAAAAAAAAP+AACAAAAAAAAAAAP/gAGAAAAAAAAAAAP/8AMAAAAAAAAAAAP/9AcAAAAAAAAAAAP//44AAAAAAAAAAAf///4AAAAAAAAAAAP///wAAAAAAAAAAAD///gAAAAAAAAAAAB///AAAAAAAAAAAAA//+AAAAAAAAAAAAAf/4AAAAAAAAAAAAAH/wAAAAAAAAAAAAAH/AAAAAAAAAAAAAADngAAAAAAAAAAAAADjwAAAAAAAAAAAAABxwAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    'tav-bg-2': '96,72,//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+AA/////////////+AAf////////////+AAf////////////+AAf////////////+AAf////////////+AAf////////////+AAf////////////+AAf////////////+AAf////////////+AAf////////////+AAf////////////+AAf////////////+AAf////////////+AAf////////////+AAf////////////+AAf////////////+AAf/////////////AA///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////'
+  };
+  var maskCache = {};
+  function maskHit(name){ if (!MASK[name]) return null; if (maskCache[name]) return maskCache[name];
+    var p = MASK[name].split(','), w = +p[0], h = +p[1], bin = atob(p[2]), d = new Uint8Array(w * h * 4);
+    for (var i = 0; i < w * h; i++) if (bin.charCodeAt(i >> 3) & (128 >> (i & 7))) d[i * 4 + 3] = 255;
+    return (maskCache[name] = { w: w, h: h, ar: w / h, d: d }); }
   var BANNER = GB + 'story-banner.webp' + AV;             // J-swirl caption frame
   var SKY = GB + 'story-nightsky.svg' + AV;
   /* the loader's night dressing, reused behind the transparent scene boards (moon + whirls + dot stars).
@@ -72,12 +85,13 @@
       { key:'dragonloop', vid:'cav-dragon-loop', ar:1400/1276, css:'right:7%;bottom:8vh;width:min(57vw,1140px)',
         hero:{ label:'Trogdor the Burninator', glow:'rgba(255,96,120,.55)', lt:25, hit:[.27,.31,.84,.8] },
         /* snd: the Seedance breathing had a music pad under it — a proper snore is coming from the user */
-        fx:[ { type:'smoke', at:[28, 46] }, { type:'glint', at:[[46,70],[58,74],[66,66],[52,78]] } ] }
+        fx:[ { type:'smoke', at:[28, 46] }, { type:'glint', at:[[46,70],[58,74],[66,66],[52,78]] } ] },
+      { key:'bones1', vid:'bones-rattle', ar:722/424, idle:true, hoverPlay:true, cls:'prop', tap:'bones', hoverSnd:'bone-jiggle', css:'left:39.5%;bottom:27vh;width:min(9.5vw,190px)' }   // Bone Collector 1/2 — still until hovered (rattles + glows), whisks away on click
     ]},
     /* tavern per the "3 - Tavern 1" mockup: Joe mid-left on the floor, grandma back-right,
        hooded guy far right, the old man BIG in the foreground (so he's last = on top). */
     tavern: { bg:'tav-bg-2', snd:{ src:'tav-fire', vol:.15 }, layers:[     // fireplace crackle bed for the whole shot; the board's window is a real hole onto the sky
-      { key:'hearth', vid:'tav-fire-loop', ar:1, css:'left:14.2vw;bottom:calc(50vh - .5vw);width:8.4vw' },   // Seedance flame on the logs (listed first → behind Joe)
+      { key:'hearth', vid:'tav-fire-loop', ar:1, cls:'hearthy', hoverBoost:1.4, css:'left:14.2vw;bottom:calc(50vh - .5vw);width:8.4vw' },   // hover: the fire swells and the crackle comes up 40%   // Seedance flame on the logs (listed first → behind Joe)
       { key:'joe', vid:'tav-joe-loop', ar:1, hold:true, css:'left:15%;bottom:24vh;width:min(26vw,520px)',
         hero:{ label:'Joe the Righteous', glow:'rgba(255,214,120,.6)', seekTo:3.0, lt:4, hit:[.22,.14,.72,.82] },
         snd:{ src:'tav-joe-tada', vol:.075, once:true } },
@@ -129,6 +143,9 @@
       { key:'joe3', vid:'cas-hurrah2', ar:700/900, hold:true, css:CAS_JOE2 }
     ]}
   };
+  Object.keys(COMP).forEach(function (n) { if (/^castle/.test(n)) COMP[n].layers.push(   // Bone Collector 2/2 — mid-ground between Joe and Trogdor, every castle shot
+    { key:'bones2', vid:'bones-rattle', ar:722/424, idle:true, hoverPlay:true, cls:'prop', tap:'bones', hoverSnd:'bone-jiggle', now:true, css:'left:41%;bottom:22vh;width:min(8.5vw,170px)' }); });
+  var taken = {};                                            // props the reader has picked up — never rebuilt
 
   /* ---- VILLAGE = 4-panel storyboard, sizes + positions traced from the "2 - Village 1..4"
          mockups (grid-measured, canvas padding factored in). Same bg + same characters (matched
@@ -141,7 +158,7 @@
   /* tavern2 = the same room, plus Trogdor BEHIND the board: a 95vw copy of the huff-and-puff loop sits behind the
      wall (behind:true → mounted under the bg, over the sky) and rises so only his head shows in the window. */
   COMP.tavern2 = { bg:'tav-bg-2', snd:COMP.tavern.snd, layers: COMP.tavern.layers.concat([
-    { key:'peek', vid:'vil-dragon-loop', ar:1400/900, behind:true, css:'left:17.2vw;top:calc(38vh - 9vw);width:52.5vw',   // 25% smaller; head centred in the window
+    { key:'peek', vid:'vil-dragon-loop', ar:1400/900, behind:true, through:{ bg:'tav-bg-2' }, css:'left:17.2vw;top:calc(38vh - 9vw);width:52.5vw',   // through: pressable only on HIS pixels seen THROUGH the window hole → Catch Trogdor!   // 25% smaller; head centred in the window
       to:{ css:'top:calc(22vh - 13vw)', delay:100, dur:1200, ease:'cubic-bezier(.22,1,.36,1)' } } ]) };
   var VIL_DRAGON = 'right:17%;bottom:21vh;width:min(46.5vw,930px)';
   var VIL_DRAGON_FIRE = 'right:16.3vw;bottom:calc(21vh - 4.2vw);width:56.9vw';   // the 16:9 fire clip, body matched to the old loop's box (flame tip lands ~30vw)   // 25% smaller than the traced size (the 1400px loop went soft at full width); right nudged so the mouth stays put   // Trogdor — body 25vw; nudged 1% left so the tail clears the old man's window
@@ -152,6 +169,8 @@
        full in shot 2. Both use VIL_DRAGON. The flicker clip is registered so its thin neck sits in the mouth
        wedge and its pointed base hides inside the head; the origin (58.4% 46%) is the mouth interior. */
     var L = [
+      /* the three chickens by the house: a Seedance one-shot that waits on its first frame — tap → squawk + a little hop, and they stay worried */
+      { key:'chick', vid:'vil-chicken', ar:548/646, seg:[0.1, 3.5], hop:[3.6, 6.0], tap:'chick', cls:'prop', css:'left:6%;bottom:21vh;width:min(12vw,240px)' },   // shivers on a loop (0.1–3.5s); tap → bones twitch + squawk + hop (3.6–6s), then back to shivering
       /* one Seedance clip does it all now: he huffs (his own smoke puffs), the fire starts at 2.2s — the same beat the
          old two-layer flame used to grow on — and the blaze is held by a swung tail. Body sits where the old loop's did. */
       /* both are Seedance one-shots (turn-back at the very end trimmed, last stride held): the class in `run` lands on
@@ -186,7 +205,7 @@
 
   /* ---- captions: each = the line + the chapter it's on + word `triggers` that switch chapter ---- */
   var SCENES = [
-    { text:"Many moons ago in a mysterious land there lived a cunning and evil beast who dwelled deep in the darkness....", comp:'cavern' },
+    { text:"Many moons ago in a mysterious land there lived a cunning and evil beast who dwelled deep in the darkness....", comp:'cavern', triggers:[ { at:'darkness', fx:'dark' } ] },   // the cave dims, the sky broods
     { text:"He had a fascination for gold, jewels, treasures and anything that sparkled...but also something more sinister...the local villagers!",
       comp:'cavern', triggers:[ { at:'jewels', fx:'chest' }, { at:'sparkled', fx:'bedOut' }, { at:'more sinister', comp:'village1' } ] },
     { text:"He had many names, Beast, Dragon, Death, but the one that put fear into the hearts of the locals was...Trogdor! Trogdor The Burninator...",
@@ -219,7 +238,10 @@
   var CSS =
   '#jjst{position:fixed;inset:0;z-index:2000;overflow:hidden;background:#0b1b2e;font-family:\'Joes Journey Headline\',sans-serif;}'+
   '#jjst-bgwrap{position:absolute;inset:0;overflow:hidden;}'+
-  '#jjst-sky{position:absolute;top:0;left:0;width:100%;height:auto;display:block;}'+
+  '#jjst-sky{position:absolute;top:0;left:0;width:100%;height:auto;display:block;transition:filter 1.8s ease;}'+
+  '#jjst.moody #jjst-sky{filter:brightness(.5) saturate(.65) contrast(1.12);}#jjst.moody #jjst-night{opacity:.5;}'+   // "…deep in the darkness": the sky broods
+  '#jjst-dark{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.8s ease;background:radial-gradient(ellipse at 50% 62%,rgba(4,8,22,.18) 0%,rgba(3,6,18,.55) 62%,rgba(2,4,14,.78) 100%);}'+
+  '#jjst-dark.on{opacity:1;}'+   // over the cave board, under the chest / bones / Trogdor
   '#jjst-night{position:absolute;inset:0;opacity:0;transition:opacity .9s ease;pointer-events:none;}'+   // sits between the sky and the boards (DOM order)
   '#jjst-night.on{opacity:1;}#jjst-night svg{width:100%;height:100%;display:block;}'+
   '#jjst-night .jjst-moonw{transform-box:fill-box;transform-origin:50% 50%;animation:jjstMoonW 7s ease-in-out infinite;}'+
@@ -238,7 +260,7 @@
   /* ---- video layers + their aura ---- */
   '#jjst video.jjst-layer,#jjst-bgwrap video.jjst-layer{object-fit:contain;background:transparent;pointer-events:none;}'+
   '#jjst video.jjst-layer.hero{pointer-events:auto;cursor:pointer;transform-origin:50% 100%;transition:scale .4s cubic-bezier(.34,1.56,.64,1);}'+
-  '#jjst video.jjst-layer.hero.hov{scale:1.1;}'+
+  '#jjst video.jjst-layer.hero.hov{scale:1.04;}'+
   '#jjst .jjst-aura,#jjst-bgwrap .jjst-aura{position:absolute;pointer-events:none;z-index:2;}'+
   '#jjst .jjst-aura .aglow{position:absolute;left:-12%;top:-8%;width:124%;height:116%;border-radius:50%;'+
     'background:radial-gradient(ellipse at 50% 58%,var(--gc,rgba(255,255,255,.4)) 0%,transparent 62%);filter:blur(18px);'+
@@ -250,6 +272,10 @@
   '#jjst .jjst-aura.hov .alabel{opacity:1;transform:translate(-50%,0);}'+
   '#jjst .jjst-aura.lit .aglow{opacity:1;transform:scale(1);}'+
   '#jjst .jjst-layer.pop{animation:jjstPop .55s cubic-bezier(.34,1.56,.64,1);transform-origin:50% 100%;}'+
+  '#jjst .jjst-layer.hearthy{transform-origin:50% 100%;transition:transform .35s cubic-bezier(.34,1.56,.64,1);}#jjst .jjst-layer.hearthy.warm{transform:scale(1.14);}'+
+  '#jjst .jjst-layer.prop{transition:filter .3s ease,opacity .6s ease;}#jjst .jjst-layer.prop:hover{filter:drop-shadow(0 0 10px rgba(255,240,180,.95)) drop-shadow(0 0 28px rgba(255,220,120,.6));}'+
+  '#jjst .jjst-layer.taken{animation:jjstTaken .7s cubic-bezier(.4,0,.7,1) forwards!important;pointer-events:none!important;}'+
+  '@keyframes jjstTaken{0%{translate:0 0;scale:1;rotate:0deg;opacity:1;}30%{translate:0 -3vh;scale:1.12;rotate:-8deg;opacity:1;}100%{translate:0 -12vh;scale:.25;rotate:30deg;opacity:0;}}'+
   '@keyframes jjstPop{0%{scale:1;}40%{scale:1.07 .95;}70%{scale:.98 1.03;}100%{scale:1;}}'+
   /* nostril smoke: a soft puff that drifts up-left, grows and thins */
   '#jjst .jjst-aura .puff{position:absolute;width:5.5%;aspect-ratio:1;border-radius:50%;margin:-2.75% 0 0 -2.75%;'+
@@ -293,19 +319,27 @@
   /* the reader's own pace: a Next chip appears once the line has finished typing */
   /* Previous / Next scene — always there under the banner (per the Figma frame) */
   /* Skip the story — the horizontal scroll's NEXT SCENE element verbatim (div.next-section-button > div.button-text + icon), so the site CSS gives it
-     the white card, radius, Joes Journey Headline label and the grey hover. Parked at the right, just above the banner, never over the text box. */
-  '#jjst-skipcta{position:absolute!important;right:3vw;left:auto;bottom:calc(9vh + min(83vw,1350px) * .1544);z-index:9;opacity:0;pointer-events:none;transform:translateY(14px);transition:opacity .6s ease,transform .6s cubic-bezier(.22,1,.36,1),background-color .2s;}'+
+     the white card, radius, Joes Journey Headline label and the grey hover. Bottom-left, 32px in — the mirror of the sound moon (bottom:32px;right:32px). */
+  '#jjst-skipcta{position:absolute!important;left:32px;right:auto;bottom:32px;z-index:9;opacity:0;pointer-events:none;transform:translateY(14px);transition:opacity .6s ease,transform .6s cubic-bezier(.22,1,.36,1),background-color .2s;}'+
+  /* the homepage button behaviour, scoped here: black fills up on hover (text + icon go white), pink circle on press */
+  '#jjst [data-jj="btn"],#jjst [data-jj="cta"]{position:relative;overflow:hidden!important;}'+
+  '#jjst .jj-btn-fill,#jjst .jj-cta-fill{position:absolute;inset:0;background:#111;transform:scaleY(0);transform-origin:bottom center;transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none;z-index:0;border-radius:inherit;}'+
+  '#jjst .jj-cta-fill{background:rgba(0,0,0,.92);}'+
+  '#jjst [data-jj="btn"]:hover .jj-btn-fill,#jjst [data-jj="cta"]:hover .jj-cta-fill{transform:scaleY(1);}'+
+  '#jjst [data-jj="btn"]>*:not(.jj-btn-fill):not(.jj-btn-pink),#jjst [data-jj="cta"]>*:not(.jj-cta-fill):not(.jj-cta-pink){position:relative;z-index:2;transition:color .3s ease,fill .3s ease;}'+
+  '#jjst [data-jj="btn"]:hover,#jjst [data-jj="btn"]:hover *{color:#fff!important;}#jjst [data-jj="btn"]:hover path{fill:#fff!important;}'+
+  '#jjst .jj-btn-pink,#jjst .jj-cta-pink{position:absolute;border-radius:50%;background:#FF00F5;opacity:.9;pointer-events:none;z-index:1;transform:scale(0);transition:transform .4s ease-out,opacity .4s ease;}'+
   '#jjst-skipcta.on{opacity:1;pointer-events:auto;transform:none;}'+
   '#jjst-skipcta .button-text{white-space:nowrap;}'+
   '#jjst-skipcta .ico{width:1.6vw;height:1.6vw;min-width:18px;min-height:18px;display:block;}'+
-  '#jjst-skipov{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease;}'+
-  '#jjst-skipov.on{opacity:1;pointer-events:auto;}'+
-  '#jjst-skipov .card{text-align:center;color:#fff;padding:0 24px;max-width:640px;}'+
-  '#jjst-skipov .q{font-size:clamp(22px,2.6vw,38px);font-weight:700;margin:0 0 12px;}'+
-  '#jjst-skipov .sub{font-size:clamp(15px,1.3vw,20px);opacity:.9;margin:0 0 28px;}#jjst-skipov .sub b{color:#FF00F5;}'+
-  '#jjst-skipov .row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}'+
-  '#jjst-skipov .row a{cursor:pointer;text-decoration:none;}'+
-  '#jjst-skipov .q{line-height:1.15;}'+
+  '.jjst-ov{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease;}'+
+  '.jjst-ov.on{opacity:1;pointer-events:auto;}'+
+  '  .jjst-ov .card{text-align:center;color:#fff;padding:0 24px;max-width:640px;}'+
+  '  .jjst-ov .q{font-size:clamp(22px,2.6vw,38px);font-weight:700;margin:0 0 12px;}'+
+  '  .jjst-ov .sub{font-size:clamp(15px,1.3vw,20px);opacity:.9;margin:0 0 28px;}  .jjst-ov .sub b{color:#FF00F5;}'+
+  '  .jjst-ov .row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}'+
+  '  .jjst-ov .row a{cursor:pointer;text-decoration:none;}'+
+  '  .jjst-ov .q{line-height:1.15;}'+
   /* tavern Joe is a character you can prod: grows on hover, a warm glow blooms behind on press */
   '.jjst-layer.joehero{pointer-events:auto;cursor:pointer;transform-origin:50% 100%;transition:scale .35s cubic-bezier(.34,1.56,.64,1),filter .45s ease;}'+
   '.jjst-layer.joehero:hover{scale:1.07;}'+
@@ -318,16 +352,18 @@
   /* ---- markup ---- */
   var wrap = document.createElement('div'); wrap.id = 'jjst';
   wrap.innerHTML =
-    '<div id="jjst-bgwrap"><img id="jjst-sky" alt=""><div id="jjst-night"></div></div>'+
+    '<div id="jjst-bgwrap"><img id="jjst-sky" alt=""><div id="jjst-night"></div></div><div id="jjst-dark"></div>'+
     '<div id="jjst-layers"></div>'+
     '<div id="jjst-black"></div>'+
     '<div id="jjst-fade"></div>'+
     '<div id="jjst-progress"><div id="jjst-progress-fill"></div></div>'+
     '<div id="jjst-cap"><div id="jjst-cap-text"></div></div>'+
     '<div id="jjst-skipcta" class="next-section-button" data-cursor="hover"><div class="button-text">SKIP THE STORY</div><svg class=\"ico\" viewBox=\"0 0 29 29\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M15.36 15.2987L7.45868 21.5688C7.27177 21.7172 7.04746 21.7897 6.82544 21.7897C6.52524 21.7897 6.22732 21.6571 6.02567 21.4045C5.67564 20.9639 5.74925 20.3227 6.19106 19.9726L13.0853 14.5013L6.19106 9.02998C5.75041 8.67995 5.67677 8.03876 6.02567 7.5981C6.3757 7.15745 7.01689 7.08267 7.45755 7.43271L15.3588 13.7028C15.6024 13.8965 15.744 14.1899 15.744 14.5014C15.744 14.8129 15.6024 15.1063 15.3588 15.3L15.36 15.2987ZM22.8096 13.7015L14.9083 7.43143C14.4676 7.0814 13.8265 7.15501 13.4764 7.59682C13.1264 8.03748 13.2 8.67867 13.6418 9.0287L20.5361 14.5L13.6418 19.9714C13.2012 20.3214 13.1275 20.9626 13.4764 21.4032C13.6781 21.657 13.9749 21.7884 14.2762 21.7884C14.4982 21.7884 14.7214 21.7159 14.9094 21.5675L22.8107 15.2975C23.0543 15.1038 23.1959 14.8104 23.1959 14.4988C23.1959 14.1873 23.0543 13.8939 22.8107 13.7002L22.8096 13.7015Z\"/></svg></div>'+
-    '<div id="jjst-skipov"><div class="card"><p class="q">Are you sure you want to skip the story?</p>'+
+    '<div id="jjst-skipov" class="jjst-ov"><div class="card"><p class="q">Are you sure you want to skip the story?</p>'+
     '<p class="sub">There\u2019s only <b id="jjst-left">0</b> seconds left and it\u2019s about to get good!</p>'+
     '<div class="row"><a id="jjst-back" class="enter-link_wrapper button w-inline-block" href="#" data-cursor="hover"><div class="button_text">BACK TO STORY</div></a><a id="jjst-skipgo" class="enter-link_wrapper button w-inline-block" href="#" data-cursor="hover"><div class="button_text">SKIP THIS PART</div></a></div></div></div>'+
+    '<div id="jjst-sndov" class="jjst-ov"><div class="card"><p class="q">I\'ve noticed your sound is off!</p><p class="sub">You\'ll only be experiencing <b>50%</b> of the story if you continue without, no worries if not!</p>'+
+    '<div class="row"><a id="jjst-nosnd" class="enter-link_wrapper button w-inline-block" href="#" data-cursor="hover"><div class="button_text">CONTINUE WITHOUT SOUND</div></a><a id="jjst-yessnd" class="enter-link_wrapper button w-inline-block" href="#" data-cursor="hover"><div class="button_text">TURN ON THE SOUND!</div></a></div></div></div>'+
     '<div id="jjst-loader"><div class="ring"></div><div class="txt">Loading the tale…</div></div>';
 
   /* ---- composition: bg crossfade + character layers ---- */
@@ -399,8 +435,8 @@
     aura.style.setProperty('--gc', h.glow || 'rgba(255,255,255,.4)');
     aura.innerHTML = '<div class="aglow"></div>' + (h.label ? '<div class="alabel" style="top:' + (h.lt == null ? -4 : h.lt) + '%">' + h.label + '</div>' : '');
     if (L.hero) {
-      var hit = null;                                       // poster alpha map: hover/click only over the character, not the empty canvas
-      if (el.tagName === 'VIDEO') { var pim = new Image(); pim.crossOrigin = 'anonymous';
+      var hit = maskHit(L.vid);                             // pressable pixels: the precomputed mask, else the poster's alpha
+      if (!hit && el.tagName === 'VIDEO') { var pim = new Image(); pim.crossOrigin = 'anonymous';
         pim.onload = function () { try { var c = document.createElement('canvas'), cx = c.getContext('2d'); c.width = 160; c.height = Math.max(1, Math.round(160 / (L.ar || 1)));
           cx.drawImage(pim, 0, 0, c.width, c.height); hit = { w: c.width, h: c.height, d: cx.getImageData(0, 0, c.width, c.height).data }; } catch (e) {} };
         pim.src = el.poster; }
@@ -438,8 +474,71 @@
     }, i * 110); })(i);
   }
   /* named one-shot effects fired from caption words (triggers: { at:'jewels', fx:'chest' }) */
-  function runFx(name){
+  var boardMaps = {};                                        // alpha maps of the scene boards — for a character that peeks through a hole
+  function boardMap(name, cb){ if (boardMaps[name]) return cb(boardMaps[name]); if (maskHit(name)) return cb(boardMaps[name] = maskHit(name));
+    var im = new Image(); im.crossOrigin = 'anonymous';
+    im.onload = function () { try { var c = document.createElement('canvas'), cx = c.getContext('2d'); c.width = 240; c.height = Math.max(1, Math.round(240 * im.naturalHeight / im.naturalWidth));
+      cx.drawImage(im, 0, 0, c.width, c.height); boardMaps[name] = { w: c.width, h: c.height, ar: im.naturalWidth / im.naturalHeight, d: cx.getImageData(0, 0, c.width, c.height).data }; cb(boardMaps[name]); } catch (e) {} };
+    im.src = F(name); }
+  function inHole(m, e){                                      // is this point on a TRANSPARENT pixel of the cover-fitted board?
+    var W = window.innerWidth, H = window.innerHeight, dw, dh; if (W / H > m.ar) { dw = W; dh = W / m.ar; } else { dh = H; dw = H * m.ar; }
+    var fx = (e.clientX - (W - dw) / 2) / dw, fy = (e.clientY - (H - dh) / 2) / dh, x = Math.floor(fx * m.w), y = Math.floor(fy * m.h);
+    return x >= 0 && y >= 0 && x < m.w && y < m.h && m.d[(y * m.w + x) * 4 + 3] < 30; }
+  function wireThrough(el, L){                                // behind:true character, pressable only where he shows through the board
+    if (!L.through || el._thruWired) return; el._thruWired = true;
+    var hit = maskHit(L.vid), board = null, pim = new Image(); pim.crossOrigin = 'anonymous';
+    if (!hit) pim.onload = function () { try { var c = document.createElement('canvas'), cx = c.getContext('2d'); c.width = 160; c.height = Math.max(1, Math.round(160 / (L.ar || 1)));
+      cx.drawImage(pim, 0, 0, c.width, c.height); hit = { w: c.width, h: c.height, d: cx.getImageData(0, 0, c.width, c.height).data }; } catch (e) {} };
+    if (!hit) pim.src = el.poster; boardMap(L.through.bg, function (m) { board = m; });
+    function over(e){ if (!hit || !board || !el.isConnected || el._caught || !inHole(board, e)) return false;
+      var r = el.getBoundingClientRect(), x = Math.floor((e.clientX - r.left) / r.width * hit.w), y = Math.floor((e.clientY - r.top) / r.height * hit.h);
+      return x >= 0 && y >= 0 && x < hit.w && y < hit.h && hit.d[(y * hit.w + x) * 4 + 3] > 40; }
+    var stage = document.getElementById('jjst'), isHov = false;
+    function setHov(on){ if (on === isHov) return; isHov = on; var b = curBgLayer; if (!b) return;
+      if (on) b.setAttribute('data-cursor', 'hover'); else b.removeAttribute('data-cursor'); b.style.cursor = on ? 'pointer' : '';
+      el.classList.toggle('hov', on); try { b.dispatchEvent(new MouseEvent('mouseover', { bubbles: true })); } catch (x) {} }
+    stage.addEventListener('pointermove', function (e) { setHov(over(e)); });
+    stage.addEventListener('click', function (e) { if (!over(e)) return; e.stopPropagation(); el._caught = true; setHov(false);
+      el.style.transition = 'top 1.1s cubic-bezier(.5,0,.7,1)'; el.style.top = (L.css.match(/top:([^;]+)/) || [0, ''])[1];   // caught! back down below the sill
+      if (window.jjScore) window.jjScore.award('trogdor', { x: e.clientX, y: e.clientY }); }, true);
+  }
+  function wireSeg(el, L){                                   // seg:[a,b] = the idle stretch to loop; hop:[a,b] = the one-shot a tap plays before returning to it
+    if (!L.seg || el._segWired) return; el._segWired = true; el._segL = L;
+    el.addEventListener('timeupdate', function () { if (el._hop) { if (el.currentTime >= L.hop[1]) { el._hop = false; el.currentTime = L.seg[0]; } }
+      else if (el.currentTime >= L.seg[1]) el.currentTime = L.seg[0]; });
+  }
+  function wireWarm(el, L){                                  // a bed-sound prop (the hearth): grows on hover, its bed swells with it
+    if (!L.hoverBoost || el._warmWired) return; el._warmWired = true; el.style.pointerEvents = 'auto'; el.setAttribute('data-cursor', 'hover');
+    el.addEventListener('pointerenter', function () { el.classList.add('warm'); if (compHowl) try { compHowl.fade(compHowl.volume(), compVol * L.hoverBoost, 400); } catch (e) {} });
+    el.addEventListener('pointerleave', function () { el.classList.remove('warm'); if (compHowl) try { compHowl.fade(compHowl.volume(), compVol, 600); } catch (e) {} });
+  }
+  function wireTap(el, L, k){                                 // a pressable prop (the chest, the bones, the chickens)
+    if (!L.tap || el._tapWired) return; el._tapWired = true;
+    el.style.pointerEvents = 'auto'; el.style.cursor = 'pointer'; el.setAttribute('data-cursor', 'hover');
+    el.addEventListener('click', function (e) { e.stopPropagation(); runFx(L.tap, k, e); });
+    if (L.hoverSnd) el.addEventListener('pointerenter', function () { var n = performance.now(); if (n - (el._hs || 0) < 1500) return; el._hs = n; oneShot(L.hoverSnd, .3); });   // the rattle
+    if (L.hoverPlay && el.tagName === 'VIDEO') {                // an idle clip that only moves while the pointer is on it
+      el.addEventListener('pointerenter', function () { el.loop = true; var p = el.play(); if (p && p.catch) p.catch(function () {}); });
+      el.addEventListener('pointerleave', function () { el.pause(); });
+    }
+  }
+  function runFx(name, key, e){
     if (name === 'bedOut') { fadeBed(2500); return; }
+    if (name === 'dark' || name === 'darkOff') { var on = name === 'dark'; document.getElementById('jjst-dark').classList.toggle('on', on); document.getElementById('jjst').classList.toggle('moody', on); return; }
+    if (name === 'chick') {                                    // the bones twitch, the chicken squawks and hops, then it's back to shivering (wireSeg)
+      var cr = layerRecs['chick']; if (!cr || cr.el._hop) return; var v = cr.el, hl = v._segL;
+      v._hop = true; try { v.currentTime = hl.hop[0]; } catch (x) {}
+      var pv = v.play(); if (pv && pv.catch) pv.catch(function () {});
+      setTimeout(function () { oneShot('chicken-squawk', .45); }, 350);
+      return;
+    }
+    if (name === 'bones') {                                    // whisk the pile away; Bone Collector ticks up (jjScore)
+      var br = layerRecs[key]; if (!br || taken[key]) return; taken[key] = true;
+      br.el.classList.add('taken'); delete layerRecs[key];
+      setTimeout(function () { if (br.el.parentNode) br.el.remove(); }, 800);
+      if (window.jjScore) window.jjScore.award('bones', { part: key, x: e ? e.clientX : null, y: e ? e.clientY : null });
+      return;
+    }
     if (name === 'chest') {
       var rec = layerRecs['chest']; if (!rec) return;
       oneShot('chest-sparkle', .25);                          // the user's sparkle sound — plays if the file exists, silent otherwise
@@ -503,7 +602,7 @@
   var swapAt = 0;                                            // set per comp: costume changes happen this long after the comp lands (under the poof)
   function reveal(el, L){ setTimeout(function () { el.style.opacity = '1'; }, (swapAt && !L.now) ? swapAt : 16); }
   function buildLayers(layers){
-    clearAnims(); layers = layers || [];
+    clearAnims(); layers = (layers || []).filter(function (L) { return !taken[L.key]; });
     var next = {}; layers.forEach(function (L, idx) { next[keyOf(L, idx)] = true; });
     Object.keys(layerRecs).forEach(function (k) { if (!next[k]) { var gone = layerRecs[k]; delete layerRecs[k];
       var drop = function () { fadeRemove(gone.el); if (gone.aura) fadeRemove(gone.aura); };
@@ -522,20 +621,20 @@
           if (rec) { fadeRemove(rec.el); if (rec.aura) fadeRemove(rec.aura); }
           el = document.createElement('video');
           el.className = 'jjst-layer' + (L.cls ? ' ' + L.cls : '') + (L.hero ? ' hero' : '') + (L.pop ? ' poof' : '');
-          el.muted = true; el.loop = !L.hold; el.playsInline = true; el.autoplay = true; el.preload = 'auto';   // hold:true → one-shot, freezes on its last frame
+          el.muted = true; el.loop = !L.hold; el.playsInline = true; el.autoplay = !L.idle; el.preload = 'auto';   // hold:true → one-shot, freezes on its last frame; idle:true → waits on its poster until tapped
           el.setAttribute('muted', ''); el.setAttribute('playsinline', '');
           el.poster = GB + 'story-' + L.vid + '-poster.webp' + AV;
           el.innerHTML = '<source src="' + GB + 'story-' + L.vid + '.mov' + AV + '" type=\'video/mp4; codecs="hvc1"\'>' +
                          '<source src="' + GB + 'story-' + L.vid + '.webm' + AV + '" type="video/webm">';
           el.style.cssText = L.css + ';opacity:0'; mountLayer(el, L);
           reveal(el, L);
-          var pr = el.play(); if (pr && pr.catch) pr.catch(function () {});   // blocked → the poster stands in
+          if (!L.idle) { var pr = el.play(); if (pr && pr.catch) pr.catch(function () {}); }   // blocked → the poster stands in
           rec = layerRecs[k] = { el: el, src: first };
           rec.aura = makeAura(L, el);
           if (L.snd) attachSound(el, L.snd);
           if (L.run) el.addEventListener('playing', function onPlay(){ el.classList.add(L.run); el.removeEventListener('playing', onPlay); });
         }
-        applyScale(el, L, startSc); applyMove(el, L);
+        applyScale(el, L, startSc); applyMove(el, L); wireTap(el, L, k); wireThrough(el, L); wireWarm(el, L); wireSeg(el, L);
         return;                                                // the img branches below don't apply
       }
       if (rec && rec.src !== first) {                        // ART CHANGE = a pose cut: ghost of the OLD art at the
@@ -573,11 +672,7 @@
         el.style.animationDelay = '-' + ((idx * 0.83) % 2.5).toFixed(2) + 's';
         el.style.animationDuration = trem ? (0.42 + (idx % 3) * 0.09).toFixed(2) + 's' : (2.2 + (idx % 3) * 0.4).toFixed(1) + 's';
       }
-      if (L.tap && !el._tapWired) {                              // a pressable prop (e.g. the chest)
-        el._tapWired = true;
-        el.style.pointerEvents = 'auto'; el.style.cursor = 'pointer'; el.setAttribute('data-cursor', 'hover');
-        el.addEventListener('click', function (e) { e.stopPropagation(); runFx(L.tap); });
-      }
+      wireTap(el, L, k);
       if (L.cls && L.cls.indexOf('joehero') >= 0 && !el._heroWired) {
         el._heroWired = true;
         el.setAttribute('data-cursor', 'hover');
@@ -641,6 +736,7 @@
     var c = COMP[name]; if (!c) return;
     swapAt = c.swapAt || 0;
     showBg(c.bg); setNight(c.bg); buildLayers(c.layers); setCompSound(c.snd); playCue(c.cue);
+    if (name !== 'cavern') runFx('darkOff');            // the darkness belongs to the cave
     if (name === 'village1') runVillageSeq();        // start the equal-timed dragon-fire sequence
     else if (name.indexOf('village') !== 0) clearPanels();  // left the village → cancel any pending shots
   }
@@ -650,6 +746,7 @@
     b.style.width = '260vmax'; b.style.height = '260vmax';
     setTimeout(function () { b.style.display = 'none'; }, T.revealDur + 120); }
   function fadeToBlack(){ var f = document.getElementById('jjst-fade'); void f.offsetWidth; f.style.opacity = '1';
+    if (window.jjScore) window.jjScore.award('storytime');                       // +1 star — the whole tale, not the skip
     setTimeout(function () {
       if (window.jjStory && window.jjStory.unlock) window.jjStory.unlock();
       setCompSound(null); playCue(null); releaseAmbient();
@@ -777,6 +874,17 @@
     function storyLeft(){ var ms = Math.max(0, boxEnd - performance.now());
       for (var k = curScene + 1; k < SCENES.length; k++) { var sc = SCENES[k]; ms += typeDuration(sc.text) + (sc.end ? sc.end.delay + 800 : Math.max(T.readMin, sc.text.length * T.readPerChar)); }
       return Math.ceil(ms / 1000); }
+    /* hover fill + pink press on the three buttons (site-footer wires these on load, before our markup exists) */
+    function pressFx(el, kind) { el.setAttribute('data-jj', kind); if (el.querySelector('.jj-' + kind + '-fill')) return;
+      var f = document.createElement('div'); f.className = 'jj-' + kind + '-fill'; el.insertBefore(f, el.firstChild);
+      el.addEventListener('pointerdown', function (e) { var r = el.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+        var d = Math.max(Math.hypot(x, y), Math.hypot(r.width - x, y), Math.hypot(x, r.height - y), Math.hypot(r.width - x, r.height - y)) * 2.4;
+        var c = document.createElement('div'); c.className = 'jj-' + kind + '-pink'; c.style.cssText = 'width:' + d + 'px;height:' + d + 'px;left:' + (x - d / 2) + 'px;top:' + (y - d / 2) + 'px;'; el.appendChild(c);
+        void c.offsetWidth; c.style.transform = 'scale(1)'; setTimeout(function () { c.style.opacity = '0'; }, 600); setTimeout(function () { c.remove(); }, 1000); }); }
+    pressFx(document.getElementById('jjst-skipcta'), 'btn'); pressFx(document.getElementById('jjst-back'), 'cta'); pressFx(document.getElementById('jjst-skipgo'), 'cta');
+    pressFx(document.getElementById('jjst-nosnd'), 'cta'); pressFx(document.getElementById('jjst-yessnd'), 'cta');
+    window.addEventListener('jj:score:pause', function () { pauseStory(); });
+    window.addEventListener('jj:score:resume', function () { if (!ov.classList.contains('on')) resumeStory(); });
     var ov = document.getElementById('jjst-skipov');
     document.getElementById('jjst-skipcta').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation();
       document.getElementById('jjst-left').textContent = storyLeft(); pauseStory(); ov.classList.add('on'); });
@@ -800,16 +908,35 @@
         return;
       }
       setTimeout(function () { revealFromBlack(); bedLive(); }, T.revealAt);
-      setTimeout(function () { capEl.classList.add('on'); prog.classList.add('on');
-        document.getElementById('jjst-skipcta').classList.add('on'); }, T.boxFadeAt);
       setTimeout(function () {
-        var nav = document.querySelectorAll('.nav-logo-link, .menu-container');
-        nav.forEach(function (n) { n.style.transition = 'none'; n.style.transform = 'translateY(-42px)'; n.style.opacity = '0'; });
-        void document.body.offsetWidth;
-        document.documentElement.classList.add('jj-nav-in');           // lifts the !important hide (page head + the rule injected below)
-        nav.forEach(function (n) { n.style.transition = 'transform .9s cubic-bezier(.22,1,.36,1), opacity .9s ease'; n.style.transform = 'translateY(0)'; n.style.opacity = '1'; });
-      }, T.menuDropAt);
-      setTimeout(function () { runScene(0); }, T.firstTypeAt);
+        var go = function () {                                             // the box, the skip CTA, the nav, the first line — same beats as before
+          capEl.classList.add('on'); prog.classList.add('on'); document.getElementById('jjst-skipcta').classList.add('on');
+          setTimeout(navDrop, T.menuDropAt - T.boxFadeAt);
+          setTimeout(function () { runScene(0); }, T.firstTypeAt - T.boxFadeAt);
+        };
+        if (soundOff()) askSound(go); else go();                          // muted visitors get a word first; nothing is typing yet, so nothing to pause
+      }, T.boxFadeAt);
+    }
+    function navDrop() {
+      var nav = document.querySelectorAll('.nav-logo-link, .menu-container');
+      nav.forEach(function (n) { n.style.transition = 'none'; n.style.transform = 'translateY(-42px)'; n.style.opacity = '0'; });
+      void document.body.offsetWidth;
+      document.documentElement.classList.add('jj-nav-in');           // lifts the !important hide (page head + the rule injected below)
+      nav.forEach(function (n) { n.style.transition = 'transform .9s cubic-bezier(.22,1,.36,1), opacity .9s ease'; n.style.transform = 'translateY(0)'; n.style.opacity = '1'; });
+    }
+    /* the site's moon button owns mute (session-scoped); we only read it, and press it on the visitor's behalf */
+    function soundOff() { try { if (sessionStorage.getItem('jjUserMuted') === '1') return true; } catch (e) {}
+      var b = document.getElementById('jj-sound-btn'); return !!(b && b.classList.contains('is-muted')) || !!(window.jjAudio && window.jjAudio.muted); }
+    function askSound(go) {
+      var so = document.getElementById('jjst-sndov'), done = false;
+      function pick(on) { if (done) return; done = true;
+        if (on) { var b = document.getElementById('jj-sound-btn'); if (b && b.classList.contains('is-muted')) b.click(); else if (window.jjAudio) window.jjAudio.muted = false;
+          try { sessionStorage.setItem('jjUserMuted', '0'); } catch (e) {} }
+        so.classList.remove('on'); go(); }
+      document.getElementById('jjst-nosnd').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); pick(false); });
+      document.getElementById('jjst-yessnd').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); pick(true); });
+      so.addEventListener('click', function (e) { e.stopPropagation(); });
+      so.classList.add('on');
     }
     if (window.JJLoader && window.JJLoader.start) {
       var EVO = [], EVOG = [], EVOB = [];
@@ -831,6 +958,7 @@
         /* measured content boxes per stage (from the loader A/B page) — seats + fill spans */
         stageBounds: [[0.390,0.590],[0.292,0.655],[0.278,0.740],[0.165,0.780],[0.163,0.805],[0.090,0.880],[0.115,0.838]],
         stageBoundsX: [[0.393,0.632],[0.268,0.733],[0.350,0.685],[0.237,0.750],[0.360,0.757],[0.212,0.757],[0.372,0.728]],
+        msg1: 'This is an interactive journey\u2026', msg2: 'If you engage with the characters you might get more out of the experience\u2026',
         minTime: 4500, maxWait: 18000, decode: true,
         onReady: beginStory
       });

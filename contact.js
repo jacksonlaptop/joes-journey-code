@@ -15,7 +15,7 @@
 (function () {
   /* Build marker — to confirm the browser is running the latest file, open the console and look for this
      line (or type window.JJ_CONTACT_BUILD). If it's missing/old, you're on a cached copy → bump ?v in Webflow. */
-  window.JJ_CONTACT_BUILD = 'r4 · name-svg-icon · duck-ambient · tut-centre+line-behind';
+  window.JJ_CONTACT_BUILD = 'r5 · jjScore hooks · linkedin opens profile · name-svg-icon · duck-ambient · tut-centre+line-behind';
   try { console.log('%c[JJ] contact.js build: ' + window.JJ_CONTACT_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
   /* ---- 1. styles: uses the site's OWN Webflow brand fonts (already served) ---- */
   var CSS = `
@@ -393,7 +393,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
   var ICN = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';            // cropped contact icons (no padding, art to the edge)
   var CONTACTS = [
     { key:'phone',    label:'Phone',    dgap:0,   def:ICN+'icon-phone.png',    fill:ICN+'icon-phone-fill.png',    detail:'+44 7565 040886',                       act:'copy', copy:'+447565040886' },
-    { key:'linkedin', label:'LinkedIn', dgap:0,   def:ICN+'icon-linkedin.png', fill:ICN+'icon-linkedin-fill.png', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'copy', copy:'https://www.linkedin.com/in/joseph-jackson-ui/' },
+    { key:'linkedin', label:'LinkedIn', dgap:0,   def:ICN+'icon-linkedin.png', fill:ICN+'icon-linkedin-fill.png', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'open', href:'https://www.linkedin.com/in/joseph-jackson-ui/' },
     { key:'credits',  label:'Credits',  dgap:0,   def:ICN+'icon-credits.png',  fill:ICN+'icon-credits-fill.png',  detail:'View',                                  act:'view',     href:'#credits' },
     { key:'mail',     label:'Mail',     dgap:0,   def:ICN+'icon-mail.png',     fill:ICN+'icon-mail-fill.png',     detail:'jackson.laptop95@gmail.com',            act:'copy', copy:'jackson.laptop95@gmail.com' },
     { key:'cv',       label:'CV',       dgap:0,   def:ICN+'icon-cv.png',       fill:ICN+'icon-cv-fill.png',       detail:'Download',                              act:'download', href:'#cv' }
@@ -438,7 +438,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       a.className = 'jj-contact'; a.href = c.href || '#'; a.setAttribute('data-key', c.key);
       var p = ellipsePos(ANG[c.key]); a.style.left = p.x + '%'; a.style.top = p.y + '%';
       var labelIco = c.act === 'copy' ? ICO.copy : '';
-      var detailIco = c.act === 'download' ? ICO.download : (c.act === 'view' ? ICO.arrow : '');
+      var detailIco = c.act === 'download' ? ICO.download : ((c.act === 'view' || c.act === 'open') ? ICO.arrow : '');
       a.innerHTML =
         '<span class="jj-c-label">' + c.label + labelIco + '</span>' +
         '<span class="jj-c-icon"><span class="jj-c-glow"></span>' +
@@ -452,13 +452,14 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       if (!di.complete || !di.naturalWidth) di.addEventListener('load', function () { placeLabels(a); });
       a.addEventListener('click', function (e) {
         e.preventDefault();
+        var sc = window.jjScore;
         if (c.act === 'copy') {
-          copyToClipboard(c.copy).then(function () {
-            showToast(c.key === 'linkedin' ? 'Copied to clipboard!' : c.copy + '  copied to clipboard!');   // phone/mail show the value, linkedin doesn't
-          });
+          copyToClipboard(c.copy).then(function () { showToast(c.copy + '  copied to clipboard!'); });
+          if (sc) sc.award('contact');                                                      // +10 coins — got in touch
         }
-        else if (c.act === 'view') { launchCredits(); }       // Credits = same as pressing Space
-        /* else c.act === 'download' (CV): parked until the file URL is ready */
+        else if (c.act === 'open') { window.open(c.href, '_blank', 'noopener'); if (sc) sc.award('linkedin'); }   // LinkedIn opens the profile: +1 star
+        else if (c.act === 'view') { launchCredits(); if (sc) sc.award('credits-click'); }  // Credits = same as pressing Space: +10 coins
+        else if (c.act === 'download') { if (sc) sc.award('cv'); }                          // CV: +10 coins (file URL still to come)
       });
       a.addEventListener('mouseenter', function () { pauseContacts(); spawnFloaters(a); });
       a.addEventListener('mouseleave', function () { resumeContacts(); clearFloaters(a); });
@@ -995,7 +996,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
         if(G.fill<0){ if(G.level>1){ G.level--; G.fill+=1; setLevelHUD(); setDragon(); } else G.fill=0; }
         if(Math.random()<0.25) flash('Eugh!',900); gsap.fromTo(dragon,{filter:'brightness(2.1) saturate(.4)'},{filter:'none',duration:.4});   // only react now and then — every time is distracting
       } else { G.score+=50; pop(1); G.fill+=.2;
-        if(G.fill>=1){ G.fill-=1; if(G.level<9){ G.level++; setLevelHUD(); setDragon(); levelUpFx(); flash("I'm getting…stronger!",1300); } else G.fill=1; }
+        if(G.fill>=1){ G.fill-=1; if(G.level<9){ G.level++; setLevelHUD(); setDragon(); levelUpFx(); flash("I'm getting…stronger!",1300); if(G.level>=9 && window.jjScore) window.jjScore.award('credits10'); } else G.fill=1; }   // top level = +1 star
         if(Math.random()<0.22) flash('Yum!',900);   // only now and then
       }
       scoreEl.textContent='SCORE : '+G.score; fillEl.style.width=Math.max(0,Math.min(1,G.fill))*100+'%';
@@ -1025,6 +1026,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       G.rollW = roll.scrollWidth/window.innerWidth*100 + 50;
       gsap.to('#jj-hud',{opacity:1,duration:.5}); gsap.to('#jj-keys',{opacity:1,duration:.5}); gsap.to('#jj-cr-progress',{opacity:1,duration:.5}); G.raf=requestAnimationFrame(loop); }
     function endGame(){ if(ended)return; ended=true; G.run=false; if(G.raf)cancelAnimationFrame(G.raf); paused=false; viewMode=false;
+      if(window.jjScore) window.jjScore.award('credits');                                     // +1 star — finished the credits
       gsap.to(['#jj-hud','#jj-keys','#jj-cr-progress'],{opacity:0,duration:.4}); if(backEl) gsap.to(backEl,{opacity:0,duration:.4});   // clear gameplay UI for the end screen
       var end=document.createElement('div'); end.id='jj-end'; end.className='jj-overlay';
       var col=document.createElement('div'); col.className='jj-e-col';

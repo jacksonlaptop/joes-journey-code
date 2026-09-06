@@ -12,7 +12,7 @@
    All copy/eras/years live in the CONFIG below.
    ============================================================================ */
 (function () {
-  window.JJ_MYSTORY_BUILD = 'M106 - the bang waits for the screen: edge-to-edge always';
+  window.JJ_MYSTORY_BUILD = 'M108 - hover hit-test sleeps while the achievements panel is open';
   try { console.log('%c[JJ] mystory.js build: ' + window.JJ_MYSTORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -174,7 +174,8 @@
     { era: 1, cap: 'I\u2019d had a very stereotypical small town upbringing',
       sub: 'Played sports, games, hung out with my friends, etc...' },
     { era: 1, cap: 'I started to realise that films were my passion', sub: 'I’ve rated over 1700 titles on iMDB, click on the titles to find out more…' },
-    { era: 1, cap: 'I even made a few…interesting ones in school…', sub: 'Take your pick' },
+    { era: 1, cap: 'I even made a few…interesting ones in school…', sub: 'Take your pick',
+      tall: 2.6, duo: true },   /* the two school films grow into shot as you scroll */
     { era: 2, cap: 'I travelled the world & lived/volunteered in a few places along the way' },
     { era: 2, cap: 'On the way I met a few people building websites and travelling and it made me think…' },
     { era: 3, cap: 'So I went off to Brighton to study BSc Digital Media where I learned lots of new skills',
@@ -924,6 +925,11 @@
   '#jjms-player .jjp-yt iframe{display:block;width:100%;height:100%;border:0;}' +
   '#jjms-player.yt video{display:none;}' +
   '#jjms-player.yt .jjp-yt{display:block;}' +
+  /* the phone-shaped cut: the walkthrough keeps its handset frame in the lightbox */
+  '#jjms-player.phone{width:auto;}' +
+  '#jjms-player.phone video{width:min(40vh,80vw);max-height:none;aspect-ratio:344/720;object-fit:cover;' +
+    'border-radius:28px;border:6px solid #0b0f18;margin:0 auto;' +
+    'box-shadow:0 26px 90px rgba(0,0,0,.75),0 0 46px rgba(255,0,245,.2);}' +
   '#jjms-player .jjp-title,#jjms-shot .jjp-title{margin:16px 0 0;text-align:center;}' +
   /* the single-image lightbox */
   '#jjms-shot{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.94);z-index:410;' +
@@ -1159,6 +1165,12 @@
   /* the chrome fade while a lightbox is open takes the sound button with it */
   'html.jjms-lb #jj-sound-btn,html.jjms-lb #jj-sound-mist{opacity:0 !important;pointer-events:none !important;' +
     'transition:opacity .35s ease;}' +
+  /* JS-driven photos: the scroll-driven shrink stands down (animations beat declarations, so these
+     must kill the animation AND come after the SDA block) */
+  '#jjms .step.duo .phw .phs,#jjms .phw.vik-ride .phs{animation:none !important;opacity:1 !important;scale:1 !important;}' +
+  '#jjms .phw.vik-ride{z-index:200;animation:none !important;}' +
+  '#jjms .step.duo .gdim{z-index:2;}' +
+  '#jjms .step.duo .phw{z-index:4;}' +
   /* the exam is long — the sound stays controllable inside it */
   'html.jjms-lb.jjms-quiz #jj-sound-btn{opacity:1 !important;pointer-events:auto !important;}' +
   'html.jjms-lb.jjms-quiz #jj-sound-mist{opacity:.55 !important;}' +
@@ -1731,6 +1743,7 @@
             '<i class="lfall">' + esc(L.t) + '</i></span></span>';
         }
       if (s.grow && s.grow.logos) glogos += '</div>';
+      if (s.duo) glogos = '<div class="gdim"></div>';         /* the duo step borrows the cinema darkness */
       var grow = s.grow ? '<div class="gdim"></div>' + glogos +
         '<span class="gvid" data-vid="' + esc(s.grow.src) + '" data-cap="' + esc(s.grow.cap || '') + '">' +
         '<i class="gglow"></i>' +
@@ -1738,9 +1751,9 @@
         '" src="' + SB + esc(s.grow.src) + '"></video>' +
         '<span class="ghint"><span class="gs-off">\ud83d\udd07 Sound off</span>' +
         '<span class="gs-on">\ud83d\udd0a Sound on</span></span></span></span>' : '';
-      html += '<div class="' + stepCls + (s.tall ? ' tall' : '') + '" id="jjms-step-' + i + '" data-era="' + s.era + '"' +
+      html += '<div class="' + stepCls + (s.tall ? ' tall' : '') + (s.duo ? ' duo' : '') + '" id="jjms-step-' + i + '" data-era="' + s.era + '"' +
         (s.tall ? ' style="height:' + (s.tall * 100) + 'vh"' : '') + '>' +
-        (s.tall ? '<div class="stage">' : '') + extra + ph + grow +
+        (s.tall ? '<div class="stage">' : '') + extra + (s.duo ? glogos : '') + ph + grow +
         '<p class="cap' + (i === 0 ? ' hero' : '') + '">' + cap + '</p>' +
         (s.sub ? '<p class="sub">' + (s.tall ? esc(s.sub) : disperseCap(s.sub, null, s.funk)) + '</p>' : '') +
         (s.tall ? '</div>' : '') + '</div>';   /* sub disperses + floats like the caption */
@@ -1771,6 +1784,13 @@
       '<button type="button" class="fquiz" id="jjms-fquiz">Think you paid attention?&ensp;' +
       '<strong>Take the History Exam</strong></button></div>';
     wrap.innerHTML = html; mount.appendChild(wrap);
+    /* If the Webflow page carries the site footer, it sits ABOVE our wrap in the DOM and would be
+       buried under the backdrop. Move it below the story so it flows in after the Big Bang links. */
+    var wfFooter = document.querySelector('footer, .footer, .footer-wrapper, .footer_component');
+    if (wfFooter && !wrap.contains(wfFooter)) {
+      wfFooter.style.position = 'relative'; wfFooter.style.zIndex = '2';
+      wrap.parentNode.appendChild(wfFooter);
+    }
     var finale = document.getElementById('jjms-finale'), banged = false;
 
     /* ---- the Big Bang plays FULL SCREEN ----
@@ -1974,7 +1994,8 @@
       }
       pmT = now; setHot(photoUnder(pmX, pmY));
     }
-    document.addEventListener('pointermove', function (e) { pmX = e.clientX; pmY = e.clientY; hitTest(); }, { passive: true });
+    document.addEventListener('pointermove', function (e) { if (document.body.classList.contains('jj-modal-open')) { setHot(null); return; } pmX = e.clientX; pmY = e.clientY; hitTest(); }, { passive: true });   // achievements open → nothing behind lights up
+    window.addEventListener('jj:score:pause', function () { setHot(null); });
     document.addEventListener('pointerleave', function () { setHot(null); });
     window.addEventListener('scroll', hitTest, { passive: true }); /* the photo under a still cursor changes as it moves */
 
@@ -2102,6 +2123,7 @@
       var src = phw.getAttribute('data-vid'), yt = phw.getAttribute('data-yt');
       if (!src && !yt) return;
       player.classList.toggle('yt', !!yt);
+      player.classList.toggle('phone', phw.classList.contains('jjphone'));   /* the app demo stays a handset */
       lightboxOpen = true;
       var loop = phw.querySelector('video');                         /* the silent preview stands down */
       if (loop) { try { loop.pause(); } catch (e0) {} }
@@ -2131,7 +2153,8 @@
       Array.prototype.forEach.call(wrap.querySelectorAll('.jjphone video'), function (v) {
         var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});   /* the phone gets going again */
       });
-      player.classList.remove('on'); scrim.classList.remove('on'); closeBtn.classList.remove('on'); lightbox(false);
+      player.classList.remove('on'); player.classList.remove('phone');
+      scrim.classList.remove('on'); closeBtn.classList.remove('on'); lightbox(false);
       unduckMusic();
     }
 
@@ -2711,7 +2734,7 @@
       inStory = inStory && last.bottom > window.innerHeight * 0.35;
       tl.classList.toggle('on', inStory); hd.classList.toggle('on', inStory);
       nav.classList.toggle('on', inStory);
-      nx.classList.toggle('on', inStory && idx < steps.length - 1);
+      nx.classList.toggle('on', inStory && idx < steps.length - 1 && !steps[idx].classList.contains('tall'));
       if (inStory) document.documentElement.classList.add('jjms-live');   /* the site nav comes back with the story */
       if (inStory && idx >= 0) flyShow(STEPS[idx].era); else fly.classList.remove('show');   /* the era mascot */
       fIdx = idx; if (inStory) startFloat(); else stopFloat();      /* keep the letter-float running while the story is live */
@@ -2743,6 +2766,21 @@
         if (gc.cap) gc.cap.style.opacity = Math.max(0, 1 - gg * 2.6).toFixed(3);
         if (gc.sub) gc.sub.style.opacity = ((0.55 + gg * 0.45) * (1 - ge)).toFixed(3);
         if (gc.hint) gc.hint.style.opacity = Math.max(0, Math.min(1, (gg - 0.4) * 3)).toFixed(3);
+        /* the duo step (school films): both cards grow from their design spots into a side-by-side
+           feature as the darkness comes up — no autoplay, the play button is the invitation */
+        if (!gc.duo && ts.classList.contains('duo')) {
+          var dph = ts.querySelectorAll('.phw');
+          gc.duo = [
+            { el: dph[0], dx: -52.7, dy: 26, sc: 1.5 },
+            { el: dph[1], dx: 48.7, dy: -23, sc: 1.5 }
+          ];
+        }
+        if (gc.duo) for (var dq = 0; dq < gc.duo.length; dq++) {
+          var D = gc.duo[dq]; if (!D.el) continue;
+          var dsc = 1 + (D.sc - 1) * gg;
+          D.el.style.transform = 'translate3d(' + (D.dx * gg).toFixed(2) + 'vw,' + (D.dy * gg).toFixed(2) +
+            'vh,0) scale3d(' + dsc.toFixed(4) + ',' + dsc.toFixed(4) + ',1)';
+        }
         var gv = ts.querySelector('.gvid video');
         if (gv) {                                                /* it starts playing once it's big */
           /* scale is .2 + gg*.8, so half size is gg .375 — it's away the moment it hits that.
@@ -2756,6 +2794,30 @@
               }, { once: true }); }
             });
           } else if (gg < 0.3 && !gv.paused) { try { gv.pause(); } catch (eG) {} }
+        }
+      }
+      /* George + Greybeard go sticky on the covid screen: once the reader scrolls past halfway they
+         ride along, growing, then dissolve just before the next scene arrives */
+      var vikStep = steps[11];
+      if (vikStep && Math.abs(11 - idx) <= 1) {
+        var vk = vikStep.__vik || (vikStep.__vik = Array.prototype.slice.call(
+          vikStep.querySelectorAll('.phw.deco[data-tap]')));
+        var vrR = vikStep.getBoundingClientRect();
+        var riding = vrR.top < 0 && vrR.bottom > -window.innerHeight * 0.2;
+        for (var vq = 0; vq < vk.length; vq++) {
+          var VE = vk[vq];
+          if (riding) {
+            var leave = Math.min(1, -vrR.top / (vrR.height * 0.92));
+            var vsc = 1 + leave * 0.65;
+            var vop = leave < 0.72 ? 1 : Math.max(0, 1 - (leave - 0.72) / 0.22);
+            VE.classList.add('vik-ride');
+            VE.style.transform = 'translate3d(0,' + (-vrR.top).toFixed(1) + 'px,0) scale3d(' +
+              vsc.toFixed(3) + ',' + vsc.toFixed(3) + ',1)';
+            VE.style.opacity = vop.toFixed(3);
+          } else if (VE.classList.contains('vik-ride')) {
+            VE.classList.remove('vik-ride');
+            VE.style.transform = ''; VE.style.opacity = '';
+          }
         }
       }
       /* only the step on screen + its neighbours carry live per-letter animations (see the .near CSS) */
@@ -2786,8 +2848,10 @@
         if (sb) { sb.style.opacity = (0.62 * (1 - am)).toFixed(3); sb.style.scale = wSc; }   /* sub grows/shrinks + fades */
         var away = Math.min(1, Math.abs(off) / (vh * 0.78)), fade = away * away;
         if (!ph.length) continue;                                  /* the rest is just the photos */
+        if (sEl.classList.contains('duo')) continue;               /* the duo step drives its own cards */
         var op = (1 - fade).toFixed(3), sc = (1 - 0.45 * fade).toFixed(3);
         for (var pj = 0; pj < ph.length; pj++) {
+          if (ph[pj].classList.contains('vik-ride')) continue;     /* riding with the reader */
           var conf = (PHOTOS[pi] || [])[pj] || {};
           ph[pj].style.translate = '0 ' + (-off * (conf.d || 0.12 + pj % 4 * 0.07)).toFixed(1) + 'px';
           var sh = ph[pj].firstChild;                              /* .phs — the shrink/fade layer */
@@ -3353,8 +3417,11 @@
     /* cursor.js (site-wide) expands its bubble over <a>/<button>/[data-cursor] — most of the
        timeline's clickables are divs, so they each get the attribute */
     Array.prototype.forEach.call(wrap.querySelectorAll(
-      '.phw:not(.deco),.trav,.jjphone,.srphone,.phw.deco[data-tap],.phw.deco[data-alt],.sub .funk,.cap .hotword,.jjtrophy'
+      '.phw:not(.deco),.trav,.jjphone,.srphone,.phw.deco[data-tap],.phw.deco[data-alt],.sub .funk,.cap .hotword,.jjtrophy,' +
+      '.stag,.glogo,.phw.logo'
     ), function (el) { if (!el.hasAttribute('data-cursor')) el.setAttribute('data-cursor', 'hover'); });
+    var flyEl = document.getElementById('jjms-fly');
+    if (flyEl) flyEl.setAttribute('data-cursor', 'hover');
 
     window.jjMyStory = { land: land, genesis: genesis, stepTop: stepTop };
 

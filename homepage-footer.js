@@ -1768,7 +1768,7 @@
     '.jj-planets .jj-pl.jupiter{width:11.5%;}.jj-planets .jj-pl.mars{width:6.4%;}' +
     '.jj-planets .jj-pl .box{position:relative;width:100%;aspect-ratio:1;}' +
     '.jj-planets .jj-pl img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:auto;transition:opacity .5s ease,transform .7s cubic-bezier(.34,1.56,.64,1),filter .3s ease;}' +
-    '.jj-planets .jj-pl img.fill{opacity:0;transform:scale(.55);pointer-events:none;}.jj-planets .jj-pl.lit img.fill{opacity:1;transform:scale(1);}.jj-planets .jj-pl.lit img.line{opacity:0;pointer-events:none;}' +
+    '.jj-planets .jj-pl img.fill{opacity:0;transform:scale(.55);pointer-events:none;}.jj-planets .jj-pl.lit img.fill{opacity:1;transform:scale(1.2);}.jj-planets .jj-pl.lit img.line{opacity:0;pointer-events:none;}' +
     '.jj-planets .jj-pl:not(.lit):hover img.line{filter:drop-shadow(0 0 14px rgba(199,231,255,.95));}';
   document.head.appendChild(st);
   function planet(name) {
@@ -1786,23 +1786,33 @@
     var els = { jupiter: planet('jupiter'), mars: planet('mars') }; box.appendChild(els.jupiter); box.appendChild(els.mars); host.appendChild(box);
     function fit() { var w = host.clientWidth, h = host.clientHeight; if (!w || !h) return; var bw = Math.min(w, h * 16 / 9); box.style.width = bw + 'px'; box.style.height = (bw * 9 / 16) + 'px'; }
     fit(); if (window.ResizeObserver) new ResizeObserver(fit).observe(host); window.addEventListener('resize', fit);
-    var shown = -1, lastLeft = null;
-    function frame() {
-      var r = host.getBoundingClientRect();
-      if (r.width) {
-        var target = (window.innerWidth - r.left) / (window.innerWidth + r.width);   // 0: host about to enter from the right · 1: gone off the left
-        target = Math.max(0, Math.min(1, target));
-        if (shown < 0) shown = target; else shown += (target - shown) * 0.14;         // eased → one fluid movement, no jitter from the scroll
-        if (lastLeft !== r.left || Math.abs(target - shown) > 0.0005) {
-          lastLeft = r.left;
-          for (var k in els) { var a = ART[k], u = (shown - a.from) / (a.to - a.from), pos = at(PATH[k], u), el = els[k];
-            el.style.left = pos[0] + '%'; el.style.top = pos[1] + '%'; el.style.opacity = (u <= 0 || u >= 1) ? '0' : '1';
-            el.querySelector('.box').style.rotate = (u * 140) + 'deg'; }
-        }
+    /* progress comes from the HORIZONTAL SCROLL itself (the host is a fixed layer that never moves): the moment Webflow reveals
+       the host (opacity > 0) marks P0; the planets then cross the sky over the next ~1.1 screens of scroll — forwards and back. */
+    var hsw = document.querySelector('.horizontal-scroll-wrapper');
+    function tx(el) { var t = (el && el.style && el.style.transform) || '', m = t.match(/translate(?:3d|X)?\(\s*(-?[\d.]+)/); if (m) return parseFloat(m[1]);
+      m = t.match(/matrix(?:3d)?\(([^)]+)\)/); if (m) { var n = m[1].split(',').map(parseFloat); return n.length === 16 ? n[12] : n[4]; } return 0; }
+    var P0 = null, shown = -1, last = null, t0 = performance.now();
+    function update(now) {
+      var target;
+      if (hsw) {
+        var P = Math.abs(tx(hsw)), vis = parseFloat(getComputedStyle(host).opacity) > 0.05;
+        if (P0 == null) { if (vis) P0 = P; }
+        target = P0 == null ? 0 : (P - P0) / (Math.max(320, window.innerWidth) * 1.1);
+      } else { var r = host.getBoundingClientRect(), vw = Math.max(320, window.innerWidth); target = r.width ? (vw - r.left) / (vw + r.width) : 0; }
+      if (!(target === target)) target = 0;                                            // never let a NaN in
+      target = Math.max(0, Math.min(1, target));
+      if (shown < 0) shown = target; else shown += (target - shown) * 0.12;            // eased → one fluid movement
+      var bob = Math.sin((now - t0) / 1400) * 1.6;                                      // and a slow drift up and down while they hang there
+      if (last === null || Math.abs(target - shown) > 0.0005 || now - last > 40) {
+        last = now;
+        for (var k in els) { var a = ART[k], u = (shown - a.from) / (a.to - a.from), pos = at(PATH[k], u), el = els[k];
+          el.style.left = pos[0] + '%'; el.style.top = (pos[1] + bob * (k === 'mars' ? -1 : 1)) + '%'; el.style.opacity = (u <= 0 || u >= 1) ? '0' : '1';
+          el.querySelector('.box').style.rotate = (u * 140) + 'deg'; }
       }
-      requestAnimationFrame(frame);
     }
-    requestAnimationFrame(frame);
+    host._jjPlanets = { update: update, state: function () { return { P0: P0, shown: shown, P: hsw ? Math.abs(tx(hsw)) : null, vis: parseFloat(getComputedStyle(host).opacity) }; } };   // debug hook
+    (function frame(now) { update(now); requestAnimationFrame(frame); })(performance.now());
+    if (hsw) new MutationObserver(function () { update(performance.now()); }).observe(hsw, { attributes: true, attributeFilter: ['style'] });   // the scroll moves hsw's transform → update at once
   }
   function scan() { document.querySelectorAll('.mars, [data-jj-planets]').forEach(wire); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan); else scan();

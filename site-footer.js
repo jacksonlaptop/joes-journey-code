@@ -938,3 +938,8 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
+
+/* Speech subtitles sit in the middle of the screen (where the "Hey I'm Joe" headline lives), not at the foot. */
+(function () { var st = document.createElement('style'); st.id = 'jj-sub-centre';
+  st.textContent = '#jj-subtitle{top:50%!important;bottom:auto!important;transform:translate(-50%,-50%)!important;width:86%!important;max-width:980px!important;font-size:clamp(26px,3.6vw,58px)!important;line-height:1.15!important;font-weight:700;}';
+  (document.head || document.documentElement).appendChild(st); })();

@@ -1,4 +1,4 @@
-/* jj-score.js — site-wide stars + coins (build k6).
+/* jj-score.js — site-wide stars + coins (build k7).
    window.jjScore.award(id, {part, x, y})  →  ticks an achievement; pays out ONCE when it reaches its target (a star, or coins).
    State persists in localStorage ('jjScore'). HUD pill sits left of the Menu (right-anchored, so it grows leftwards).
    Anything in Webflow can award by attribute: <div data-jj-score="alien"> (+ optional data-jj-part="a").
@@ -71,10 +71,10 @@
     /* achievements panel — the user's "Achievements UI" frame: stone all round, big banners outside left/right, score pill + close in the header,
        icon tabs (grey block → blue block cross-fade), and a Back to Exploring glass button under the frame */
     '#jj-ach{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;opacity:0;pointer-events:none;transition:opacity .3s ease;}' +
-    '#jj-ach.on{opacity:1;pointer-events:auto;}' +
+    '#jj-ach.on{opacity:1;pointer-events:auto;}#jj-ach.closing{pointer-events:auto;}' +
     '#jj-ach .card{position:relative;width:min(820px,52vw);min-width:min(92vw,560px);height:min(800px,78vh);--sw:36px;display:flex;flex-direction:column;transform:translateY(16px) scale(.98);transition:transform .45s cubic-bezier(.22,1,.36,1);}' +
     '#jj-ach.on .card{transform:none;}' +
-    '#jj-ach .banner{position:absolute;top:calc(-1 * var(--sw) + 4px);width:clamp(110px,21%,190px);height:auto;pointer-events:none;z-index:2;filter:drop-shadow(0 10px 16px rgba(0,0,0,.35));}#jj-ach .banner.l{right:calc(100% - 7px);}#jj-ach .banner.r{left:calc(100% - 7px);}' +
+    '#jj-ach .banner{--bwid:clamp(120px,24%,210px);position:absolute;top:calc(-1 * var(--sw) - 2px);width:var(--bwid);height:auto;pointer-events:none;z-index:2;filter:drop-shadow(0 10px 16px rgba(0,0,0,.35));}#jj-ach .banner.l{right:calc(100% - var(--bwid) * .13);}#jj-ach .banner.r{left:calc(100% - var(--bwid) * .13);}' +
     '#jj-ach .head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 10px 0 14px;flex:0 0 auto;}' +
     '#jj-ach h2{margin:0;font-size:clamp(24px,2.6vw,34px);font-weight:700;letter-spacing:.02em;}' +
     '#jj-ach .hr{display:flex;align-items:center;gap:7px;}' +
@@ -83,12 +83,17 @@
     '#jj-ach .x{width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.8);background:rgba(0,0,0,.82);cursor:pointer;color:#fff;padding:0;display:flex;align-items:center;justify-content:center;transition:transform .25s ease,background .2s ease;}#jj-ach .x svg{width:16px;height:16px;display:block;}#jj-ach .x:hover{transform:rotate(90deg);background:#000;}' +
     '#jj-ach .tabs{display:flex;gap:6px;padding:14px 14px 0;flex:0 0 auto;flex-wrap:wrap;}' +
     '#jj-ach .tab{--bw:12px;position:relative;height:48px;padding:0 16px;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;outline:none;color:rgba(255,255,255,.88);text-shadow:0 1px 2px rgba(0,0,0,.45);font-family:' + FONT + ';font-weight:700;font-size:15px;letter-spacing:.03em;transition:color .3s ease,transform .2s ease;}' +
-    '#jj-ach .tab .bb{position:absolute;inset:0;border:14px solid transparent;border-image:url(' + IMG.blockBlue + ') 100 fill / 14px / 0 round;opacity:0;transition:opacity .3s ease;pointer-events:none;}' +
+    '#jj-ach .tab .bb{position:absolute;inset:calc(-1 * var(--bw) - 1px);border:14px solid transparent;border-image:url(' + IMG.blockBlue + ') 100 fill / 14px / 0 round;opacity:0;transition:opacity .3s ease;pointer-events:none;}' +
     '#jj-ach .tab .ic{position:relative;width:24px;height:24px;flex:0 0 auto;}#jj-ach .tab .ic img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .3s ease;}#jj-ach .tab .ic .on{opacity:0;}' +
     '#jj-ach .tab span{position:relative;}' +
     '#jj-ach .tab:hover{transform:translateY(-1px);color:#fff;}#jj-ach .tab:hover .bb{opacity:.35;}' +
     '#jj-ach .tab.on{color:#fff;}#jj-ach .tab.on .bb{opacity:1;}#jj-ach .tab.on .ic .on{opacity:1;}#jj-ach .tab.on .ic .off{opacity:0;}' +
-    '#jj-ach .list{flex:1 1 auto;overflow:auto;overscroll-behavior:contain;padding:14px 8px 8px 14px;margin:0 4px 0 0;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:#8a8a8a transparent;}' +
+    '#jj-ach .lw{position:relative;flex:1 1 auto;min-height:0;display:flex;}' +
+    '#jj-ach .list{flex:1 1 auto;overflow:auto;overscroll-behavior:contain;padding:14px 10px 18px 14px;margin:0 6px 0 0;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:#8b8b8b rgba(58,42,18,.12);scrollbar-gutter:stable;}' +
+    '#jj-ach .list::-webkit-scrollbar{width:12px;}#jj-ach .list::-webkit-scrollbar-track{background:rgba(58,42,18,.12);border-radius:6px;margin:12px 0;}' +
+    '#jj-ach .list::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#a3a3a3,#7d7d7d);border-radius:6px;border:2px solid #e9d9b4;box-shadow:inset 0 1px 0 rgba(255,255,255,.5);}#jj-ach .list::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#8d8d8d,#666);}' +
+    '#jj-ach .fade{position:absolute;left:0;right:18px;height:64px;pointer-events:none;opacity:1;transition:opacity .3s ease;z-index:1;}#jj-ach .fade.b{bottom:0;background:linear-gradient(180deg,rgba(243,226,186,0),rgba(243,226,186,.98));}#jj-ach .fade.t{top:0;background:linear-gradient(0deg,rgba(243,226,186,0),rgba(243,226,186,.98));}#jj-ach .fade.off{opacity:0;}' +
+    '#jj-ach .more{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);z-index:2;pointer-events:none;color:#6b5535;font-size:12px;letter-spacing:.08em;display:flex;align-items:center;gap:6px;opacity:1;transition:opacity .3s ease;}#jj-ach .more svg{width:12px;height:8px;animation:jjScNudge 1.4s ease-in-out infinite;}#jj-ach .more.off{opacity:0;}@keyframes jjScNudge{0%,100%{translate:0 0;}50%{translate:0 3px;}}' +
     '#jj-ach .row{--sw:22px;display:grid;grid-template-columns:1fr auto;gap:0 18px;align-items:center;padding:2px 6px 4px 8px;min-height:74px;flex:0 0 auto;}' +
     '#jj-ach .row .nm{font-size:18px;font-weight:700;line-height:1.15;}#jj-ach .row .ds{font-size:14px;line-height:1.3;margin-top:2px;color:#6b5535;}' +
     '#jj-ach .row .bar{--bw:6px;height:20px;margin-top:10px;position:relative;width:100%;}' +
@@ -100,7 +105,7 @@
     '#jj-ach .empty{text-align:center;padding:30px 0;color:#6b5535;font-size:16px;}' +
     /* Back to Exploring — the homepage glass button with the fill-up hover + pink press */
     '.jj-sc-glass{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:1.2rem 2.4rem;border-radius:8px;border:2px solid rgba(255,255,255,.11);background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);color:#fff;font-family:' + FONT + ';font-size:1.05rem;font-weight:400;line-height:1;text-transform:uppercase;letter-spacing:.02em;cursor:pointer;margin:0;-webkit-appearance:none;transition:box-shadow .2s ease,transform .45s cubic-bezier(.22,1,.36,1),opacity .3s ease;transform:translateY(16px);opacity:0;}' +
-    '#jj-ach.on .jj-sc-glass{transform:none;opacity:1;}.jj-sc-glass:hover{box-shadow:0 12px 20px -14px rgba(255,255,255,.68);}' +
+    '#jj-ach.on .jj-sc-glass{transform:none;opacity:1;}.jj-sc-glass:hover{box-shadow:0 12px 20px -14px rgba(255,255,255,.68);background:rgba(160,160,160,.4);}' +
     '.jj-sc-glass>*{position:relative;z-index:2;}.jj-sc-glass svg{width:18px;height:18px;display:block;}' +
     '.jj-sc-glass .fill{position:absolute;inset:0;background:rgba(0,0,0,.92);transform:scaleY(0);transform-origin:bottom center;transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none;z-index:0!important;border-radius:inherit;}.jj-sc-glass:hover .fill{transform:scaleY(1);}' +
     '.jj-sc-glass .pink{position:absolute;border-radius:50%;background:#FF00F5;opacity:.9;pointer-events:none;z-index:1!important;transform:scale(0);transition:transform .4s ease-out,opacity .4s ease;}' +
@@ -208,8 +213,8 @@
 
   /* ---- achievements panel ---- */
   var panel, listEl, totEl, panelOpen = false, curTab = 'general', paused = false;
-  function pause() { if (paused) return; paused = true; try { window.dispatchEvent(new Event('jj:score:pause')); } catch (e) {} }
-  function resume() { if (!paused) return; paused = false; try { window.dispatchEvent(new Event('jj:score:resume')); } catch (e) {} }
+  function pause() { if (paused) return; paused = true; try { var L = window.lenis || window.__lenis; if (L && L.stop) L.stop(); } catch (e) {} try { window.dispatchEvent(new Event('jj:score:pause')); } catch (e) {} }
+  function resume() { if (!paused) return; paused = false; try { var L = window.lenis || window.__lenis; if (L && L.start) L.start(); } catch (e) {} try { window.dispatchEvent(new Event('jj:score:resume')); } catch (e) {} }
   function buildPanel() {
     if (panel) return;
     panel = document.createElement('div'); panel.id = 'jj-ach'; panel.setAttribute('data-lenis-prevent', '');
@@ -217,10 +222,14 @@
       '<div class="head"><h2>Achievements</h2><div class="hr"><div class="tot pill"><span class="n ts"></span><img src="' + IMG.star + '" alt=""><span class="n tc"></span><img src="' + IMG.coin + '" alt=""></div>' +
       '<button class="x" type="button" aria-label="Close" data-cursor="hover"><svg viewBox="0 0 16 16" fill="none"><path d="M2 2l12 12M14 2L2 14" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></button></div></div>' +
       '<div class="tabs">' + TABS.map(function (t) { var ic = GB + 'score-tab-' + TABICON[t[0]]; return '<div class="tab jj-block" role="tab" tabindex="0" data-tab="' + t[0] + '" data-cursor="hover"><i class="bb"></i><i class="ic"><img class="off" src="' + ic + '-off.webp" alt=""><img class="on" src="' + ic + '-on.webp" alt=""></i><span>' + t[1] + '</span></div>'; }).join('') + '</div>' +
-      '<div class="list" data-lenis-prevent></div></div>' +
+      '<div class="lw"><div class="list" data-lenis-prevent></div><i class="fade t off"></i><i class="fade b"></i><span class="more">MORE <svg viewBox="0 0 12 8" fill="none"><path d="M1 1l5 5 5-5" stroke="#6b5535" stroke-width="2" stroke-linecap="round"/></svg></span></div></div>' +
       '<button type="button" class="jj-sc-glass" id="jj-ach-back" data-cursor="hover"><i class="fill"></i><svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back to Exploring</span></button>';
     document.body.appendChild(panel);
     listEl = panel.querySelector('.list'); totEl = panel.querySelector('.tot');
+    var fadeT = panel.querySelector('.fade.t'), fadeB = panel.querySelector('.fade.b'), more = panel.querySelector('.more');
+    function edges() { var atTop = listEl.scrollTop < 6, atEnd = listEl.scrollTop + listEl.clientHeight >= listEl.scrollHeight - 6, none = listEl.scrollHeight <= listEl.clientHeight + 6;
+      fadeT.classList.toggle('off', atTop); fadeB.classList.toggle('off', atEnd || none); more.classList.toggle('off', atEnd || none || listEl.scrollTop > 40); }
+    listEl.addEventListener('scroll', edges, { passive: true }); panel._edges = edges; if (window.ResizeObserver) new ResizeObserver(edges).observe(listEl);
     panel.querySelector('.x').addEventListener('click', closePanel);
     var back = panel.querySelector('#jj-ach-back'); back.addEventListener('click', closePanel);
     back.addEventListener('pointerdown', function (e) { var r = back.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;   // the pink press, as on click to begin
@@ -243,10 +252,14 @@
         '<div class="bar jj-block" style="--p:' + (p / a.target) + '"><i></i><b>' + p + '/' + a.target + '</b></div></div>' +
         '<div class="rw"><img src="' + IMG[a.kind] + '" alt=""><span>' + (a.kind === 'star' ? 1 : COIN) + '</span></div></div>';
     }).join('') : '<div class="empty">Nothing here yet.</div>';
+    listEl.scrollTop = 0; if (panel._edges) setTimeout(panel._edges, 30);
   }
   function modal() { document.body.classList.toggle('jj-modal-open', panelOpen || firstOpen); }   // pages hide their hover/click targets behind an open modal
-  function openPanel() { buildPanel(); renderRows(); panelOpen = true; panel.classList.add('on'); if (hud) hud.classList.add('open'); modal(); pause(); sfx('open'); }
-  function closePanel() { if (!panel || !panelOpen) return; panelOpen = false; panel.classList.remove('on'); if (hud) hud.classList.remove('open'); modal(); if (!firstOpen) resume(); sfx('close'); }
+  function openPanel() { buildPanel(); renderRows(); panelOpen = true; clearTimeout(closingT); panel.classList.remove('closing'); panel.classList.add('on'); if (hud) hud.classList.add('open'); modal(); pause(); sfx('open'); }
+  var closingT = null;
+  function closePanel() { if (!panel || !panelOpen) return; panelOpen = false; panel.classList.remove('on'); panel.classList.add('closing'); if (hud) hud.classList.remove('open');
+    clearTimeout(closingT); closingT = setTimeout(function () { panel.classList.remove('closing'); modal(); }, 380);   // keep catching the pointer while it fades — the closing click never lands behind
+    if (!firstOpen) resume(); sfx('close'); }
 
   /* ---- first coin / first star: a short pause and a word about what just happened ---- */
   var first, firstOpen = false;

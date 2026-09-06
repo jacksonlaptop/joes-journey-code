@@ -12,16 +12,32 @@
 
   var SITTING_ALIEN_SAD   = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a1020606c5b65a83f63a171_sassy%20boy%201.svg';
   var SITTING_ALIEN_HAPPY = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a102060d6130fe4145e128e_happy%20boy.svg';
+  /* the Seedance alien clips (keyed, repo root): the five peeking aliens play their full clip once when they peer in; the sitting alien has four states */
+  var ABASE = window.JJ_SCORE_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
+  var PEEK = { TL: 'alien-peek-tl', TM: 'alien-peek-tm', BR: 'alien-peek-br', BL: 'alien-peek-bl', BM: 'alien-peek-bm' };   // TR has no clip yet — it keeps the SVG
+  function clipVideo(name, loop) {
+    var v = document.createElement('video'); v.muted = true; v.loop = !!loop; v.playsInline = true; v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+    v.poster = ABASE + name + '-poster.webp';
+    v.innerHTML = '<source src="' + ABASE + name + '.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + ABASE + name + '.webm" type="video/webm">';
+    v.addEventListener('playing', function () { v.removeAttribute('poster'); }, { once: true });   // no poster flash when a loop wraps
+    return v;
+  }
+  function mkPeek(cfg, loop) { if (!cfg.clip) { var im = document.createElement('img'); im.src = cfg.src; return im; } return clipVideo(cfg.clip, loop); }
+  function playFrom0(v) { if (v.tagName !== 'VIDEO') return; try { v.currentTime = 0; } catch (e) {} var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+  function peekHold(el, fallbackMs, cb) {                       // a clip peeks for as long as it plays; an image for the given time
+    var done = false, fin = function () { if (done) return; done = true; cb(); };
+    if (el.tagName === 'VIDEO') { el.addEventListener('ended', fin, { once: true }); setTimeout(fin, 6500); } else setTimeout(fin, fallbackMs);
+  }
   var MATRIX_GUY = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a218a72b3fe2da2dabfa4e5_Matrix.png';
 
-  var LANDING_ALIEN_AT = 8000;
-  var LANDING_SPEECH_AT = 12000;
+  var LANDING_ALIEN_AT = 3000;
+  var LANDING_SPEECH_AT = 6500;
   var SPEECH_POST_TYPE_PAUSE = 1000;
   var SPEECH_POST_REVEAL_PAUSE = 4000;
   var SPEECH_BETWEEN_PARTS = 6000;
   var SPEECH_PART2_HOLD = 4000;
   var POST_CLICK_DELAY = 1000;
-  var ALIEN_HIDE_AFTER_CLICK = 1500;
+  var ALIEN_HIDE_AFTER_CLICK = 4300;   // the send-off clip runs 4.1s and ends on an empty frame
   var STICKY_REVEAL_AT = 25400;
   var NEXT_SCENE_AT = 28400;
   var TYPEWRITER_AT = 28900;
@@ -451,6 +467,7 @@
   function startSubtitleGrowth() {
     var subtitle = document.getElementById('jj-subtitle');
     if (!subtitle) { setTimeout(startSubtitleGrowth, 100); return; }
+    if (document.getElementById('jj-sub-centre')) return;   // site-footer pins the subtitle to the centre at one size — no stepped growth, so it never shifts
     var targetPx       = Math.min(Math.max(50, window.innerWidth * 0.06), 100);
     var targetBottomPx = window.innerHeight * 0.45;
     try {
@@ -505,32 +522,26 @@
   var sittingAlienLines = null;
   function setupSittingAlien() {
     if (document.getElementById('jj-sitting-alien')) return;
-    sittingAlien = document.createElement('img');
+    sittingAlien = document.createElement('div');                 // two stacked clips: the next state fades in over the current one, so he never blinks
     sittingAlien.id = 'jj-sitting-alien';
-    sittingAlien.src = SITTING_ALIEN_SAD;
     sittingAlien.setAttribute('role', 'button');
+    sittingAlien.style.width = '216px'; sittingAlien.style.height = '233px'; sittingAlien.style.left = 'calc(12vw - 34px)';   // all four clips share one frame (ground line + left edge), so states never shift
+    sittingAlien.setAttribute('data-cursor', 'hover');
+    if (!document.getElementById('jj-sit-style')) { var ss = document.createElement('style'); ss.id = 'jj-sit-style';
+      ss.textContent = '#jj-sitting-alien video{position:absolute;left:0;bottom:0;height:100%;width:auto;max-width:none;opacity:0;transition:opacity .2s ease,scale .3s ease;transform-origin:32% 100%;pointer-events:none;display:block;}#jj-sitting-alien video.on{opacity:1;}#jj-sitting-alien:hover video.on{scale:1.06;}'; document.head.appendChild(ss); }
+    sittingAlien._v = {}; ['idle', 'poke', 'wait', 'bye'].forEach(function (n) { var v = clipVideo('alien-sit-' + n, n === 'idle'); v._name = n; sittingAlien._v[n] = v; sittingAlien.appendChild(v); });   // all four preloaded, ready the instant they are needed
     document.body.appendChild(sittingAlien);
-    sittingAlien.addEventListener('mouseenter', function () {
-      if (!sittingAlien) return;
-      sittingAlien.src = (alienBaseExpression === 'sad') ? SITTING_ALIEN_HAPPY : SITTING_ALIEN_SAD;
-    });
-    sittingAlien.addEventListener('mouseleave', function () {
-      if (!sittingAlien) return;
-      sittingAlien.src = (alienBaseExpression === 'sad') ? SITTING_ALIEN_SAD : SITTING_ALIEN_HAPPY;
-    });
+    mood('idle', true);
     sittingAlien.addEventListener('click', function () {
       if (!sittingAlien || sittingAlien._sulking) return;
       sittingAlien._sulking = true;
       landingTimers.forEach(clearTimeout); landingTimers = [];
-      hideAlienSpeech(); makeAlienSad();
-      sittingAlien.style.transition = 'transform 0.5s cubic-bezier(0.5, 0, 0.75, 0)';
-      sittingAlien.style.transform = 'translateY(66%) scale(0.8)';
+      hideAlienSpeech(); alienBaseExpression = 'sad';
+      mood('poke', false, function () { mood('idle', true); });   // the flinch-and-glare clip, then back to shifting about
       typewriterChars('Do you mind…', alienFontRevealToCaptions);
       setTimeout(function () {
         if (!sittingAlien) return;
         hideAlienSpeech();
-        sittingAlien.style.transition = 'transform 1s cubic-bezier(0.34, 1.56, 0.64, 1)';
-        sittingAlien.style.transform = 'translateY(15%)';
         sittingAlien._sulking = false;
         // "Do you mind" only paused things — if he never got to the sound-on line, pick the flow back up.
         if (!triggered && !audioLineSaid) {
@@ -550,6 +561,24 @@
       sittingAlienLines.appendChild(l);
     }
     document.body.appendChild(sittingAlienLines);
+  }
+  /* one of the four Seedance states: idle (loop), poke, wait, bye (one-shots; `then` runs when they end) */
+  function mood(name, loop, then) {
+    if (!sittingAlien || !sittingAlien._v) return;
+    var cur = sittingAlien._cur, nxt = sittingAlien._v[name]; if (!nxt) return;
+    if (nxt === cur && loop) return;
+    nxt.loop = !!loop; nxt.onended = null; sittingAlien._busy = !loop;
+    try { nxt.currentTime = 0; } catch (e) {}
+    var swap = function () { nxt.classList.add('on'); if (cur) { cur.classList.remove('on'); setTimeout(function () { if (sittingAlien && sittingAlien._cur !== cur) cur.pause(); }, 260); } };
+    var p = nxt.play(); if (p && p.then) p.then(swap, swap); else swap();
+    sittingAlien._cur = nxt;
+    if (!loop) { var fin = function () { if (sittingAlien && sittingAlien._cur === nxt) { sittingAlien._busy = false; if (then) then(); } }; nxt.onended = fin; setTimeout(fin, 4600); }
+  }
+  var waitTimer = null;
+  function startAlienWaiting() {                                  // he has said his piece and nobody clicked: an impatient sigh every so often
+    clearInterval(waitTimer);
+    waitTimer = setInterval(function () { if (triggered || !sittingAlien) { clearInterval(waitTimer); return; } if (sittingAlien._busy || sittingAlien._sulking) return; mood('wait', false, function () { mood('idle', true); }); }, 14000);
+    landingTimers.push(waitTimer);
   }
   function positionEmoteLines() {
     if (!sittingAlien || !sittingAlienLines) return;
@@ -581,7 +610,6 @@
   function makeAlienHappy() {
     if (!sittingAlien) return;
     alienBaseExpression = 'happy';
-    sittingAlien.src = SITTING_ALIEN_HAPPY;
     positionEmoteLines();
     if (sittingAlienLines) sittingAlienLines.classList.add('is-visible');
     setTimeout(function () {
@@ -591,7 +619,6 @@
   function makeAlienSad() {
     if (!sittingAlien) return;
     alienBaseExpression = 'sad';
-    sittingAlien.src = SITTING_ALIEN_SAD;
     if (sittingAlienLines) sittingAlienLines.classList.remove('is-visible');
   }
 
@@ -607,7 +634,7 @@
     var subtitle = document.getElementById('jj-subtitle');
     if (!subtitle) return;
     var cs = getComputedStyle(subtitle);
-    var props = ['fontFamily','fontWeight','fontSize','letterSpacing','lineHeight','color','textShadow','webkitTextStroke','paintOrder'];
+    var props = ['fontFamily','fontWeight','letterSpacing','color','textShadow','webkitTextStroke','paintOrder'];   // NOT fontSize/lineHeight — the narration caption is big and centred now; the alien keeps his own bubble size
     props.forEach(function (p) { if (cs[p]) el.style[p] = cs[p]; });
   }
   function prepareAlienSpeech(text) {
@@ -743,7 +770,8 @@
       { t: SPEECH_PART_4, m: 'sad' }
     ];
     (function next(i) {
-      if (triggered || i >= lines.length) return;
+      if (triggered) return;
+      if (i >= lines.length) { startAlienWaiting(); return; }
       speakLine(lines[i].t, lines[i].m, function () { next(i + 1); }, lines[i].audio);
     })(0);
   }
@@ -757,7 +785,7 @@
 
   function popUpAlienSmileFallback() {
     if (!sittingAlien) setupSittingAlien();
-    sittingAlien.src = SITTING_ALIEN_HAPPY;
+    mood('bye', false);
     requestAnimationFrame(function () {
       sittingAlien.classList.add('is-visible');
     });
@@ -808,9 +836,10 @@
 
   function enablePoke(sprite, hiddenT) {
     sprite.classList.add('jj-poke-sprite');
-    sprite.addEventListener('click', function () {
+    sprite.addEventListener('click', function (e) {
       if (sprite._poked) return;
       sprite._poked = true;
+      if (window.jjScore) window.jjScore.award('alien-catch', { x: e.clientX, y: e.clientY });   // Close Encounter
       var prev = sprite.style.transition;
       sprite.style.transition = 'opacity 0.25s ease, transform 0.45s cubic-bezier(0.5, 0, 0.75, 0)';
       sprite.style.transform = hiddenT;
@@ -865,15 +894,14 @@
       (function (gx) { setTimeout(function () { gx.style.transition = 'opacity 3s ease'; gx.style.opacity = '0.85'; }, 2200 + Math.random() * 1500); })(g);
     });
     var spritesConfig = [
-      { src: SPRITE_TR, anchor: { top: '0',     right: '90px' }, hiddenT: 'translate(0, -100%)',     peekT: 'translate(0, -22%)',     firstMin: 4000,  firstSpread: 4000 },
-      { src: SPRITE_TL, anchor: { top: '80px',  left:  '0' },    hiddenT: 'translate(-100%, -100%)', peekT: 'translate(-22%, -22%)',  firstMin: 6000,  firstSpread: 4000 },
-      { src: SPRITE_TM, anchor: { top: '0',     left:  '50%' },  hiddenT: 'translate(-50%, -100%)',  peekT: 'translate(-50%, -32%)',  firstMin: 8000,  firstSpread: 4000 },
-      { src: SPRITE_BR, anchor: { bottom: '0',  right: '0' },    hiddenT: 'translate(100%, 100%)',   peekT: 'translate(20%, 20%)',    firstMin: 10000, firstSpread: 4000 },
-      { src: SPRITE_BL, anchor: { bottom: '0',  left:  '0' },    hiddenT: 'translate(-100%, 100%)',  peekT: 'translate(-20%, 20%)',   firstMin: 12000, firstSpread: 4000 }
+      { src: SPRITE_TR, anchor: { top: '0',     right: '90px' }, hiddenT: 'translate(0, -100%)',     peekT: 'translate(0, -22%)',     firstMin: 1500,  firstSpread: 2500 },
+      { src: SPRITE_TL, clip: PEEK.TL, anchor: { top: '80px',  left:  '0' },    hiddenT: 'translate(-100%, -100%)', peekT: 'translate(-22%, -22%)',  firstMin: 2600,  firstSpread: 2500 },
+      { src: SPRITE_TM, clip: PEEK.TM, anchor: { top: '0',     left:  '30%' },  hiddenT: 'translate(-50%, -100%)',  peekT: 'translate(-50%, -32%)',  firstMin: 3700,  firstSpread: 2500 },
+      { src: SPRITE_BR, clip: PEEK.BR, anchor: { bottom: '0',  right: '0' },    hiddenT: 'translate(100%, 100%)',   peekT: 'translate(20%, 20%)',    firstMin: 4800, firstSpread: 2500 },
+      { src: SPRITE_BL, clip: PEEK.BL, anchor: { bottom: '0',  left:  '0' },    hiddenT: 'translate(-100%, 100%)',  peekT: 'translate(-20%, 20%)',   firstMin: 5900, firstSpread: 2500 }
     ];
     spritesConfig.forEach(function (cfg) {
-      var sprite = document.createElement('img');
-      sprite.src = cfg.src;
+      var sprite = mkPeek(cfg);
       sprite.className = 'jj-intro-deco jj-alien-sprite';
       sprite.style.width = '150px'; sprite.style.height = 'auto';
       Object.keys(cfg.anchor).forEach(function (k) { sprite.style[k] = cfg.anchor[k]; });
@@ -885,8 +913,8 @@
       function peek() {
         if (triggered) return;
         sprite.style.opacity = '1';
-        sprite.style.transform = cfg.peekT;
-        setTimeout(function () {
+        sprite.style.transform = cfg.peekT; playFrom0(sprite);
+        peekHold(sprite, 2800 + Math.random() * 2500, function () {
           if (triggered) return;
           sprite.style.transform = cfg.hiddenT;
           sprite.style.opacity = '0';
@@ -894,7 +922,7 @@
             if (triggered) return;
             setTimeout(peek, 15000 + Math.random() * 13000);
           }, 1800);
-        }, 2800 + Math.random() * 2500);
+        });
       }
       setTimeout(peek, cfg.firstMin + Math.random() * cfg.firstSpread);
     });
@@ -1198,17 +1226,16 @@
   function scheduleHorizontalSprite() {
     var hsSpritesConfig = [
       { src: SPRITE_TR, anchor: { top: '0',     right: '90px' }, hiddenT: 'translate(0, -100%)',     peekT: 'translate(0, -22%)' },
-      { src: SPRITE_TL, anchor: { top: '80px',  left:  '0' },    hiddenT: 'translate(-100%, -100%)', peekT: 'translate(-22%, -22%)' },
-      { src: SPRITE_TM, anchor: { top: '0',     left:  '50%' },  hiddenT: 'translate(-50%, -100%)',  peekT: 'translate(-50%, -32%)' },
-      { src: SPRITE_BR, anchor: { bottom: '0',  right: '0' },    hiddenT: 'translate(100%, 100%)',   peekT: 'translate(20%, 20%)' },
-      { src: SPRITE_BL, anchor: { bottom: '0',  left:  '0' },    hiddenT: 'translate(-100%, 100%)',  peekT: 'translate(-20%, 20%)' },
-      { src: SPRITE_BM, anchor: { bottom: '0',  left:  '38%' },  hiddenT: 'translate(-50%, 100%)',   peekT: 'translate(-50%, 22%)' }
+      { src: SPRITE_TL, clip: PEEK.TL, anchor: { top: '80px',  left:  '0' },    hiddenT: 'translate(-100%, -100%)', peekT: 'translate(-22%, -22%)' },
+      { src: SPRITE_TM, clip: PEEK.TM, anchor: { top: '0',     left:  '30%' },  hiddenT: 'translate(-50%, -100%)',  peekT: 'translate(-50%, -32%)' },
+      { src: SPRITE_BR, clip: PEEK.BR, anchor: { bottom: '0',  right: '0' },    hiddenT: 'translate(100%, 100%)',   peekT: 'translate(20%, 20%)' },
+      { src: SPRITE_BL, clip: PEEK.BL, anchor: { bottom: '0',  left:  '0' },    hiddenT: 'translate(-100%, 100%)',  peekT: 'translate(-20%, 20%)' },
+      { src: SPRITE_BM, clip: PEEK.BM, anchor: { bottom: '0',  left:  '38%' },  hiddenT: 'translate(-50%, 100%)',   peekT: 'translate(-50%, 22%)' }
     ];
     function next() {
       if (!bgEnabled) { setTimeout(next, 3000); return; }
       var cfg = hsSpritesConfig[Math.floor(Math.random() * hsSpritesConfig.length)];
-      var sprite = document.createElement('img');
-      sprite.src = cfg.src;
+      var sprite = mkPeek(cfg);
       sprite.style.cssText = 'position: fixed; pointer-events: none; z-index: 4; width: 150px; height: auto; opacity: 0; will-change: transform, opacity; transition: opacity 0.6s ease, transform 1.6s cubic-bezier(0.34, 1.56, 0.64, 1);';
       Object.keys(cfg.anchor).forEach(function (k) { sprite.style[k] = cfg.anchor[k]; });
       sprite.style.transform = cfg.hiddenT;
@@ -1216,15 +1243,15 @@
       enablePoke(sprite, cfg.hiddenT);
       setTimeout(function () {
         sprite.style.opacity = '1';
-        sprite.style.transform = cfg.peekT;
-        setTimeout(function () {
+        sprite.style.transform = cfg.peekT; playFrom0(sprite);
+        peekHold(sprite, 3000 + Math.random() * 2000, function () {
           sprite.style.transform = cfg.hiddenT;
           sprite.style.opacity = '0';
           setTimeout(function () {
             if (sprite.parentNode) sprite.parentNode.removeChild(sprite);
             setTimeout(next, 18000 + Math.random() * 17000);
           }, 1800);
-        }, 3000 + Math.random() * 2000);
+        });
       }, 100);
     }
     setTimeout(next, 10000 + Math.random() * 10000);
@@ -1490,13 +1517,12 @@
 
   function bigBangAliens() {
     var trio = [
-      { src: SPRITE_TL, anchor: { top: '80px', left: '0' },    hiddenT: 'translate(-100%, -100%)', peekT: 'translate(-22%, -22%)' },
-      { src: SPRITE_TM, anchor: { top: '0',    left: '50%' },   hiddenT: 'translate(-50%, -100%)',  peekT: 'translate(-50%, -32%)' },
+      { src: SPRITE_TL, clip: PEEK.TL, anchor: { top: '80px', left: '0' },    hiddenT: 'translate(-100%, -100%)', peekT: 'translate(-22%, -22%)' },
+      { src: SPRITE_TM, clip: PEEK.TM, anchor: { top: '0',    left: '30%' },   hiddenT: 'translate(-50%, -100%)',  peekT: 'translate(-50%, -32%)' },
       { src: SPRITE_TR, anchor: { top: '0',    right: '90px' }, hiddenT: 'translate(0, -100%)',     peekT: 'translate(0, -22%)' }
     ];
     trio.forEach(function (cfg) {
-      var s = document.createElement('img');
-      s.src = cfg.src;
+      var s = mkPeek(cfg, true); playFrom0(s);
       s.style.cssText = 'position:fixed;width:150px;height:auto;pointer-events:none;z-index:' + BB_Z + ';will-change:transform;transition:transform 0.5s cubic-bezier(0.34,1.5,0.64,1);';
       Object.keys(cfg.anchor).forEach(function (k) { s.style[k] = cfg.anchor[k]; });
       s.style.transform = cfg.hiddenT;
@@ -1554,7 +1580,7 @@
         landingTimers = [];
 
         if (alienShown) {
-          makeAlienHappy();
+          makeAlienHappy(); mood('bye', false);                    // delighted, a wave, and off he shoots (the clip itself leaves the frame)
           hideAlienSpeech();
         } else {
           popUpAlienSmileFallback();
@@ -1748,7 +1774,7 @@
    motion stays one fluid movement. The Rive canvas is hidden; the outline art flies; a click pops the FILLED art in (the flight
    carries on) and ticks Planet Hunter (2 parts). ===== */
 (function () {
-  var PGB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
+  var PGB = window.JJ_SCORE_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';   // JJ_SCORE_BASE: local preview override
   var ART = { jupiter: { line: PGB + 'score-jupiter-line.webp', fill: PGB + 'score-jupiter.webp', w: 11.5, from: 0.02, to: 0.98 },
               mars:    { line: PGB + 'score-mars-line.webp',    fill: PGB + 'score-mars.webp',    w: 6.4,  from: 0.30, to: 0.98 } };
   /* [u, left%, top%] along each planet's own path (u 0→1), % of the 16:9 box */
@@ -1817,6 +1843,49 @@
   function scan() { document.querySelectorAll('.mars, [data-jj-planets]').forEach(wire); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan); else scan();
   setTimeout(scan, 3000);
+})();
+
+/* ===== The grumpy alien of the horizontal scroll (Close Encounter). A keyed Seedance loop (hs-alien.*) drifts in from the edge at three
+   points of the journey, hovers, and drifts away again if ignored. A click flies him off for good and ticks Close Encounter.
+   VISITS: [progress window, side, bottom]. LOOP_END / FLYOFF: when the two-part clip lands (hover loop first, then angrier + exit),
+   set LOOP_END to where the loop should wrap and FLYOFF to where the exit starts; the click then plays that instead of the CSS fly-off. ===== */
+(function () {
+  var PGB = window.JJ_SCORE_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';   // JJ_SCORE_BASE: local preview override
+  var VISITS = [ [0.18, 0.30, 'right', '18vh'], [0.48, 0.60, 'left', '42vh'], [0.78, 0.90, 'right', '28vh'] ];
+  var LOOP_END = 3.0, FLYOFF = 3.1, LOOP_RATE = 0.55;   // the shifty loop runs at just over half speed so he lingers; the exit plays at full speed   // shiftygrumpy alien.mp4: 0–3s shifty hover loop; 3.1s → angrier, shoots off up-right at 6s, gone by 6.5s
+  var st = document.createElement('style');
+  st.textContent = '#jj-hs-alien{position:fixed;z-index:60;width:clamp(120px,12vw,200px);height:auto;pointer-events:auto;cursor:pointer;opacity:0;transition:transform 1.1s cubic-bezier(.22,1,.36,1),opacity .6s ease;}' +
+    '#jj-hs-alien.right{right:0;transform:translateX(110%);}#jj-hs-alien.left{left:0;transform:translateX(-110%) scaleX(-1);}' +
+    '#jj-hs-alien.in{opacity:1;}#jj-hs-alien.right.in{transform:translateX(12%);}#jj-hs-alien.left.in{transform:translateX(-12%) scaleX(-1);}' +
+    '#jj-hs-alien.off{transition:transform 1.1s cubic-bezier(.5,0,.8,1),opacity .8s ease .3s;opacity:0;}#jj-hs-alien.right.off{transform:translate(60vw,-70vh) scale(.5) rotate(20deg);}#jj-hs-alien.left.off{transform:translate(-60vw,-70vh) scale(.5) scaleX(-1) rotate(-20deg);}' +
+    'body.jj-modal-open #jj-hs-alien{pointer-events:none!important;}';
+  document.head.appendChild(st);
+  var v = document.createElement('video'); v.id = 'jj-hs-alien'; v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+  v.poster = PGB + 'hs-alien-poster.webp'; v.setAttribute('data-cursor', 'hover');
+  v.innerHTML = '<source src="' + PGB + 'hs-alien.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + PGB + 'hs-alien.webm" type="video/webm">';
+  document.body.appendChild(v);
+  var caught = false, cur = -1;
+  if (LOOP_END) v.addEventListener('timeupdate', function () { if (!v._flying && v.currentTime >= LOOP_END) v.currentTime = 0; });
+  function show(k) { var vis = VISITS[k]; v.className = vis[2] + ' in'; v.style.bottom = vis[3]; v.style.top = 'auto'; v.playbackRate = LOOP_RATE; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+  function hide() { v.classList.remove('in'); }
+  function tick() {
+    if (caught) return;
+    var hsw = document.querySelector('.horizontal-scroll-wrapper'); if (!hsw) return;
+    var t = (hsw.style && hsw.style.transform) || '', m = t.match(/translate(?:3d|X)?\(\s*(-?[\d.]+)/), x = m ? Math.abs(parseFloat(m[1])) : 0;
+    var max = Math.max(1, hsw.scrollWidth - window.innerWidth), P = Math.min(1, x / max), k = -1;
+    for (var i = 0; i < VISITS.length; i++) if (P >= VISITS[i][0] && P <= VISITS[i][1]) k = i;
+    if (k !== cur) { cur = k; if (k < 0) hide(); else show(k); }
+  }
+  v.addEventListener('click', function (e) {
+    if (caught) return; caught = true; v._flying = true;
+    if (window.jjScore) window.jjScore.award('alien-catch', { x: e.clientX, y: e.clientY });
+    if (FLYOFF != null) { v.loop = false; v.playbackRate = 1; try { v.currentTime = FLYOFF; } catch (x) {} var p = v.play(); if (p && p.catch) p.catch(function () {}); v.style.transition = 'opacity .4s ease';
+      var gone = function () { v.style.opacity = '0'; setTimeout(function () { v.remove(); }, 500); }; v.addEventListener('ended', gone, { once: true }); setTimeout(gone, 5000); }   // he gets angrier, then shoots off in the clip itself
+    else { v.classList.add('off'); setTimeout(function () { v.remove(); }, 2600); }
+  });
+  function arm() { var hsw = document.querySelector('.horizontal-scroll-wrapper'); if (!hsw) return setTimeout(arm, 1500);
+    new MutationObserver(tick).observe(hsw, { attributes: true, attributeFilter: ['style'] }); window.addEventListener('resize', tick); tick(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arm); else arm();
 })();
 
 /* ===== Achievements open = the world holds its breath. GSAP, every CSS/Web animation outside the modal, videos, running sounds

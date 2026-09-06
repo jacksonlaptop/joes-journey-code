@@ -22,7 +22,7 @@
    ============================================================================ */
 (function () {
   var JJ = (window.JJLoader = window.JJLoader || {});
-  JJ.version = 'L11 · figures fade in as they arrive; capital T';   // bump every edit — verify in console
+  JJ.version = 'L11 · figures fade in as they arrive; capital T · black-first ease-in';   // bump every edit — verify in console
   window.JJ_LOADER_BUILD = JJ.version;
   try { console.log('%c[JJ] jj-loader.js build: ' + JJ.version, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
@@ -177,8 +177,10 @@
     '#jjld .jjmoonw{transform-box:fill-box;transform-origin:50% 50%;animation:jjmoonwK 7s ease-in-out infinite;}';
 
   function mount(html) {
-    if (!document.getElementById('jjld-style')) { var st = document.createElement('style'); st.id = 'jjld-style'; st.textContent = CSS; document.head.appendChild(st); }
-    var el = document.createElement('div'); el.id = 'jjld'; el.innerHTML = html; document.body.appendChild(el); return el;
+    if (!document.getElementById('jjld-style')) { var st = document.createElement('style'); st.id = 'jjld-style'; st.textContent = CSS + '.jjld-title{position:absolute;left:50%;top:9vh;transform:translateX(-50%);width:92vw;text-align:center;font-family:\'Joes Journey Headline\',sans-serif;font-weight:700;color:#e8d9b5;font-size:clamp(28px,4.2vw,64px);line-height:1.1;letter-spacing:.02em;text-shadow:0 6px 30px rgba(0,0,0,.7);opacity:0;animation:jjldTtl 1.4s ease .4s forwards;pointer-events:none;z-index:3;}@keyframes jjldTtl{to{opacity:1;}}'; document.head.appendChild(st); }
+    var el = document.createElement('div'); el.id = 'jjld'; el.innerHTML = html; document.body.appendChild(el);
+    if (mount.title) { var tt = document.createElement('div'); tt.className = 'jjld-title'; tt.textContent = mount.title; el.appendChild(tt); }   // opts.title: a big title over the loader (storytime)
+    return el;
   }
   function joeSvg(frames) {
     return frames && frames.length ? '<image class="joe" href="' + frames[0] + '" />' : '<circle class="joe" r="10" fill="#FF00F5"/>';
@@ -660,7 +662,7 @@
 
   /* ---------- RUN ---------- */
   JJ.start = function (opts) {
-    opts = opts || {};
+    opts = opts || {}; mount.title = opts.title || '';
     var prev = document.getElementById('jjld');                  // starting anew replaces a running loader
     if (prev) prev.remove();                                     // (its rAF loop exits via the isConnected check)
     var frames = (opts.frames || []).filter(Boolean);
@@ -672,6 +674,17 @@
       : opts.variant === 'evolution' ? Evolution(opts)
       : opts.variant === 'precam' ? Precam(opts)
       : (opts.variant === 'scroll' ? Scroll : Journey)(opts, frames));
+    /* pitch black first: the loader's own art (grass, moon, first figures) is given a beat to land, then the whole
+       stage eases in and the clock starts — no half-drawn ground, and every page begins from the same black */
+    scene.el.style.opacity = '0';
+    (function easeIn() {
+      var urls = []; scene.el.querySelectorAll('image, img').forEach(function (n) { var u = n.getAttribute('href') || n.getAttribute('src'); if (u) urls.push(u); });
+      var left = urls.length, done = false;
+      function go() { if (done) return; done = true; scene.el.style.transition = 'opacity .7s ease'; scene.el.style.opacity = '1'; startT = performance.now(); }
+      if (!left) return setTimeout(go, 120);
+      urls.forEach(function (u) { var im = new Image(); im.onload = im.onerror = function () { if (--left <= 0) setTimeout(go, 60); }; im.src = u; });
+      setTimeout(go, 1100);                                        // never wait longer than this
+    })();
     var startT = performance.now(), minTime = opts.minTime != null ? opts.minTime : 900;
     var fps = opts.fps || 8, fi = 0, lastF = 0;
     var target = 0, shown = 0, revealed = false, downloaded = false, decoded = !opts.decode;

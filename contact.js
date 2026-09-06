@@ -15,7 +15,7 @@
 (function () {
   /* Build marker — to confirm the browser is running the latest file, open the console and look for this
      line (or type window.JJ_CONTACT_BUILD). If it's missing/old, you're on a cached copy → bump ?v in Webflow. */
-  window.JJ_CONTACT_BUILD = 'r7 · game holds while achievements are open · score pill fades with the nav · jjScore hooks · linkedin opens profile · name-svg-icon · duck-ambient · tut-centre+line-behind';
+  window.JJ_CONTACT_BUILD = 'r8 · level 5 achievement · game holds while achievements are open · score pill fades with the nav · jjScore hooks · linkedin opens profile · name-svg-icon · duck-ambient · tut-centre+line-behind';
   try { console.log('%c[JJ] contact.js build: ' + window.JJ_CONTACT_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
   /* ---- 1. styles: uses the site's OWN Webflow brand fonts (already served) ---- */
   var CSS = `
@@ -999,7 +999,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
         if(G.fill<0){ if(G.level>1){ G.level--; G.fill+=1; setLevelHUD(); setDragon(); } else G.fill=0; }
         if(Math.random()<0.25) flash('Eugh!',900); gsap.fromTo(dragon,{filter:'brightness(2.1) saturate(.4)'},{filter:'none',duration:.4});   // only react now and then — every time is distracting
       } else { G.score+=50; pop(1); G.fill+=.2;
-        if(G.fill>=1){ G.fill-=1; if(G.level<9){ G.level++; setLevelHUD(); setDragon(); levelUpFx(); flash("I'm getting…stronger!",1300); if(G.level>=9 && window.jjScore) window.jjScore.award('credits10'); } else G.fill=1; }   // top level = +1 star
+        if(G.fill>=1){ G.fill-=1; if(G.level<9){ G.level++; setLevelHUD(); setDragon(); levelUpFx(); flash("I'm getting…stronger!",1300); if(window.jjScore){ if(G.level>=5) window.jjScore.award('credits5'); if(G.level>=9) window.jjScore.award('credits10'); } } else G.fill=1; }   // top level = +1 star
         if(Math.random()<0.22) flash('Yum!',900);   // only now and then
       }
       scoreEl.textContent='SCORE : '+G.score; fillEl.style.width=Math.max(0,Math.min(1,G.fill))*100+'%';

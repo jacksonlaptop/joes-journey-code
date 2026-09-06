@@ -15,7 +15,7 @@
 (function () {
   /* Build marker — to confirm the browser is running the latest file, open the console and look for this
      line (or type window.JJ_CONTACT_BUILD). If it's missing/old, you're on a cached copy → bump ?v in Webflow. */
-  window.JJ_CONTACT_BUILD = 'r6 · score pill fades with the nav · jjScore hooks · linkedin opens profile · name-svg-icon · duck-ambient · tut-centre+line-behind';
+  window.JJ_CONTACT_BUILD = 'r7 · game holds while achievements are open · score pill fades with the nav · jjScore hooks · linkedin opens profile · name-svg-icon · duck-ambient · tut-centre+line-behind';
   try { console.log('%c[JJ] contact.js build: ' + window.JJ_CONTACT_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
   /* ---- 1. styles: uses the site's OWN Webflow brand fonts (already served) ---- */
   var CSS = `
@@ -888,6 +888,9 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
 
     function up(){ G.ty=Math.max(16,G.ty-8); } function down(){ G.ty=Math.min(80,G.ty+8); }
     var paused=false, viewMode=false, menuOpen=false, menuSel=0, menuItems=null, menuBoxEl=null, pauseFrom='play', ended=false;
+    var achHeld=false;                                                                            // achievements panel open mid-game → hold the loop, resume where it was
+    window.addEventListener('jj:score:pause', function(){ if(G.run && !paused && !ended){ achHeld=true; paused=true; } });
+    window.addEventListener('jj:score:resume', function(){ if(achHeld){ achHeld=false; paused=false; G.lastT=0; } });
     var LVLCOL=['#FF00F5','#EEFF00','#A38CFF','#FF0000','#00FF33','#BF00FF','#FFBB00','#FFDDFE','#FF00F5'];
     function onKey(e){
       if(menuOpen){

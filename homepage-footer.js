@@ -1255,7 +1255,17 @@
     PHIL_OUT:     30200   // wizard fades out as the scroll unlocks
   };
   var BB_Z = 9990;
-  function bbTimer(fn, t) { return setTimeout(fn, t); }
+  /* big-bang timers are pausable (achievements open mid-bang): each remembers what is left to run */
+  var bbPending = [], bbPaused = false;
+  function bbTimer(fn, t) {
+    var rec = { fn: fn, rem: t, due: Date.now() + t, id: null };
+    function arm() { rec.due = Date.now() + rec.rem; rec.id = setTimeout(function () { bbPending = bbPending.filter(function (r) { return r !== rec; }); rec.fn(); }, rec.rem); }
+    bbPending.push(rec); if (!bbPaused) arm(); rec.arm = arm; return rec;
+  }
+  window.jjBB = {
+    pause: function () { if (bbPaused) return; bbPaused = true; bbPending.forEach(function (r) { clearTimeout(r.id); r.rem = Math.max(0, r.due - Date.now()); }); },
+    resume: function () { if (!bbPaused) return; bbPaused = false; bbPending.forEach(function (r) { r.arm(); }); }
+  };
 
   var bigBangRan = false;
   function runBigBang() {
@@ -1732,34 +1742,38 @@
   else window.addEventListener('load', initParallax);
 })();
 
-/* ===== Planet Hunter: the "mars" Rive (which holds BOTH planets) rebuilt in code — the user has no Rive access. Traced from the
-   .riv: a 10s loop on a 16:9 artboard. Jupiter (11.5% of the width) enters top-right at 0.7s, swoops through the bottom and leaves
-   top-left at 8.3s; Mars (6.4%) enters top-right at 3.5s and slides down to leave bottom-left at 8.3s. We hide the Rive canvas, fit a
-   16:9 box inside the element exactly like Rive's contain/center, and fly the outline art along the same paths. A click pops the
-   FILLED art in (the flight carries on) and ticks Planet Hunter. The element keeps its Webflow box and reveal. ===== */
+/* ===== Planet Hunter: Jupiter + Mars, driven by the horizontal SCROLL (not the clock). Paths traced from the original "mars" Rive
+   (which held both planets): Jupiter enters top-right, swoops through the bottom and leaves top-left; Mars enters top-right later and
+   slides down to leave bottom-left. Progress = how far the host element has travelled across the viewport, eased each frame so the
+   motion stays one fluid movement. The Rive canvas is hidden; the outline art flies; a click pops the FILLED art in (the flight
+   carries on) and ticks Planet Hunter (2 parts). ===== */
 (function () {
   var PGB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
-  var ART = { jupiter: { line: PGB + 'score-jupiter-line.webp', fill: PGB + 'score-jupiter.webp', w: 11.5 },
-              mars:    { line: PGB + 'score-mars-line.webp',    fill: PGB + 'score-mars.webp',    w: 6.4 } };
+  var ART = { jupiter: { line: PGB + 'score-jupiter-line.webp', fill: PGB + 'score-jupiter.webp', w: 11.5, from: 0.02, to: 0.98 },
+              mars:    { line: PGB + 'score-mars-line.webp',    fill: PGB + 'score-mars.webp',    w: 6.4,  from: 0.30, to: 0.98 } };
+  /* [u, left%, top%] along each planet's own path (u 0→1), % of the 16:9 box */
+  var PATH = { jupiter: [[0,103,17],[.15,79.7,32],[.27,68.9,57],[.4,57.7,83],[.5,46,86.6],[.54,38,86.6],[.66,21.4,68],[.78,11.9,41],[.9,3,17.5],[1,-4,12]],
+               mars:    [[0,98,19],[.12,88.3,15],[.24,75.3,15],[.36,60.7,23],[.48,49.3,41],[.6,40.7,59],[.72,31.1,71.6],[.84,19.3,79],[.94,8.4,83],[1,-4,87]] };
+  function at(path, u) {                                  // Catmull-Rom through the traced points → no kinks
+    u = Math.max(0, Math.min(1, u)); var i = 0; while (i < path.length - 2 && path[i + 1][0] < u) i++;
+    var p0 = path[Math.max(0, i - 1)], p1 = path[i], p2 = path[i + 1], p3 = path[Math.min(path.length - 1, i + 2)];
+    var t = (u - p1[0]) / Math.max(1e-6, p2[0] - p1[0]), t2 = t * t, t3 = t2 * t;
+    function cr(a, b, c, d) { return 0.5 * ((2 * b) + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (-a + 3 * b - 3 * c + d) * t3); }
+    return [cr(p0[1], p1[1], p2[1], p3[1]), cr(p0[2], p1[2], p2[2], p3[2])];
+  }
   var st = document.createElement('style');
   st.textContent = '.jj-planets>canvas{display:none!important;}.jj-planets{position:relative;}' +
-    '.jj-planets .jj-pl-box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);aspect-ratio:16/9;width:100%;max-height:100%;pointer-events:none;}' +
-    '@supports not (aspect-ratio:16/9){.jj-planets .jj-pl-box{height:100%;}}' +
-    '.jj-planets .jj-pl{position:absolute;left:0;top:0;translate:-50% -50%;pointer-events:none;animation:10s linear infinite;cursor:pointer;}' +
-    '.jj-planets .jj-pl.jupiter{width:11.5%;animation-name:jjPlJupiter;}.jj-planets .jj-pl.mars{width:6.4%;animation-name:jjPlMars;}' +
-    '.jj-planets .jj-pl img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:auto;transition:opacity .5s ease,transform .7s cubic-bezier(.34,1.56,.64,1),filter .3s ease;}' +
-    '.jj-planets .jj-pl img.spin{animation:jjPlSpin 70s linear infinite;}' +
-    '.jj-planets .jj-pl img.fill{opacity:0;transform:scale(.55);pointer-events:none;}.jj-planets .jj-pl.lit img.fill{opacity:1;transform:scale(1);}.jj-planets .jj-pl.lit img.line{opacity:0;pointer-events:none;}' +
-    '.jj-planets .jj-pl:not(.lit):hover img.line{filter:drop-shadow(0 0 14px rgba(199,231,255,.95));}' +
+    '.jj-planets .jj-pl-box{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;}' +
+    '.jj-planets .jj-pl{position:absolute;left:0;top:0;translate:-50% -50%;pointer-events:none;cursor:pointer;will-change:left,top;}' +
+    '.jj-planets .jj-pl.jupiter{width:11.5%;}.jj-planets .jj-pl.mars{width:6.4%;}' +
     '.jj-planets .jj-pl .box{position:relative;width:100%;aspect-ratio:1;}' +
-    '@keyframes jjPlSpin{to{rotate:360deg;}}' +
-    /* left/top are % of the 16:9 box, straight from the trace (centre points) */
-    '@keyframes jjPlJupiter{0%,6.9%{left:106%;top:19%;opacity:0;}7%{left:103%;top:17%;opacity:1;}20%{left:79.7%;top:32%;}30%{left:68.9%;top:57%;}40%{left:57.7%;top:83%;}47%{left:46%;top:86.6%;}50%{left:38%;top:86.6%;}60%{left:21.4%;top:68%;}70%{left:11.9%;top:41%;}80%{left:3%;top:17.5%;}83%{left:-4%;top:12%;opacity:1;}83.1%,100%{left:-6%;top:10%;opacity:0;}}' +
-    '@keyframes jjPlMars{0%,34.9%{left:104%;top:19%;opacity:0;}35%{left:98%;top:19%;opacity:1;}40%{left:88.3%;top:15%;}45%{left:75.3%;top:15%;}50%{left:60.7%;top:23%;}55%{left:49.3%;top:41%;}60%{left:40.7%;top:59%;}65%{left:31.1%;top:71.6%;}70%{left:19.3%;top:79%;}75%{left:8.4%;top:83%;}80%{left:2.4%;top:85%;}83%{left:-4%;top:87%;opacity:1;}83.1%,100%{left:-6%;top:88%;opacity:0;}}';
+    '.jj-planets .jj-pl img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:auto;transition:opacity .5s ease,transform .7s cubic-bezier(.34,1.56,.64,1),filter .3s ease;}' +
+    '.jj-planets .jj-pl img.fill{opacity:0;transform:scale(.55);pointer-events:none;}.jj-planets .jj-pl.lit img.fill{opacity:1;transform:scale(1);}.jj-planets .jj-pl.lit img.line{opacity:0;pointer-events:none;}' +
+    '.jj-planets .jj-pl:not(.lit):hover img.line{filter:drop-shadow(0 0 14px rgba(199,231,255,.95));}';
   document.head.appendChild(st);
   function planet(name) {
     var a = ART[name], el = document.createElement('div'); el.className = 'jj-pl ' + name; el.setAttribute('data-cursor', 'hover');
-    el.innerHTML = '<div class="box"><img class="line spin" src="' + a.line + '" alt=""><img class="fill" src="' + a.fill + '" alt=""></div>';
+    el.innerHTML = '<div class="box"><img class="line" src="' + a.line + '" alt=""><img class="fill" src="' + a.fill + '" alt=""></div>';
     el.addEventListener('click', function (e) {
       if (el.classList.contains('lit')) return; el.classList.add('lit');
       if (window.jjScore) window.jjScore.award('planets', { part: name, x: e.clientX, y: e.clientY });
@@ -1768,12 +1782,55 @@
   }
   function wire(host) {
     if (host._jjPlanets) return; host._jjPlanets = true; host.classList.add('jj-planets');
-    var box = document.createElement('div'); box.className = 'jj-pl-box'; box.appendChild(planet('jupiter')); box.appendChild(planet('mars')); host.appendChild(box);
-    /* contain/center like Rive: the 16:9 box is as big as the host allows */
+    var box = document.createElement('div'); box.className = 'jj-pl-box';
+    var els = { jupiter: planet('jupiter'), mars: planet('mars') }; box.appendChild(els.jupiter); box.appendChild(els.mars); host.appendChild(box);
     function fit() { var w = host.clientWidth, h = host.clientHeight; if (!w || !h) return; var bw = Math.min(w, h * 16 / 9); box.style.width = bw + 'px'; box.style.height = (bw * 9 / 16) + 'px'; }
     fit(); if (window.ResizeObserver) new ResizeObserver(fit).observe(host); window.addEventListener('resize', fit);
+    var shown = -1, lastLeft = null;
+    function frame() {
+      var r = host.getBoundingClientRect();
+      if (r.width) {
+        var target = (window.innerWidth - r.left) / (window.innerWidth + r.width);   // 0: host about to enter from the right · 1: gone off the left
+        target = Math.max(0, Math.min(1, target));
+        if (shown < 0) shown = target; else shown += (target - shown) * 0.14;         // eased → one fluid movement, no jitter from the scroll
+        if (lastLeft !== r.left || Math.abs(target - shown) > 0.0005) {
+          lastLeft = r.left;
+          for (var k in els) { var a = ART[k], u = (shown - a.from) / (a.to - a.from), pos = at(PATH[k], u), el = els[k];
+            el.style.left = pos[0] + '%'; el.style.top = pos[1] + '%'; el.style.opacity = (u <= 0 || u >= 1) ? '0' : '1';
+            el.querySelector('.box').style.rotate = (u * 140) + 'deg'; }
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
   }
   function scan() { document.querySelectorAll('.mars, [data-jj-planets]').forEach(wire); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan); else scan();
   setTimeout(scan, 3000);
+})();
+
+/* ===== Achievements open = the world holds its breath. GSAP, every CSS/Web animation outside the modal, videos, running sounds
+   and the big-bang timers pause on jj:score:pause and pick up exactly where they were on jj:score:resume. Plain setTimeout flows
+   elsewhere (the alien's speech) are left alone on purpose — they were not built to be paused. ===== */
+(function () {
+  var paused = false, anims = [], vids = [], howls = [];
+  function inModal(n) { return n && n.closest && n.closest('#jj-ach, #jj-first, #jj-sc-hud'); }
+  window.addEventListener('jj:score:pause', function () {
+    if (paused) return; paused = true;
+    try { if (window.gsap) gsap.globalTimeline.pause(); } catch (e) {}
+    try { anims = document.getAnimations().filter(function (a) { var t = a.effect && a.effect.target; return a.playState === 'running' && !inModal(t); }); anims.forEach(function (a) { a.pause(); }); } catch (e) { anims = []; }
+    vids = []; document.querySelectorAll('video').forEach(function (v) { if (!v.paused && !v.ended) { vids.push(v); v.pause(); } });
+    howls = []; try { (window.Howler ? Howler._howls : []).forEach(function (h) { if (h.playing()) { howls.push(h); h.pause(); } }); } catch (e) {}
+    try { if (window.lenis && window.lenis.stop) window.lenis.stop(); } catch (e) {}
+    if (window.jjBB && window.jjBB.pause) window.jjBB.pause();
+  });
+  window.addEventListener('jj:score:resume', function () {
+    if (!paused) return; paused = false;
+    try { if (window.gsap) gsap.globalTimeline.resume(); } catch (e) {}
+    anims.forEach(function (a) { try { if (a.playState === 'paused') a.play(); } catch (e) {} }); anims = [];
+    vids.forEach(function (v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }); vids = [];
+    howls.forEach(function (h) { try { h.play(); } catch (e) {} }); howls = [];
+    try { if (window.lenis && window.lenis.start) window.lenis.start(); } catch (e) {}
+    if (window.jjBB && window.jjBB.resume) window.jjBB.resume();
+  });
 })();

@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's56 · lone chicken + bones in the cave, the three back by the village house; bones further back; score pill drops in with the nav; one shivering chicken + its bones by the house (tap: twitch, squawk, hop); bones piles are the rattle clip (hover = rattle, click = collect); pressable pixels from baked masks (Joe/Trogdor/window hole — every browser); hearth swells + crackle +40% on hover; loader copy = interactive journey; sound-off ask before the first line; gentler hero hover grow; window Trogdor catchable through the hole (Catch Trogdor!); cave darkness + moody sky on \'darkness\'; bone rattle hook; chickens by the village house (tap = squawk + hop); bones in the cavern + castle (Bone Collector); score pause hooks; +1 star on finishing (jjScore); Skip CTA bottom-left, 32px like the sound moon; hover fill + pink press on Skip/Back/Skip-this-part; Skip = the exact NEXT SCENE element above the banner; glass confirm buttons; brighter sky dressing + bigger tavern moon; quicker pants→Designer; ta-da once and trimmed; Joe off the fire; smaller window Trogdor; pitchfork man in front;  Skip CTA = the horizontal-scroll Next Scene button with the skip icon; progress bar along the bottom; village flame in front of the fleeing villagers;  tavern crowd = one full-body Seedance clip on the floorboards;  castle Trogdor is ONE clip too (huff → fire on \'facing fire\' → puzzled turn to camera → shrinks in smoke);  village Trogdor is ONE Seedance clip (huff, then fire from 2.2s, held);  CTA = the homepage button; hearth fire on the logs; puzzled Trogdor lands where the fire-breather stood; sword + pitchfork clips uncut; villagers stay on the land; SFX at a quarter; gait-matched gallop seam;  nav held back until its drop-in (jj-nav-in gate);  clips prefetched in scene order while the tale plays;  Skip CTA + pause-everything confirm; seamless gallop;  every sound at half; castle clips silent bar the roar; smaller puzzled Trogdor; flame deeper in the mouth; bigger hearth fire; grounded tavern crowd; villagers run longer; headroom for the jump; quick ending';
+  window.JJ_STORY_BUILD = 's57 · stage-level hit manager (hero boxes block nothing → hearth hover works); overlays have no hit area while hidden + own glass buttons; modal guard; chicken left, bones into the distance, instant chicken hop; lone chicken + bones in the cave, the three back by the village house; bones further back; score pill drops in with the nav; one shivering chicken + its bones by the house (tap: twitch, squawk, hop); bones piles are the rattle clip (hover = rattle, click = collect); pressable pixels from baked masks (Joe/Trogdor/window hole — every browser); hearth swells + crackle +40% on hover; loader copy = interactive journey; sound-off ask before the first line; gentler hero hover grow; window Trogdor catchable through the hole (Catch Trogdor!); cave darkness + moody sky on \'darkness\'; bone rattle hook; chickens by the village house (tap = squawk + hop); bones in the cavern + castle (Bone Collector); score pause hooks; +1 star on finishing (jjScore); Skip CTA bottom-left, 32px like the sound moon; hover fill + pink press on Skip/Back/Skip-this-part; Skip = the exact NEXT SCENE element above the banner; glass confirm buttons; brighter sky dressing + bigger tavern moon; quicker pants→Designer; ta-da once and trimmed; Joe off the fire; smaller window Trogdor; pitchfork man in front;  Skip CTA = the horizontal-scroll Next Scene button with the skip icon; progress bar along the bottom; village flame in front of the fleeing villagers;  tavern crowd = one full-body Seedance clip on the floorboards;  castle Trogdor is ONE clip too (huff → fire on \'facing fire\' → puzzled turn to camera → shrinks in smoke);  village Trogdor is ONE Seedance clip (huff, then fire from 2.2s, held);  CTA = the homepage button; hearth fire on the logs; puzzled Trogdor lands where the fire-breather stood; sword + pitchfork clips uncut; villagers stay on the land; SFX at a quarter; gait-matched gallop seam;  nav held back until its drop-in (jj-nav-in gate);  clips prefetched in scene order while the tale plays;  Skip CTA + pause-everything confirm; seamless gallop;  every sound at half; castle clips silent bar the roar; smaller puzzled Trogdor; flame deeper in the mouth; bigger hearth fire; grounded tavern crowd; villagers run longer; headroom for the jump; quick ending';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -86,8 +86,8 @@
         hero:{ label:'Trogdor the Burninator', glow:'rgba(255,96,120,.55)', lt:25, hit:[.27,.31,.84,.8] },
         /* snd: the Seedance breathing had a music pad under it — a proper snore is coming from the user */
         fx:[ { type:'smoke', at:[28, 46] }, { type:'glint', at:[[46,70],[58,74],[66,66],[52,78]] } ] },
-      { key:'bones1', vid:'bones-rattle', ar:722/424, idle:true, hoverPlay:true, cls:'prop', tap:'bones', hoverSnd:'bone-jiggle', css:'left:41%;bottom:33vh;width:min(6.5vw,130px)' },   // Bone Collector 1/2 — further back on the cave floor; still until hovered, whisks away on click
-      { key:'chick', vid:'vil-chicken', ar:548/646, seg:[0.1, 3.5], hop:[3.6, 6.0], tap:'chick', cls:'prop', css:'left:49%;bottom:27.5vh;width:min(6.5vw,130px)' }   // the lone chicken by its friend's bones: shivers on a loop; tap → bones twitch, squawk, hop
+      { key:'bones1', vid:'bones-rattle', ar:722/424, idle:true, hoverPlay:true, cls:'prop', tap:'bones', hoverSnd:'bone-jiggle', css:'left:44%;bottom:38vh;width:min(5.5vw,110px)' },   // Bone Collector 1/2 — further back on the cave floor; still until hovered, whisks away on click
+      { key:'chick', vid:'vil-chicken', ar:548/646, seg:[0.1, 3.5], hop:[3.6, 6.0], tap:'chick', cls:'prop', css:'left:6.5%;bottom:31vh;width:min(8.5vw,170px)' }   // in the gap between the rocks and the chest   // the lone chicken by its friend's bones: shivers on a loop; tap → bones twitch, squawk, hop
     ]},
     /* tavern per the "3 - Tavern 1" mockup: Joe mid-left on the floor, grandma back-right,
        hooded guy far right, the old man BIG in the foreground (so he's last = on top). */
@@ -145,7 +145,7 @@
     ]}
   };
   Object.keys(COMP).forEach(function (n) { if (/^castle/.test(n)) COMP[n].layers.push(   // Bone Collector 2/2 — mid-ground between Joe and Trogdor, every castle shot
-    { key:'bones2', vid:'bones-rattle', ar:722/424, idle:true, hoverPlay:true, cls:'prop', tap:'bones', hoverSnd:'bone-jiggle', now:true, css:'left:44%;bottom:27vh;width:min(6vw,120px)' }); });
+    { key:'bones2', vid:'bones-rattle', ar:722/424, idle:true, hoverPlay:true, cls:'prop', tap:'bones', hoverSnd:'bone-jiggle', now:true, css:'left:47%;bottom:36vh;width:min(5vw,100px)' }); });
   var taken = {};                                            // props the reader has picked up — never rebuilt
 
   /* ---- VILLAGE = 4-panel storyboard, sizes + positions traced from the "2 - Village 1..4"
@@ -171,7 +171,7 @@
        wedge and its pointed base hides inside the head; the origin (58.4% 46%) is the mouth interior. */
     var L = [
       /* the three chickens by the house: a Seedance one-shot that waits on its first frame — tap → squawk + a little hop, and they stay worried */
-      { key:'chicks', vid:'vil-chickens', ar:898/592, hold:true, idle:true, tap:'chicks', cls:'prop', css:'left:4%;bottom:21vh;width:min(23vw,460px)' },   // the three by the house: wait on frame 0; tap → squawk + hop, they stay worried
+      { key:'chicks', vid:'vil-chickens', ar:898/592, hold:true, idle:true, tap:'chicks', cls:'prop', css:'left:4%;bottom:27vh;width:min(21vw,420px)' },   // the three by the house: wait on frame 0; tap → squawk + hop, they stay worried
       /* one Seedance clip does it all now: he huffs (his own smoke puffs), the fire starts at 2.2s — the same beat the
          old two-layer flame used to grow on — and the blaze is held by a swung tail. Body sits where the old loop's did. */
       /* both are Seedance one-shots (turn-back at the very end trimmed, last stride held): the class in `run` lands on
@@ -274,6 +274,7 @@
   '#jjst .jjst-aura.lit .aglow{opacity:1;transform:scale(1);}'+
   '#jjst .jjst-layer.pop{animation:jjstPop .55s cubic-bezier(.34,1.56,.64,1);transform-origin:50% 100%;}'+
   '#jjst .jjst-layer.hearthy{transform-origin:50% 100%;transition:transform .35s cubic-bezier(.34,1.56,.64,1);}#jjst .jjst-layer.hearthy.warm{transform:scale(1.14);}'+
+  'body.jj-modal-open #jjst *{pointer-events:none!important;}'+   // achievements / explainer open → nothing in the scene hovers or clicks
   '#jjst .jjst-layer.prop{transition:filter .3s ease,opacity .6s ease;}#jjst .jjst-layer.prop:hover{filter:drop-shadow(0 0 10px rgba(255,240,180,.95)) drop-shadow(0 0 28px rgba(255,220,120,.6));}'+
   '#jjst .jjst-layer.taken{animation:jjstTaken .7s cubic-bezier(.4,0,.7,1) forwards!important;pointer-events:none!important;}'+
   '@keyframes jjstTaken{0%{translate:0 0;scale:1;rotate:0deg;opacity:1;}30%{translate:0 -3vh;scale:1.12;rotate:-8deg;opacity:1;}100%{translate:0 -12vh;scale:.25;rotate:30deg;opacity:0;}}'+
@@ -333,14 +334,17 @@
   '#jjst-skipcta.on{opacity:1;pointer-events:auto;transform:none;}'+
   '#jjst-skipcta .button-text{white-space:nowrap;}'+
   '#jjst-skipcta .ico{width:1.6vw;height:1.6vw;min-width:18px;min-height:18px;display:block;}'+
-  '.jjst-ov{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease;}'+
-  '.jjst-ov.on{opacity:1;pointer-events:auto;}'+
-  '  .jjst-ov .card{text-align:center;color:#fff;padding:0 24px;max-width:640px;}'+
-  '  .jjst-ov .q{font-size:clamp(22px,2.6vw,38px);font-weight:700;margin:0 0 12px;}'+
-  '  .jjst-ov .sub{font-size:clamp(15px,1.3vw,20px);opacity:.9;margin:0 0 28px;}  .jjst-ov .sub b{color:#FF00F5;}'+
-  '  .jjst-ov .row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}'+
-  '  .jjst-ov .row a{cursor:pointer;text-decoration:none;}'+
-  '  .jjst-ov .q{line-height:1.15;}'+
+  '.jjst-ov{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s ease,visibility 0s linear .3s;}'+
+  '.jjst-ov.on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .3s ease,visibility 0s;}'+
+  /* the homepage glass button, drawn here (its Webflow class carries hover interactions + the site-wide Credits/Contact link hijack) */
+  '.jjst-glass{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;padding:1.6rem 3.5rem;border-radius:8px;border:2px solid rgba(255,255,255,.11);background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);color:#fff;font-family:\'Joes Journey Headline\',sans-serif;font-size:1.2rem;font-weight:400;line-height:1;text-decoration:none;text-transform:uppercase;cursor:pointer;transition:box-shadow .2s ease;-webkit-appearance:none;margin:0;}'+
+  '.jjst-glass:hover{box-shadow:0 12px 20px -14px rgba(255,255,255,.68);}.jjst-glass .button_text{position:relative;z-index:2;}'+
+  '.jjst-ov .card{text-align:center;color:#fff;padding:0 24px;max-width:640px;}'+
+  '.jjst-ov .q{font-size:clamp(22px,2.6vw,38px);font-weight:700;margin:0 0 12px;}'+
+  '.jjst-ov .sub{font-size:clamp(15px,1.3vw,20px);opacity:.9;margin:0 0 28px;}  .jjst-ov .sub b{color:#FF00F5;}'+
+  '.jjst-ov .row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}'+
+  '.jjst-ov .row{gap:16px;}'+
+  '.jjst-ov .q{line-height:1.15;}'+
   /* tavern Joe is a character you can prod: grows on hover, a warm glow blooms behind on press */
   '.jjst-layer.joehero{pointer-events:auto;cursor:pointer;transform-origin:50% 100%;transition:scale .35s cubic-bezier(.34,1.56,.64,1),filter .45s ease;}'+
   '.jjst-layer.joehero:hover{scale:1.07;}'+
@@ -362,9 +366,9 @@
     '<div id="jjst-skipcta" class="next-section-button" data-cursor="hover"><div class="button-text">SKIP THE STORY</div><svg class=\"ico\" viewBox=\"0 0 29 29\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M15.36 15.2987L7.45868 21.5688C7.27177 21.7172 7.04746 21.7897 6.82544 21.7897C6.52524 21.7897 6.22732 21.6571 6.02567 21.4045C5.67564 20.9639 5.74925 20.3227 6.19106 19.9726L13.0853 14.5013L6.19106 9.02998C5.75041 8.67995 5.67677 8.03876 6.02567 7.5981C6.3757 7.15745 7.01689 7.08267 7.45755 7.43271L15.3588 13.7028C15.6024 13.8965 15.744 14.1899 15.744 14.5014C15.744 14.8129 15.6024 15.1063 15.3588 15.3L15.36 15.2987ZM22.8096 13.7015L14.9083 7.43143C14.4676 7.0814 13.8265 7.15501 13.4764 7.59682C13.1264 8.03748 13.2 8.67867 13.6418 9.0287L20.5361 14.5L13.6418 19.9714C13.2012 20.3214 13.1275 20.9626 13.4764 21.4032C13.6781 21.657 13.9749 21.7884 14.2762 21.7884C14.4982 21.7884 14.7214 21.7159 14.9094 21.5675L22.8107 15.2975C23.0543 15.1038 23.1959 14.8104 23.1959 14.4988C23.1959 14.1873 23.0543 13.8939 22.8107 13.7002L22.8096 13.7015Z\"/></svg></div>'+
     '<div id="jjst-skipov" class="jjst-ov"><div class="card"><p class="q">Are you sure you want to skip the story?</p>'+
     '<p class="sub">There\u2019s only <b id="jjst-left">0</b> seconds left and it\u2019s about to get good!</p>'+
-    '<div class="row"><a id="jjst-back" class="enter-link_wrapper button w-inline-block" href="#" data-cursor="hover"><div class="button_text">BACK TO STORY</div></a><a id="jjst-skipgo" class="enter-link_wrapper button w-inline-block" href="#" data-cursor="hover"><div class="button_text">SKIP THIS PART</div></a></div></div></div>'+
+    '<div class="row"><button type="button" id="jjst-back" class="jjst-glass" data-cursor="hover"><div class="button_text">BACK TO STORY</div></button><button type="button" id="jjst-skipgo" class="jjst-glass" data-cursor="hover"><div class="button_text">SKIP THIS PART</div></button></div></div></div>'+
     '<div id="jjst-sndov" class="jjst-ov"><div class="card"><p class="q">I\'ve noticed your sound is off!</p><p class="sub">You\'ll only be experiencing <b>50%</b> of the story if you continue without, no worries if not!</p>'+
-    '<div class="row"><a id="jjst-nosnd" class="enter-link_wrapper button w-inline-block" href="#" data-cursor="hover"><div class="button_text">CONTINUE WITHOUT SOUND</div></a><a id="jjst-yessnd" class="enter-link_wrapper button w-inline-block" href="#" data-cursor="hover"><div class="button_text">TURN ON THE SOUND!</div></a></div></div></div>'+
+    '<div class="row"><button type="button" id="jjst-nosnd" class="jjst-glass" data-cursor="hover"><div class="button_text">CONTINUE WITHOUT SOUND</div></button><button type="button" id="jjst-yessnd" class="jjst-glass" data-cursor="hover"><div class="button_text">TURN ON THE SOUND!</div></button></div></div></div>'+
     '<div id="jjst-loader"><div class="ring"></div><div class="txt">Loading the tale…</div></div>';
 
   /* ---- composition: bg crossfade + character layers ---- */
@@ -429,6 +433,23 @@
     video._howl = h;
   }
   /* ---- the aura: a box exactly over a layer that carries its glow, label and code effects ---- */
+  /* ---- one stage-level hit manager for every pixel-tested character (heroes + the window peek) ---- */
+  var HITS = [];
+  function hitTop(e){
+    if (document.body.classList.contains('jj-modal-open')) return null;          // achievements / explainer open → nothing behind reacts
+    var t = e.target; if (t && t.closest && t.closest('.prop, #jjst-cap, .jjst-ov, #jjst-skipcta, .hearthy')) return null;
+    for (var i = HITS.length - 1; i >= 0; i--) { var h = HITS[i]; if (!h.el.isConnected) { HITS.splice(i, 1); continue; } if (h.over(e)) return h; }
+    return null;
+  }
+  function stageCursor(on){ var b = curBgLayer; if (!b || b._cur === on) return; b._cur = on;
+    if (on) b.setAttribute('data-cursor', 'hover'); else b.removeAttribute('data-cursor'); b.style.cursor = on ? 'pointer' : '';
+    try { b.dispatchEvent(new MouseEvent('mouseover', { bubbles: true })); } catch (x) {} }   // the site cursor re-reads data-cursor on mouseover
+  function clearHits(){ HITS.forEach(function (h) { h.setHov(false); }); stageCursor(false); }
+  function wireStageHits(stage){
+    stage.addEventListener('pointermove', function (e) { var top = hitTop(e); HITS.forEach(function (h) { h.setHov(h === top); }); stageCursor(!!top); });
+    stage.addEventListener('pointerleave', clearHits);
+    stage.addEventListener('click', function (e) { var top = hitTop(e); if (!top) return; e.stopPropagation(); top.click(e); }, true);
+  }
   function makeAura(L, el){
     var aura = document.createElement('div'); aura.className = 'jjst-aura';
     aura.style.cssText = L.css + ';aspect-ratio:' + (L.ar || 1) + ';';
@@ -447,20 +468,14 @@
         var b = h.hit; return !b || (fx >= b[0] && fy >= b[1] && fx <= b[2] && fy <= b[3]);   // fallback: a box round the character
       }
       var isHov = false;
-      function setHov(on){ if (on === isHov) return; isHov = on;
-        el.classList.toggle('hov', on); aura.classList.toggle('hov', on);
-        if (on) el.setAttribute('data-cursor', 'hover'); else el.removeAttribute('data-cursor');
-        try { el.dispatchEvent(new MouseEvent('mouseover', { bubbles: true })); } catch (e) {}   // the site cursor re-reads data-cursor on mouseover
-      }
-      el.addEventListener('pointermove', function (e) { setHov(over(e)); });
-      el.addEventListener('pointerleave', function () { setHov(false); });
-      if (L.hero.seekTo != null && el.tagName === 'VIDEO') el.addEventListener('click', function (e) {
-        if (!over(e)) return;
-        e.stopPropagation();
+      function setHov(on){ if (on === isHov) return; isHov = on; el.classList.toggle('hov', on); aura.classList.toggle('hov', on); }
+      el.style.pointerEvents = 'none';                      // the stage hit-tests his pixels; the box itself blocks nothing beneath it
+      HITS.push({ el: el, over: over, setHov: setHov, click: function () {
+        if (L.hero.seekTo == null || el.tagName !== 'VIDEO') return;
         try { el.currentTime = L.hero.seekTo; var p = el.play(); if (p && p.catch) p.catch(function () {}); } catch (err) {}
         aura.classList.add('lit'); clearTimeout(aura._litT);
         aura._litT = setTimeout(function () { aura.classList.remove('lit'); }, 1800);
-      });
+      } });
     }
     el.parentNode.insertBefore(aura, el);                 // glow sits BEHIND the art (same parent — layers or, for behind:true, the bg wrap)
     (L.fx || []).forEach(function (fx) { startFx(aura, fx); });
@@ -494,14 +509,10 @@
     function over(e){ if (!hit || !board || !el.isConnected || el._caught || !inHole(board, e)) return false;
       var r = el.getBoundingClientRect(), x = Math.floor((e.clientX - r.left) / r.width * hit.w), y = Math.floor((e.clientY - r.top) / r.height * hit.h);
       return x >= 0 && y >= 0 && x < hit.w && y < hit.h && hit.d[(y * hit.w + x) * 4 + 3] > 40; }
-    var stage = document.getElementById('jjst'), isHov = false;
-    function setHov(on){ if (on === isHov) return; isHov = on; var b = curBgLayer; if (!b) return;
-      if (on) b.setAttribute('data-cursor', 'hover'); else b.removeAttribute('data-cursor'); b.style.cursor = on ? 'pointer' : '';
-      el.classList.toggle('hov', on); try { b.dispatchEvent(new MouseEvent('mouseover', { bubbles: true })); } catch (x) {} }
-    stage.addEventListener('pointermove', function (e) { setHov(over(e)); });
-    stage.addEventListener('click', function (e) { if (!over(e)) return; e.stopPropagation(); el._caught = true; setHov(false);
+    HITS.push({ el: el, over: over, setHov: function (on) { el.classList.toggle('hov', on); }, click: function (e) {
+      el._caught = true; el.classList.remove('hov');
       el.style.transition = 'top 1.1s cubic-bezier(.5,0,.7,1)'; el.style.top = (L.css.match(/top:([^;]+)/) || [0, ''])[1];   // caught! back down below the sill
-      if (window.jjScore) window.jjScore.award('trogdor', { x: e.clientX, y: e.clientY }); }, true);
+      if (window.jjScore) window.jjScore.award('trogdor', { x: e.clientX, y: e.clientY }); } });
   }
   function wireSeg(el, L){                                   // seg:[a,b] = the idle stretch to loop; hop:[a,b] = the one-shot a tap plays before returning to it
     if (!L.seg || el._segWired) return; el._segWired = true; el._segL = L;
@@ -535,7 +546,7 @@
     }
     if (name === 'chicks') {                                   // the village three: squawk + hop, once through; a second prod replays from the calm still
       var gr = layerRecs[key]; if (!gr || gr.el._busy) return; var gv = gr.el; gv._busy = true;
-      try { gv.currentTime = (gv.ended || gv.currentTime > 4) ? 1.3 : 0; } catch (x) {}
+      try { gv.currentTime = 1.7; } catch (x) {}                    // the clip idles for 1.7s before the hop — skip straight to the reaction
       oneShot('chickens-squawk', .45);
       var gp = gv.play(); if (gp && gp.catch) gp.catch(function () {});
       var gfree = function () { gv._busy = false; }; gv.addEventListener('ended', gfree, { once: true }); setTimeout(gfree, 5500);
@@ -746,7 +757,8 @@
     swapAt = c.swapAt || 0;
     showBg(c.bg); setNight(c.bg); buildLayers(c.layers); setCompSound(c.snd); playCue(c.cue);
     if (name !== 'cavern') runFx('darkOff');            // the darkness belongs to the cave
-    if (name === 'village1') runVillageSeq();        // start the equal-timed dragon-fire sequence
+    if (name === 'village1') { runVillageSeq();      // start the equal-timed dragon-fire sequence
+      panelTimers.push(sched(function () { runFx('chicks', 'chicks'); }, 2500)); }   // the three by the house jump when Trogdor's fire starts (2.2s into his clip)
     else if (name.indexOf('village') !== 0) clearPanels();  // left the village → cancel any pending shots
   }
 
@@ -892,7 +904,8 @@
         void c.offsetWidth; c.style.transform = 'scale(1)'; setTimeout(function () { c.style.opacity = '0'; }, 600); setTimeout(function () { c.remove(); }, 1000); }); }
     pressFx(document.getElementById('jjst-skipcta'), 'btn'); pressFx(document.getElementById('jjst-back'), 'cta'); pressFx(document.getElementById('jjst-skipgo'), 'cta');
     pressFx(document.getElementById('jjst-nosnd'), 'cta'); pressFx(document.getElementById('jjst-yessnd'), 'cta');
-    window.addEventListener('jj:score:pause', function () { pauseStory(); });
+    wireStageHits(document.getElementById('jjst'));
+    window.addEventListener('jj:score:pause', function () { pauseStory(); clearHits(); document.querySelectorAll('#jjst .warm').forEach(function (n) { n.classList.remove('warm'); }); });
     window.addEventListener('jj:score:resume', function () { if (!ov.classList.contains('on')) resumeStory(); });
     var ov = document.getElementById('jjst-skipov');
     document.getElementById('jjst-skipcta').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation();

@@ -22,7 +22,7 @@
    ============================================================================ */
 (function () {
   var JJ = (window.JJLoader = window.JJLoader || {});
-  JJ.version = 'L11 · figures fade in as they arrive; capital T · black-first ease-in';   // bump every edit — verify in console
+  JJ.version = 'L13 · black crossfades and curved Sketch Gothic story title';   // bump every edit — verify in console
   window.JJ_LOADER_BUILD = JJ.version;
   try { console.log('%c[JJ] jj-loader.js build: ' + JJ.version, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
@@ -116,9 +116,13 @@
       '<path d="' + foamD + '" fill="none" stroke="' + foam + '" stroke-width="4.5" stroke-linecap="round" opacity="' + (foamOp || 1) + '"/>' + curls + '</g>';
   }
 
+  var LOADER_BASE = window.JJ_LOADER_BASE || window.JJ_SCORE_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
   var CSS =
+    '@font-face{font-family:"Sketch Gothic School";src:url("' + LOADER_BASE + 'sketch-gothic-school.ttf") format("truetype");font-display:swap;}' +
     '#jjld{position:fixed;inset:0;z-index:2147483000;background:#05070d;display:flex;align-items:center;justify-content:center;transition:opacity .6s ease;font-family:"Joes Journey Headline",Georgia,serif;}' +
     '#jjld.hide{opacity:0;pointer-events:none;}' +
+    '#jjld .jjld-curtain{position:absolute;inset:0;background:#000;z-index:99;opacity:1;pointer-events:none;transition:opacity .72s ease;}' +
+    '#jjld.revealed .jjld-curtain{opacity:0;}#jjld.to-black .jjld-curtain{opacity:1;}' +
     '#jjld svg{width:100vw;height:100vh;display:block;overflow:visible;}' +   // full-bleed: scene art extends past the viewBox to cover any screen
     '#jjld::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(0,0,0,.42) 100%);}' +
     '#jjld .wp{opacity:.34;transition:opacity .45s ease,filter .45s ease;}' +
@@ -177,9 +181,9 @@
     '#jjld .jjmoonw{transform-box:fill-box;transform-origin:50% 50%;animation:jjmoonwK 7s ease-in-out infinite;}';
 
   function mount(html) {
-    if (!document.getElementById('jjld-style')) { var st = document.createElement('style'); st.id = 'jjld-style'; st.textContent = CSS + '.jjld-title{position:absolute;left:50%;top:9vh;transform:translateX(-50%);width:92vw;text-align:center;font-family:\'Joes Journey Headline\',sans-serif;font-weight:700;color:#e8d9b5;font-size:clamp(28px,4.2vw,64px);line-height:1.1;letter-spacing:.02em;text-shadow:0 6px 30px rgba(0,0,0,.7);opacity:0;animation:jjldTtl 1.4s ease .4s forwards;pointer-events:none;z-index:3;}@keyframes jjldTtl{to{opacity:1;}}'; document.head.appendChild(st); }
-    var el = document.createElement('div'); el.id = 'jjld'; el.innerHTML = html; document.body.appendChild(el);
-    if (mount.title) { var tt = document.createElement('div'); tt.className = 'jjld-title'; tt.textContent = mount.title; el.appendChild(tt); }   // opts.title: a big title over the loader (storytime)
+    if (!document.getElementById('jjld-style')) { var st = document.createElement('style'); st.id = 'jjld-style'; st.textContent = CSS + '#jjld svg.jjld-title{position:absolute;left:50%;top:3vh;transform:translateX(-50%);width:min(96vw,1500px);height:26vh;overflow:visible;filter:drop-shadow(0 6px 30px rgba(0,0,0,.75));opacity:0;animation:jjldTtl 1.2s ease .3s forwards;pointer-events:none;z-index:3}.jjld-title text{font-family:"Sketch Gothic School",Georgia,serif;font-size:62px;fill:#eadbb7;letter-spacing:1px}@keyframes jjldTtl{to{opacity:1}}'; document.head.appendChild(st); }
+    var el = document.createElement('div'); el.id = 'jjld'; el.innerHTML = html + '<i class="jjld-curtain" aria-hidden="true"></i>'; document.body.appendChild(el);
+    if (mount.title) { var tt = document.createElementNS('http://www.w3.org/2000/svg','svg'); tt.setAttribute('class','jjld-title'); tt.setAttribute('viewBox','0 0 1500 260'); tt.setAttribute('role','img'); tt.setAttribute('aria-label',mount.title); tt.innerHTML='<defs><path id="jjld-title-arc" d="M90 185 Q750 35 1410 185"/></defs><text text-anchor="middle"><textPath href="#jjld-title-arc" startOffset="50%">'+String(mount.title).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</textPath></text>'; el.appendChild(tt); }
     return el;
   }
   function joeSvg(frames) {
@@ -676,11 +680,11 @@
       : (opts.variant === 'scroll' ? Scroll : Journey)(opts, frames));
     /* pitch black first: the loader's own art (grass, moon, first figures) is given a beat to land, then the whole
        stage eases in and the clock starts — no half-drawn ground, and every page begins from the same black */
-    scene.el.style.opacity = '0';
+    scene.el.style.opacity = '1';
     (function easeIn() {
       var urls = []; scene.el.querySelectorAll('image, img').forEach(function (n) { var u = n.getAttribute('href') || n.getAttribute('src'); if (u) urls.push(u); });
       var left = urls.length, done = false;
-      function go() { if (done) return; done = true; scene.el.style.transition = 'opacity .7s ease'; scene.el.style.opacity = '1'; startT = performance.now(); }
+      function go() { if (done) return; done = true; scene.el.classList.add('revealed'); startT = performance.now(); }
       if (!left) return setTimeout(go, 120);
       urls.forEach(function (u) { var im = new Image(); im.onload = im.onerror = function () { if (--left <= 0) setTimeout(go, 60); }; im.src = u; });
       setTimeout(go, 1100);                                        // never wait longer than this
@@ -708,9 +712,12 @@
     })(startT);
 
     function finish() {
-      scene.el.classList.add('hide');
-      setTimeout(function () { if (scene.el.parentNode) scene.el.remove(); }, 650);
-      if (typeof opts.onReady === 'function') opts.onReady();
+      scene.el.classList.add('to-black');
+      setTimeout(function () {
+        if (typeof opts.onReady === 'function') opts.onReady();
+        scene.el.style.transition = 'opacity .72s ease'; scene.el.classList.add('hide');
+      }, 720);
+      setTimeout(function () { if (scene.el.parentNode) scene.el.remove(); }, 1500);
     }
     var safety = setTimeout(function () { target = 1; downloaded = true; decoded = true; }, opts.maxWait || 15000);
     function onProgress(p) { target = Math.max(target, p); }

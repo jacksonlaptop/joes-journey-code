@@ -15,7 +15,7 @@
 (function () {
   /* Build marker — to confirm the browser is running the latest file, open the console and look for this
      line (or type window.JJ_CONTACT_BUILD). If it's missing/old, you're on a cached copy → bump ?v in Webflow. */
-  window.JJ_CONTACT_BUILD = 'r8 · level 5 achievement · game holds while achievements are open · score pill fades with the nav · jjScore hooks · linkedin opens profile · name-svg-icon · duck-ambient · tut-centre+line-behind';
+  window.JJ_CONTACT_BUILD = 'r12 · credits rewards and Level 6 mixed-theme step';
   try { console.log('%c[JJ] contact.js build: ' + window.JJ_CONTACT_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
   /* ---- 1. styles: uses the site's OWN Webflow brand fonts (already served) ---- */
   var CSS = `
@@ -625,6 +625,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
   }
   var GAME_VOL = 0.15;                                                                           // game music kept well under the rest of the mix — the 8-bit tracks are loud, so this sits ~30% of the contact song (0.5)
   var gameMusic = null, gameMusicMuted = false, gameMusicIdx = 0;
+  try { gameMusicMuted = sessionStorage.getItem('jjUserMuted') === '1'; } catch (e) {}             // respect the site-wide mute choice, including direct ?credits=1 previews
   function applyGameVol(){ if (!gameMusic) return; var v = gameMusicMuted ? 0 : GAME_VOL;
     try { if (typeof gameMusic.volume === 'function') gameMusic.volume(v); else gameMusic.volume = v; } catch (e) {} }
   function setGameMute(m){ gameMusicMuted = m; applyGameVol(); }                                // Space (pause) also mutes; resume restores
@@ -751,7 +752,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       '.jj-item.bad img{filter:drop-shadow(0 0 11px rgba(255,55,55,.75));}'+
       '.jj-item.good img{filter:drop-shadow(0 0 9px rgba(130,175,255,.55));}'+
       '@font-face{font-family:\'Mario\';src:url(\''+GB+'mario.ttf\') format(\'truetype\');font-display:swap;}'+
-      '#jj-hud{position:absolute;left:50%;top:3vh;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:24px;z-index:10;opacity:0;}'+   // ~20px gap below the card (its 4px outer ring eats some)
+      '#jj-hud{position:absolute;left:50%;top:clamp(118px,13vh,170px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:24px;z-index:10;opacity:0;}'+
       '#jj-hud-card{position:relative;width:min(23vw,300px);background:#E0E0DE;border:3px solid #9b9b99;border-radius:6px;box-shadow:0 0 0 4px #4B4B4B;padding:8px 11px 9px;display:flex;flex-direction:column;gap:6px;}'+
       '#jj-hud-title{font-family:\'Joes Journey Headline\',sans-serif;color:#4A4A48;font-size:clamp(14px,1.65vw,25px);line-height:1;text-align:center !important;white-space:nowrap !important;display:block !important;}'+   // forced block + centered so nothing can stack the icon above the name
       '#jj-hud-title .mars{display:inline-block !important;vertical-align:middle !important;width:.95em;height:.95em;margin-right:10px;flex:none;}'+   // ♂ icon, inline, 10px left of the name
@@ -902,6 +903,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       }
       if(G.frozen){ e.preventDefault(); return; }                            // input is locked during the 3s tutorial freeze
       if(e.code==='Space'){ e.preventDefault(); if(G.run){ openMenu(viewMode?'view':'play'); } return; }   // Space pauses anytime
+      if(viewMode){ if(e.code==='ArrowRight'||e.code==='ArrowDown'){ e.preventDefault(); viewScroll(90); } else if(e.code==='ArrowLeft'||e.code==='ArrowUp'){ e.preventDefault(); viewScroll(-90); } return; }
       if(!G.run || paused) return;
       if(e.code==='ArrowUp'){ e.preventDefault(); up(); } else if(e.code==='ArrowDown'){ e.preventDefault(); down(); }
     }
@@ -920,18 +922,20 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     function paintMenu(){ if(!menuBoxEl)return; var its=menuBoxEl.querySelectorAll('.jj-menu-item'); for(var i=0;i<its.length;i++) its[i].classList.toggle('sel',i===menuSel); }
     function menuMove(d){ if(!menuItems)return; menuSel=(menuSel+d+menuItems.length)%menuItems.length; paintMenu(); }
     function menuActivate(i){ if(!menuItems)return; var it=menuItems[Math.min(i,menuItems.length-1)]; if(it) it.fn(); }
-    function pauseItems(){ return [ {label:'Continue',fn:resume}, {label:'Restart',fn:restartGame}, {label:'Back to Contact',fn:backToContact}, {label:'View Scene',fn:enterView}, {label:'Main Menu',fn:openMainMenu} ]; }
+    function pauseItems(from){ return from==='view'
+      ? [ {label:'Keep Viewing',fn:resume}, {label:ended?'Restart Game':'Return to Game',fn:ended?restartGame:exitView}, {label:'Restart',fn:restartGame}, {label:'Back to Contact',fn:backToContact}, {label:'Main Menu',fn:openMainMenu} ]
+      : [ {label:'Continue',fn:resume}, {label:'Restart',fn:restartGame}, {label:'Back to Contact',fn:backToContact}, {label:'View Scene',fn:enterView}, {label:'Main Menu',fn:openMainMenu} ]; }
     function endItems(){ return [ {label:'Restart',fn:restartGame}, {label:'Back to Contact',fn:backToContact}, {label:'View Scene',fn:enterView}, {label:'Main Menu',fn:openMainMenu} ]; }
     function openMenu(from){
       if(menuOpen)return; menuOpen=true; paused=true; pauseFrom=from||'play'; setGameMute(true);   // pausing with Space also mutes the music
       var ov=document.createElement('div'); ov.id='jj-pause'; ov.className='jj-overlay';
       var t=document.createElement('img'); t.className='jj-paused-img'; t.src=GB+'paused.svg'; t.alt='Paused'; ov.appendChild(t);   // the attached PAUSED graphic
-      menuItems=pauseItems(); menuSel=0; menuBoxEl=buildMenuBox(menuItems,0); ov.appendChild(menuBoxEl);
+      menuItems=pauseItems(pauseFrom); menuSel=0; menuBoxEl=buildMenuBox(menuItems,0); ov.appendChild(menuBoxEl);
       stage.appendChild(ov); gsap.fromTo(ov,{opacity:0},{opacity:1,duration:.22});
     }
     function closeMenu(){ ['jj-pause','jj-end'].forEach(function(id){ var o=document.getElementById(id); if(o)o.remove(); }); menuOpen=false; menuItems=null; menuBoxEl=null; setGameMute(false); }   // un-mute on resume/restart/view
-    function resume(){ closeMenu(); if(pauseFrom==='view'){ paused=true; viewMode=true; showCap("Press 'Space' to open the menu…",0); } else { paused=false; viewMode=false; cap.classList.remove('show'); G.lastT=0; } }
-    function restartGame(){ closeMenu();
+    function resume(){ closeMenu(); if(pauseFrom==='view'){ paused=true; viewMode=true; showCap('Scroll to explore the credits. The game stays paused in View Scene mode. Press Space for the menu.',0); } else { paused=false; viewMode=false; cap.classList.remove('show'); G.lastT=0; } }
+    function restartGame(){ closeMenu(); setViewChrome(false);
       document.querySelectorAll('#jj-credits .jj-item').forEach(function(el){el.remove();}); G.items=[];
       G.score=0; G.level=1; G.fill=0; G.dy=50; G.ty=50; G.said={}; G.harder=false; G.frozen=false; G.rollX=60; rollDone=false; ended=false;
       ['jj-tut-box','jj-tut-svg'].forEach(function(c){ document.querySelectorAll('.'+c).forEach(function(el){el.remove();}); });   // clear any leftover tutorial highlight
@@ -941,7 +945,19 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       paused=false; viewMode=false; if(!G.run){ G.run=true; G.lastT=0; G.lastSpawn=0; G.raf=requestAnimationFrame(loop); } else { G.lastT=0; } }
     function backToContact(){ location.href = location.pathname; }   // drop ?credits=1 so Back returns to the normal contact scene (not straight back into the game)
     function openMainMenu(){ var m=document.querySelector('.menu-container, .menu-button, .menu-links-wrap'); closeMenu(); if(m) m.click(); }
-    function enterView(){ closeMenu(); paused=true; viewMode=true; pauseFrom='view'; showCap("Press 'Space' to open the menu…",0); if(!G.run){ G.run=true; G.lastT=0; G.raf=requestAnimationFrame(loop); } }
+    function setViewChrome(on){
+      var els=[document.getElementById('jj-hud'),document.getElementById('jj-keys'),dragon];
+      els.forEach(function(el){ if(el) el.style.visibility=on?'hidden':''; });
+      document.querySelectorAll('#jj-credits .jj-item').forEach(function(el){ el.style.visibility=on?'hidden':''; });
+      stage.classList.toggle('viewing',on);
+    }
+    function viewScroll(px){ if(!viewMode)return; var vw=(px/window.innerWidth)*100, min=-(G.rollW||0)/REEL_K; G.rollX=Math.max(min,Math.min(60,G.rollX-vw)); paintScroll(); }
+    function exitView(){ closeMenu(); setViewChrome(false); paused=false; viewMode=false; cap.classList.remove('show'); G.lastT=0; }
+    function enterView(){ closeMenu(); paused=true; viewMode=true; pauseFrom='view'; setViewChrome(true); showCap('Scroll to explore the credits. The game stays paused in View Scene mode. Press Space for the menu.',0); if(!G.run){ G.run=true; G.lastT=0; G.raf=requestAnimationFrame(loop); } }
+    stage.addEventListener('wheel',function(e){ if(!viewMode||menuOpen)return; e.preventDefault(); viewScroll(Math.abs(e.deltaY)>Math.abs(e.deltaX)?e.deltaY:e.deltaX); },{passive:false});
+    var viewDrag=null; stage.addEventListener('pointerdown',function(e){ if(viewMode&&!menuOpen){ viewDrag=e.clientX; try{stage.setPointerCapture(e.pointerId);}catch(x){} } });
+    stage.addEventListener('pointermove',function(e){ if(viewMode&&!menuOpen&&viewDrag!=null){ var dx=viewDrag-e.clientX; viewDrag=e.clientX; viewScroll(dx); } });
+    stage.addEventListener('pointerup',function(){ viewDrag=null; }); stage.addEventListener('pointercancel',function(){ viewDrag=null; });
 
     function showCap(text, ms, done){
       cap.classList.add('show'); clearInterval(cap._tw); clearTimeout(cap._h); var i=0; cap.textContent='';
@@ -950,7 +966,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     function flash(text, ms){ showCap(text, ms||1100); }
     function pop(kind){ var p=document.createElement('div'); p.className='jj-pop'; p.innerHTML='<img src="'+GB+(kind>0?'pop-plus.svg':'pop-minus.svg')+'">'; p.style.left='16%'; p.style.top=G.dy+'%'; stage.appendChild(p);
       gsap.fromTo(p,{opacity:0,scale:.7},{opacity:1,scale:1,duration:.18}); gsap.to(p,{top:(G.dy-8)+'%',opacity:0,duration:.9,delay:.2,ease:'power1.out',onComplete:function(){p.remove();}}); }
-    function levelUpFx(){ var l=document.createElement('div'); l.className='jj-pop'; l.innerHTML='<img src="'+GB+'levelup-'+Math.min(9,G.level)+'.svg" style="width:clamp(120px,13vw,210px);display:block">'; l.style.left='16%'; l.style.top=(G.dy-16)+'%'; stage.appendChild(l);
+    function levelUpFx(){ var art=Math.max(1,Math.min(8,G.level-1)), l=document.createElement('div'); l.className='jj-pop'; l.innerHTML='<img src="'+GB+'levelup-'+art+'.svg" style="width:clamp(120px,13vw,210px);display:block">'; l.style.left='16%'; l.style.top=(G.dy-16)+'%'; stage.appendChild(l);
       gsap.fromTo(l,{opacity:0,scale:.5},{opacity:1,scale:1,duration:.4,ease:'back.out(2)'}); gsap.to(l,{top:(G.dy-22)+'%',opacity:0,duration:.7,delay:.7,onComplete:function(){l.remove();}}); }
 
     /* Tutorial freeze: hold the whole scene, ring an item with a dashed box, draw a line to it from the
@@ -999,7 +1015,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
         if(G.fill<0){ if(G.level>1){ G.level--; G.fill+=1; setLevelHUD(); setDragon(); } else G.fill=0; }
         if(Math.random()<0.25) flash('Eugh!',900); gsap.fromTo(dragon,{filter:'brightness(2.1) saturate(.4)'},{filter:'none',duration:.4});   // only react now and then — every time is distracting
       } else { G.score+=50; pop(1); G.fill+=.2;
-        if(G.fill>=1){ G.fill-=1; if(G.level<9){ G.level++; setLevelHUD(); setDragon(); levelUpFx(); flash("I'm getting…stronger!",1300); if(window.jjScore){ if(G.level>=5) window.jjScore.award('credits5'); if(G.level>=9) window.jjScore.award('credits10'); } } else G.fill=1; }   // top level = +1 star
+        if(G.fill>=1){ G.fill-=1; if(G.level<9){ G.level++; setLevelHUD(); setDragon(); levelUpFx(); flash("I'm getting…stronger!",1300); if(window.jjScore){ if(G.level>=6) window.jjScore.award('credits5'); if(G.level>=9) window.jjScore.award('credits10'); } } else G.fill=1; }   // over level 5 unlocks the mixed-theme step; top level = +1 star
         if(Math.random()<0.22) flash('Yum!',900);   // only now and then
       }
       scoreEl.textContent='SCORE : '+G.score; fillEl.style.width=Math.max(0,Math.min(1,G.fill))*100+'%';
@@ -1008,12 +1024,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     function loop(t){
       if(!G.run) return; var dt=Math.min(48,t-(G.lastT||t)); G.lastT=t; var k=dt/16.7;
       if(G.frozen){ G.lastSpawn=t; G.raf=requestAnimationFrame(loop); return; }   // tutorial freeze: hold the dragon, items, scroll & spawns in place
-      frame(t);                                                       // dragon keeps flapping even while paused
-      if(paused){                                                     // pause menu open, or View-Scene mode
-        G.lastSpawn=t;                                                 // keep spawn clock fresh so resume doesn't burst
-        if(viewMode){ G.rollX-=0.16*k; paintScroll(); if(-G.rollX*REEL_K>G.rollW){ G.rollX=60; } }
-        dragon.style.top=(G.dy+Math.sin(t/520)*1.4)+'%'; G.raf=requestAnimationFrame(loop); return;
-      }
+      if(paused){ G.lastSpawn=t; G.raf=requestAnimationFrame(loop); return; }   // pause and View Scene are fully still; viewing moves only on user scroll/drag
+      frame(t);
       G.dy += (G.ty-G.dy)*Math.min(1,.22*k); dragon.style.top=(G.dy+Math.sin(t/520)*1.4)+'%';
       if(t-G.lastSpawn > Math.max(560,1150-(G.level-1)*85)*1.25){ G.lastSpawn=t; spawnItem(); }     // ~20% fewer items (longer gap between spawns)
       var sp=.30+(G.level-1)*.045;
@@ -1029,7 +1041,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       G.rollW = roll.scrollWidth/window.innerWidth*100 + 50;
       gsap.to('#jj-hud',{opacity:1,duration:.5}); gsap.to('#jj-keys',{opacity:1,duration:.5}); gsap.to('#jj-cr-progress',{opacity:1,duration:.5}); G.raf=requestAnimationFrame(loop); }
     function endGame(){ if(ended)return; ended=true; G.run=false; if(G.raf)cancelAnimationFrame(G.raf); paused=false; viewMode=false;
-      if(window.jjScore) window.jjScore.award('credits');                                     // +1 star — finished the credits
+      if(window.jjScore){ window.jjScore.award('credits'); window.jjScore.award('credits-star'); } // Retro theme + finishing star
       gsap.to(['#jj-hud','#jj-keys','#jj-cr-progress'],{opacity:0,duration:.4}); if(backEl) gsap.to(backEl,{opacity:0,duration:.4});   // clear gameplay UI for the end screen
       var end=document.createElement('div'); end.id='jj-end'; end.className='jj-overlay';
       var col=document.createElement('div'); col.className='jj-e-col';

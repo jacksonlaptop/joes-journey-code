@@ -11,7 +11,7 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's61 · sky alien over the woods (Stopped an Alien Invasion); loader title · s60 · loader asks for sound again; Trogdor circles in the tavern window (flying loop; catch = he bolts); glass buttons grey-on-hover under the fill; stage-level hit manager (hero boxes block nothing → hearth hover works); overlays have no hit area while hidden + own glass buttons; modal guard; chicken left, bones into the distance, instant chicken hop; lone chicken + bones in the cave, the three back by the village house; bones further back; score pill drops in with the nav; one shivering chicken + its bones by the house (tap: twitch, squawk, hop); bones piles are the rattle clip (hover = rattle, click = collect); pressable pixels from baked masks (Joe/Trogdor/window hole — every browser); hearth swells + crackle +40% on hover; loader copy = interactive journey; sound-off ask before the first line; gentler hero hover grow; window Trogdor catchable through the hole (Catch Trogdor!); cave darkness + moody sky on \'darkness\'; bone rattle hook; chickens by the village house (tap = squawk + hop); bones in the cavern + castle (Bone Collector); score pause hooks; +1 star on finishing (jjScore); Skip CTA bottom-left, 32px like the sound moon; hover fill + pink press on Skip/Back/Skip-this-part; Skip = the exact NEXT SCENE element above the banner; glass confirm buttons; brighter sky dressing + bigger tavern moon; quicker pants→Designer; ta-da once and trimmed; Joe off the fire; smaller window Trogdor; pitchfork man in front;  Skip CTA = the horizontal-scroll Next Scene button with the skip icon; progress bar along the bottom; village flame in front of the fleeing villagers;  tavern crowd = one full-body Seedance clip on the floorboards;  castle Trogdor is ONE clip too (huff → fire on \'facing fire\' → puzzled turn to camera → shrinks in smoke);  village Trogdor is ONE Seedance clip (huff, then fire from 2.2s, held);  CTA = the homepage button; hearth fire on the logs; puzzled Trogdor lands where the fire-breather stood; sword + pitchfork clips uncut; villagers stay on the land; SFX at a quarter; gait-matched gallop seam;  nav held back until its drop-in (jj-nav-in gate);  clips prefetched in scene order while the tale plays;  Skip CTA + pause-everything confirm; seamless gallop;  every sound at half; castle clips silent bar the roar; smaller puzzled Trogdor; flame deeper in the mouth; bigger hearth fire; grounded tavern crowd; villagers run longer; headroom for the jump; quick ending';
+  window.JJ_STORY_BUILD = 's64 · mapped Storytime rewards + equal modal buttons';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -275,7 +275,7 @@
   '#jjst .jjst-aura.lit .aglow{opacity:1;transform:scale(1);}'+
   '#jjst .jjst-layer.pop{animation:jjstPop .55s cubic-bezier(.34,1.56,.64,1);transform-origin:50% 100%;}'+
   '#jjst .jjst-layer.hearthy{transform-origin:50% 100%;transition:transform .35s cubic-bezier(.34,1.56,.64,1);}#jjst .jjst-layer.hearthy.warm{transform:scale(1.14);}'+
-  'body.jj-modal-open #jjst *{pointer-events:none!important;}'+   // achievements / explainer open → nothing in the scene hovers or clicks
+  'body.jj-modal-open #jjst>:not(.jjst-ov),body.jj-modal-open #jj-sc-hud,body.jj-modal-open .menu-links,body.jj-modal-open .menu-button,body.jj-modal-open #jj-sound-btn,body.jj-modal-open #jj-sound-mist{pointer-events:none!important;}'+   // achievements / Storytime prompt open → the scene and page chrome sleep while the active overlay remains usable
   '#jjst .jjst-layer.sky{animation:jjst-float 7s ease-in-out infinite;transition:scale .35s ease,filter .3s ease;z-index:2;}#jjst .jjst-layer.sky:hover{scale:1.12;}'+
   '#jjst .jjst-layer.sky.gone{opacity:0;translate:28vw -45vh;scale:.25;transition:translate 1.1s cubic-bezier(.5,0,.8,1),scale 1.1s cubic-bezier(.5,0,.8,1),opacity .5s ease .5s;pointer-events:none!important;}'+
   '@keyframes jjst-float{0%,100%{transform:translate(0,0) rotate(-3deg);}50%{transform:translate(1.2vw,-2.4vh) rotate(3deg);}}'+
@@ -572,6 +572,7 @@
     }
     if (name === 'chest') {
       var rec = layerRecs['chest']; if (!rec) return;
+      if (e && window.jjScore) window.jjScore.award('treasure', { x: e.clientX, y: e.clientY });
       oneShot('chest-sparkle', .25);                          // the user's sparkle sound — plays if the file exists, silent otherwise
       var el = rec.el, aura = rec.aura;
       el.src = F('cav-chest-open'); el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
@@ -779,7 +780,7 @@
     b.style.width = '260vmax'; b.style.height = '260vmax';
     setTimeout(function () { b.style.display = 'none'; }, T.revealDur + 120); }
   function fadeToBlack(){ var f = document.getElementById('jjst-fade'); void f.offsetWidth; f.style.opacity = '1';
-    if (window.jjScore) window.jjScore.award('storytime');                       // +1 star — the whole tale, not the skip
+    if (window.jjScore) { window.jjScore.award('storytime'); window.jjScore.award('storytime-star'); } // theme + star; only the whole tale, never Skip
     setTimeout(function () {
       if (window.jjStory && window.jjStory.unlock) window.jjStory.unlock();
       setCompSound(null); playCue(null); releaseAmbient();
@@ -921,9 +922,9 @@
     window.addEventListener('jj:score:resume', function () { if (!ov.classList.contains('on')) resumeStory(); });
     var ov = document.getElementById('jjst-skipov');
     document.getElementById('jjst-skipcta').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation();
-      document.getElementById('jjst-left').textContent = storyLeft(); pauseStory(); ov.classList.add('on'); });
-    document.getElementById('jjst-back').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); ov.classList.remove('on'); resumeStory(); });
-    document.getElementById('jjst-skipgo').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); ov.classList.remove('on'); storyPaused = false; skipStory(); });
+      document.getElementById('jjst-left').textContent = storyLeft(); pauseStory(); document.body.classList.add('jj-modal-open'); ov.classList.add('on'); });
+    document.getElementById('jjst-back').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); ov.classList.remove('on'); document.body.classList.remove('jj-modal-open'); resumeStory(); });
+    document.getElementById('jjst-skipgo').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); ov.classList.remove('on'); document.body.classList.remove('jj-modal-open'); storyPaused = false; skipStory(); });
     ov.addEventListener('click', function (e) { e.stopPropagation(); });
     prog = document.getElementById('jjst-progress'); fill = document.getElementById('jjst-progress-fill');
 
@@ -966,11 +967,11 @@
       function pick(on) { if (done) return; done = true;
         if (on) { var b = document.getElementById('jj-sound-btn'); if (b && b.classList.contains('is-muted')) b.click(); else if (window.jjAudio) window.jjAudio.muted = false;
           try { sessionStorage.setItem('jjUserMuted', '0'); } catch (e) {} }
-        so.classList.remove('on'); go(); }
+        so.classList.remove('on'); document.body.classList.remove('jj-modal-open'); go(); }
       document.getElementById('jjst-nosnd').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); pick(false); });
       document.getElementById('jjst-yessnd').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); pick(true); });
       so.addEventListener('click', function (e) { e.stopPropagation(); });
-      so.classList.add('on');
+      document.body.classList.add('jj-modal-open'); so.classList.add('on');
     }
     if (window.JJLoader && window.JJLoader.start) {
       var EVO = [], EVOG = [], EVOB = [];

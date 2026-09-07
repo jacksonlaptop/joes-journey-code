@@ -1341,6 +1341,7 @@
         animStarsWrap.style.opacity = '1';
       }
     }, BB.HSTARS_AT);
+    bbTimer(function () { if (window.jjScore) window.jjScore.award('big-bangs', { part: 'home' }); }, BB.PHIL_OUT + 200);
   }
 
   // "…a single flash of light": a point of light fades in, swells for ~2s, then bursts —
@@ -1560,7 +1561,7 @@
       var e = Date.now() - start;
       if (e < FILL_UNTIL) bar.style.width = Math.min(100, (e / FILL_UNTIL) * 100) + '%';
       else { var p = jjScrollProgress(); bar.style.width = (p * 100) + '%';
-        if (p >= 0.98 && window.jjScore) window.jjScore.award('scroll'); }   // +1 star — made it through the journey
+        if (p >= 0.98 && window.jjScore) { window.jjScore.award('scroll'); window.jjScore.award('scroll-star'); } } // Space theme + journey star
       requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
@@ -1568,11 +1569,15 @@
 
   document.addEventListener('click', function (e) {
     if (triggered) return;
-    var node = e.target;
+    // A landing container can also have only "Click to Begin" as its text.
+    // Match the actual CTA, never a background ancestor with matching text.
+    var node = e.target && e.target.closest ? e.target.closest('.enter-link_wrapper') : null;
+    if (!node) return;
     while (node && node !== document.body) {
       var text = (node.textContent || '').trim().toLowerCase();
       if (text === 'click to begin') {
         triggered = true;
+        if (window.jjScore && !(window.jjAudio && window.jjAudio.muted)) window.jjScore.award('sound-on', { x: e.clientX, y: e.clientY });
         lockScroll();
         runBigBang();
 

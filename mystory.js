@@ -12,7 +12,7 @@
    All copy/eras/years live in the CONFIG below.
    ============================================================================ */
 (function () {
-  window.JJ_MYSTORY_BUILD = 'M108 - hover hit-test sleeps while the achievements panel is open';
+  window.JJ_MYSTORY_BUILD = 'M111 - Big Bang and quiz achievements wired';
   try { console.log('%c[JJ] mystory.js build: ' + window.JJ_MYSTORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
@@ -1513,6 +1513,8 @@
     return B.map(function (b) { return { x: b.x, y: b.y }; });
   }
 
+  CSS += 'body.jj-modal-open #jjms *,body.jj-modal-open #jjms-fly *,body.jj-modal-open #jj-sc-hud,body.jj-modal-open .menu-links,body.jj-modal-open .menu-button,body.jj-modal-open #jj-sound-btn,body.jj-modal-open #jj-sound-mist{pointer-events:none!important;}';
+
   function init() {
     /* this page always opens on the story's first frame, so don't let the browser restore a
        previous scroll position over the top of the landing */
@@ -2576,6 +2578,7 @@
     player.addEventListener('click', function (e) { e.stopPropagation(); });              /* clicks on the player itself stay put */
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAny(); });
     document.addEventListener('click', function (e) {
+      if (document.body.classList.contains('jj-modal-open')) return;
       if (e.target.closest('#jjms-nav,#jjms-next,.cap,#jj-sound-btn,#jj-sound-mist')) return;   /* chrome, headline and the sound moon stay out of it */
       var ph = photoUnder(e.clientX, e.clientY);
       var wasBlown = blownEl, wasPlaying = playing, wasColl = collOpen;
@@ -2718,6 +2721,7 @@
            bang can never play cut off mid-glide (which is what was happening on the live site) */
         snapToFinale._onPinned = function () {
           finale.classList.add('go');
+          setTimeout(function () { if (window.jjScore) window.jjScore.award('big-bangs', { part: 'story' }); }, 3300);
           if (!teasePlayed) {                        /* first bang only: darkness asks, then the exam */
             teasePlayed = true;
             if (calmQ) setTimeout(function () { openQuiz(); }, 2400);
@@ -3278,6 +3282,11 @@
       });
     }
     function quizResults() {
+      if (window.jjScore) {
+        window.jjScore.award('quiz');
+        if (qScore / QUIZ_N >= .8) window.jjScore.award('quiz80');
+        if (qScore === QUIZ_N) window.jjScore.award('quizFull');
+      }
       var rank;
       for (var r = 0; r < QUIZ_RANKS.length; r++) if (qScore >= QUIZ_RANKS[r][0]) { rank = QUIZ_RANKS[r]; break; }
       qSwap('<p class="qkick">The verdict</p>' +

@@ -180,6 +180,68 @@ document.addEventListener("DOMContentLoaded", function () {
   else scheduleBegin();
 })();
 
+/* ===== Menu information rail + hard background interaction lock ===== */
+(function () {
+  function ready() {
+    var wrap = document.querySelector('.menu-wrap');
+    var btn = document.querySelector('.menu-container');
+    var list = document.querySelector('.menu-wrap .flex-down.left') || document.querySelector('.menu-wrap .flex-down');
+    if (!wrap || !btn || !list || document.getElementById('jj-menu-meta')) return;
+
+    var st = document.createElement('style'); st.id = 'jj-menu-polish'; st.textContent =
+      'body.jj-menu-open *{pointer-events:none!important}body.jj-menu-open .menu-wrap,body.jj-menu-open .menu-wrap *,body.jj-menu-open .menu-container,body.jj-menu-open .menu-container *,body.jj-menu-open #jj-sc-hud,body.jj-menu-open #jj-sc-hud *{pointer-events:auto!important}' +
+      'body.jj-menu-open{overflow:hidden!important}body.jj-menu-open .menu-wrap{isolation:isolate;cursor:default}' +
+      '.menu-wrap .images-row{position:fixed!important;inset:8vh -18vw 7vh 2vw!important;width:auto!important;height:auto!important;display:flex!important;align-items:center!important;gap:1.2vw!important;z-index:-1!important;transform:translateX(0);opacity:.7;filter:saturate(.82)}' +
+      '.menu-wrap .menu-hover-image{position:relative!important;inset:auto!important;width:36vw!important;height:72vh!important;min-width:36vw!important;object-fit:cover!important;border:1px solid rgba(255,255,255,.28)!important;border-radius:20px!important;clip-path:polygon(10% 0,100% 0,90% 100%,0 100%);transform:rotate(-3deg);box-shadow:0 30px 90px rgba(0,0,0,.55)!important}' +
+      '.menu-wrap .menu-hover-image:nth-child(even){transform:rotate(3deg) translateY(4vh)}' +
+      '.menu-wrap .flex-down.left,.menu-wrap .flex-down{position:relative;z-index:3}' +
+      '.menu-wrap .menu-open-link{position:relative;transition:color .25s ease,text-shadow .25s ease!important}' +
+      '.menu-wrap .menu-open-link:hover{color:#fff!important;text-shadow:0 0 28px rgba(255,0,245,.55)}' +
+      '.menu-wrap .menu-open-link[aria-current="page"]::before{content:"";position:absolute;left:-28px;top:50%;width:10px;height:10px;border-radius:50%;background:#FF00F5;box-shadow:0 0 16px #FF00F5;transform:translateY(-50%)}' +
+      '#jj-menu-meta{position:fixed;left:5vw;right:5vw;top:120px;bottom:4vh;z-index:6;display:block;color:#fff;font-family:"Joes Journey Headline",sans-serif;pointer-events:none!important}' +
+      '#jj-menu-meta .jjmm-left{position:absolute;left:0;top:0;pointer-events:none!important}' +
+      '#jj-menu-meta .jjmm-theme{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.62);margin-bottom:10px}#jj-menu-meta .jjmm-theme b{color:#fff}' +
+      '#jj-menu-meta .jjmm-actions{position:absolute;right:0;bottom:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}' +
+      '#jj-menu-meta button,#jj-menu-meta a{width:52px;height:52px;border-radius:50%;border:1px solid rgba(255,255,255,.65);background:rgba(4,7,14,.62);backdrop-filter:blur(12px);color:#fff;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font:700 18px/1 "Joes Journey Headline",sans-serif;cursor:pointer;transition:transform .25s ease,background .25s ease,box-shadow .25s ease}' +
+      '#jj-menu-meta a img{width:24px;height:24px;object-fit:contain;filter:brightness(0) invert(1)}' +
+      '#jj-menu-meta button.wide{width:auto;border-radius:26px;padding:0 18px;gap:9px;font-size:13px;text-transform:uppercase;letter-spacing:.06em}' +
+      '#jj-menu-meta button:hover,#jj-menu-meta a:hover{transform:translateY(-4px);background:rgba(255,0,245,.25);box-shadow:0 10px 28px rgba(255,0,245,.28)}' +
+      '#jj-menu-meta .jjmm-score{display:flex;gap:8px;align-items:center;font-size:14px}#jj-menu-meta .jjmm-score img{width:22px;height:22px;object-fit:contain}' +
+      'html[data-jj-theme="medieval"] #jj-menu-meta{--jj-accent:#FFC531}html[data-jj-theme="retro"] #jj-menu-meta{--jj-accent:#FFD400}html[data-jj-theme="alien"] #jj-menu-meta{--jj-accent:#4FE3FF}' +
+      '#jj-menu-meta .jjmm-left::after{content:"";display:block;margin-top:12px;width:110px;height:2px;background:var(--jj-accent,#FF00F5);box-shadow:0 0 12px var(--jj-accent,#FF00F5)}' +
+      '@media(max-width:760px){.menu-wrap .images-row{opacity:.36!important}.menu-wrap .menu-hover-image{width:78vw!important;min-width:78vw!important}#jj-menu-meta{left:24px;right:24px;top:100px;bottom:22px}#jj-menu-meta .jjmm-actions{left:0;right:auto;justify-content:flex-start}#jj-menu-meta button.wide{height:46px}}';
+    document.head.appendChild(st);
+
+    var meta = document.createElement('div'); meta.id = 'jj-menu-meta';
+    meta.innerHTML = '<div class="jjmm-left"><div class="jjmm-theme">Current theme · <b>Classic</b></div><div class="jjmm-score"><span class="js">0</span><img src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/score-star.webp" alt="stars"><span class="jc">0</span><img src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/score-coin.webp" alt="coins"></div></div><div class="jjmm-actions"><button type="button" class="wide jt">Themes</button><button type="button" class="wide jsop">Shop</button><a href="mailto:jackson.laptop95@gmail.com" aria-label="Email Joe"><img src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/icon-mail-fill.png" alt=""></a><a href="https://www.linkedin.com/in/joseph-jackson-ui/" target="_blank" rel="noopener" aria-label="Joe on LinkedIn"><img src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/icon-linkedin-fill.png" alt=""></a><a href="/contact" aria-label="Contact Joe"><img src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/icon-phone-fill.png" alt=""></a></div>';
+    wrap.appendChild(meta);
+
+    function update() {
+      var score = window.jjScore, key = score ? score.theme() : (document.documentElement.getAttribute('data-jj-theme') || 'classic');
+      var names = { classic:'Classic', medieval:'Medieval', retro:'Retro', alien:'Space', mixed:'Special' };
+      meta.querySelector('.jjmm-theme b').textContent = names[key] || 'Classic';
+      if (score) { meta.querySelector('.js').textContent = score.stars(); meta.querySelector('.jc').textContent = score.coins(); }
+      Array.prototype.forEach.call(list.querySelectorAll('a[href]'), function (a) {
+        var p; try { p = new URL(a.href, location.href).pathname.replace(/\/$/,'') || '/'; } catch(e) { return; }
+        var here = location.pathname.replace(/\/$/,'') || '/'; if (p === here && !/credits=1/.test(a.href)) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');
+      });
+    }
+    function closeThen(fn) { if (document.body.classList.contains('jj-menu-open')) btn.click(); setTimeout(fn, 180); }
+    meta.querySelector('.jt').addEventListener('click', function () { closeThen(function () { if (window.jjScore) window.jjScore.open(); }); });
+    meta.querySelector('.jsop').addEventListener('click', function () { closeThen(function () { if (window.jjScore) window.jjScore.store(); }); });
+
+    function visible() { var c = getComputedStyle(wrap), r = wrap.getBoundingClientRect(); return r.width > 2 && r.height > 2 && c.display !== 'none' && c.visibility !== 'hidden' && parseFloat(c.opacity || 1) > .02; }
+    function sync() { var on = visible(); document.body.classList.toggle('jj-menu-open', on); meta.style.display = on ? 'flex' : 'none'; if (on) update(); }
+    meta.style.display = 'none'; btn.addEventListener('click', function () { setTimeout(sync, 80); setTimeout(sync, 700); });
+    document.addEventListener('wheel', function (e) { if (document.body.classList.contains('jj-menu-open') && !(e.target.closest && e.target.closest('.menu-wrap'))) e.preventDefault(); }, { passive:false, capture:true });
+    document.addEventListener('touchmove', function (e) { if (document.body.classList.contains('jj-menu-open') && !(e.target.closest && e.target.closest('.menu-wrap'))) e.preventDefault(); }, { passive:false, capture:true });
+    new MutationObserver(sync).observe(wrap, { attributes:true, attributeFilter:['class','style'] });
+    window.addEventListener('jj:score', update); setInterval(function () { if (document.body.classList.contains('jj-menu-open')) update(); }, 1000);
+    sync();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready); else ready();
+})();
+
 document.addEventListener("DOMContentLoaded", function () {
   const audioTrigger = document.querySelector('.enter-link_wrapper');
   const audioController = document.querySelector('.audio-container-controller');

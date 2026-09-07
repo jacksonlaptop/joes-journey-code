@@ -17,4 +17,6 @@ From back to front:
 
 `headfull-*` items replace hats and hair. Open and closed eye files share exact registration, so blinking only requires swapping the image source. The four `body-*` alternatives also share exact registration with `body.png`.
 
-The `preview-*` files are flattened reference images for checking the Knight, Space, and Wizard sets. They are not required by the in-site layer stack.
+Hair is supplied as messy, mohawk and shaved-sides styles, each in brown, black and blue. `orbit-mars.png` and `orbit-jupiter.png` use the existing horizontal-scroll planet art and are intended to unlock when those planets are clicked.
+
+The `preview-*` files are flattened reference images for checking the Knight, Space, Wizard and hair sets. They are not required by the in-site layer stack.

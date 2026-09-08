@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Companion Alien — Layer Map</title>
+  <style>
+    :root { color-scheme: dark; font-family: ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: radial-gradient(circle at 30% 0%, #202650, #090b18 58%); color: #fff; }
+    main { width: min(1500px, 94vw); margin: 0 auto; padding: 52px 0 90px; }
+    h1 { margin: 0; font-size: clamp(34px, 5vw, 70px); letter-spacing: -.04em; }
+    .intro { max-width: 870px; margin: 14px 0 36px; color: #cbd0ec; font-size: 18px; line-height: 1.55; }
+    section { margin-top: 48px; }
+    h2 { font-size: 30px; margin: 0 0 8px; }
+    .note { color: #aeb5d8; margin: 0 0 20px; }
+    .rules { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 32px; }
+    .rule { padding:10px 14px; border:1px solid #465083; border-radius:999px; background:#12162d; color:#dce1f7; font-size:14px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 18px; }
+    .card { position: relative; overflow: hidden; border: 1px solid #3f4676; border-radius: 24px; background: linear-gradient(145deg,#191d3d,#101329); padding: 18px; min-width: 0; }
+    .card h3 { margin: 8px 0 2px; font-size: 19px; }
+    .meta { color: #9fa7d1; font-size: 13px; }
+    .sprite { position: relative; width: 100%; aspect-ratio: 1; border-radius: 18px; overflow: hidden; background-color: #11152b; background-image: linear-gradient(45deg,#171b34 25%,transparent 25%),linear-gradient(-45deg,#171b34 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#171b34 75%),linear-gradient(-45deg,transparent 75%,#171b34 75%); background-size: 28px 28px; background-position: 0 0,0 14px,14px -14px,-14px 0; }
+    .sprite img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+    .flat { width: 100%; display: block; border-radius: 18px; background: #fff; }
+    .badge { position: absolute; top: 14px; right: 14px; z-index: 10; padding: 7px 10px; border-radius: 999px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase; background: #1b704d; }
+    .badge.reference { background: #694aaa; }
+    .palette { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; }
+    .colour { border-radius: 18px; padding: 16px; border: 1px solid #3f4676; background: #11152b; text-align: center; }
+    .colour img { width: 100%; aspect-ratio: 1; object-fit: contain; }
+    .number { font-size:clamp(46px,8vw,92px); line-height:1; color:#ffcc38; margin:8px 0 14px; letter-spacing:-.05em; }
+    @media(max-width:700px){ .palette{grid-template-columns:repeat(2,1fr)} }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Companion alien layer map</h1>
+  <p class="intro">Complex costumes now use finished companion presets, so hats, armour, glasses and held items cannot drift away from the approved wide alien. Small custom extras can still use shared slots.</p>
+  <div class="rules" aria-label="Equipment slot rules">
+    <span class="rule">Right: sword · staff · wand · brush</span>
+    <span class="rule">Left: shield · plush · 8-bit alien · mobile</span>
+    <span class="rule">Body: dress · battle harness · knight armour</span>
+  </div>
+
+  <section>
+    <h2>Recommended fixed presets</h2>
+    <p class="note">Each card is one finished character image. No runtime layer mapping is needed.</p>
+    <div class="grid" id="sets"></div>
+  </section>
+
+  <section>
+    <h2>Why not pre-render every mixture?</h2>
+    <article class="card">
+      <div class="number">85,050,000</div>
+      <p class="note">Possible combinations from the current colour, face, head, body, back, hand, orbit and makeup choices. Even a reduced version remains above 40 million.</p>
+      <div class="meta">Six to twelve curated presets are manageable. Millions of baked combinations are not.</div>
+    </article>
+  </section>
+
+  <section id="hand-assets">
+    <h2>Combined hand assets</h2>
+    <p class="note">Each held item includes its complete wrapping hand on the shared 1024 canvas. The shield covers the left hand and needs no hand artwork.</p>
+    <div class="grid" id="extras"></div>
+  </section>
+
+  <section>
+    <h2>Expressions and eyewear</h2>
+    <p class="note">The updated villain scar cuts through the narrowed eye. Open and closed files use the same placement.</p>
+    <div class="grid">
+      <article class="card"><span class="badge reference">Approved reference</span><img class="flat" src="previews-updated/expressions-eyewear-preview.png" alt="Expression and eyewear catalogue"><h3>Core expressions</h3></article>
+      <article class="card"><span class="badge reference">Approved reference</span><img class="flat" src="previews-updated/scar-villain-preview.png" alt="Villain scar expression"><h3>Villain scar</h3></article>
+    </div>
+  </section>
+
+  <section>
+    <h2>Body colours</h2>
+    <div class="palette" id="colours"></div>
+  </section>
+</main>
+<script>
+const base = 'body-wide-blue.png';
+const configs = [
+  {name:'Knight', status:'flat thin armour · metal shoes · complete preset', preview:'previews-updated/knight-preset-flat.png'},
+  {name:'Wizard', status:'hat · cape · monocle · staff · complete preset', preview:'previews-updated/wizard-set-preview.png'},
+  {name:'Space', status:'flat helmet · jetpack · orbit · complete preset', preview:'previews-updated/space-preset-flat.png'},
+  {name:'Princess', status:'flat crown · bow · dress · wand · complete preset', preview:'previews-updated/princess-preset-flat.png'},
+  {name:'Designer', status:'fitted beret · glasses · brush · complete preset', preview:'previews-updated/designer-preset-fitted.png'},
+  {name:'Battle Chicken', status:'hat · harness · back swords · scar · complete preset', preview:'previews-updated/battle-chicken-set-preview.png'},
+];
+const sets = document.querySelector('#sets');
+for (const item of configs) {
+  const card=document.createElement('article'); card.className='card';
+  card.innerHTML = `<span class="badge ${item.preview?'reference':''}">${item.preview?'Preset':'Live stack'}</span>`;
+  if(item.preview){ card.innerHTML += `<img class="flat" src="${item.preview}" alt="${item.name}">`; }
+  else { const stack=document.createElement('div'); stack.className='sprite'; item.layers.forEach(layer=>{ const src=typeof layer==='string'?layer:layer.src; const style=typeof layer==='string'?'':layer.style; stack.insertAdjacentHTML('beforeend',`<img src="${src}" style="${style}" alt="">`); }); card.appendChild(stack); }
+  card.insertAdjacentHTML('beforeend',`<h3>${item.name}</h3><div class="meta">${item.status}</div>`); sets.appendChild(card);
+}
+const colours=[['Blue','body-wide-blue.png'],['Mint','body-wide-mint.png'],['Coral','body-wide-coral.png'],['Violet','body-wide-violet.png'],['Yellow','body-wide-yellow.png']];
+document.querySelector('#colours').innerHTML=colours.map(([name,src])=>`<div class="colour"><img src="${src}" alt="${name}"><strong>${name}</strong></div>`).join('');
+const extras=[
+  {name:'Wizard staff',status:'right-hand combined asset',layers:[base,'png-wide-v3/hand-right-staff-grip.png']},
+  {name:'Upright sword',status:'right-hand combined asset',layers:[base,'png-wide-v3/hand-right-sword-grip.png']},
+  {name:'Princess wand',status:'right-hand combined asset',layers:[base,'png-wide-v3/hand-right-wand-grip.png']},
+  {name:'Designer brush',status:'right-hand combined asset · flat style',layers:[base,'png-wide-v3/hand-right-paintbrush-grip.png']},
+  {name:'Trogdor plush',status:'left-hand combined asset',layers:[base,'png-wide-v3/hand-left-trogdor-plush-grip.png']},
+  {name:'8-bit alien',status:'left-hand combined asset · Credits unlock',layers:[base,'png-wide-v3/hand-left-8bit-alien-grip.png']},
+  {name:'Mobile',status:'left-hand combined asset · Contact unlock',layers:[base,'png-wide-v3/hand-left-mobile-grip.png']},
+  {name:'J shield',status:'left-hand cover · no hand needed',layers:[base,'offhand-shield-wide.png']},
+  {name:'Moustache',status:'face accessory',layers:[base,{src:'png-wide-v2/mouth-moustache.png',style:'transform:translate(14%,10%) scale(.48)'}]},
+];
+const extrasRoot=document.querySelector('#extras');
+for(const item of extras){const card=document.createElement('article');card.className='card';card.innerHTML='<span class="badge">Custom extra</span>';const stack=document.createElement('div');stack.className='sprite';item.layers.forEach(layer=>{const src=typeof layer==='string'?layer:layer.src;const style=typeof layer==='string'?'':layer.style;stack.insertAdjacentHTML('beforeend',`<img src="${src}" style="${style}" alt="">`)});card.appendChild(stack);card.insertAdjacentHTML('beforeend',`<h3>${item.name}</h3><div class="meta">${item.status}</div>`);extrasRoot.appendChild(card)}
+</script>
+</body>
+</html>

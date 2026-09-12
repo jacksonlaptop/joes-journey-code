@@ -22,7 +22,7 @@
    ============================================================================ */
 (function () {
   var JJ = (window.JJLoader = window.JJLoader || {});
-  JJ.version = 'L13 · black crossfades and curved Sketch Gothic story title';   // bump every edit — verify in console
+  JJ.version = 'L17 · pill loaders: deep feather, hint as a subtitle; L16 · precam moon behind the grass; L15 pill variant (Storytime fight, My Story evolution)';   // bump every edit — verify in console
   window.JJ_LOADER_BUILD = JJ.version;
   try { console.log('%c[JJ] jj-loader.js build: ' + JJ.version, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
@@ -116,7 +116,16 @@
       '<path d="' + foamD + '" fill="none" stroke="' + foam + '" stroke-width="4.5" stroke-linecap="round" opacity="' + (foamOp || 1) + '"/>' + curls + '</g>';
   }
 
-  var LOADER_BASE = window.JJ_LOADER_BASE || window.JJ_SCORE_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
+  var LOADER_BASE = window.JJ_LOADER_BASE || window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
+
+  /* The night dressing is the same handful of files on every loader and it gates the reveal,
+     so ask for it the moment this script parses rather than when a loader is started. */
+  ['loader-grass.webp', 'loader-guy.webp'].forEach(function (f) {
+    var l = document.createElement('link'); l.rel = 'preload'; l.as = 'image'; l.href = LOADER_BASE + f;
+    try { l.fetchPriority = 'high'; } catch (e) {}
+    (document.head || document.documentElement).appendChild(l);
+  });
+  [NIGHT_XSTAR, NIGHT_WHIRL, NIGHT_MOON].forEach(function (u) { if (u) { var i = new Image(); i.src = u; } });
   var CSS =
     '@font-face{font-family:"Sketch Gothic School";src:url("' + LOADER_BASE + 'sketch-gothic-school.ttf") format("truetype");font-display:swap;}' +
     '#jjld{position:fixed;inset:0;z-index:2147483000;background:#05070d;display:flex;align-items:center;justify-content:center;transition:opacity .6s ease;font-family:"Joes Journey Headline",Georgia,serif;}' +
@@ -335,7 +344,7 @@
         '</g></g>';
     }
     /* the landing loader's night dressing: grass line, moon window, sound-on message */
-    var GRASS = opts.grass || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/loader-grass.webp';
+    var GRASS = opts.grass || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/loader-grass.webp';
     var MSG1 = opts.msg1 || 'Please keep the sound on,';
     var MSG2 = opts.msg2 || 'This is an audio enhanced journey\u2026';
     var GRW = 1160, GRH = Math.round(627 / 2508 * 1160);
@@ -514,7 +523,11 @@
         '<radialGradient id="jjmoonl" gradientUnits="userSpaceOnUse" cx="497" cy="205" r="200"><stop offset="0" stop-color="#C5E7FF" stop-opacity=".22"/><stop offset=".55" stop-color="#C5E7FF" stop-opacity=".08"/><stop offset="1" stop-color="#C5E7FF" stop-opacity="0"/></radialGradient>' +
         '<radialGradient id="jjmoonpool" gradientUnits="userSpaceOnUse" cx="497" cy="' + LINE + '" r="220"><stop offset="0" stop-color="#eaf5ff" stop-opacity=".2"/><stop offset="1" stop-color="#eaf5ff" stop-opacity="0"/></radialGradient>' +
         '<g class="jjmpulse"><ellipse cx="497" cy="' + (LINE + 2) + '" rx="220" ry="26" fill="url(#jjmoonpool)"/></g>' +
-        '<g class="jjmoonw">' +
+        '<filter id="jjblk" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/></filter>' +
+        '<mask id="jjbehindgrass"><rect x="-3500" y="-1440" width="8000" height="3200" fill="#fff"/>' +
+          '<image href="' + GRASS + '" x="-80" y="' + GRTOP + '" width="' + GRW + '" height="' + GRH + '" preserveAspectRatio="none" filter="url(#jjblk)"/>' +
+          '<rect x="-3500" y="' + (GRTOP + GRH - 6) + '" width="8000" height="1600" fill="#000"/></mask>' +
+        '<g class="jjmoonw" mask="url(#jjbehindgrass)">' +                    // the moon rises BEHIND the grass line
           '<g class="jjmpulse"><circle cx="497" cy="205" r="200" fill="url(#jjmoonl)"/></g>' +
           '<image href="' + MOON + '" x="432" y="140" width="130" height="130"/>' +
         '</g>' +
@@ -561,6 +574,178 @@
     }};
   }
 
+  /* ---------- VARIANT F — Joe vs Trogdor (storytime) — the keyed Seedance fight when it lands, the still plate until then ---------- */
+  function Fight(opts) {
+    var MSG1 = opts.msg1 || 'Please keep the sound on,', MSG2 = opts.msg2 || 'This is an audio enhanced journey\u2026';
+    var GRASS = opts.grass || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/loader-grass.webp';
+    var GROUND = 243, GRW = 1160, GRH = Math.round(627 / 2508 * 1160), GRTOP = GROUND - Math.round(165 / 627 * GRH);
+    var FH = opts.figH || 158, AR = opts.figAR || (908 / 471), FW = Math.round(FH * AR), FX = 500 - FW / 2, FY = GROUND + 6 - FH;
+    var clip = opts.clip || null;
+    [GRASS, NIGHT_MOON].forEach(function (u) { var im = new Image(); im.src = u; });
+    var el = mount(
+      '<svg viewBox="0 0 1000 320">' + DEFS +
+        '<filter id="jjsoft" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="1.2"/></filter>' +
+        '<g filter="url(#jjsoft)">' +                                   // the same night scene as the other loaders
+          '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#0E1F33"/>' +
+          '<g transform="translate(0,-152.5) scale(0.3472)">' + NIGHT_SWIRLS + '</g>' +
+          nightStars() +
+          '<image href="' + GRASS + '" x="-80" y="' + GRTOP + '" width="' + GRW + '" height="' + GRH + '" preserveAspectRatio="none"/>' +
+          '<rect x="-3500" y="' + (GRTOP + GRH - 6) + '" width="8000" height="1600" fill="#504438"/>' +
+        '</g>' +
+        '<radialGradient id="jjmoonl2" gradientUnits="userSpaceOnUse" cx="782" cy="120" r="165"><stop offset="0" stop-color="#C5E7FF" stop-opacity=".2"/><stop offset=".55" stop-color="#C5E7FF" stop-opacity=".07"/><stop offset="1" stop-color="#C5E7FF" stop-opacity="0"/></radialGradient>' +
+        '<g class="jjmoonw"><g class="jjmpulse"><circle cx="782" cy="120" r="165" fill="url(#jjmoonl2)"/></g>' +
+          '<image href="' + NIGHT_MOON + '" x="740" y="78" width="84" height="84"/></g>' +
+        '<ellipse cx="500" cy="' + (GROUND + 6) + '" rx="' + Math.round(FW * 0.42) + '" ry="11" fill="rgba(0,0,0,.32)"/>' +
+        '<g class="jjfight" style="transform-box:fill-box;transform-origin:50% 100%">' +
+          (clip ? '<foreignObject x="' + FX + '" y="' + FY + '" width="' + FW + '" height="' + FH + '"><video xmlns="http://www.w3.org/1999/xhtml" class="jjfv" muted autoplay loop playsinline style="width:100%;height:100%;object-fit:contain;display:block;background:transparent" poster="' + (opts.img || '') + '">' + (clip.mov ? '<source src="' + clip.mov + '" type=\'video/mp4; codecs="hvc1"\'/>' : '') + (clip.webm ? '<source src="' + clip.webm + '" type="video/webm"/>' : '') + '</video></foreignObject>' : '') +
+          '<image class="jjfimg" href="' + (opts.img || '') + '" x="' + FX + '" y="' + FY + '" width="' + FW + '" height="' + FH + '" preserveAspectRatio="xMidYMax meet" style="' + (clip ? 'opacity:0;' : '') + 'transition:opacity .4s ease"/>' +
+        '</g>' +
+        '<text x="500" y="58" text-anchor="middle" fill="white" style="font-size:19px">' + MSG1 + '</text>' +
+        '<text x="500" y="79" text-anchor="middle" fill="rgba(255,255,255,.85)" style="font-size:12px">' + MSG2 + '</text>' +
+        '<rect x="335" y="272" width="339" height="2.6" rx="1.3" fill="rgba(255,255,255,.18)"/>' +
+        '<rect class="bar" x="335" y="272" width="0" height="2.6" rx="1.3" fill="#FF00F5"/>' +
+        '<text class="pct" x="500" y="298" text-anchor="middle" style="font-size:16px">0%</text>' +
+      '</svg>');
+    var pct = el.querySelector('.pct'), bar = el.querySelector('.bar'), g = el.querySelector('.jjfight'), v = el.querySelector('.jjfv'), im = el.querySelector('.jjfimg');
+    if (v) { var fb = function () { im.style.opacity = '1'; if (v.parentNode) v.parentNode.style.display = 'none'; };
+      v.addEventListener('error', fb); setTimeout(function () { if (v.readyState < 2) fb(); }, 4500);
+      var pp = v.play(); if (pp && pp.catch) pp.catch(function () {}); }
+    return { el: el, joe: null, render: function (p) {
+      pct.textContent = Math.round(p * 100) + '%'; bar.setAttribute('width', (339 * p).toFixed(1));
+      if (!v || v.readyState < 2) { var now = performance.now(); g.style.transform = 'translateY(' + (Math.sin(now / 260) * 2).toFixed(2) + 'px)'; }   // the still plate breathes until the clip is ready
+    }};
+  }
+  /* ---------- VARIANT G — Precam: the first little guy asks for sound on ---------- */
+  function Precam(opts) {
+    /* v4 — the user's dark "moon window" frame: full-bleed night scene visible through a big
+       FEATHERED ROUNDED-RECT window in the darkness (black to every corner outside it). The
+       moon is the site's own Moon.svg and the ONLY light: its glow breathes on a 7s cycle and
+       the whole scene brightens with it (the uniform dim layer thins as the glow peaks).
+       Moon, texts, progress bar and the guy sit ABOVE the darkness at full opacity.
+       Perf: the blurred scene group is static (rasterized once); the breathing is two pure
+       opacity animations on separate layers — compositor-only. */
+    var GUY = opts.guy || opts.joe;                              // fallback single image (394x297)
+    var BODY = opts.body, EYE = opts.eye;                        // split sprite: body rolls, eye stays level
+    var GRASS = opts.grass;                                      // loader-grass.webp (2508x627, grass line at row 165)
+    var MSG1 = opts.msg1 || 'Please keep the sound on,';
+    var MSG2 = opts.msg2 || 'This is an audio enhanced journey\u2026';
+    var XSTAR = NIGHT_XSTAR, WHIRL = NIGHT_WHIRL, MOON = NIGHT_MOON;
+    [GUY, BODY, EYE, GRASS, XSTAR, WHIRL, MOON].forEach(function (u) { if (u) { var im = new Image(); im.src = u; } });
+    var SWIRLS = NIGHT_SWIRLS;
+    var stars = nightStars();
+    /* layout */
+    var LINE = 243;                                              // walkable grass line
+    var GW2 = 53, GH2 = 40, GY2 = Math.round(LINE + 2 - GH2 * 0.919);   // fallback single-image seat
+    var BX0 = 335, BX1 = 674, BW = BX1 - BX0, BY = 256;
+    var GXBASE = BX0 - GW2 / 2;
+    /* split-sprite geometry (blob-body.webp 458x376, content bbox (11,6,443,367); eye = eyeball disc) */
+    var BW2 = 48.7, BH2 = 40, BY2 = LINE + 2 - 39;               // content bottom seated on the green
+    var RCX = GXBASE + 24.1, RCY = BY2 + 19.8;                   // body content centre = roll axis
+    var ROLL_D = 38.4;                                           // rolling diameter ~ content height
+    var EW = 11.5, EX = GXBASE + 30.1 - EW / 2, EY = BY2 + 22.0 - EW / 2;   // eye centred at (63%,56%) of the blob
+    var GRW = 1160, GRH = Math.round(627 / 2508 * 1160);
+    var GRTOP = LINE - Math.round(165 / 627 * GRH);
+    var el = mount(
+      '<svg viewBox="0 0 1000 320">' + DEFS +
+        '<filter id="jjsoft" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="1.2"/></filter>' +
+        '<filter id="jjfeather" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="50"/></filter>' +
+        /* ---- blurred, static scene (no moon — he lives above the darkness) ---- */
+        '<g filter="url(#jjsoft)">' +
+          '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#0E1F33"/>' +
+          '<g transform="translate(0,-152.5) scale(0.3472)">' + SWIRLS + '</g>' +
+          stars +
+          '<image href="' + GRASS + '" x="-80" y="' + GRTOP + '" width="' + GRW + '" height="' + GRH + '" preserveAspectRatio="none"/>' +
+          '<rect x="-3500" y="' + (GRTOP + GRH - 6) + '" width="8000" height="1600" fill="#504438"/>' +
+        '</g>' +
+        /* ---- the darkness: a uniform dim that thins as the moon glows (breathes) ... ---- */
+        '<rect class="jjdim" x="-3500" y="-1440" width="8000" height="3200" fill="#000"/>' +
+        /* ---- ...and black to every corner outside a feathered rounded-rect window ---- */
+        '<mask id="jjveil"><rect x="-3500" y="-1440" width="8000" height="3200" fill="#fff"/>' +
+          '<rect x="165" y="-15" width="670" height="420" rx="160" fill="#000" filter="url(#jjfeather)"/></mask>' +
+        '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#000" opacity=".985" mask="url(#jjveil)"/>' +
+        /* ---- full-opacity layer: the moon (site asset, glow breathing), guy, bar, text ---- */
+        '<radialGradient id="jjmoonl" gradientUnits="userSpaceOnUse" cx="497" cy="205" r="200"><stop offset="0" stop-color="#C5E7FF" stop-opacity=".22"/><stop offset=".55" stop-color="#C5E7FF" stop-opacity=".08"/><stop offset="1" stop-color="#C5E7FF" stop-opacity="0"/></radialGradient>' +
+        '<radialGradient id="jjmoonpool" gradientUnits="userSpaceOnUse" cx="497" cy="' + LINE + '" r="220"><stop offset="0" stop-color="#eaf5ff" stop-opacity=".2"/><stop offset="1" stop-color="#eaf5ff" stop-opacity="0"/></radialGradient>' +
+        '<g class="jjmpulse"><ellipse cx="497" cy="' + (LINE + 2) + '" rx="220" ry="26" fill="url(#jjmoonpool)"/></g>' +
+        '<filter id="jjblk" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/></filter>' +
+        '<mask id="jjbehindgrass"><rect x="-3500" y="-1440" width="8000" height="3200" fill="#fff"/>' +
+          '<image href="' + GRASS + '" x="-80" y="' + GRTOP + '" width="' + GRW + '" height="' + GRH + '" preserveAspectRatio="none" filter="url(#jjblk)"/>' +
+          '<rect x="-3500" y="' + (GRTOP + GRH - 6) + '" width="8000" height="1600" fill="#000"/></mask>' +
+        '<g class="jjmoonw" mask="url(#jjbehindgrass)">' +                    // the moon rises BEHIND the grass line
+          '<g class="jjmpulse"><circle cx="497" cy="205" r="200" fill="url(#jjmoonl)"/></g>' +
+          '<image href="' + MOON + '" x="432" y="140" width="130" height="130"/>' +
+        '</g>' +
+        '<text x="500" y="134" text-anchor="middle" fill="white" style="font-size:19px">' + MSG1 + '</text>' +
+        '<text x="500" y="155" text-anchor="middle" fill="rgba(255,255,255,.85)" style="font-size:12px">' + MSG2 + '</text>' +
+        '<rect x="' + BX0 + '" y="' + BY + '" width="' + BW + '" height="2.6" rx="1.3" fill="rgba(255,255,255,.18)"/>' +
+        '<rect class="jjpbar" x="' + BX0 + '" y="' + BY + '" width="0" height="2.6" rx="1.3" fill="#FF00F5"/>' +
+        '<g class="jjslug"><g class="evoInner jjjelly">' +
+          (BODY && EYE
+            ? '<g class="jjroll"><image href="' + BODY + '" x="' + GXBASE + '" y="' + BY2 + '" width="' + BW2 + '" height="' + BH2 + '"/></g>' +
+              '<image href="' + EYE + '" x="' + EX.toFixed(1) + '" y="' + EY.toFixed(1) + '" width="' + EW + '" height="' + EW + '"/>'
+            : '<image href="' + GUY + '" x="' + GXBASE + '" y="' + GY2 + '" width="' + GW2 + '" height="' + GH2 + '"/>') +
+        '</g></g>' +
+        '<text class="pct" x="500" y="287" text-anchor="middle" style="font-size:13px">0%</text>' +
+      '</svg>');
+    var pct = el.querySelector('.pct'), bar = el.querySelector('.jjpbar');
+    var slug = el.querySelector('.jjslug');
+    /* the site's moon sound button rides ABOVE the loader so visitors can mute
+       before any audio begins; z restored once the loader has revealed */
+    var sb = document.getElementById('jj-sound-btn'), sbPrev = null;
+    var sbMist = document.getElementById('jj-sound-mist'), sbMistPrev = null;
+    if (sb) { sbPrev = sb.style.zIndex; sb.style.zIndex = '2147483200'; }
+    if (sbMist) { sbMistPrev = sbMist.style.zIndex; sbMist.style.zIndex = '2147483190'; }
+    if (sb || sbMist) {
+      var zint = setInterval(function () {
+        if (!document.body.contains(el) || el.classList.contains('hide')) {
+          if (sb) sb.style.zIndex = sbPrev || '';
+          if (sbMist) sbMist.style.zIndex = sbMistPrev || '';
+          clearInterval(zint);
+        }
+      }, 400);
+    }
+    var roll = el.querySelector('.jjroll');
+    return { el: el, joe: null, render: function (p) {
+      pct.textContent = Math.round(p * 100) + '%';
+      var tx = BW * p;
+      slug.setAttribute('transform', 'translate(' + tx.toFixed(1) + ',0)');
+      if (roll) {
+        // true rolling: one full turn per circumference of ground covered
+        var deg = (tx / (Math.PI * ROLL_D)) * 360;
+        roll.setAttribute('transform', 'rotate(' + deg.toFixed(2) + ' ' + RCX.toFixed(1) + ' ' + RCY.toFixed(1) + ')');
+      }
+      bar.setAttribute('width', tx.toFixed(1));
+    }};
+  }
+
+  /* ---------- VARIANT F — Joe vs Trogdor (storytime) — the keyed Seedance fight when it lands, the still plate until then ---------- */
+  /* ---------- VARIANT G — the portal (Part Two) — the four frames of the sheet wake up with progress, the orb circles the arch ---------- */
+  function Portal(opts) {
+    var MSG1 = opts.msg1 || 'Grab your popcorn, it\u2019s about to go down', MSG2 = opts.msg2 || '';
+    var FR = (opts.frames || []).filter(Boolean); if (!FR.length) FR = [''];
+    var GROUND = 268, PH = 230, PW = Math.round(PH * 1.04), PX = (1000 - PW) / 2, PY = GROUND - PH + 10;
+    var el = mount(
+      '<svg viewBox="0 0 1000 320">' + DEFS +
+        '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#04060c"/>' +
+        '<radialGradient id="jjpglow"><stop offset="0" stop-color="#b04cff" stop-opacity=".55"/><stop offset=".6" stop-color="#7a2cff" stop-opacity=".18"/><stop offset="1" stop-color="#7a2cff" stop-opacity="0"/></radialGradient>' +
+        '<ellipse class="jjpg" cx="500" cy="' + (GROUND - PH * .45) + '" rx="' + (PW * .9) + '" ry="' + (PH * .8) + '" fill="url(#jjpglow)" style="opacity:.35;transition:opacity 1.2s ease"/>' +
+        '<rect x="-3500" y="' + GROUND + '" width="8000" height="1600" fill="#0a0f1c"/><line x1="-3500" y1="' + GROUND + '" x2="4500" y2="' + GROUND + '" stroke="#1a2334" stroke-width="2"/>' +
+        FR.map(function (u, i) { return '<image class="jjpf" data-i="' + i + '" href="' + u + '" x="' + PX + '" y="' + PY + '" width="' + PW + '" height="' + PH + '" preserveAspectRatio="xMidYMax meet" style="opacity:' + (i ? 0 : 1) + ';transition:opacity .9s ease"/>'; }).join('') +
+        '<g class="jjorb"><circle r="9" fill="#ffd54a" stroke="#1b1030" stroke-width="2"/><circle r="3.5" cx="-2.5" cy="-2.5" fill="#fff6c8"/></g>' +
+        '<text x="500" y="52" text-anchor="middle" fill="white" style="font-size:19px">' + MSG1 + '</text>' +
+        '<text x="500" y="73" text-anchor="middle" fill="rgba(255,255,255,.85)" style="font-size:12px">' + MSG2 + '</text>' +
+        '<rect x="335" y="288" width="330" height="4" rx="2" fill="rgba(255,255,255,.14)"/><rect class="bar" x="335" y="288" width="0" height="4" rx="2" fill="#b04cff"/>' +
+        '<text class="pct" x="500" y="311" text-anchor="middle" style="font-size:16px">0%</text>' +
+      '</svg>');
+    var pct = el.querySelector('.pct'), bar = el.querySelector('.bar'), fr = el.querySelectorAll('.jjpf'), orb = el.querySelector('.jjorb'), glow = el.querySelector('.jjpg'), cur = 0;
+    return { el: el, joe: null, render: function (p) {
+      pct.textContent = Math.round(p * 100) + '%'; bar.setAttribute('width', (330 * p).toFixed(1));
+      var want = Math.min(fr.length - 1, Math.floor(p * (fr.length - 1) + 0.0001)); if (p > .96) want = fr.length - 1;
+      if (want !== cur) { cur = want; fr.forEach(function (f, i) { f.style.opacity = i === cur ? '1' : '0'; }); glow.style.opacity = cur === fr.length - 1 ? '1' : (.35 + cur * .15).toFixed(2); }
+      var t = performance.now() / 1000, cx = 500 + Math.cos(t * 1.1) * (PW * .34), cy = (PY + 8) + Math.sin(t * 2.2) * 10 - Math.abs(Math.sin(t * 1.1)) * 14;   // the orb rides an arc over the top of the portal
+      orb.setAttribute('transform', 'translate(' + cx.toFixed(1) + ',' + cy.toFixed(1) + ')');
+    }};
+  }
   /* ---------- VARIANT E — Trogdor flies to the wizard (contact) — black stage + tracking spotlight ---------- */
   function Trogdor(opts) {
     /* the dragon = the CONTACT PAGE's own sprite sheet (9×8 grid, 72 frames @ 12fps), stepped by
@@ -665,15 +850,118 @@
   }
 
   /* ---------- RUN ---------- */
+  /* ---------- VARIANT P — the pill window (Joe's Sep '26 loaders) ----------
+     Drawn in Joe's 2880x1800 artboard space and scaled to fit, so it matches the Figma frame on any screen: a
+     pre-rendered pill of night scene (loader-pill-*.webp — sky, swirls, moon, ground, bar track, and for Storytime the
+     gothic title arched above it) with the live parts on top: the pink bar, the texts, and
+       layout 'storytime' — the Joe vs Trogdor fight clip where the two stand in the frame, the hint, and the %
+       layout 'mystory'   — the seven evolution figures, each painted in from grey as the load passes it; the newest walks */
+  function Pill(opts) {
+    var ST = opts.layout === 'storytime';
+    var BG = opts.bg, BOX = ST ? [560, 430, 1740, 910] : [594, 695, 1693, 507];
+    var esc = function (t) { return String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+    if (!document.getElementById('jjld-pill-style')) { var ps = document.createElement('style'); ps.id = 'jjld-pill-style';
+      ps.textContent = '@keyframes jjwalkP{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-9px) rotate(-1.2deg);}50%{transform:translateY(0) rotate(0deg);}75%{transform:translateY(-9px) rotate(1.2deg);}}' +
+        '@keyframes jjswimP{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-12px) rotate(2deg);}}' +
+        '@keyframes jjstepP{0%{transform:translate(0,0);}45%{transform:translate(14px,-20px);}100%{transform:translate(26px,0);}}' +
+        '@keyframes jjshiverP{0%,100%{transform:translateX(0);}25%{transform:translateX(-3px);}75%{transform:translateX(3px);}}' +
+        '#jjld.jjld-pill{background:#000;}#jjld.jjld-pill::after{display:none;}' +
+        '#jjld .jjpill .evoWalk{animation-name:jjwalkP;}#jjld .jjpill .evoSwim{animation-name:jjswimP;}#jjld .jjpill .evoStepped{animation-name:jjstepP;}#jjld .jjpill .evoFillin{animation-name:jjshiverP;}';
+      document.head.appendChild(ps); }
+    /* the window is FEATHERED into the black, like the loaders before it — never a hard-edged box. The pill is a
+       blurred rounded rect used as a mask; for Storytime the arched title above it stays crisp (its own mask patch). */
+    var PILL = ST ? [658, 713, 1565, 620, 310] : [594, 695, 1693, 507, 253];
+    var F = 150;                                                        // a deep feather: the scene melts into the black over ~10% of the frame, as in Joe's mocks
+    var html = '<svg class="jjpill" viewBox="0 0 2880 1800" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' + esc(opts.title || 'Loading') + '">' +
+      '<filter id="jjpfeather" x="-30%" y="-40%" width="160%" height="180%"><feGaussianBlur stdDeviation="' + F + '"/></filter>' +
+      '<mask id="jjpmask"><rect x="' + (PILL[0] + F * .55) + '" y="' + (PILL[1] + F * .55) + '" width="' + (PILL[2] - F * 1.1) + '" height="' + (PILL[3] - F * 1.1) + '" rx="' + PILL[4] + '" fill="#fff" filter="url(#jjpfeather)"/>' +
+        (ST ? '<rect x="' + BOX[0] + '" y="' + BOX[1] + '" width="' + BOX[2] + '" height="' + (PILL[1] - BOX[1] - 8) + '" fill="#fff"/>' : '') +
+      '</mask>' +
+      '<g mask="url(#jjpmask)"><image href="' + BG + '" x="' + BOX[0] + '" y="' + BOX[1] + '" width="' + BOX[2] + '" height="' + BOX[3] + '"/></g>';
+    var POS = [[557, 973], [812, 963], [1066, 939], [1321, 931], [1576, 925], [1830, 909], [2085, 909]], S = 239;
+    var N = 0, figs = [];
+    if (ST) {
+      var clip = opts.clip || null, FX = 1180, FY = 791, FW = 621, FH = 360;   // the pair stands where Joe drew the knight and Trogdor
+      html +=
+        '<text x="1440" y="712" text-anchor="middle" fill="rgba(255,255,255,.88)" style="font-size:40px">' + esc(opts.msg1 || 'Hint: This is an interactive story') + '</text>' +   // a subtitle under the title
+        '<ellipse cx="1490" cy="1150" rx="250" ry="16" fill="rgba(0,0,0,.28)"/>' +
+        '<g class="jjfight">' +
+          (clip ? '<foreignObject x="' + FX + '" y="' + FY + '" width="' + FW + '" height="' + FH + '"><video xmlns="http://www.w3.org/1999/xhtml" class="jjfv" muted autoplay loop playsinline style="width:100%;height:100%;object-fit:contain;object-position:50% 100%;display:block;background:transparent" poster="' + (opts.img || '') + '">' + (clip.mov ? '<source src="' + clip.mov + '" type=\'video/mp4; codecs="hvc1"\'/>' : '') + (clip.webm ? '<source src="' + clip.webm + '" type="video/webm"/>' : '') + '</video></foreignObject>' : '') +
+          '<image class="jjfimg" href="' + (opts.img || '') + '" x="' + FX + '" y="' + FY + '" width="' + FW + '" height="' + FH + '" preserveAspectRatio="xMidYMax meet" style="' + (clip ? 'opacity:0;' : '') + 'transition:opacity .4s ease"/>' +
+        '</g>' +
+        '<text class="pct" x="1440" y="1262" text-anchor="middle" style="font-size:66px;fill:#fff">0%</text>';
+    } else {
+      var col = (opts.stages || []).filter(Boolean), grey = (opts.stagesGrey || []).filter(Boolean), colB = (opts.stagesB || []).filter(Boolean);
+      var bx = opts.stageBoundsX || [];
+      N = Math.min(col.length, POS.length);
+      html +=
+        '<text x="1440" y="800" text-anchor="middle" fill="#fff" style="font-size:62px">' + esc(opts.msg1 || 'To be continued') + '</text>' +
+        '<text x="1440" y="856" text-anchor="middle" fill="#A7AEB4" style="font-size:38px">' + esc(opts.msg2 || 'Perhaps there’s more to be discovered…') + '</text>';
+      for (var i = 0; i < N; i++) {
+        var x = POS[i][0], y = POS[i][1], b = bx[i] || [0, 1], box = ' x="' + x + '" y="' + y + '" width="' + S + '" height="' + S + '"';
+        figs.push({ x0: x - 20, l: x + S * b[0] - 4, r: x + S * b[1] + 4 });
+        html += '<clipPath id="jjpc' + i + '" clipPathUnits="userSpaceOnUse"><rect class="jjpcr" x="' + (x - 20) + '" y="' + (y - 20) + '" width="0" height="' + (S + 40) + '"/></clipPath>' +
+          '<g class="evoStage"><g class="evoInner" style="animation-delay:-' + (i * .13).toFixed(2) + 's">' +
+            '<image class="evoG" href="' + (grey[i] || col[i]) + '"' + box + (grey[i] ? '' : ' style="filter:grayscale(1) brightness(.45)"') + '/>' +
+            '<g clip-path="url(#jjpc' + i + ')"><image class="evoA" href="' + col[i] + '"' + box + '/>' +
+              (colB[i] ? '<image class="evoB" style="display:none" href="' + colB[i] + '"' + box + '/>' : '') + '</g>' +
+          '</g></g>';
+      }
+    }
+    html += '<rect class="jjpbar" x="943" y="1164" width="0" height="6" rx="3" fill="#FF00F5"/></svg>';
+    var el = mount(html); el.classList.add('jjld-pill');                 // true black around the pill, as drawn — no vignette
+    var sb = document.getElementById('jj-sound-btn'), sbPrev = null, sbMist = document.getElementById('jj-sound-mist'), sbMistPrev = null;   // the moon sound button stays reachable over the loader
+    if (sb) { sbPrev = sb.style.zIndex; sb.style.zIndex = '2147483200'; }
+    if (sbMist) { sbMistPrev = sbMist.style.zIndex; sbMist.style.zIndex = '2147483190'; }
+    if (sb || sbMist) { var zint = setInterval(function () { if (!document.body.contains(el) || el.classList.contains('hide')) { if (sb) sb.style.zIndex = sbPrev || ''; if (sbMist) sbMist.style.zIndex = sbMistPrev || ''; clearInterval(zint); } }, 400); }
+    var bar = el.querySelector('.jjpbar'), pct = el.querySelector('.pct');
+    if (ST) {
+      var v = el.querySelector('.jjfv'), im = el.querySelector('.jjfimg'), g = el.querySelector('.jjfight');
+      if (v) { var fb = function () { im.style.opacity = '1'; if (v.parentNode) v.parentNode.style.display = 'none'; };
+        v.addEventListener('error', fb); setTimeout(function () { if (v.readyState < 2) fb(); }, 4500);
+        var pp = v.play(); if (pp && pp.catch) pp.catch(function () {}); }
+      return { el: el, joe: null, render: function (p) {
+        pct.textContent = Math.round(p * 100) + '%'; bar.setAttribute('width', (995 * p).toFixed(1));
+        if (!v || v.readyState < 2) g.style.transform = 'translateY(' + (Math.sin(performance.now() / 260) * 3).toFixed(2) + 'px)';   // the still plate breathes until the clip plays
+      }};
+    }
+    var rects = Array.prototype.slice.call(el.querySelectorAll('.jjpcr')), stages = Array.prototype.slice.call(el.querySelectorAll('.evoStage'));
+    var inners = Array.prototype.slice.call(el.querySelectorAll('.evoInner'));
+    var aEls = Array.prototype.slice.call(el.querySelectorAll('.evoA')), bAll = el.querySelectorAll('.evoB'), bEls = bAll.length === N ? Array.prototype.slice.call(bAll) : null;
+    var anims = opts.stageAnims || [], modes = [], pose = [];
+    function animClass(i) { var a = anims[i] || (i === 0 ? 'squish' : (i === 1 ? 'swim' : 'walk')); return a === 'squish' ? 'evoSquish' : (a === 'swim' ? 'evoSwim' : 'evoWalk'); }
+    return { el: el, joe: null, render: function (p) {
+      bar.setAttribute('width', (995 * p).toFixed(1));
+      var alive = -1, loc = [], i;
+      for (i = 0; i < N; i++) { loc[i] = Math.max(0, Math.min(1, p * N - i)); if (loc[i] >= 1) alive = i; }
+      for (i = 0; i < N; i++) {
+        var f = figs[i], w = loc[i] >= 1 ? S + 400 : (f.l - f.x0) + loc[i] * (f.r - f.l);   // the colour sweeps left to right across the figure
+        rects[i].setAttribute('width', Math.max(0, w).toFixed(1));
+        var m = loc[i] <= 0 ? 'frozen' : (loc[i] < 1 ? 'fill' : (i === alive ? 'walk' : 'done'));
+        if (m !== modes[i]) {
+          modes[i] = m;
+          stages[i].setAttribute('class', 'evoStage' + (loc[i] >= 1 ? ' evoStepped' : ''));
+          inners[i].setAttribute('class', 'evoInner' + (m === 'fill' ? ' evoFillin' : (m === 'walk' ? ' ' + animClass(i) : '')));
+          if (bEls && m !== 'walk') { pose[i] = 0; aEls[i].style.display = ''; bEls[i].style.display = 'none'; }
+        }
+        if (bEls && m === 'walk') { var fr = Math.floor(performance.now() / 320) % 2;
+          if (fr !== pose[i]) { pose[i] = fr; aEls[i].style.display = fr ? 'none' : ''; bEls[i].style.display = fr ? '' : 'none'; } }
+      }
+    }};
+  }
+
   JJ.start = function (opts) {
-    opts = opts || {}; mount.title = opts.title || '';
+    opts = opts || {}; mount.title = opts.variant === 'pill' ? '' : (opts.title || '');   // the pill's title is part of its art
     var prev = document.getElementById('jjld');                  // starting anew replaces a running loader
     if (prev) prev.remove();                                     // (its rAF loop exits via the isConnected check)
     var frames = (opts.frames || []).filter(Boolean);
     frames.concat(opts.fillFrames || [], opts.stages || [], opts.stagesGrey || [], opts.stagesB || []).forEach(function (u) {   // preload + decode all art up front
       var im = new Image(); im.src = u; if (im.decode) im.decode().catch(function () {});
     });
-    var scene = (opts.variant === 'juggle' ? Juggle(opts)
+    var scene = (opts.variant === 'pill' ? Pill(opts)
+      : opts.variant === 'juggle' ? Juggle(opts)
+      : opts.variant === 'fight' ? Fight(opts)
+      : opts.variant === 'portal' ? Portal(opts)
       : opts.variant === 'trogdor' ? Trogdor(opts)
       : opts.variant === 'evolution' ? Evolution(opts)
       : opts.variant === 'precam' ? Precam(opts)
@@ -681,13 +969,30 @@
     /* pitch black first: the loader's own art (grass, moon, first figures) is given a beat to land, then the whole
        stage eases in and the clock starts — no half-drawn ground, and every page begins from the same black */
     scene.el.style.opacity = '1';
+    var playing = false;                                           // the clock does not start until the curtain is fully up
     (function easeIn() {
-      var urls = []; scene.el.querySelectorAll('image, img').forEach(function (n) { var u = n.getAttribute('href') || n.getAttribute('src'); if (u) urls.push(u); });
+      /* Gate on the art the FIRST frame needs — the ground and the figure — not on every
+         star and flourish in the scene. Holding black for the whole set just moves the wait. */
+      var urls = [opts.bg, opts.grass, opts.body, opts.eye, opts.img].filter(Boolean);
+      if (!urls.length) scene.el.querySelectorAll('image, img').forEach(function (n) {
+        var u = n.getAttribute('href') || n.getAttributeNS('http://www.w3.org/1999/xlink', 'href') || n.getAttribute('src'); if (u) urls.push(u);
+      });
       var left = urls.length, done = false;
-      function go() { if (done) return; done = true; scene.el.classList.add('revealed'); startT = performance.now(); }
+      function go() {
+        if (done) return; done = true;
+        try { scene.render(0); } catch (e) {}                      // draw the opening frame BEHIND the curtain, so nothing pops in mid-fade
+        scene.el.classList.add('revealed');
+        setTimeout(function () { playing = true; startT = performance.now(); }, 760);   // .72s curtain + a beat, then the animation begins
+      }
       if (!left) return setTimeout(go, 120);
-      urls.forEach(function (u) { var im = new Image(); im.onload = im.onerror = function () { if (--left <= 0) setTimeout(go, 60); }; im.src = u; });
-      setTimeout(go, 1100);                                        // never wait longer than this
+      urls.forEach(function (u) {
+        var im = new Image();
+        var ok = function () { if (--left <= 0) setTimeout(go, 60); };
+        im.onload = function () { if (im.decode) im.decode().then(ok, ok); else ok(); };   // decoded, not merely downloaded — the ground is really there
+        im.onerror = ok;
+        im.src = u;
+      });
+      setTimeout(go, 1800);                                        // never hold the black longer than this
     })();
     var startT = performance.now(), minTime = opts.minTime != null ? opts.minTime : 900;
     var fps = opts.fps || 8, fi = 0, lastF = 0;
@@ -695,6 +1000,7 @@
 
     (function loop(now) {
       if (!scene.el.isConnected) return;                         // replaced by a newer start — stop this orphaned loop
+      if (!playing) return requestAnimationFrame(loop);           // still black, or still fading up: hold the story at frame one
       /* pace the show: displayed progress may never outrun the minTime ramp, so even an instant
          load plays the full story — but it still can't outrun the REAL progress either */
       var ramp = Math.min(1, (now - startT) / minTime);
@@ -712,12 +1018,18 @@
     })(startT);
 
     function finish() {
+      /* Hand over on a clear screen. The loader closes to full black, then leaves — black on
+         black, so the swap is invisible — and only THEN does the page play its own reveal.
+         Firing onReady during the fade meant the page's curtains were already half open
+         by the time the loader had gone. */
       scene.el.classList.add('to-black');
       setTimeout(function () {
-        if (typeof opts.onReady === 'function') opts.onReady();
-        scene.el.style.transition = 'opacity .72s ease'; scene.el.classList.add('hide');
+        scene.el.style.transition = 'opacity .45s ease'; scene.el.classList.add('hide');
+        setTimeout(function () {
+          if (scene.el.parentNode) scene.el.remove();
+          if (typeof opts.onReady === 'function') opts.onReady();
+        }, 470);
       }, 720);
-      setTimeout(function () { if (scene.el.parentNode) scene.el.remove(); }, 1500);
     }
     var safety = setTimeout(function () { target = 1; downloaded = true; decoded = true; }, opts.maxWait || 15000);
     function onProgress(p) { target = Math.max(target, p); }

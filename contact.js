@@ -3,7 +3,7 @@
    same as the site's other scripts — githack refreshes without any purge step)
 
    IN WEBFLOW (Contact page → Page Settings → Before </body> tag) add ONLY:
-     <script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/contact.js"></script>
+     <script src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/contact.js"></script>
 
    TO UPDATE: edit this file → re-upload contact.js (+ any changed assets) to the
    repo. githack picks up the new commit within ~minutes — no purge needed.
@@ -56,6 +56,7 @@
 .jj-contact:hover .jj-c-detail{transform:translateX(-50%) translateY(12px);}
 .jj-contact[data-key="credits"]:hover .jj-c-label{transform:translateX(-50%) translateY(-28px);}     /* credits grows more (1.42) */
 .jj-contact[data-key="credits"]:hover .jj-c-detail{transform:translateX(-50%) translateY(28px);}
+#jj-space-cta{left:0;right:0;margin:0 auto;width:max-content;max-width:calc(2 * (50vw - min(34vw,554px) * .62 - 24px));font-size:clamp(22px,2.9vw,44px);text-wrap:balance;position:absolute;bottom:calc(2.5vh + min(8vw,120px) * 0.77 + 14px);text-align:center;font-family:'Joes Journey Headline',sans-serif;line-height:1.15;color:#fff;opacity:0;z-index:8;pointer-events:none;text-shadow:0 2px 12px rgba(0,0,0,.5);will-change:transform;}#jj-space-ask{left:0;right:0;margin:0 auto;width:max-content;max-width:calc(2 * (50vw - min(34vw,554px) * .62 - 24px));font-size:clamp(22px,2.9vw,44px);text-wrap:balance;position:absolute;bottom:calc(2.5vh + min(8vw,120px) * 0.77 + 14px);text-align:center;font-family:'Joes Journey Headline',sans-serif;line-height:1.15;color:#fff;z-index:8;pointer-events:none;text-shadow:0 2px 12px rgba(0,0,0,.5);will-change:transform;}#jj-space-ask .w{display:inline-block;white-space:nowrap;}#jj-space-ask .w>span{display:inline-block;opacity:0;}
 #jj-caption{position:absolute;left:16vw;bottom:calc(2.5vh + min(8vw,120px) * 0.77 - 7px);width:min(60vw,940px);min-height:2.7em;text-align:left;white-space:pre-line;font-family:'Joes Journey Headline',sans-serif;font-size:clamp(18px,2vw,30px);line-height:1.32;color:#fff;opacity:0;z-index:8;pointer-events:none;}
 #jj-toast{position:absolute;left:48%;top:43%;transform:translate(-50%,-50%) scale(0.92);display:flex;align-items:center;gap:18px;opacity:0;pointer-events:none;z-index:40;transition:opacity .22s ease,transform .22s ease;}
 #jj-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
@@ -86,7 +87,7 @@
 .jj-head{position:relative;--r:100%;font-family:'Joes Journey Headline',sans-serif;color:#fff;-webkit-text-stroke:1px rgba(0,0,0,.35);paint-order:stroke fill;text-shadow:0 2px 10px rgba(0,0,0,.5);clip-path:inset(0 var(--r) 0 0);}
 .jj-head .jj-char{display:inline-block;will-change:transform,opacity;}
 #jj-dragon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:155px;pointer-events:none;}
-#jj-dragon .jj-dragon-sprite{width:100%;height:100%;background-image:url('https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-sprite.png');background-repeat:no-repeat;background-size:900% 800%;}
+#jj-dragon .jj-dragon-sprite{width:100%;height:100%;background-image:url('https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-sprite.webp');background-repeat:no-repeat;background-size:900% 800%;}
 /* hide the Webflow "Back to Contact" button (.next-section-button.back) everywhere EXCEPT inside the credits game (where setupCredits adds .jj-credits-on to <html>) */
 html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-events:none !important;}`;
 
@@ -97,7 +98,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
 
   /* Lottie player for the animated storybook (page-turn). Loaded up front so it's
      ready by the time the story scene fades in (~8s). */
-  var BOOK_URL = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/book.json?v=3';  // ?v bumps to dodge stale CDN/browser cache when book.json content changes
+  var BOOK_URL = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/book.json?v=3';  // ?v bumps to dodge stale CDN/browser cache when book.json content changes
   if (!window.lottie) {
     var ls = document.createElement('script');
     ls.src = 'https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js';
@@ -226,8 +227,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
   <div id="jj-dark"></div>
   <div id="jj-stars"></div>
   <div id="jj-story"></div>
-  <img id="jj-philosopher" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/philosopher.png" alt="" data-cursor="hover">
-  <img id="jj-rest-dragon" src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png" alt="" data-cursor="hover">
+  <img id="jj-philosopher" src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/wizard-normal.webp" alt="" data-cursor="hover">
+  <img id="jj-rest-dragon" src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-rest.webp" alt="" data-cursor="hover">
   <div id="jj-contacts"></div>
   <div id="jj-caption"></div>
   <img id="jj-spacebar" src="https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a32c43b02d23ed8f42fb5a6_Space%20bar.svg" alt="Press Space" data-cursor="hover">
@@ -390,13 +391,13 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
   var ORB = { cx:48, cy:43, rx:33, ry:26 };
   var ANG = { linkedin:270, credits:342, cv:54, mail:126, phone:198 };   // degrees, evenly spaced
   function ellipsePos(deg){ var r = deg * Math.PI / 180; return { x: ORB.cx + ORB.rx * Math.cos(r), y: ORB.cy + ORB.ry * Math.sin(r) }; }
-  var ICN = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';            // cropped contact icons (no padding, art to the edge)
+  var ICN = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';            // cropped contact icons (no padding, art to the edge)
   var CONTACTS = [
-    { key:'phone',    label:'Phone',    dgap:0,   def:ICN+'icon-phone.png',    fill:ICN+'icon-phone-fill.png',    detail:'+44 7565 040886',                       act:'copy', copy:'+447565040886' },
-    { key:'linkedin', label:'LinkedIn', dgap:0,   def:ICN+'icon-linkedin.png', fill:ICN+'icon-linkedin-fill.png', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'open', href:'https://www.linkedin.com/in/joseph-jackson-ui/' },
-    { key:'credits',  label:'Credits',  dgap:0,   def:ICN+'icon-credits.png',  fill:ICN+'icon-credits-fill.png',  detail:'View',                                  act:'view',     href:'#credits' },
-    { key:'mail',     label:'Mail',     dgap:0,   def:ICN+'icon-mail.png',     fill:ICN+'icon-mail-fill.png',     detail:'jackson.laptop95@gmail.com',            act:'copy', copy:'jackson.laptop95@gmail.com' },
-    { key:'cv',       label:'CV',       dgap:0,   def:ICN+'icon-cv.png',       fill:ICN+'icon-cv-fill.png',       detail:'Download',                              act:'download', href:'#cv' }
+    { key:'phone',    label:'Phone',    dgap:0,   def:ICN+'icon-phone.webp',    fill:ICN+'icon-phone-fill.webp',    detail:'+44 7565 040886',                       act:'copy', copy:'+447565040886' },
+    { key:'linkedin', label:'LinkedIn', dgap:0,   def:ICN+'icon-linkedin.webp', fill:ICN+'icon-linkedin-fill.webp', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'open', href:'https://www.linkedin.com/in/joseph-jackson-ui/' },
+    { key:'credits',  label:'Credits',  dgap:0,   def:ICN+'icon-credits.webp',  fill:ICN+'icon-credits-fill.webp',  detail:'View',                                  act:'view',     href:'#credits' },
+    { key:'mail',     label:'Mail',     dgap:0,   def:ICN+'icon-mail.webp',     fill:ICN+'icon-mail-fill.webp',     detail:'jackson.laptop95@gmail.com',            act:'copy', copy:'jackson.laptop95@gmail.com' },
+    { key:'cv',       label:'CV',       dgap:0,   def:ICN+'icon-cv.webp',       fill:ICN+'icon-cv-fill.webp',       detail:'Download',                              act:'download', href:'#cv' }
   ];
   var SPACE = [
     IC+'6a32a12291178c585287628f_small%20space%201.svg',
@@ -436,6 +437,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     CONTACTS.forEach(function (c) {
       var a = document.createElement('a');
       a.className = 'jj-contact'; a.href = c.href || '#'; a.setAttribute('data-key', c.key);
+      a.setAttribute('data-cursor', (c.key === 'linkedin' || c.key === 'mail' || c.key === 'cv' || c.key === 'phone') ? 'external' : 'hover');   // these leave the site
       var p = ellipsePos(ANG[c.key]); a.style.left = p.x + '%'; a.style.top = p.y + '%';
       var labelIco = c.act === 'copy' ? ICO.copy : '';
       var detailIco = c.act === 'download' ? ICO.download : ((c.act === 'view' || c.act === 'open') ? ICO.arrow : '');
@@ -513,37 +515,42 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
   function resumeContacts(){ contactMotion.forEach(function (t) { t.resume(); }); }
 
   /* ---- wizard captions: rapid typed lines bottom-centre; he reacts sad → happy ---- */
-  var WIZ = {
-    normal: 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/philosopher.png',
-    sad:    IC + '6a326b676232e8946bfa7893_Wizard%20-%20sad.svg',
-    happy:  IC + '6a326b682510ef80bdc333ec_Wizard%20-%20very%20happy.svg',
-    surprised: IC + '6a200195245a88910104f066_Sprite%20philios.svg'
+  var WIZB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
+  var WIZ = {                                                               // the jetpack wizard: one pose, three faces (painted from his sheet), so swaps are instant
+    normal: WIZB + 'wizard-normal.webp',
+    blink:  WIZB + 'wizard-blink.webp',
+    happy:  WIZB + 'wizard-happy.webp'
   };
+  WIZ.sad = WIZ.normal; WIZ.surprised = WIZ.happy;                          // older cues: calm on the hate-mail line, delighted when the game starts                                                     // the captions still ask for 'sad' on the hate-mail line — he stays calm now
+  [WIZ.normal, WIZ.blink, WIZ.happy].forEach(function (u) { var i = new Image(); i.src = u; });   // all three decoded up front, so a blink is a clean cut
   var wizState = 'normal';                                                   // the scripted resting expression
-  function applyWizard(face){                                               // fade quickly out → swap → fade in, so he never appears to "move"
-    var el = document.getElementById('jj-philosopher'); var url = WIZ[face]; if (!el || !url || !window.gsap) return;
-    if (el.getAttribute('src') === url) return;
-    gsap.to(el, { opacity:0, duration:0.13, ease:'power1.in', onComplete:function () {
-      el.src = url; gsap.to(el, { opacity:1, duration:0.18, ease:'power1.out' });
-    } });
+  function applyWizard(face){                                               // same pose in every face: an instant swap, no fade needed
+    var el = document.getElementById('jj-philosopher'); var url = WIZ[face]; if (!el || !url) return;
+    if (el.getAttribute('src') !== url) el.src = url;
   }
   function setWizard(face){ wizState = face; applyWizard(face); }            // scripted (captions) — also sets the resting state
-  /* wizard is interactive: hover → happy, click → sad + shuffle down-left ~2s then back to resting */
+  /* the wizard, like the resting dragon: a slow float, a blink every few seconds, and a happy hop when clicked */
   function setupWizard(){
     var w = document.getElementById('jj-philosopher'); if (!w || !window.gsap || w._wired) return;
     w._wired = true;
-    var busy = false, hovering = false;
-    w.addEventListener('mouseenter', function () { if (creditsRunning) return; hovering = true; if (!busy) applyWizard('happy'); });
-    w.addEventListener('mouseleave', function () { if (creditsRunning) return; hovering = false; if (!busy) applyWizard(wizState); });
+    var busy = false;
+    var float = function () { gsap.to(w, { y: 0, duration: 0.35, ease: 'power1.out', onComplete: function () { gsap.to(w, { y: -16, duration: 3.1, repeat: -1, yoyo: true, ease: 'sine.inOut' }); } }); };   // always from home, so clicks never make him drift
+    float();
+    (function blink(){                                                       // a quick, natural blink — sometimes a double
+      setTimeout(function () {
+        if (!busy && !creditsRunning && wizState !== 'happy') {
+          applyWizard('blink');
+          setTimeout(function () { if (!busy) applyWizard(wizState); }, 130);
+          if (Math.random() < .25) setTimeout(function () { if (!busy && wizState !== 'happy') { applyWizard('blink'); setTimeout(function () { if (!busy) applyWizard(wizState); }, 120); } }, 300);
+        }
+        blink();
+      }, 2600 + Math.random() * 3600);
+    })();
     w.addEventListener('click', function () {
       if (creditsRunning || busy) return; busy = true;
-      gsap.killTweensOf(w); applyWizard('sad');                                          // kill leftover motion FIRST, then start the sad fade-swap (else killTweensOf cancels it)
-      gsap.to(w, { x: -w.offsetWidth * 0.16, y: w.offsetHeight * 0.14, duration: 0.6, ease: 'power2.out', onComplete: function () {   // slightly left + down
-        setTimeout(function () {
-          gsap.to(w, { x: 0, y: 0, duration: 0.7, ease: 'power2.inOut', onComplete: function () {
-            busy = false; applyWizard(hovering ? 'happy' : wizState);
-          } });
-        }, 2000);   // hold ~2 seconds
+      gsap.killTweensOf(w); applyWizard('happy');
+      gsap.to(w, { y: '-=30', duration: 0.26, ease: 'power2.out', yoyo: true, repeat: 1, onComplete: function () {   // a delighted little hop
+        setTimeout(function () { busy = false; applyWizard(wizState); float(); }, 1500);                          // grinning for a moment, then back to floating
       } });
     });
   }
@@ -558,32 +565,40 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     }, 45);   // typing speed (ms per character)
   }
   function runCaptions(){
-    var cap = document.getElementById('jj-caption'); if (!cap || !window.gsap) return;
-    gsap.to(cap, { opacity: 1, duration: 0.4 });
-    typeCaption(cap, 'Want to talk? Have some feedback?', false, function () {
-      setTimeout(function () {
-        setWizard('sad');
-        typeCaption(cap, '\nMaybe you want to send me some hate mail?', true, function () {
-          setTimeout(function () {                                     // longer beat so the hate-mail line can be read
-            setWizard('happy');
-            // scene 3 types in chunks with pauses
-            typeCaption(cap, 'Fancy playing a quick game, it’s my favourite?', false, function () {
-              setTimeout(function () {
-                showSpacebar();
-                typeCaption(cap, ' Just press ‘Space’ to begin…', true, function () {
-                  setTimeout(function () {
-                    typeCaption(cap, ' Oh I see what he’s done there… Space… Ha!', true, function () {});
-                  }, 1300);                                            // pause before "Oh I see..."
-                });
-              }, 1300);                                                // pause after "favourite?"
-            });
-          }, 4000);
-        });
-      }, 1400);
+    /* One line now, in the CTA's own style, centred: typed in, held, then it disintegrates the way the red
+       alien's chat does on the landing (each letter flashes pink and tumbles away), and "Press space to begin"
+       fades in with the spacebar. Starts once the orbs have landed — the last thing on the page to arrive. */
+    if (!window.gsap || document.documentElement.classList.contains('jj-credits-on')) return;
+    var cap = document.getElementById('jj-caption'), host = (cap && cap.parentNode) || document.body;
+    var line = document.getElementById('jj-space-ask');
+    if (!line) { line = document.createElement('div'); line.id = 'jj-space-ask'; host.appendChild(line); }
+    var text = 'Fancy playing a game? It\u2019s my favourite\u2026';
+    line.innerHTML = ''; var chars = [];
+    text.split(' ').forEach(function (word, wi) {                              // words as unbreakable groups; the spaces between them are where it may wrap
+      if (wi) line.appendChild(document.createTextNode(' '));
+      var wEl = document.createElement('span'); wEl.className = 'w';
+      word.split('').forEach(function (ch) { var sp = document.createElement('span'); sp.textContent = ch; wEl.appendChild(sp); chars.push(sp); });
+      line.appendChild(wEl);
     });
+    showSpacebar();                                                            // the key comes in with the invite, as it always did
+    chars.forEach(function (sp, i) { setTimeout(function () { if (!document.documentElement.classList.contains('jj-credits-on')) sp.style.opacity = '1'; }, 45 * i); });   // same typing speed as before
+    var favAt = text.slice(0, text.indexOf('It')).replace(/ /g, '').length;   // letters only, spaces aren't typed setTimeout(function () { applyWizard('happy'); setTimeout(function () { applyWizard(wizState); }, 1400); }, 45 * favAt);   // he lights up on "It's my favourite"
+    setTimeout(function () {
+      if (document.documentElement.classList.contains('jj-credits-on')) { line.remove(); return; }
+      gsap.to(chars, {                                                       // the landing alien's exit: pink, then everything tumbles away
+        color: '#FF00F5',
+        y: function () { return gsap.utils.random(60, 180); },
+        x: function () { return gsap.utils.random(-25, 25); },
+        rotation: function () { return gsap.utils.random(-60, 60); },
+        opacity: 0,
+        duration: function () { return gsap.utils.random(0.9, 1.4); },
+        ease: 'power2.in',
+        stagger: { each: 0.04, from: 'random' },
+        onComplete: function () { if (line.parentNode) line.parentNode.removeChild(line); }
+      });
+      setTimeout(function () { spaceCTA(); }, 1500);                          // then the CTA (the key is already up and now floats with it)
+    }, 45 * chars.length + 2200);                                           // a beat to read it
   }
-
-  /* Credits "View", the Spacebar key and the spacebar icon all launch the credits experience. */
   var creditsArmed = false, creditsRunning = false, creditsCleanup = null, wfBack = null;
   var wantCredits = /[?&]credits=1\b/.test(location.search) || location.hash === '#credits';   // Credits menu item lands here with ?credits=1 → auto-play
   function onContactPage(){ return /(^|\/)contact\/?$/.test(location.pathname); }
@@ -616,8 +631,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
   function hideWfBack(){ if (creditsRunning) return;                                            // once credits start, setupCredits owns this button — don't let the load-time retries re-hide it
     var b = findWfBack(); if (b) { b.style.setProperty('opacity', '0', 'important'); b.style.setProperty('pointer-events', 'none', 'important'); b.style.transition = 'opacity .6s ease'; } }
   // ---- music: fade the contact song out over 5s, then roll the two 8-bit tracks ----
-  var GM1 = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/game-music-1.mp3';   // 8-bit Console From My Childhood
-  var GM2 = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/game-music-2.mp3';   // The World of 8-bit Games
+  var GM1 = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/game-music-1.mp3';   // 8-bit Console From My Childhood
+  var GM2 = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/game-music-2.mp3';   // The World of 8-bit Games
   function fadeOutSong(ms){
     var s = window._jjSong; if (!s) return;
     if (s.fade && s.volume) { try { s.fade(s.volume(), 0, ms); } catch (e) {} setTimeout(function () { try { s.stop(); } catch (e) {} }, ms + 80); }
@@ -701,8 +716,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     tl.set('#jj-wipe-v', { display:'none' }, coverAt + 2.7);                                   // gone for good — no black-out
   }
   /* ===== "Trogdor" — the credits catch-game (revealed by the downward wipe) ===== */
-  var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';                 // game assets live at the repo root (uploaded flat, not in a /game/ folder)
-  var GSPRITE = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-sprite.png';
+  var GB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';   // game assets live at the repo root (uploaded flat, not in a /game/ folder)
+  var GSPRITE = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-sprite.webp';
   // Homepage "hi I'm Joe" horizontal-scroll background art — reused so the credits scroll matches it.
   var BG_BACK  = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0c90afafa53a631f4ff3ac_Starry%20Board%20-%20Background.svg';
   var BG_FRONT = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0c964e79a06e8151f7f16b_Starry%20Board%20-%20Foreground2.svg';
@@ -753,7 +768,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       '.jj-item.good img{filter:drop-shadow(0 0 9px rgba(130,175,255,.55));}'+
       '@font-face{font-family:\'Mario\';src:url(\''+GB+'mario.ttf\') format(\'truetype\');font-display:swap;}'+
       '#jj-hud{position:absolute;left:50%;top:clamp(118px,13vh,170px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:24px;z-index:10;opacity:0;}'+
-      '#jj-hud-card{position:relative;width:min(23vw,300px);background:#E0E0DE;border:3px solid #9b9b99;border-radius:6px;box-shadow:0 0 0 4px #4B4B4B;padding:8px 11px 9px;display:flex;flex-direction:column;gap:6px;}'+
+      '#jj-hud-card{position:relative;width:min(23vw,300px);background:none;border:20px solid transparent;border-image:url(' + GB + 'retro-card-w.webp) 20 fill / 20px / 0 round;image-rendering:pixelated;border-radius:0;box-shadow:none;padding:8px 11px 9px;display:flex;flex-direction:column;gap:6px;}'+
       '#jj-hud-title{font-family:\'Joes Journey Headline\',sans-serif;color:#4A4A48;font-size:clamp(14px,1.65vw,25px);line-height:1;text-align:center !important;white-space:nowrap !important;display:block !important;}'+   // forced block + centered so nothing can stack the icon above the name
       '#jj-hud-title .mars{display:inline-block !important;vertical-align:middle !important;width:.95em;height:.95em;margin-right:10px;flex:none;}'+   // ♂ icon, inline, 10px left of the name
       '#jj-hud-title .tname{display:inline-block !important;vertical-align:middle !important;}'+
@@ -783,10 +798,11 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       '.jj-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:rgba(7,12,22,.55);z-index:30;opacity:0;}'+
       '.jj-menu-title{font-family:\'Mario\',\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(40px,6.5vw,104px);letter-spacing:2px;text-shadow:0 6px 0 rgba(0,0,0,.4);}'+
       '.jj-paused-img{width:clamp(180px,24vw,300px);height:auto;display:block;margin-bottom:6px;filter:drop-shadow(0 0 16px rgba(255,0,245,.4));}'+   // the PAUSED graphic; overlay gap(24)+6 ≈ 30px above the menu box
-      '.jj-menu-box{background:#E0E0DE;border:6px solid #616068;border-radius:8px;box-shadow:0 0 0 5px #FBDD65,0 0 0 9px #2E2F31;padding:14px 32px 14px 14px;min-width:300px;}'+
-      '.jj-menu-item{font-family:\'Joes Journey Headline\',sans-serif;color:#7a7a78;font-size:clamp(18px,2vw,30px);padding:7px 8px 7px 36px;position:relative;cursor:pointer;line-height:1.15;transition:color .12s ease;}'+
+      '.jj-menu-box{background:none;border:40px solid transparent;border-image:url(' + GB + 'retro-panel.webp) 40 fill / 40px / 0 round;image-rendering:pixelated;border-radius:0;box-shadow:none;padding:6px 30px 6px 12px;min-width:320px;}'+
+      '.jj-menu-item{font-family:\'Joes Journey Headline\',sans-serif;color:rgba(255,255,255,.62);font-size:clamp(18px,2vw,30px);padding:7px 8px 7px 36px;position:relative;cursor:pointer;line-height:1.15;transition:color .12s ease,text-shadow .12s ease;text-shadow:2px 2px 0 rgba(0,0,0,.55);}'+
+      '.jj-menu-item:hover{color:#fff;text-shadow:2px 2px 0 #FF00F5;}'+
       '.jj-menu-item .tri{position:absolute;left:9px;top:50%;width:0;height:0;border-left:11px solid #FF2A2A;border-top:7px solid transparent;border-bottom:7px solid transparent;transform:translateY(-50%);opacity:0;}'+
-      '.jj-menu-item.sel{color:#2E2F31;}.jj-menu-item.sel .tri{opacity:1;}'+
+      '.jj-menu-item.sel{color:#FFD400;text-shadow:2px 2px 0 #000;}.jj-menu-item.sel .tri{opacity:1;}'+
       '#jj-end .jj-e-col{display:flex;flex-direction:column;align-items:center;gap:40px;}'+   // more space between the title block, menu, and level badge
       '#jj-end .jj-e-head{display:flex;flex-direction:column;align-items:center;gap:6px;}'+   // title + subtitle are a tight pair (per design)
       '#jj-end .jj-e-title{font-family:\'Joes Journey Headline\',sans-serif;color:#fff;font-size:clamp(34px,5.5vw,82px);margin:0;text-align:center;line-height:1.05;}'+
@@ -890,6 +906,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     function up(){ G.ty=Math.max(16,G.ty-8); } function down(){ G.ty=Math.min(80,G.ty+8); }
     var paused=false, viewMode=false, menuOpen=false, menuSel=0, menuItems=null, menuBoxEl=null, pauseFrom='play', ended=false;
     var achHeld=false;                                                                            // achievements panel open mid-game → hold the loop, resume where it was
+    window.addEventListener('jj:menu:open', function(){ if(G.run && !paused && !ended){ achHeld=true; paused=true; } });     // the credits game holds still behind the main menu (the game only — the menu's own GSAP keeps running)
+    window.addEventListener('jj:menu:close', function(){ if(achHeld){ achHeld=false; paused=false; G.lastT=0; } });
     window.addEventListener('jj:score:pause', function(){ if(G.run && !paused && !ended){ achHeld=true; paused=true; } });
     window.addEventListener('jj:score:resume', function(){ if(achHeld){ achHeld=false; paused=false; G.lastT=0; } });
     var LVLCOL=['#FF00F5','#EEFF00','#A38CFF','#FF0000','#00FF33','#BF00FF','#FFBB00','#FFDDFE','#FF00F5'];
@@ -914,7 +932,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     // ---- pause / View-Scene / end menu ----
     function buildMenuBox(items, sel){
       var box=document.createElement('div'); box.className='jj-menu-box';
-      box.innerHTML=items.map(function(it,i){ return '<div class="jj-menu-item'+(i===sel?' sel':'')+'" data-i="'+i+'"><span class="tri"></span>'+it.label+'</div>'; }).join('');
+      box.innerHTML=items.map(function(it,i){ return '<div class="jj-menu-item'+(i===sel?' sel':'')+'" data-i="'+i+'" data-cursor="hover"><span class="tri"></span>'+it.label+'</div>'; }).join('');
       box.addEventListener('click', function(e){ var el=e.target.closest('.jj-menu-item'); if(el){ menuSel=+el.getAttribute('data-i'); paintMenu(); menuActivate(menuSel); } });
       box.addEventListener('mousemove', function(e){ var el=e.target.closest('.jj-menu-item'); if(el && +el.getAttribute('data-i')!==menuSel){ menuSel=+el.getAttribute('data-i'); paintMenu(); } });
       return box;
@@ -1065,6 +1083,18 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     creditsCleanup=function(){ G.run=false; if(G.raf)cancelAnimationFrame(G.raf); window.removeEventListener('keydown',onKey); clearInterval(cap._tw); clearTimeout(cap._h); };
   }
   /* the "press Space" key prompt — fades in with the happy caption, clickable too */
+  /* the wizard's chat is done: swap to one big line that floats up and down together with the space bar */
+  function spaceCTA(){
+    var cap = document.getElementById('jj-caption'), sb = document.getElementById('jj-spacebar'); if (!cap || !window.gsap) return;
+    if (document.documentElement.classList.contains('jj-credits-on')) return;                 // they already pressed it
+    gsap.to(cap, { opacity: 0, duration: .4 });                                                // the caption goes; a plain centred line takes over
+    var cta = document.getElementById('jj-space-cta');
+    if (!cta) { cta = document.createElement('div'); cta.id = 'jj-space-cta'; cta.textContent = 'Press space to begin'; (cap.parentNode || document.body).appendChild(cta); }
+    gsap.set(cta, { opacity: 0, y: 8 }); gsap.to(cta, { opacity: 1, y: 0, duration: .6, delay: .3 });
+    gsap.to(cta, { y: -9, duration: 1.1, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: .9 });
+    if (sb) { gsap.killTweensOf(sb); gsap.set(sb, { scale: 1, opacity: 1 }); gsap.to(sb, { y: -9, duration: 1.1, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: .9 }); }   // the key floats with the words
+    new MutationObserver(function () { if (document.documentElement.classList.contains('jj-credits-on')) { gsap.killTweensOf(cta); gsap.to(cta, { opacity: 0, y: -14, duration: .45 }); } }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });   // fades away the moment space is pressed
+  }
   function showSpacebar(){
     var sb = document.getElementById('jj-spacebar'); if (!sb || !window.gsap) return;
     if (!sb._wired) { sb._wired = true; sb.addEventListener('click', function () { launchCredits(); }); }
@@ -1074,9 +1104,9 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
 
   /* the bottom-right dragon reacts: hover → happy, click → angry + sink (face only) then back, idle smile every 5–10s */
   var DR = {
-    normal: 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-rest.png',
-    happy:  'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-happy.png',
-    angry:  'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/dragon-angry.png'
+    normal: 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-rest.webp',
+    happy:  'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-happy.webp',
+    angry:  'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-angry.webp'
   };
   function setupDragon(){
     var d = document.getElementById('jj-rest-dragon'); if (!d || !window.gsap || d._wired) return;

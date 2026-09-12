@@ -13,7 +13,7 @@
   var SITTING_ALIEN_SAD   = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a1020606c5b65a83f63a171_sassy%20boy%201.svg';
   var SITTING_ALIEN_HAPPY = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a102060d6130fe4145e128e_happy%20boy.svg';
   /* the Seedance alien clips (keyed, repo root): the five peeking aliens play their full clip once when they peer in; the sitting alien has four states */
-  var ABASE = window.JJ_SCORE_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
+  var ABASE = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
   var PEEK = { TL: 'alien-peek-tl', TM: 'alien-peek-tm', BR: 'alien-peek-br', BL: 'alien-peek-bl', BM: 'alien-peek-bm' };   // TR has no clip yet — it keeps the SVG
   function clipVideo(name, loop) {
     var v = document.createElement('video'); v.muted = true; v.loop = !!loop; v.playsInline = true; v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
@@ -24,6 +24,16 @@
   }
   function mkPeek(cfg, loop) { if (!cfg.clip) { var im = document.createElement('img'); im.src = cfg.src; return im; } return clipVideo(cfg.clip, loop); }
   function playFrom0(v) { if (v.tagName !== 'VIDEO') return; try { v.currentTime = 0; } catch (e) {} var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+  /* One gate for every peeking alien on the page (landing, the horizontal-scroll one, the Big Bang pair):
+     only ONE out at a time now (Joe, 11 Sep: the companions and flying Joe fill the screen enough) — the Big Bang's
+     "gazed back upon us?" trio is the one allowed exception. Never two arriving, or two leaving, at the same moment.
+     `out` counts an alien from the moment it starts in until it has fully slid away. */
+  var PK = { out: 0, lastIn: -1e9, lastOut: -1e9, MAX: 1, GAP: 1100 };
+  function pkCanEnter() { return PK.out < PK.MAX && performance.now() - PK.lastIn >= PK.GAP; }
+  function pkEnter() { PK.out++; PK.lastIn = performance.now(); }
+  function pkExitWait() { return Math.max(0, PK.GAP - (performance.now() - PK.lastOut)); }   // hold a leaver until the last exit is a beat behind it
+  function pkLeft() { PK.lastOut = performance.now(); }
+  function pkGone() { PK.out = Math.max(0, PK.out - 1); }
   function peekHold(el, fallbackMs, cb) {                       // a clip peeks for as long as it plays; an image for the given time
     var done = false, fin = function () { if (done) return; done = true; cb(); };
     if (el.tagName === 'VIDEO') { el.addEventListener('ended', fin, { once: true }); setTimeout(fin, 6500); } else setTimeout(fin, fallbackMs);
@@ -96,6 +106,141 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', decide);
     else decide();
   }
+
+  /* The "Next scene" button sits invisible (Webflow's opacity 0) over the bottom-right of the landing long
+     before it is needed — still hit-testable, so the cursor lit up over empty space above the sound button
+     and a click there would jump a scene. It is dead until the journey actually reveals it. */
+  (function () { var st = document.createElement('style');
+    st.textContent = '.next-section-button:not(.jj-next-scene-revealing),.next-section-button:not(.jj-next-scene-revealing) *{pointer-events:none!important}';
+    (document.head || document.documentElement).appendChild(st); })();
+
+  /* The flyer, built locally (was the Webflow Rive blob, fly-2.riv): Joe's flying head (joe-fly-loop, keyed, loops).
+     - horizontal scroll: he sits INSIDE .fly-rive, so every existing show/hide/fade of that element still applies;
+       the Rive canvas is hidden and its instance released
+     - landing flyover: he takes the SVG's place on #character-path before intro.js starts its motionPath tween */
+  /* "Click to begin" fades the landing to black FIRST; only then do the speech, the Big Bang and everything else
+     start (the real click is re-dispatched once it is black). The landing's leftovers — the red alien, the peekers,
+     the landing flyover — are cleared under the black, and the black lifts as the story begins. The audio context
+     is resumed inside the real click so the speech is still allowed to play after the fade. */
+  (function jjBeginGate() {
+    var passing = false, done = false;
+    window.addEventListener('click', function (e) {
+      if (passing || done) return;
+      var cta = e.target && e.target.closest ? e.target.closest('.enter-link_wrapper') : null;
+      if (!cta || (cta.textContent || '').trim().toLowerCase() !== 'click to begin') return;
+      done = true; e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      try { if (window.Howler && Howler.ctx && Howler.ctx.state !== 'running') Howler.ctx.resume(); } catch (x) {}
+      /* the pink press first — you see the button fill before anything else happens */
+      cta._jjPink = true;
+      if (getComputedStyle(cta).position === 'static') cta.style.setProperty('position', 'relative', 'important');
+      cta.style.setProperty('overflow', 'hidden', 'important');
+      var pink = document.createElement('div');
+      pink.style.cssText = 'position:absolute;left:50%;top:50%;width:300%;height:300%;border-radius:50%;background:#FF00F5;z-index:1;pointer-events:none;transform:translate(-50%,-50%) scale(0);transition:transform .45s cubic-bezier(0.2,0.7,0.3,1);';
+      cta.appendChild(pink);
+      void pink.offsetWidth; pink.style.transform = 'translate(-50%,-50%) scale(1)';
+      var black = document.createElement('div'); black.id = 'jj-begin-black';
+      black.style.cssText = 'position:fixed;inset:0;background:#000;opacity:0;z-index:9989;pointer-events:none;transition:opacity .9s ease;';
+      document.body.appendChild(black);
+      setTimeout(function () { void black.offsetWidth; black.style.opacity = '1'; }, 380);   // the pink lands, then the world goes dark (no rAF — it can stall in a background tab)
+      setTimeout(function () {
+        passing = true; cta.click(); passing = false;                  // now it all begins, on black
+        ['#jj-sitting-alien', '#jj-sitting-alien-lines', '#jj-sitting-alien-speech'].forEach(function (sel) { var el = document.querySelector(sel); if (el) el.style.visibility = 'hidden'; });
+        document.querySelectorAll('.jj-alien-sprite, .jj-flyover, .rive').forEach(function (el) { el.style.visibility = 'hidden'; });   // the CTA and the title are gone before the black lifts
+        document.querySelectorAll('.enter-link_wrapper').forEach(function (el) { el.style.setProperty('display', 'none', 'important'); });   // no pink pressed state, no fade — just gone
+        /* hold the black until the landing has finished clearing itself (its fade-outs run ~1.7s), so nothing of it shows through */
+        setTimeout(function () { black.style.transition = 'opacity 1.4s ease'; black.style.opacity = '0'; setTimeout(function () { if (black.parentNode) black.parentNode.removeChild(black); }, 1500); }, 2000);
+      }, 1400);
+    }, true);
+  })();
+
+  (function jjFlyer() {
+    /* Joe's flying head replaces the Webflow Rive blob. He is his own element now (not inside .fly-rive), so he is
+       NOT shown when "Click to begin" is pressed: he flies in from the left when "Hey, I'm Joe" types in and settles
+       just left of that text, in front of it. Click him and he dives down, shrinks and is gone — then comes back in
+       from the left like the first time. The landing flyover (the SVG on #character-path) is Joe too. Half size. */
+    var st = document.createElement('style');
+    st.textContent = '.fly-rive canvas{display:none!important;}' +
+      '#jj-flyer{position:fixed;left:0;top:0;z-index:1000;width:clamp(45px,6.25vw,105px);opacity:0;pointer-events:none;cursor:pointer;' +
+        'transition:transform 1.2s cubic-bezier(.22,1,.36,1),opacity .6s ease;}' +
+      '#jj-flyer.on{opacity:1;pointer-events:auto;}' +
+      '#jj-flyer.dive{pointer-events:none;}' +
+      '#jj-flyer video{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 12px rgba(0,0,0,.35));animation:jjFlyBob 2.4s ease-in-out infinite;}' +
+      '@keyframes jjFlyBob{0%,100%{translate:0 0;rotate:-2deg}50%{translate:0 -6px;rotate:2deg}}' +
+      '.jj-flyover{display:block;width:75px;height:auto;filter:drop-shadow(0 6px 12px rgba(0,0,0,.35));}';
+    (document.head || document.documentElement).appendChild(st);
+    function flyVid(cls) {
+      var v = document.createElement('video'); v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.preload = 'auto';
+      v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); if (cls) v.className = cls; v.poster = ABASE + 'joe-fly-loop-poster.webp';
+      v.innerHTML = '<source src="' + ABASE + 'joe-fly-loop.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + ABASE + 'joe-fly-loop.webm" type="video/webm">';
+      var p = v.play(); if (p && p.catch) p.catch(function () {});
+      return v;
+    }
+    var fly = null, home = null;
+    function place(x, y, animate) { fly.style.transition = animate ? '' : 'none'; fly.style.transform = 'translate(' + Math.round(x) + 'px,' + Math.round(y) + 'px)'; if (!animate) void fly.offsetWidth; }
+    function target(texts) {                                          // well left of the text, level with its TOP line ("Hey, I'm Joe")
+      var L = 1e9, first = null;
+      (texts || []).forEach(function (el) {
+        var r = el.getBoundingClientRect(); if (!r.width) return;
+        L = Math.min(L, r.left);
+        var rg = document.createRange(); rg.selectNodeContents(el);
+        var lines = Array.prototype.filter.call(rg.getClientRects(), function (q) { return q.width > 2 && q.height > 2; });
+        var ln = lines.length ? lines[0] : r;                        // the first line box of this block
+        if (!first || ln.top < first.top) first = { top: ln.top, bottom: lines.length ? ln.bottom : ln.top + (parseFloat(getComputedStyle(el).lineHeight) || 40) };
+      });
+      var w = fly.offsetWidth || 90, h = fly.offsetHeight || w;
+      if (L === 1e9) return { x: innerWidth * .1, y: innerHeight * .4 - h / 2 };
+      return { x: Math.max(12, Math.min(L - w - 40, innerWidth * .08)), y: (first.top + first.bottom) / 2 - h / 2 };   // 8% in, never over a panel's text
+    }
+    function flyIn() {
+      if (!fly || !home) return;
+      fly.classList.remove('dive');
+      place(-(fly.offsetWidth || 90) - 40, home.y, false);             // start just off the left edge
+      requestAnimationFrame(function () { fly.classList.add('on'); place(home.x, home.y, true); });
+    }
+    window.jjFlyerIn = function (texts) {
+      if (!fly) {
+        fly = document.createElement('div'); fly.id = 'jj-flyer'; fly.setAttribute('data-cursor', 'hover'); fly.appendChild(flyVid());
+        document.body.appendChild(fly);
+        fly.addEventListener('click', function () {                     // a wind-up, a loop over the top, then away off the right — then back in from the left
+          if (fly.classList.contains('dive')) return;
+          fly.classList.add('dive');
+          var x = Math.round(home.x), y = Math.round(home.y), off = innerWidth + 80 - x;
+          var T = function (dx, dy, sc, rot) { return 'translate(' + (x + dx) + 'px,' + (y + dy) + 'px) scale(' + sc + ') rotate(' + rot + 'deg)'; };
+          fly.style.transition = 'transform .22s ease-out';                 // wind-up: leans back and dips
+          fly.style.transform = T(-28, 16, 1.08, -14);
+          setTimeout(function () {                                          // up and over the top
+            fly.style.transition = 'transform .45s cubic-bezier(.3,0,.35,1)';
+            fly.style.transform = T(90, -84, 1, 16);
+          }, 230);
+          setTimeout(function () {                                          // and away off the right, shrinking into the distance
+            fly.style.transition = 'transform .95s cubic-bezier(.45,0,.85,.4), opacity .7s ease .3s';
+            fly.style.transform = T(off, -innerHeight * .16, .28, 28);
+            fly.style.opacity = '0';
+          }, 690);
+          setTimeout(function () {
+            fly.style.transition = 'none'; fly.classList.remove('on'); fly.style.removeProperty('opacity');
+            place(-(fly.offsetWidth || 90) - 40, y, false);
+            setTimeout(flyIn, 700);
+          }, 1700);
+        });
+      }
+      setTimeout(function () { home = target(texts); flyIn(); }, 60);   // measure once the text has its layout
+    };
+    function setup() {
+      var fr = document.querySelector('.fly-rive'); if (fr && !fr._jjFly) { fr._jjFly = true; releaseRive(fr, 0); }
+      var fc = document.querySelector('img.flying-character');
+      if (fc && !fc._jjFly) {                                      // same class, same path: intro.js now flies Joe
+        fc._jjFly = true; var v = flyVid('flying-character jj-flyover');
+        fc.parentNode.insertBefore(v, fc); fc.classList.remove('flying-character'); fc.style.display = 'none';
+      }
+    }
+    function releaseRive(fr, n) {                                    // free the hidden Rive's canvas/WebGL once Webflow has built it
+      var pl = window.Webflow && Webflow.require && Webflow.require('rive'), inst = pl && pl.getInstance(fr);
+      if (inst && inst.rive) { try { inst.rive.stop(); inst.rive.cleanup(); } catch (e) {} return; }
+      if (n < 40) setTimeout(function () { releaseRive(fr, n + 1); }, 250);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup); else setup();
+  })();
 
   (function jjNavDropIn(){
     var SEL = '.nav-logo-link, .nav-logo, .menu-container, .menu-button, #jj-sc-hud';
@@ -462,7 +607,7 @@
       cta.classList.add('jj-cta-revealing');
     }, 7000);
   }
-  setupCta();
+  jjWhenEntrance(setupCta);      // the CTA counts its 7s from the loader lifting, not from page load — otherwise it is already sitting there when the curtain opens
 
   function startSubtitleGrowth() {
     var subtitle = document.getElementById('jj-subtitle');
@@ -528,7 +673,14 @@
     sittingAlien.style.width = '216px'; sittingAlien.style.height = '233px'; sittingAlien.style.left = 'calc(12vw - 34px)';   // all four clips share one frame (ground line + left edge), so states never shift
     sittingAlien.setAttribute('data-cursor', 'hover');
     if (!document.getElementById('jj-sit-style')) { var ss = document.createElement('style'); ss.id = 'jj-sit-style';
-      ss.textContent = '#jj-sitting-alien video{position:absolute;left:0;bottom:0;height:100%;width:auto;max-width:none;opacity:0;transition:opacity .2s ease,scale .3s ease;transform-origin:32% 100%;pointer-events:none;display:block;}#jj-sitting-alien video.on{opacity:1;}#jj-sitting-alien:hover video.on{scale:1.06;}'; document.head.appendChild(ss); }
+      ss.textContent = '#jj-sitting-alien video{position:absolute;left:0;bottom:0;height:100%;width:auto;max-width:none;opacity:0;transition:opacity .2s ease,scale .3s ease;transform-origin:32% 100%;pointer-events:none;display:block;}#jj-sitting-alien video.on{opacity:1;}#jj-sitting-alien:hover video.on{scale:1.06;}' +
+        /* he never cuts between clips: he shrinks, fades and drops out of frame, changes costume off-stage, then grows back */
+        '#jj-sitting-alien{transform-origin:32% 100%;}' +
+        '#jj-sitting-alien.jj-away{opacity:0!important;transform:translateY(56px) scale(.62)!important;transition:opacity .3s ease,transform .3s cubic-bezier(.4,0,.7,.2)!important;}' +
+        '#jj-sitting-alien.jj-nudge{transform:translateY(14px)!important;transition:transform .45s cubic-bezier(.3,0,.4,1)!important;}' +
+        '#jj-sitting-alien.jj-nudge2{transform:translateY(36px)!important;transition:transform .5s cubic-bezier(.3,0,.4,1)!important;}' +
+        '#jj-sitting-alien.jj-drop{opacity:0!important;transform:translateY(160px) scale(.48)!important;transition:opacity .4s ease,transform .48s cubic-bezier(.5,0,.75,0)!important;}' +
+        '#jj-sitting-alien.jj-back{opacity:1!important;transform:none!important;transition:opacity .42s ease,transform .5s cubic-bezier(.22,1.25,.5,1)!important;}'; document.head.appendChild(ss); }
     sittingAlien._v = {}; ['idle', 'poke', 'wait', 'bye'].forEach(function (n) { var v = clipVideo('alien-sit-' + n, n === 'idle'); v._name = n; sittingAlien._v[n] = v; sittingAlien.appendChild(v); });   // all four preloaded, ready the instant they are needed
     document.body.appendChild(sittingAlien);
     mood('idle', true);
@@ -537,7 +689,7 @@
       sittingAlien._sulking = true;
       landingTimers.forEach(clearTimeout); landingTimers = [];
       hideAlienSpeech(); alienBaseExpression = 'sad';
-      mood('poke', false, function () { mood('idle', true); });   // the flinch-and-glare clip, then back to shifting about
+      pokeSequence();
       typewriterChars('Do you mind…', alienFontRevealToCaptions);
       setTimeout(function () {
         if (!sittingAlien) return;
@@ -550,7 +702,7 @@
           }, 700);
           landingTimers.push(rt);
         }
-      }, 5000);
+      }, 6800);   // the poke sequence now runs ~6.3s (clip + drop + the two-second pause), so the sulk must outlast it
     });
 
     sittingAlienLines = document.createElement('div');
@@ -562,23 +714,130 @@
     }
     document.body.appendChild(sittingAlienLines);
   }
-  /* one of the four Seedance states: idle (loop), poke, wait, bye (one-shots; `then` runs when they end) */
-  function mood(name, loop, then) {
+  /* One of the four Seedance states: idle (loop), poke, wait, bye.
+
+     Every clip is a Seedance render that fades up from a washed-out grade over its first half second
+     (measured: the average body colour starts at rgb(232,84,80) and settles by ~0.4s, rgb(203,84,83)).
+     So NOTHING ever plays from 0 — every clip starts at CLIP_IN, and the idle loop wraps back to CLIP_IN
+     rather than to 0. That also means all four clips share the same first frame at CLIP_IN, which is why
+     a swap can be an instant cut with nothing visible.
+
+     Two behaviours:
+       1. a one-shot always plays to its natural end — a request arriving mid-clip is QUEUED, never cut in;
+       2. a `cut` swap is instant (used when poked: the angry clip just plays); any other change has him
+          shrink, fade and drop out of frame, swap off-stage, then grow back to exactly where he was. */
+  var CLIP_IN = 0.40, LOOP_HOLD = 2600, POKE_PLAY = 2000;
+  var AWAY_OUT = 300, AWAY_HOLD = 420, AWAY_IN = 460;
+  function startClip(v, loop) {
+    v.loop = false;                                                // never the native loop — that would wrap to 0 and flash the ungraded frames
+    v.onended = null;
+    try { v.currentTime = CLIP_IN; } catch (e) {}
+    if (loop) v.onended = function () {
+      if (!sittingAlien || sittingAlien._cur !== v) return;
+      try { v.pause(); } catch (e) {}                              // he holds the last pose he lands on...
+      landingTimers.push(setTimeout(function () {                  // ...and a few seconds later starts again from the top
+        if (!sittingAlien || sittingAlien._cur !== v) return;
+        try { v.currentTime = CLIP_IN; } catch (e) {}
+        var q = v.play(); if (q && q.catch) q.catch(function () {});
+      }, LOOP_HOLD));
+    };
+    var p = v.play(); if (p && p.catch) p.catch(function () {});
+  }
+  function mood(name, loop, then, cut) {
     if (!sittingAlien || !sittingAlien._v) return;
-    var cur = sittingAlien._cur, nxt = sittingAlien._v[name]; if (!nxt) return;
-    if (nxt === cur && loop) return;
-    nxt.loop = !!loop; nxt.onended = null; sittingAlien._busy = !loop;
-    try { nxt.currentTime = 0; } catch (e) {}
-    var swap = function () { nxt.classList.add('on'); if (cur) { cur.classList.remove('on'); setTimeout(function () { if (sittingAlien && sittingAlien._cur !== cur) cur.pause(); }, 260); } };
-    var p = nxt.play(); if (p && p.then) p.then(swap, swap); else swap();
+    if (!sittingAlien._v[name]) return;
+    if (sittingAlien._busy || sittingAlien._moving) { sittingAlien._queue = [name, loop, then, cut]; return; }   // let the clip on screen finish
+    play(name, loop, then, cut);
+  }
+  function watchEnd(nxt, loop, then) {
+    sittingAlien._busy = !loop;
+    if (loop) return drain();
+    var fin = function () {
+      if (!sittingAlien || sittingAlien._cur !== nxt) return;
+      nxt.onended = null; sittingAlien._busy = false;
+      if (then) then();
+      drain();
+    };
+    nxt.onended = fin;
+    var dur = (nxt.duration && isFinite(nxt.duration)) ? (nxt.duration - CLIP_IN) * 1000 + 400 : 5200;   // safety only — onended is what normally ends it
+    setTimeout(fin, dur);
+  }
+  function show(nxt, cur) {
+    nxt.classList.add('on');
+    if (cur && cur !== nxt) { cur.classList.remove('on'); try { cur.pause(); } catch (e) {} }
     sittingAlien._cur = nxt;
-    if (!loop) { var fin = function () { if (sittingAlien && sittingAlien._cur === nxt) { sittingAlien._busy = false; if (then) then(); } }; nxt.onended = fin; setTimeout(fin, 4600); }
+  }
+  function play(name, loop, then, cut) {
+    var cur = sittingAlien._cur, nxt = sittingAlien._v[name];
+    if (nxt === cur && loop) { drain(); return; }
+    if (!cur || cut) {                                             // same first frame in every clip, so this is invisible
+      show(nxt, cur); startClip(nxt, loop);
+      sittingAlien._moving = false;
+      watchEnd(nxt, loop, then);
+      return;
+    }
+    sittingAlien._moving = true;
+    sittingAlien.classList.remove('jj-back');
+    sittingAlien.classList.add('jj-away');                        // shrink + fade + drop away
+    setTimeout(function () {
+      if (!sittingAlien) return;
+      nxt.onended = null;
+      try { nxt.currentTime = CLIP_IN; } catch (e) {}
+      show(nxt, cur);
+      setTimeout(function () {                                     // held off-stage, then he grows back in
+        if (!sittingAlien) return;
+        sittingAlien.classList.add('jj-back');
+        sittingAlien.classList.remove('jj-away');
+        startClip(nxt, loop);                                      // the clip starts as he reappears, so none of it is spent off-stage
+        setTimeout(function () {
+          if (!sittingAlien) return;
+          sittingAlien._moving = false;
+          watchEnd(nxt, loop, then);
+        }, AWAY_IN);
+      }, AWAY_HOLD);
+    }, AWAY_OUT);
+  }
+  /* Poked. He flinches down, gets angrier and drops further a beat later, plays the clip right
+     through, then shrinks away out of the bottom of the screen — and reappears two seconds later
+     as if nothing had happened. */
+  function pokeSequence() {
+    var a = sittingAlien; if (!a || !a._v.poke) return;
+    a._queue = null; a._moving = false; a._busy = true;
+    a.classList.remove('jj-away', 'jj-back', 'jj-drop', 'jj-nudge2');
+    a.classList.add('jj-nudge');
+    landingTimers.push(setTimeout(function () { if (sittingAlien) sittingAlien.classList.add('jj-nudge2'); }, 1000));   // the really angry beat
+    var nxt = a._v.poke;
+    show(nxt, a._cur);
+    startClip(nxt, false);
+    var done = false;
+    var end = function () {
+      if (done || !sittingAlien || sittingAlien._cur !== nxt) return;
+      done = true; nxt.onended = null;
+      sittingAlien.classList.remove('jj-nudge', 'jj-nudge2');
+      sittingAlien.classList.add('jj-drop');                       // shrink and go, out of the bottom
+      landingTimers.push(setTimeout(function () {
+        if (!sittingAlien) return;
+        var v = sittingAlien._v.idle;
+        show(v, sittingAlien._cur); startClip(v, true);
+        sittingAlien.classList.add('jj-back');                     // grows back up from where he left
+        sittingAlien.classList.remove('jj-drop');
+        sittingAlien._busy = false; drain();
+      }, 2000));
+    };
+    nxt.onended = end;
+    landingTimers.push(setTimeout(end, POKE_PLAY));                // cut short on purpose — long enough to read as furious, short enough not to outstay it
+  }
+  function drain() {
+    if (!sittingAlien) return;
+    var q = sittingAlien._queue; if (!q) return;
+    sittingAlien._queue = null;
+    play(q[0], q[1], q[2], q[3]);
   }
   var waitTimer = null;
-  function startAlienWaiting() {                                  // he has said his piece and nobody clicked: an impatient sigh every so often
-    clearInterval(waitTimer);
-    waitTimer = setInterval(function () { if (triggered || !sittingAlien) { clearInterval(waitTimer); return; } if (sittingAlien._busy || sittingAlien._sulking) return; mood('wait', false, function () { mood('idle', true); }); }, 14000);
-    landingTimers.push(waitTimer);
+  function startAlienWaiting() {
+    /* He used to break into the 'wait' clip — the impatient one where he kicks a leg out — every 14s.
+       That one is off the rotation: the idle loop plays throughout, holding its last pose between rounds. */
+    clearInterval(waitTimer); waitTimer = null;
   }
   function positionEmoteLines() {
     if (!sittingAlien || !sittingAlienLines) return;
@@ -785,7 +1044,7 @@
 
   function popUpAlienSmileFallback() {
     if (!sittingAlien) setupSittingAlien();
-    mood('bye', false);
+    mood('bye', false, null, true);
     requestAnimationFrame(function () {
       sittingAlien.classList.add('is-visible');
     });
@@ -894,12 +1153,13 @@
       (function (gx) { setTimeout(function () { gx.style.transition = 'opacity 3s ease'; gx.style.opacity = '0.85'; }, 2200 + Math.random() * 1500); })(g);
     });
     var spritesConfig = [
-      { src: SPRITE_TR, anchor: { top: '0',     right: '90px' }, hiddenT: 'translate(0, -100%)',     peekT: 'translate(0, -22%)',     firstMin: 1500,  firstSpread: 2500 },
+      { src: SPRITE_TR, anchor: { top: '124px', right: '90px' }, hiddenT: 'translate(0, -160%)',    peekT: 'translate(0, -22%)',     firstMin: 1500,  firstSpread: 2500 },   // clear of the nav, so he can be clicked
       { src: SPRITE_TL, clip: PEEK.TL, anchor: { top: '80px',  left:  '0' },    hiddenT: 'translate(-100%, -100%)', peekT: 'translate(-22%, -22%)',  firstMin: 2600,  firstSpread: 2500 },
       { src: SPRITE_TM, clip: PEEK.TM, anchor: { top: '0',     left:  '30%' },  hiddenT: 'translate(-50%, -100%)',  peekT: 'translate(-50%, -32%)',  firstMin: 3700,  firstSpread: 2500 },
-      { src: SPRITE_BR, clip: PEEK.BR, anchor: { bottom: '0',  right: '0' },    hiddenT: 'translate(100%, 100%)',   peekT: 'translate(20%, 20%)',    firstMin: 4800, firstSpread: 2500 },
+      { src: SPRITE_BR, clip: PEEK.BR, anchor: { bottom: '15vh', right: '0' },  hiddenT: 'translate(100%, 100%)',   peekT: 'translate(20%, 20%)',    firstMin: 4800, firstSpread: 2500 },   // lifted 15% so he never sits on the sound button
       { src: SPRITE_BL, clip: PEEK.BL, anchor: { bottom: '0',  left:  '0' },    hiddenT: 'translate(-100%, 100%)',  peekT: 'translate(-20%, 20%)',   firstMin: 5900, firstSpread: 2500 }
     ];
+    var pool = [];
     spritesConfig.forEach(function (cfg) {
       var sprite = mkPeek(cfg);
       sprite.className = 'jj-intro-deco jj-alien-sprite';
@@ -910,22 +1170,30 @@
       sprite.style.transform = cfg.hiddenT; sprite.style.opacity = '0';
       document.body.appendChild(sprite);
       enablePoke(sprite, cfg.hiddenT);
-      function peek() {
-        if (triggered) return;
-        sprite.style.opacity = '1';
-        sprite.style.transform = cfg.peekT; playFrom0(sprite);
-        peekHold(sprite, 2800 + Math.random() * 2500, function () {
-          if (triggered) return;
-          sprite.style.transform = cfg.hiddenT;
-          sprite.style.opacity = '0';
-          setTimeout(function () {
-            if (triggered) return;
-            setTimeout(peek, 15000 + Math.random() * 13000);
-          }, 1800);
-        });
-      }
-      setTimeout(peek, cfg.firstMin + Math.random() * cfg.firstSpread);
+      pool.push({ sprite: sprite, cfg: cfg, busy: false, readyAt: 0 });
     });
+    function launch(p) {
+      p.busy = true; pkEnter();
+      p.sprite.style.opacity = '1';
+      p.sprite.style.transform = p.cfg.peekT; playFrom0(p.sprite);
+      peekHold(p.sprite, 2800 + Math.random() * 2500, function () {
+        setTimeout(function () {                                   // never leave in step with another alien
+          pkLeft();
+          p.sprite.style.transform = p.cfg.hiddenT;
+          p.sprite.style.opacity = '0';
+          setTimeout(function () { pkGone(); p.busy = false; p.readyAt = performance.now() + 9000 + Math.random() * 9000; }, 1800);
+        }, pkExitWait());
+      });
+    }
+    function tick() {
+      if (triggered) return;
+      if (pkCanEnter()) {
+        var now = performance.now(), free = pool.filter(function (p) { return !p.busy && now >= p.readyAt; });
+        if (free.length) launch(free[(Math.random() * free.length) | 0]);
+      }
+      setTimeout(tick, 500 + Math.random() * 1400);
+    }
+    setTimeout(tick, 1500);
   }
   // Decorations wait for the loader's reveal — otherwise their fade-ins run behind the
   // curtain and the stars are already lit when it lifts.
@@ -937,7 +1205,7 @@
     if (!chars || !chars.length) return;
     var arr = Array.prototype.slice.call(chars);
     arr.forEach(function (c) {
-      c.style.fontFamily = 'var(--jj-alien-font, monospace)';
+      c.style.fontFamily = 'var(--jj-alien-font, monospace)'; c._jjAlienAt = Date.now();
       c.style.transition = 'color 0.15s ease';
       c.style.color = '#ffffff';
     });
@@ -953,9 +1221,21 @@
       arr.forEach(function (c) {
         c.style.color = '';
         c.style.transition = '';
+        c.style.removeProperty('font-family');                   // belt and braces: never leave a letter in the alien font
       });
     }, 620);
   }
+
+  /* Safety net: any panel character still wearing the alien font a second later is put back. One stranded letter in
+     the middle of a sentence (the "=" in "I did it my way!") is the tell that a tween was killed mid-reveal. */
+  setInterval(function () {
+    try {
+      document.querySelectorAll('.jj-panel-char').forEach(function (c) {
+        if (c.style.fontFamily && c.style.fontFamily.indexOf('jj-alien-font') !== -1 && !c._jjAlienAt) c.style.removeProperty('font-family');
+        if (c._jjAlienAt && Date.now() - c._jjAlienAt > 1000) { c.style.removeProperty('font-family'); c._jjAlienAt = 0; }
+      });
+    } catch (e) {}
+  }, 1500);
 
   function customDisintegrate(chars) {
     if (!chars || !chars.length || typeof gsap === 'undefined') return;
@@ -1223,36 +1503,55 @@
     return out;
   }
 
+  var hsGone = false;                                          // once the visitor catches him, that is that until a reload
   function scheduleHorizontalSprite() {
+    /* One alien on the horizontal scroll, and he always arrives from the RIGHT facing into the page. He bobs just
+       enough to feel alive — never so much that he is hard to click. Catch him once and he does not come back. */
+    if (!document.getElementById('jj-hs-bob-style')) {
+      var hbs = document.createElement('style'); hbs.id = 'jj-hs-bob-style';
+      hbs.textContent = '@keyframes jjHsBob{0%,100%{translate:0 0;}50%{translate:0 -6px;}}.jj-hs-sprite{animation:jjHsBob 2.8s ease-in-out infinite;}.jj-hs-sprite.flip{scale:-1 1;}';   // flipped only where the art looks right natively
+      (document.head || document.documentElement).appendChild(hbs);
+    }
     var hsSpritesConfig = [
-      { src: SPRITE_TR, anchor: { top: '0',     right: '90px' }, hiddenT: 'translate(0, -100%)',     peekT: 'translate(0, -22%)' },
-      { src: SPRITE_TL, clip: PEEK.TL, anchor: { top: '80px',  left:  '0' },    hiddenT: 'translate(-100%, -100%)', peekT: 'translate(-22%, -22%)' },
-      { src: SPRITE_TM, clip: PEEK.TM, anchor: { top: '0',     left:  '30%' },  hiddenT: 'translate(-50%, -100%)',  peekT: 'translate(-50%, -32%)' },
-      { src: SPRITE_BR, clip: PEEK.BR, anchor: { bottom: '0',  right: '0' },    hiddenT: 'translate(100%, 100%)',   peekT: 'translate(20%, 20%)' },
-      { src: SPRITE_BL, clip: PEEK.BL, anchor: { bottom: '0',  left:  '0' },    hiddenT: 'translate(-100%, 100%)',  peekT: 'translate(-20%, 20%)' },
-      { src: SPRITE_BM, clip: PEEK.BM, anchor: { bottom: '0',  left:  '38%' },  hiddenT: 'translate(-50%, 100%)',   peekT: 'translate(-50%, 22%)' }
+      { src: SPRITE_TR, anchor: { top: '124px',  right: '90px' }, hiddenT: 'translate(140%, -30%)',  peekT: 'translate(0, -22%)' },                  // in from the right, below the nav; the red one already looks left
+      { src: SPRITE_BR, clip: PEEK.BR, anchor: { bottom: '15vh', right: '0' },  hiddenT: 'translate(140%, 20%)',   peekT: 'translate(20%, 20%)', flip: true }   // clear of the sound button; his eyes look right, so he is flipped
     ];
     function next() {
-      if (!bgEnabled) { setTimeout(next, 3000); return; }
+      if (hsGone) return;
+      if (!bgEnabled || !bbOver) { setTimeout(next, 3000); return; }   // no stray alien during the Big Bang — only its trio
       var cfg = hsSpritesConfig[Math.floor(Math.random() * hsSpritesConfig.length)];
       var sprite = mkPeek(cfg);
-      sprite.style.cssText = 'position: fixed; pointer-events: none; z-index: 4; width: 150px; height: auto; opacity: 0; will-change: transform, opacity; transition: opacity 0.6s ease, transform 1.6s cubic-bezier(0.34, 1.56, 0.64, 1);';
+      sprite.className = 'jj-hs-sprite' + (cfg.flip ? ' flip' : '');
+      sprite.setAttribute('data-cursor', 'hover');
+      sprite.style.cssText = 'position: fixed; pointer-events: auto; cursor: pointer; z-index: 4; width: 150px; height: auto; opacity: 0; will-change: transform, opacity; transition: opacity 0.6s ease, transform 1.6s cubic-bezier(0.34, 1.56, 0.64, 1);';
       Object.keys(cfg.anchor).forEach(function (k) { sprite.style[k] = cfg.anchor[k]; });
       sprite.style.transform = cfg.hiddenT;
       document.body.appendChild(sprite);
       enablePoke(sprite, cfg.hiddenT);
-      setTimeout(function () {
+      sprite.addEventListener('click', function () {                // caught: he leaves and stays gone for this visit
+        if (hsGone) return; hsGone = true;
+        setTimeout(function () { pkLeft(); pkGone(); if (sprite.parentNode) sprite.parentNode.removeChild(sprite); }, 600);
+      });
+      (function go() {
+        if (!pkCanEnter()) { setTimeout(go, 400); return; }        // waits its turn — never a third alien, never in step with another
+        pkEnter();
         sprite.style.opacity = '1';
         sprite.style.transform = cfg.peekT; playFrom0(sprite);
         peekHold(sprite, 3000 + Math.random() * 2000, function () {
-          sprite.style.transform = cfg.hiddenT;
-          sprite.style.opacity = '0';
+          if (hsGone) return;                                      // already caught — his exit is handled by the click
           setTimeout(function () {
-            if (sprite.parentNode) sprite.parentNode.removeChild(sprite);
-            setTimeout(next, 18000 + Math.random() * 17000);
-          }, 1800);
+            if (hsGone) return;
+            pkLeft();
+            sprite.style.transform = cfg.hiddenT;
+            sprite.style.opacity = '0';
+            setTimeout(function () {
+              pkGone();
+              if (sprite.parentNode) sprite.parentNode.removeChild(sprite);
+              setTimeout(next, 18000 + Math.random() * 17000);
+            }, 1800);
+          }, pkExitWait());
         });
-      }, 100);
+      })();
     }
     setTimeout(next, 10000 + Math.random() * 10000);
   }
@@ -1275,8 +1574,8 @@
     DOOR_AT:      18800,  // "doorways into another world" — a doorway opens in the sky and
                           // glimpses of the site's worlds drift out of it
     GALAXIES_AT:  19000,  // galaxies drift in around the doorway, then out
-    ALIENS_AT:    22900,  // "Poetic, indeed." — the trio peeks in for the comic beat
-    ALIENS_HOLD:  2500,
+    ALIENS_AT:    27200,  // "what if something beyond them gazed back" — all three peek over the top; that is what scares the wizard
+    ALIENS_HOLD:  2600,
     PHIL_RESOLVE: 27100,  // "what if something beyond them" — dissolves to the shocked face
     EYES_AT:      28100,  // "gazed back upon us?" — two eyes open in the sky and blink
     PHIL_OUT:     30200   // wizard fades out as the scroll unlocks
@@ -1294,7 +1593,7 @@
     resume: function () { if (!bbPaused) return; bbPaused = false; bbPending.forEach(function (r) { r.arm(); }); }
   };
 
-  var bigBangRan = false;
+  var bigBangRan = false, bbOver = false;
   function runBigBang() {
     if (bigBangRan) return;
     bigBangRan = true;
@@ -1302,33 +1601,44 @@
     layer.id = 'jj-bigbang';
     layer.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:' + BB_Z + ';overflow:hidden;';
     document.body.appendChild(layer);
+    /* the companion sits the whole Big Bang out (hidden from the click until the wizard has gone) */
+    var coSt = document.createElement('style'); coSt.id = 'jj-bb-co';
+    coSt.textContent = 'html.jj-bb-on #jj-co{opacity:0!important;visibility:hidden!important;transition:none!important;}';
+    document.head.appendChild(coSt);
+    document.documentElement.classList.add('jj-bb-on');
+    bbTimer(function () { bbOver = true; document.documentElement.classList.remove('jj-bb-on'); }, BB.PHIL_OUT + 1200);
 
-    if (PHIL_BASE && PHIL_THINKING) {
-      // Both sprites share the same left/top anchor so he stays put across the swap.
-      var philCSS = 'position:absolute;left:2vw;top:70%;transform:translateY(-50%);height:25vh;width:auto;opacity:0;transition:opacity 0.5s ease;filter:drop-shadow(0 0 26px rgba(150,180,255,0.28));';
-      var imgThink = document.createElement('img');   // thinking, bubble up-right
-      imgThink.src = PHIL_THINKING;
-      imgThink.style.cssText = philCSS;
-      var imgBase = document.createElement('img');     // shocked, looking up-right
-      imgBase.src = PHIL_BASE;
-      imgBase.style.cssText = philCSS;
-      layer.appendChild(imgThink); layer.appendChild(imgBase);
-      // start already thinking
-      bbTimer(function () { imgThink.style.transition = 'opacity 0.8s ease'; imgThink.style.opacity = '1'; }, BB.PHIL_IN);
-      // dissolve thinking -> shocked base (no overlap, so the differing sprite sizes never look like a jump)
-      bbTimer(function () {
-        imgThink.style.transition = 'opacity 0.35s ease'; imgThink.style.opacity = '0';
-        bbTimer(function () { imgBase.style.transition = 'opacity 0.35s ease'; imgBase.style.opacity = '1'; }, 260);
-      }, BB.PHIL_RESOLVE);
-      bbTimer(function () { imgBase.style.transition = 'opacity 0.8s ease'; imgBase.style.opacity = '0'; }, BB.PHIL_OUT);
-      bbTimer(function () {
-        if (imgThink.parentNode) imgThink.parentNode.removeChild(imgThink);
-        if (imgBase.parentNode) imgBase.parentNode.removeChild(imgBase);
-      }, BB.PHIL_OUT + 1200);
-    }
+    /* The wizard: Joe's Seedance take of him (bb-wizard), one clip timed to the speech — stardust arrival on "a wizard
+       came to be", the gaze, the staff raised at the doorway, the smug "Poetic, indeed", unease, then the shock on
+       "gazed back upon us?". 15.1s of clip across his 19.6s on screen (PHIL_IN → PHIL_OUT), so it plays at 0.77x.
+       Sized and placed so his BODY sits where the old sprite stood (lower-left, ~26vh tall): in the clip's frame his
+       body spans 21-59% across and 31-87% down, so the 4:3 box is 46.4vh tall and pushed left/up to match. */
+    var wiz = document.createElement('video');
+    wiz.muted = true; wiz.playsInline = true; wiz.preload = 'auto'; wiz.setAttribute('muted', ''); wiz.setAttribute('playsinline', '');
+    wiz.poster = ABASE + 'bb-wizard-poster.webp';
+    wiz.innerHTML = '<source src="' + ABASE + 'bb-wizard.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + ABASE + 'bb-wizard.webm" type="video/webm">';
+    /* 40vh box (was 46.4) — a touch smaller, feet kept on the same line (body bottom = 87% of the box) */
+    wiz.style.cssText = 'position:absolute;left:calc(2vw - 11.2vh);top:48.2vh;height:40vh;width:auto;aspect-ratio:4/3;opacity:0;transition:opacity .35s ease;transform-origin:40% 87%;filter:drop-shadow(0 0 26px rgba(150,180,255,0.28));pointer-events:none;';
+    layer.appendChild(wiz);
+    bbTimer(function () {
+      try { wiz.currentTime = 0.75; } catch (e) {}                 // skip the opening stardust swirl: its keyed edge reads as a black line on the flash's white
+      wiz.playbackRate = 0.73; var pw = wiz.play(); if (pw && pw.catch) pw.catch(function () {});   // 14.35s of clip across the same 19.6s on screen
+      wiz.style.transition = 'opacity .6s ease'; wiz.style.opacity = '1';
+    }, BB.PHIL_IN);
+    bbTimer(function () {                                        // out: shrinks away and drifts left as he fades
+      wiz.style.transition = 'opacity 0.9s ease, transform 1s cubic-bezier(.5,0,.75,.4)';
+      wiz.style.opacity = '0'; wiz.style.transform = 'translateX(-7vw) scale(.55)';
+    }, BB.PHIL_OUT);
+    bbTimer(function () { if (wiz.parentNode) wiz.parentNode.removeChild(wiz); }, BB.PHIL_OUT + 1200);
 
-    withLottie(function () {});   // warm the lottie runtime now so the doorway can't be late
     bbTimer(function () { bigBangFlash(layer); }, BB.FLASH_AT);
+    /* the flash goes fully white from "light" until the Rive's white circle closes (~9.0s → ~13.6s after the click): the
+       white logo and Menu invert for that stretch so they never vanish into it */
+    if (!document.getElementById('jj-bb-white-style')) { var ws = document.createElement('style'); ws.id = 'jj-bb-white-style';
+      ws.textContent = '.nav-logo,.menu-container{transition:filter .5s ease!important;}html.jj-bb-white .nav-logo,html.jj-bb-white .menu-container{filter:invert(1);}';
+      document.head.appendChild(ws); }
+    bbTimer(function () { document.documentElement.classList.add('jj-bb-white'); }, BB.FLASH_AT + 2400);
+    bbTimer(function () { document.documentElement.classList.remove('jj-bb-white'); }, 13600);
     bbTimer(function () { spawnBlinkStars(layer); }, BB.STARS_AT);
     bbTimer(function () { spawnDoorway(layer); }, BB.DOOR_AT);
     bbTimer(function () { spawnGalaxies(layer); }, BB.GALAXIES_AT);
@@ -1392,47 +1702,69 @@
   // self-contained json in the GitHub repo) and three round glimpses of the site's
   // own worlds — village, woods, castle — drift out of it, then everything slips
   // away as "Poetic, indeed." lands. Degrades to nothing if lottie failed to load.
-  var DOORWAY_JSON = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/Flow%202%20(2).json';
+  var DOORWAY_JSON = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/Flow%202%20(2).json';
   var WORLD_GLIMPSES = [
-    'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/story-vil-bg.webp',
-    'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/story-wood-bg.webp',
-    'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/story-cas-bg.webp'
+    'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/story-vil-bg.webp',
+    'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/story-wood-bg.webp',
+    'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/story-cas-bg.webp'
+  ];
+  /* The doorway beat ("…wondering if they were doorways into another world"). Joe's stone arch — a still for now,
+     his Seedance "turning on" clip once it lands — with the tale's village masked into the opening, and his four
+     world bubbles popping out of it one after another. Everything the arch doesn't draw is ours, so it stays crisp,
+     keys cleanly, and lands on the narration. Timeline from DOOR_AT: in 0-1s, lights up at 1s, bubbles 1.6-2.7s,
+     fades out at 4.2s for "Poetic, indeed." */
+  var DOOR_WORLDS = [                                                   // [image, where it settles: left %, top % of the arch box]
+    ['world-tavern',  -6, 24], ['world-village', 106, 22],
+    ['world-woods',  -10, 76], ['world-cave',    110, 74]
   ];
   function spawnDoorway(layer) {
-    var wrap = document.createElement('div');
-    wrap.style.cssText = 'position:absolute;left:50%;top:12vh;width:min(34vh,300px);aspect-ratio:656/689;transform:translateX(-50%) scale(0.6);opacity:0;transition:opacity 1s ease,transform 1.2s cubic-bezier(0.34,1.56,0.64,1);';
+    if (!document.getElementById('jj-door-style')) {
+      var st = document.createElement('style'); st.id = 'jj-door-style';
+      st.textContent =
+        '#jj-door{position:absolute;left:50%;top:9vh;height:min(calc(41vh - 110px),330px);width:auto;aspect-ratio:720/617;transform:translateX(-50%) scale(.6);opacity:0;transition:opacity 1s ease,transform 1.2s cubic-bezier(.34,1.56,.64,1);}' +
+        '#jj-door.in{opacity:1;transform:translateX(-50%) scale(1);}#jj-door.out{opacity:0;transition:opacity .9s ease;}' +
+        '#jj-door .world{position:absolute;inset:0;background-size:cover;background-position:50% 60%;-webkit-mask:url(' + ABASE + 'arch-hole.png) center/100% 100% no-repeat;mask:url(' + ABASE + 'arch-hole.png) center/100% 100% no-repeat;opacity:0;filter:brightness(2.2) saturate(.4);transition:opacity .7s ease,filter 1.4s ease;}' +
+        '#jj-door.on .world{opacity:1;filter:brightness(1) saturate(1);}' +
+        '#jj-door .arch{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 0 rgba(255,210,120,0));transition:filter 1.2s ease;}' +
+        '#jj-door.on .arch{filter:drop-shadow(0 0 16px rgba(255,205,110,.75)) drop-shadow(0 0 34px rgba(170,90,255,.45)) brightness(1.08);}' +
+        '#jj-door .bub{position:absolute;left:50%;top:52%;width:26%;aspect-ratio:1;border-radius:50%;opacity:0;transform:translate(-50%,-50%) scale(.1);' +
+          'box-shadow:0 0 0 3px #FFC93D,0 0 0 6px #8B5CF6,0 0 22px rgba(255,200,90,.7),0 0 40px rgba(139,92,246,.5);transition:left 1s cubic-bezier(.34,1.3,.64,1),top 1s cubic-bezier(.34,1.3,.64,1),transform 1s cubic-bezier(.34,1.45,.64,1),opacity .4s ease;}' +
+        '#jj-door .bub img{display:block;width:100%;height:100%;border-radius:50%;}' +
+        '#jj-door .bub.float{animation:jjDoorBob 3.2s ease-in-out infinite;}' +
+        '@keyframes jjDoorBob{0%,100%{translate:0 0}50%{translate:0 -7px}}' +
+        '#jj-door .tw{position:absolute;width:9px;height:9px;opacity:0;background:#fff4c8;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);filter:drop-shadow(0 0 4px #FFD76A);}' +
+        '#jj-door.on .tw{animation:jjDoorTw 1.9s ease-in-out infinite;}' +
+        '@keyframes jjDoorTw{0%,100%{opacity:0;scale:.4}50%{opacity:1;scale:1}}';
+      document.head.appendChild(st);
+    }
+    var wrap = document.createElement('div'); wrap.id = 'jj-door';
+    var world = document.createElement('div'); world.className = 'world'; world.style.backgroundImage = 'url(' + ABASE + 'story-vil-bg.webp)';
+    var arch = document.createElement('img'); arch.className = 'arch'; arch.alt = ''; arch.src = ABASE + 'arch-still.webp';
+    wrap.appendChild(world); wrap.appendChild(arch);
+    for (var t = 0; t < 10; t++) {                                     // the arch's sparkle: twinkles scattered round the stones
+      var tw = document.createElement('i'); tw.className = 'tw';
+      var ang = (t / 10) * Math.PI * 2, rx = 44 + Math.random() * 10, ry = 40 + Math.random() * 10;
+      tw.style.left = (50 + Math.cos(ang) * rx) + '%'; tw.style.top = (50 + Math.sin(ang) * ry) + '%'; tw.style.animationDelay = (Math.random() * 1.9) + 's';
+      wrap.appendChild(tw);
+    }
     layer.appendChild(wrap);
-    var anim = null;
-    withLottie(function (lottie) {
-      if (!wrap.parentNode) return;
-      anim = lottie.loadAnimation({ container: wrap, renderer: 'svg', loop: false, autoplay: true, path: DOORWAY_JSON });
-    });
-    requestAnimationFrame(function () {
-      wrap.style.opacity = '1';
-      wrap.style.transform = 'translateX(-50%) scale(1)';
-    });
-    WORLD_GLIMPSES.forEach(function (src, i) {
+    requestAnimationFrame(function () { requestAnimationFrame(function () { wrap.classList.add('in'); }); });
+    setTimeout(function () { if (wrap.parentNode) wrap.classList.add('on'); }, 1000);          // it switches on: the runes glow, the world appears
+    DOOR_WORLDS.forEach(function (w, i) {
       setTimeout(function () {
         if (!wrap.parentNode) return;
-        var g = document.createElement('img');
-        var sz = 62 + i * 8;
-        var dx = [-120, 14, 132][i];
-        var dy = [-88, -150, -96][i];
-        g.src = src;
-        g.style.cssText = 'position:absolute;left:50%;top:58%;width:' + sz + 'px;height:' + sz + 'px;border-radius:50%;object-fit:cover;opacity:0;transform:translate(-50%,-50%) scale(0.15);box-shadow:0 0 18px rgba(255,220,140,0.6);transition:transform 2.6s ease,opacity 0.7s ease;';
-        wrap.appendChild(g);
-        requestAnimationFrame(function () {
-          g.style.opacity = '0.95';
-          g.style.transform = 'translate(calc(-50% + ' + dx + 'px), calc(-50% + ' + dy + 'px)) scale(1)';
-        });
-        setTimeout(function () { g.style.opacity = '0'; }, 2700);
-      }, 1500 + i * 600);
+        var bub = document.createElement('div'); bub.className = 'bub';
+        var img = document.createElement('img'); img.alt = ''; img.src = ABASE + w[0] + '.webp'; bub.appendChild(img);
+        wrap.appendChild(bub);
+        requestAnimationFrame(function () { requestAnimationFrame(function () {
+          bub.style.opacity = '1'; bub.style.left = w[1] + '%'; bub.style.top = w[2] + '%';      // out of the opening to its spot round the arch
+          bub.style.transform = 'translate(-50%,-50%) scale(1)';
+          setTimeout(function () { bub.classList.add('float'); bub.style.animationDelay = (-Math.random() * 3.2) + 's'; }, 1000);
+        }); });
+      }, 1600 + i * 360);
     });
-    setTimeout(function () { wrap.style.opacity = '0'; }, 4000);
-    setTimeout(function () {
-      try { if (anim) anim.destroy(); } catch (e) {}
-      if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
-    }, 5100);
+    setTimeout(function () { wrap.classList.add('out'); }, 4200);
+    setTimeout(function () { if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }, 5300);
   }
 
   // Galaxies drift in around the doorway while the wizard wonders,
@@ -1522,7 +1854,13 @@
       { src: SPRITE_TM, clip: PEEK.TM, anchor: { top: '0',    left: '30%' },   hiddenT: 'translate(-50%, -100%)',  peekT: 'translate(-50%, -32%)' },
       { src: SPRITE_TR, anchor: { top: '0',    right: '90px' }, hiddenT: 'translate(0, -100%)',     peekT: 'translate(0, -22%)' }
     ];
-    trio.forEach(function (cfg) {
+    /* Joe's one exception to "never more than two aliens": all three peek over the top on "gazed back upon us?".
+       They hold every peek slot so no other alien can come in while they are out. */
+    PK.out += trio.length; PK.lastIn = performance.now();
+    setTimeout(function () { PK.out = Math.max(0, PK.out - trio.length); PK.lastOut = performance.now(); }, (trio.length - 1) * 300 + BB.ALIENS_HOLD + 700);
+    trio.forEach(function (cfg, n) {
+      var lag = [0, 300, 600][n];                                  // left, middle, right — a beat apart, in and out
+      setTimeout(function () {
       var s = mkPeek(cfg, true); playFrom0(s);
       s.style.cssText = 'position:fixed;width:150px;height:auto;pointer-events:none;z-index:' + BB_Z + ';will-change:transform;transition:transform 0.5s cubic-bezier(0.34,1.5,0.64,1);';
       Object.keys(cfg.anchor).forEach(function (k) { s.style[k] = cfg.anchor[k]; });
@@ -1531,6 +1869,7 @@
       requestAnimationFrame(function () { requestAnimationFrame(function () { s.style.transform = cfg.peekT; }); });
       setTimeout(function () { s.style.transition = 'transform 0.4s cubic-bezier(0.5,0,0.75,0)'; s.style.transform = cfg.hiddenT; }, BB.ALIENS_HOLD);
       setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, BB.ALIENS_HOLD + 700);
+      }, lag);
     });
   }
 
@@ -1585,7 +1924,7 @@
         landingTimers = [];
 
         if (alienShown) {
-          makeAlienHappy(); mood('bye', false);                    // delighted, a wave, and off he shoots (the clip itself leaves the frame)
+          makeAlienHappy(); mood('bye', false, null, true);        // delighted, a wave, and off he shoots — cut straight to it, he must not duck out and back first
           hideAlienSpeech();
         } else {
           popUpAlienSmileFallback();
@@ -1603,6 +1942,7 @@
         nextScenes.forEach(function (b) { b.classList.add('jj-next-scene-hidden'); });
         enterLinks.forEach(function (el) {
           el.style.setProperty('pointer-events', 'none', 'important');
+          if (el._jjPink) return;                                    // the begin gate already pressed this one pink
           // Cancel any Webflow/CSS reveal animation still controlling this button,
           // otherwise it overrides our opacity and the button never fades.
           if (el.getAnimations) el.getAnimations().forEach(function (a) { try { a.cancel(); } catch (e) {} });
@@ -1643,6 +1983,7 @@
           function revealTypewriter() {
             if (typedFirst) return; typedFirst = true;
             fadeOutSubtitle();
+            if (window.jjFlyerIn) window.jjFlyerIn(firstTexts);            // Joe flies in from the left as "Hey, I'm Joe" types
             firstTexts.forEach(function (el) {
               el.classList.remove('jj-first-text-hidden');
               el.style.opacity = '1';
@@ -1779,9 +2120,9 @@
    motion stays one fluid movement. The Rive canvas is hidden; the outline art flies; a click pops the FILLED art in (the flight
    carries on) and ticks Planet Hunter (2 parts). ===== */
 (function () {
-  var PGB = window.JJ_SCORE_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';   // JJ_SCORE_BASE: local preview override
-  var ART = { jupiter: { line: PGB + 'score-jupiter-line.webp', fill: PGB + 'score-jupiter.webp', w: 11.5, from: 0.02, to: 0.98 },
-              mars:    { line: PGB + 'score-mars-line.webp',    fill: PGB + 'score-mars.webp',    w: 6.4,  from: 0.30, to: 0.98 } };
+  var PGB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';   // JJ_SCORE_BASE: local preview override
+  var ART = { jupiter: { line: PGB + 'score-jupiter-line.webp', fill: PGB + 'score-jupiter.webp', w: 11.5, from: 0.0,  to: 0.98 },
+              mars:    { line: PGB + 'score-mars-line.webp',    fill: PGB + 'score-mars.webp',    w: 6.4,  from: 0.03, to: 0.98 } };   // both in from the first scroll, together, for the "Jupiter and Mars" line
   /* [u, left%, top%] along each planet's own path (u 0→1), % of the 16:9 box */
   var PATH = { jupiter: [[0,103,17],[.15,79.7,32],[.27,68.9,57],[.4,57.7,83],[.5,46,86.6],[.54,38,86.6],[.66,21.4,68],[.78,11.9,41],[.9,3,17.5],[1,-4,12]],
                mars:    [[0,98,19],[.12,88.3,15],[.24,75.3,15],[.36,60.7,23],[.48,49.3,41],[.6,40.7,59],[.72,31.1,71.6],[.84,19.3,79],[.94,8.4,83],[1,-4,87]] };
@@ -1812,7 +2153,8 @@
     return el;
   }
   function wire(host) {
-    if (host._jjPlanets) return; host._jjPlanets = true; host.classList.add('jj-planets');
+    if (host._jjPlanets || host.classList.contains('jj-pl') || host.closest('.jj-planets')) return;   // our own Mars carries class "mars" — never wire it as a host
+    host._jjPlanets = true; host.classList.add('jj-planets');
     var box = document.createElement('div'); box.className = 'jj-pl-box';
     var els = { jupiter: planet('jupiter'), mars: planet('mars') }; box.appendChild(els.jupiter); box.appendChild(els.mars); host.appendChild(box);
     function fit() { var w = host.clientWidth, h = host.clientHeight; if (!w || !h) return; var bw = Math.min(w, h * 16 / 9); box.style.width = bw + 'px'; box.style.height = (bw * 9 / 16) + 'px'; }
@@ -1828,7 +2170,7 @@
       if (hsw) {
         var P = Math.abs(tx(hsw)), vis = parseFloat(getComputedStyle(host).opacity) > 0.05;
         if (P0 == null) { if (vis) P0 = P; }
-        target = P0 == null ? 0 : (P - P0) / (Math.max(320, window.innerWidth) * 1.1);
+        target = P0 == null ? 0 : (P - P0) / (Math.max(320, window.innerWidth) * 2.1);   // ~two screens of scroll to cross the sky: they linger, they don't dash
       } else { var r = host.getBoundingClientRect(), vw = Math.max(320, window.innerWidth); target = r.width ? (vw - r.left) / (vw + r.width) : 0; }
       if (!(target === target)) target = 0;                                            // never let a NaN in
       target = Math.max(0, Math.min(1, target));
@@ -1855,9 +2197,9 @@
    VISITS: [progress window, side, bottom]. LOOP_END / FLYOFF: when the two-part clip lands (hover loop first, then angrier + exit),
    set LOOP_END to where the loop should wrap and FLYOFF to where the exit starts; the click then plays that instead of the CSS fly-off. ===== */
 (function () {
-  var PGB = window.JJ_SCORE_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';   // JJ_SCORE_BASE: local preview override
+  var PGB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';   // JJ_SCORE_BASE: local preview override
   var VISITS = [ [0.18, 0.30, 'right', '18vh'], [0.48, 0.60, 'left', '42vh'], [0.78, 0.90, 'right', '28vh'] ];
-  var LOOP_END = 3.0, FLYOFF = 3.1, LOOP_RATE = 0.55;   // the shifty loop runs at just over half speed so he lingers; the exit plays at full speed   // shiftygrumpy alien.mp4: 0–3s shifty hover loop; 3.1s → angrier, shoots off up-right at 6s, gone by 6.5s
+  var LOOP_END = 6.0, FLYOFF = 6.1, LOOP_RATE = 0.55;   // the shifty loop runs at just over half speed so he lingers; the exit plays at full speed   // hs-alien = shiftygrumpy alien.mp4 re-cut: 0–3s shifty hover, 3–6s the same played backwards (no jump at the wrap), 6.1s → angrier, shoots off up-right, gone by 9.6s
   var st = document.createElement('style');
   st.textContent = '#jj-hs-alien{position:fixed;z-index:60;width:clamp(120px,12vw,200px);height:auto;pointer-events:auto;cursor:pointer;opacity:0;transition:transform 1.1s cubic-bezier(.22,1,.36,1),opacity .6s ease;}' +
     '#jj-hs-alien.right{right:0;transform:translateX(110%);}#jj-hs-alien.left{left:0;transform:translateX(-110%) scaleX(-1);}' +
@@ -1869,12 +2211,12 @@
   v.poster = PGB + 'hs-alien-poster.webp'; v.setAttribute('data-cursor', 'hover');
   v.innerHTML = '<source src="' + PGB + 'hs-alien.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + PGB + 'hs-alien.webm" type="video/webm">';
   document.body.appendChild(v);
-  var caught = false, cur = -1;
-  if (LOOP_END) v.addEventListener('timeupdate', function () { if (!v._flying && v.currentTime >= LOOP_END) v.currentTime = 0; });
+  var cur = -1;
+  if (LOOP_END) v.addEventListener('timeupdate', function () { if (!v._flying && v.currentTime >= LOOP_END) v.currentTime = 0; });   // the clip itself is forward + reverse, so the wrap is invisible
   function show(k) { var vis = VISITS[k]; v.className = vis[2] + ' in'; v.style.bottom = vis[3]; v.style.top = 'auto'; v.playbackRate = LOOP_RATE; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
   function hide() { v.classList.remove('in'); }
   function tick() {
-    if (caught) return;
+    if (v._flying) return;
     var hsw = document.querySelector('.horizontal-scroll-wrapper'); if (!hsw) return;
     var t = (hsw.style && hsw.style.transform) || '', m = t.match(/translate(?:3d|X)?\(\s*(-?[\d.]+)/), x = m ? Math.abs(parseFloat(m[1])) : 0;
     var max = Math.max(1, hsw.scrollWidth - window.innerWidth), P = Math.min(1, x / max), k = -1;
@@ -1882,11 +2224,13 @@
     if (k !== cur) { cur = k; if (k < 0) hide(); else show(k); }
   }
   v.addEventListener('click', function (e) {
-    if (caught) return; caught = true; v._flying = true;
-    if (window.jjScore) window.jjScore.award('alien-catch', { x: e.clientX, y: e.clientY });
+    if (v._flying) return; v._flying = true;
+    if (window.jjScore) window.jjScore.award('alien-catch', { x: e.clientX, y: e.clientY });   // pays once; later pokes are just for fun
     if (FLYOFF != null) { v.loop = false; v.playbackRate = 1; try { v.currentTime = FLYOFF; } catch (x) {} var p = v.play(); if (p && p.catch) p.catch(function () {}); v.style.transition = 'opacity .4s ease';
-      var gone = function () { v.style.opacity = '0'; setTimeout(function () { v.remove(); }, 500); }; v.addEventListener('ended', gone, { once: true }); setTimeout(gone, 5000); }   // he gets angrier, then shoots off in the clip itself
-    else { v.classList.add('off'); setTimeout(function () { v.remove(); }, 2600); }
+      var gone = function () { if (!v._flying) return; v.style.opacity = '0';   // he gets angrier and shoots off in the clip; then, out of sight, he calms down and drifts back in from the start of his loop
+        setTimeout(function () { v.pause(); try { v.currentTime = 0; } catch (x) {} v.loop = true; v._flying = false; if (cur >= 0) { v.style.opacity = ''; show(cur); } }, 1800); };
+      v.addEventListener('ended', gone, { once: true }); setTimeout(gone, 5000); }
+    else { v.classList.add('off'); setTimeout(function () { v.classList.remove('off'); v._flying = false; }, 2600); }
   });
   function arm() { var hsw = document.querySelector('.horizontal-scroll-wrapper'); if (!hsw) return setTimeout(arm, 1500);
     new MutationObserver(tick).observe(hsw, { attributes: true, attributeFilter: ['style'] }); window.addEventListener('resize', tick); tick(); }

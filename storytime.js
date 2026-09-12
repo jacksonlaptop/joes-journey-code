@@ -3,7 +3,7 @@
 
    IN WEBFLOW (Storytime page → Page Settings):
      Inside <head>:  <style>.nav-logo-link,.menu-container{opacity:0}</style>
-     Before </body>: <script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/storytime.js?v=15"></script>
+     Before </body>: <script src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/storytime.js?v=16"></script>
 
    Every scene is COMPOSED FROM LAYERS in code (not a flat image): the night sky
    backdrop → a transparent scene bg → positioned character layers (some animated)
@@ -11,10 +11,14 @@
    Positions live in COMP below as plain CSS strings — easy to nudge.
    ============================================================================ */
 (function () {
-  window.JJ_STORY_BUILD = 's64 · mapped Storytime rewards + equal modal buttons';
+  window.JJ_STORY_BUILD = 's81 · opening the portal with the Special cursor no longer removes it at the next shot (it was marked taken, like a caught prop); s80 · stepping back out of the ending can no longer strand a see-through story over My Story; s79 · Trogdor brighter over the mountains; prod him in the cave → he jolts + Rise and Shine; s78 · pause on ‘rolling hills…’ not ‘nighttime fell’; pause catches clips born under it; a scene reached while paused settles before freezing; s77 · the three spirits + mushroom perch on the banner stone, a crystal on the other side; s76 · village to black on ‘Trogdor! Trogdor’, back with the tavern; stepping while paused stays paused; label font back; s75 · night sky over hills/mountains (big moons, design-system stars), forest mushrooms + glowing shards, spirit + mushroom on the banner, portal ????? in the Special font, sparkles bigger/denser/glowing, transport debounce; s74 · sparkles re-scatter every shot, denser and coloured round the portal; s73 · Trogdor small, grows in/shrinks away; the wide forest board drifts with the horse at the dismount; bars +16px; s72 · glides never skip on a fresh layer (Joe missing on the hills), bars reset on next/previous; s71 · first-scene hints (arrows + themed pill), montage letterbox on ‘set off’ → off at the dismount, forest sparkle, Trogdor crosses the mountain sky, the line reworded; s70 · the ride crosses the frame (hills on ‘nighttime fell’, mountains on ‘treacherous’), the dismount clip into the wide forest board, the close shot is its own board, Joe’s snow cap + flakes, hearth hover + Chicken Run fixes; s69 · Joe’s gallop clip on the ride (hills, mountains, into the forest), stronger pan; s68 · snow over the mountains + on the banner; tree spirits tappable → Forest Friend; s67 · forest spirits (kodama tilt + rattle, in code), Skip CTA retired; s66 · previous / pause / next transport top centre (also arrow keys + space); s65 · Part One ends on the journey: hills, mountains, the forest, the portal takes Joe; the fight is Part Two';
   try { console.log('%c[JJ] storytime.js build: ' + window.JJ_STORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
-  var GB = window.JJ_STORY_BASE || 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
+  var GB = window.JJ_STORY_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
+  var PART2 = /[?&]part=2\b/.test(location.search);            // Part Two of the tale (unlocked by the 'tale2' achievement: the tale, then the quiz). For now it opens on the final fight.
+  var START_SCENE = 0;
+  try { var _sq = /[?&]scene=(\d+)/.exec(location.search); if (_sq) START_SCENE = parseInt(_sq[1], 10) || 0; } catch (e) {}   // ?scene=N jumps straight to a scene, for checking a single beat without sitting through the tale
+  if (PART2) setTimeout(function () { if (window.jjScore && window.jjScore.has && !window.jjScore.has('tale2')) { location.replace('/storytime'); } }, 1500);   // the lock in the menu is the front door; a typed URL goes back to Part One
   var AV = '?a=6';
   function F(name){ return GB + 'story-' + name + '.webp' + AV; }
   /* pressable-pixel masks, precomputed from the posters / the tavern board (96px wide, 1 bit per pixel) — so hover and click land
@@ -43,6 +47,8 @@
     'vil-bg':  { moon:[430,100,48], whirls:[[150,80,18],[830,60,20],[560,30,14],[720,230,15]], xs:[[300,40,12],[700,160,10],[180,120,9],[860,190,9]], stars:[[60,50],[230,150],[400,190],[620,70],[900,110],[960,40],[280,220],[580,220],[760,40],[120,220],[340,110],[500,40],[660,200],[930,220],[20,120]] },
     'wood-bg': { moon:[400,80,44], whirls:[[250,150,16],[600,40,18],[440,220,13],[300,240,12]], xs:[[300,120,11],[520,40,10],[420,150,9]], stars:[[230,50],[360,190],[480,160],[640,110],[700,180],[170,230],[560,200],[330,20],[250,100],[600,220],[520,100],[380,240]] },
     'cas-bg':  { moon:[220,110,52], whirls:[[90,50,18],[440,60,20],[600,160,14],[360,230,13]], xs:[[330,40,12],[520,120,10],[160,60,9],[680,40,9]], stars:[[40,150],[130,200],[400,170],[600,40],[720,90],[300,240],[480,220],[560,20],[80,40],[260,60],[440,110],[660,200],[540,180]] },
+    'hills-bg':{ over:true, moon:[790,105,62], whirls:[[120,70,20],[330,40,16],[600,180,14],[930,240,15]], xs:[[210,150,12],[470,90,11],[700,60,12],[880,150,9],[60,230,9]], stars:[[40,60],[150,200],[290,120],[400,40],[520,210],[640,120],[730,230],[860,60],[960,130],[990,40],[250,250],[560,30],[680,260],[820,30]] },
+    'mtn-bg':  { over:true, moon:[230,120,70], whirls:[[520,50,18],[760,150,20],[920,60,14],[420,220,13]], xs:[[380,120,12],[640,40,11],[840,220,10],[100,240,9],[970,180,9]], stars:[[60,40],[140,220],[330,60],[470,170],[590,120],[700,30],[790,250],[880,120],[950,30],[1000,230],[270,250],[610,230],[720,190],[40,150]] },
     'tav-bg-2':{ moon:[530,100,36], whirls:[[458,175,10]], xs:[[470,70,7]], stars:[[452,140],[550,190],[480,200],[560,60],[500,45],[540,150]] }   // all inside the window (x430–570, y60–210); moon 2× with a big glow
   };
   function nightSvg(c){
@@ -58,6 +64,9 @@
   var nightEl = null, nightCur = null;
   function setNight(bg){
     if (!nightEl || bg === nightCur) return; var had = !!nightCur; nightCur = bg;
+    var over = !!(NIGHT[bg] && NIGHT[bg].over);                    // an opaque board (hills, mountains): the sky goes OVER it, under the figures
+    if (over) bgWrap.appendChild(nightEl); else bgWrap.insertBefore(nightEl, bgWrap.querySelector('.jjst-bg') || null);
+    nightEl.classList.toggle('over', over);
     nightEl.classList.remove('on');
     setTimeout(function () { if (nightCur !== bg) return; var c = NIGHT[bg];
       nightEl.innerHTML = c ? nightSvg(c) : '';
@@ -81,14 +90,14 @@
          box that sits exactly over the video. */
       /* the treasure chest: closed still, swaps to the open art on the word "jewels" with a gold
          bloom + sparkle burst, then shuts again (see runFx). Faces right, per the mockup. */
-      { key:'chest', src:'cav-chest-closed', css:'left:16.3%;bottom:28.9vh;width:min(20.6vw,420px)',
+      { key:'chest', hint:true, src:'cav-chest-closed', css:'left:16.3%;bottom:28.9vh;width:min(20.6vw,420px)',
         aura:{ glow:'rgba(255,214,120,.65)' }, tap:'chest' },
-      { key:'dragonloop', vid:'cav-dragon-loop', ar:1400/1276, css:'right:7%;bottom:8vh;width:min(57vw,1140px)',
+      { key:'dragonloop', hint:true, tap:'wake', vid:'cav-dragon-loop', ar:1400/1276, css:'right:7%;bottom:8vh;width:min(57vw,1140px)',
         hero:{ label:'Trogdor the Burninator', glow:'rgba(255,96,120,.55)', lt:25, hit:[.27,.31,.84,.8] },
         /* snd: the Seedance breathing had a music pad under it — a proper snore is coming from the user */
         fx:[ { type:'smoke', at:[28, 46] }, { type:'glint', at:[[46,70],[58,74],[66,66],[52,78]] } ] },
-      { key:'bones1', vid:'bones-rattle', ar:722/424, idle:true, hoverPlay:true, cls:'prop', tap:'bones', hoverSnd:'bone-jiggle', css:'left:44%;bottom:38vh;width:min(5.5vw,110px)' },   // Bone Collector 1/2 — further back on the cave floor; still until hovered, whisks away on click
-      { key:'chick', vid:'vil-chicken', ar:548/646, seg:[0.1, 3.5], hop:[3.6, 6.0], tap:'chick', cls:'prop', css:'left:6.5%;bottom:31vh;width:min(8.5vw,170px)' }   // in the gap between the rocks and the chest   // the lone chicken by its friend's bones: shivers on a loop; tap → bones twitch, squawk, hop
+      { key:'bones1', hint:true, vid:'bones-rattle', ar:722/424, idle:true, hoverPlay:true, cls:'prop', tap:'bones', hoverSnd:'bone-jiggle', css:'left:44%;bottom:38vh;width:min(5.5vw,110px)' },   // Bone Collector 1/2 — further back on the cave floor; still until hovered, whisks away on click
+      { key:'chick', hint:true, vid:'vil-chicken', ar:548/646, seg:[0.1, 3.5], hop:[3.6, 6.0], tap:'chick', cls:'prop', aura:{ glow:'rgba(255,214,120,.6)' }, css:'left:6.5%;bottom:31vh;width:min(8.5vw,170px)' }   // in the gap between the rocks and the chest   // the lone chicken by its friend's bones: shivers on a loop; tap → bones twitch, squawk, hop
     ]},
     /* tavern per the "3 - Tavern 1" mockup: Joe mid-left on the floor, grandma back-right,
        hooded guy far right, the old man BIG in the foreground (so he's last = on top). */
@@ -106,6 +115,48 @@
       { key:'v2', vid:'wood-char-2-loop', ar:1, css:'left:68%;bottom:26vh;width:min(13vw,260px)' },
       { key:'ufo', vid:'sky-alien', ar:314/360, cls:'prop sky', tap:'ufo', css:'left:58%;top:15vh;width:min(5.5vw,100px)' }   // a little alien hangs in the sky the whole ride; click = Stopped an Alien Invasion
     ]},
+    /* ---- THE JOURNEY (Part One's ending since Sep '26): rolling hills → treacherous mountains → the enchanted forest,
+       the arch and the orb, the portal waking, Joe taken. Positions traced from the "Adventure 1-3 / Forest 1-11"
+       mockups (1627×1019 frame). `bgFx` dims the board, `pan` slides it against Joe's ride, `zoom` is the camera on
+       the board alone (the figures are re-placed per shot, as in the mockups). ---- */
+    hills: { bg:'hills-bg', bgFx:'brightness(.75)', pan:true, snd:{ src:'horse-gallop', vol:.2, fadeIn:800 }, layers:[   // 25% darker; Joe rides right, the hills roll left
+      { key:'ride', vid:'ride-loop', ar:640/480, css:'left:calc(-30% - 19.4vw);bottom:calc(30vh - 12.8vw);width:60.1vw', to:{ css:'left:calc(108% - 19.4vw)', delay:0, dur:5600, ease:'linear' } } ]},   // in from the left, out on the right   // Joe's gallop clip (the pair is 22vw of a 60.1vw frame, keyed at the clip's native 1112x834 so he stays sharp)
+    mountains: { bg:'mtn-bg', bgFx:'brightness(.5)', pan:true, snow:true, snd:{ src:'horse-gallop', vol:.2, fadeIn:800 }, layers:[   // 50% darker; Trogdor crosses the sky once, far back
+      { key:'trogfly', vid:'tav-trogdor-fly', ar:1080/710, hold:true, cls:'trogfly', css:'left:-14vw;top:6vh;width:14vw;filter:brightness(.85)', to:{ css:'left:104vw', delay:600, dur:9500, ease:'linear' } },   // small and far back; grows in, shrinks away (like the companion dragons)
+      { key:'ride3', vid:'ride-loop', ar:640/480, css:'left:calc(-30% - 19.4vw);bottom:calc(30vh - 12.8vw);width:60.1vw', to:{ css:'left:calc(108% - 19.4vw)', delay:0, dur:6200, ease:'linear' } } ]},   // and across the mountains
+    forest1: { bg:'forest-far', sparkle:true, slide:{ dx:'-5.6vw', delay:3300, dur:3400 }, snd:{ src:'horse-gallop', vol:.2, fadeIn:400 }, layers:[ { key:'mushP', src:'mush-purple', css:'left:3%;bottom:20vh;width:6.5vw' }, { key:'mushB', src:'mush-blue', css:'left:89%;bottom:23vh;width:5.5vw' },                               // the wide board: in from the left on the horse; the forest spirits watch from the undergrowth
+      { key:'spirit3', src:'spirit-3', cls:'prop kodama', tap:'spirit', aura:{ glow:'rgba(190,255,225,.55)' }, css:'left:2.5%;bottom:41vh;width:7.5vw;filter:brightness(.82);animation-duration:7.4s;animation-delay:-2.6s' },
+      { key:'spirit1', src:'spirit-1', cls:'prop kodama', tap:'spirit', aura:{ glow:'rgba(190,255,225,.55)' }, css:'left:36%;bottom:43vh;width:2.8vw;filter:brightness(.8);animation-duration:6.1s;animation-delay:-4.1s' },
+      { key:'ride2', vid:'ride-dismount', ar:1112/834, hold:true, css:'left:calc(-30% - 7vw);bottom:calc(34vh - 4vw);width:36.7vw', to:{ css:'left:calc(13.3% - 7vw)', delay:100, dur:3000, ease:'cubic-bezier(.25,0,.15,1)' } } ]},   // the dismount clip: gallops in, halts at ~3s, dismounts, holds
+    forest2: { bg:'forest-far', sparkle:true, slide:{ dx:'-5.6vw', delay:0, dur:0 }, layers:[ { key:'mushP', src:'mush-purple', css:'left:3%;bottom:20vh;width:6.5vw' }, { key:'mushB', src:'mush-blue', css:'left:89%;bottom:23vh;width:5.5vw' }, { key:'spirit3', src:'spirit-3', cls:'prop kodama', tap:'spirit', aura:{ glow:'rgba(190,255,225,.55)' }, css:'left:2.5%;bottom:41vh;width:7.5vw;filter:brightness(.82);animation-duration:7.4s;animation-delay:-2.6s' }, { key:'spirit1', src:'spirit-1', cls:'prop kodama', tap:'spirit', aura:{ glow:'rgba(190,255,225,.55)' }, css:'left:38%;bottom:43vh;width:2.8vw;filter:brightness(.8);animation-duration:6.1s;animation-delay:-4.1s' },
+      { key:'ride2', vid:'ride-dismount', ar:1112/834, hold:true, css:'left:calc(13.3% - 7vw);bottom:calc(34vh - 4vw);width:36.7vw' } ]},   // dismounted: the clip holds its last frame beside the horse   // dismounted
+    forest3: { bg:'forest-far', sparkle:true, slide:{ dx:'-5.6vw', delay:0, dur:0 }, layers:[ { key:'mushP', src:'mush-purple', css:'left:3%;bottom:20vh;width:6.5vw' }, { key:'mushB', src:'mush-blue', css:'left:89%;bottom:23vh;width:5.5vw' },                                                                                 // the arch and the strange object up ahead
+      { key:'spirit3', src:'spirit-3', cls:'prop kodama', tap:'spirit', aura:{ glow:'rgba(190,255,225,.55)' }, css:'left:2.5%;bottom:41vh;width:7.5vw;filter:brightness(.82);animation-duration:7.4s;animation-delay:-2.6s' },
+      { key:'joe',  src:'forest-joe', cls:'idle', css:'left:25.7%;bottom:30.8vh;width:8.5vw' },
+      { key:'arch', src:'arch-off', css:'left:57.6%;bottom:32.1vh;width:44.2vw' },
+      { key:'orb',  src:'orb-ground', css:'left:53.3%;bottom:27.6vh;width:6vw;rotate:-16.5deg' } ]},
+    forest4: { bg:'forest-near', sparkle:'near', cut:true, layers:[                                                                     // CUT to the close board, no scaling
+      { key:'joe',  src:'forest-joe', cls:'idle', css:'left:13.2%;bottom:31vh;width:14.6vw' },
+      { key:'arch', src:'arch-off', css:'left:32%;bottom:33.4vh;width:75.3vw' },
+      { key:'orb',  src:'orb-ground', css:'left:24.5%;bottom:25.7vh;width:10.2vw;rotate:-16.5deg' } ]},
+    forest5: { bg:'forest-bg', sparkle:'portal', cut:true, layers:[ { key:'mushY', src:'mush-yellow', css:'left:6%;bottom:22vh;width:5.5vw' }, { key:'shards', src:'shards', cls:'shards', css:'left:49%;bottom:29vh;width:6vw' },                                                                       // CUT back out: the orb (active now) shoots up, the portal wakes
+      { key:'spirit3', src:'spirit-3', cls:'prop kodama', tap:'spirit', aura:{ glow:'rgba(190,255,225,.55)' }, css:'left:2.5%;bottom:41vh;width:7.5vw;filter:brightness(.82);animation-duration:7.4s;animation-delay:-2.6s' },
+      { key:'joe',    src:'forest-joe', cls:'idle', css:'left:38.2%;bottom:30.5vh;width:9.7vw' },
+      { key:'pgrass', src:'portal-grass', css:'left:57.6%;bottom:32.1vh;width:44.2vw' },                                                    // the keyed clip lost its grass — the still's grass sits under it
+      { key:'portal', vid:'portal-loop', ar:896/984, now:true, tap:'portal', aura:{ glow:'rgba(214,120,255,.55)', label:'?????', lt:2 }, css:'left:57.6%;bottom:32.1vh;width:44.2vw' },
+      { key:'orb',    src:'orb-active', css:'left:52.5%;bottom:27vh;width:8.5vw', to:{ css:'--pw:44.2vw;--ow:9vw;left:calc(79.7% - var(--ow)/2);bottom:calc(32.1vh + var(--pw)*.80 - var(--ow)/2);width:9vw', delay:0, dur:900, ease:'cubic-bezier(.3,0,.2,1)' } } ]},
+    forest6: { bg:'forest-bg', sparkle:'portal', layers:[ { key:'mushY', src:'mush-yellow', css:'left:6%;bottom:22vh;width:5.5vw' }, { key:'shards', src:'shards', cls:'shards', css:'left:49%;bottom:29vh;width:6vw' },                                                                                 // pulled toward it; the orb circles the portal, spinning and pulsing, as in the castle
+      { key:'spirit3', src:'spirit-3', cls:'prop kodama', tap:'spirit', aura:{ glow:'rgba(190,255,225,.55)' }, css:'left:2.5%;bottom:41vh;width:7.5vw;filter:brightness(.82);animation-duration:7.4s;animation-delay:-2.6s' },
+      { key:'joe',    src:'forest-joe', cls:'idle', css:'left:53%;bottom:30.8vh;width:8.6vw' },
+      { key:'pgrass', src:'portal-grass', css:'left:57.6%;bottom:32.1vh;width:44.2vw' },
+      { key:'portal', vid:'portal-loop', ar:896/984, tap:'portal', aura:{ glow:'rgba(214,120,255,.55)', label:'?????', lt:2 }, css:'left:57.6%;bottom:32.1vh;width:44.2vw' },
+      { key:'orbit',  vid:'orb-float', ar:1, cls:'prop orbit', now:true, css:'--pw:44.2vw;--ow:9vw;left:calc(79.7% - var(--ow)/2);bottom:calc(32.1vh + var(--pw)*.80 - var(--ow)/2);width:var(--ow)' } ]},
+    forest7: { bg:'forest-bg', sparkle:'portal', layers:[ { key:'mushY', src:'mush-yellow', css:'left:6%;bottom:22vh;width:5.5vw' }, { key:'shards', src:'shards', cls:'shards', css:'left:49%;bottom:29vh;width:6vw' },                                                                                 // gone — a puff where he stood
+      { key:'spirit3', src:'spirit-3', cls:'prop kodama', tap:'spirit', aura:{ glow:'rgba(190,255,225,.55)' }, css:'left:2.5%;bottom:41vh;width:7.5vw;filter:brightness(.82);animation-duration:7.4s;animation-delay:-2.6s' },
+      { key:'pgrass', src:'portal-grass', css:'left:57.6%;bottom:32.1vh;width:44.2vw' },
+      { key:'portal', vid:'portal-loop', ar:896/984, tap:'portal', aura:{ glow:'rgba(214,120,255,.55)', label:'?????', lt:2 }, css:'left:57.6%;bottom:32.1vh;width:44.2vw' },
+      { key:'orbit',  vid:'orb-float', ar:1, cls:'prop orbit', css:'--pw:44.2vw;--ow:9vw;left:calc(79.7% - var(--ow)/2);bottom:calc(32.1vh + var(--pw)*.80 - var(--ow)/2);width:var(--ow)' },
+      { key:'poofV',  vid:'cas-smoke', ar:1, hold:true, pop:true, now:true, css:'left:46vw;bottom:calc(29vh - 2vw);width:22vw' } ]},
     /* CASTLE = 7-shot sequence traced from the "5 - Castle 1/2/3/4/5/6/13" mockups. Keys persist
        across shots so the engine morphs/crossfades: `joe` = knight arts → designer arts (the
        swap happens while `joecloud` covers him); `dragon` crossfades pose → then SHRINKS via a
@@ -146,8 +197,21 @@
       { key:'joe3', vid:'cas-hurrah2', ar:700/900, hold:true, css:CAS_JOE2 }
     ]}
   };
+  Object.keys(COMP).forEach(function (n) { if (/^castle/.test(n)) COMP[n].layers.unshift(   // the portal — huge, behind the whole fight; the secret achievement (click it with the Special cursor) lives here
+    { key:'portal', vid:'portal-loop', ar:896/984, cls:'prop portal', tap:'portal', now:true, css:'left:50%;bottom:38vh;width:min(31vw,600px);transform:translateX(-50%)' }); });   // far back on the plain, behind everything
+  Object.keys(COMP).forEach(function (n) { if (/^castle/.test(n)) COMP[n].layers.splice(1, 0,   // the orb — straight after the portal: in front of it, behind everyone else
+    { key:'orb', vid:'orb-float', ar:1, cls:'prop orbit', now:true, css:'--pw:min(31vw,600px);--ow:min(8.25vw,148px);left:calc(50% - var(--ow)/2);bottom:calc(38vh + var(--pw)*.80 - var(--ow)/2);width:var(--ow)' }); });
   Object.keys(COMP).forEach(function (n) { if (/^castle/.test(n)) COMP[n].layers.push(   // Bone Collector 2/2 — mid-ground between Joe and Trogdor, every castle shot
     { key:'bones2', vid:'bones-rattle', ar:722/424, idle:true, hoverPlay:true, cls:'prop', tap:'bones', hoverSnd:'bone-jiggle', now:true, css:'left:47%;bottom:36vh;width:min(5vw,100px)' }); });
+  /* the orb's moods: now and then a quick full spin, or a swell and settle. Separate `rotate`/`scale`
+     properties, so they ride on top of the figure-of-eight (which only moves `translate`). */
+  setInterval(function () {
+    var o = document.querySelector('#jjst .jjst-layer.orbit'); if (!o || !o.animate || o._fx) return;
+    var r = Math.random(), a = null;
+    if (r < .22) a = o.animate([{ rotate: '0deg' }, { rotate: (Math.random() < .5 ? '-' : '') + '360deg' }], { duration: 900 + Math.random() * 500, easing: 'cubic-bezier(.45,0,.2,1)' });
+    else if (r < .5) { var big = 1.18 + Math.random() * .2; a = o.animate([{ scale: 1 }, { scale: big }, { scale: .92 }, { scale: 1 }], { duration: 1300, easing: 'ease-in-out' }); }
+    if (a) { o._fx = true; a.onfinish = a.oncancel = function () { o._fx = false; }; }
+  }, 1600);
   var taken = {};                                            // props the reader has picked up — never rebuilt
 
   /* ---- VILLAGE = 4-panel storyboard, sizes + positions traced from the "2 - Village 1..4"
@@ -172,7 +236,7 @@
        wedge and its pointed base hides inside the head; the origin (58.4% 46%) is the mouth interior. */
     var L = [
       /* the three chickens by the house: a Seedance one-shot that waits on its first frame — tap → squawk + a little hop, and they stay worried */
-      { key:'chicks', vid:'vil-chickens', ar:898/592, hold:true, idle:true, tap:'chicks', cls:'prop', css:'left:4%;bottom:27vh;width:min(21vw,420px)' },   // the three by the house: wait on frame 0; tap → squawk + hop, they stay worried
+      { key:'chicks', vid:'vil-chickens', ar:898/592, hold:true, idle:true, tap:'chicks', cls:'prop', aura:{ glow:'rgba(255,214,120,.6)' }, css:'left:4%;bottom:27vh;width:min(21vw,420px)' },   // the three by the house: wait on frame 0; tap → squawk + hop, they stay worried
       /* one Seedance clip does it all now: he huffs (his own smoke puffs), the fire starts at 2.2s — the same beat the
          old two-layer flame used to grow on — and the blaze is held by a swung tail. Body sits where the old loop's did. */
       /* both are Seedance one-shots (turn-back at the very end trimmed, last stride held): the class in `run` lands on
@@ -211,11 +275,27 @@
     { text:"He had a fascination for gold, jewels, treasures and anything that sparkled...but also something more sinister...the local villagers!",
       comp:'cavern', triggers:[ { at:'jewels', fx:'chest' }, { at:'sparkled', fx:'bedOut' }, { at:'more sinister', comp:'village1' } ] },
     { text:"He had many names, Beast, Dragon, Death, but the one that put fear into the hearts of the locals was...Trogdor! Trogdor The Burninator...",
-      comp:'village1', triggers:[ { at:'Trogdor!', fx:'bedOut' } ] },   // shots advance on a timer (runVillageSeq); the shouting fades before the tavern
+      comp:'village1', triggers:[ { at:'Trogdor!', fx:'bedOut' }, { at:'Trogdor! Trogdor', fx:'blackout' } ] },   // the scene goes to black under the banner; the tavern fades it back in   // shots advance on a timer (runVillageSeq); the shouting fades before the tavern
     { text:"Luckily one day a brave young man appeared to try and best this beast! His goal? To save the villagers and stop this evil...",
       comp:'village4', triggers:[ { at:'Luckily one day', comp:'tavern' }, { at:'stop this evil', comp:'tavern2' } ] },   // Trogdor rises into the window ~2s before the tavern ends
-    { text:"“Joe the Righteous” they called! He set off a journey to find the beast, searching through forests, rolling hills and treacherous mountains...",
-      comp:'tavern2', triggers:[ { at:'Joe the Righteous', comp:'woodland' } ] },
+    { text:"“Joe the Righteous” they called! And so he set off to find the beast...as nighttime fell he rode over rolling hills...and treacherous mountains...",
+      comp:'tavern2', triggers:[ { at:'Joe the Righteous', comp:'woodland' }, { at:'set off', fx:'barsIn' }, { at:'find the beast...', pause:2000 },
+        { at:'nighttime fell', comp:'hills' }, { at:'rolling hills...', pause:3600 }, { at:'treacherous mountains...', comp:'mountains', pause:4600 } ] },   // the line waits while he rides through each
+    { text:"Then he encountered a forest, but something felt...different...enchanted perhaps...Joe decided to dismount to take in the woodland aura",
+      comp:'forest1', triggers:[ { at:'perhaps...', pause:1200 }, { at:'dismount', comp:'forest2', fx:'barsOut' } ] },
+    { text:"He then saw something strange up ahead, a large stone structure like nothing he had ever seen before and in front of it a strange object...",
+      comp:'forest2', triggers:[ { at:'up ahead,', comp:'forest3' } ] },
+    { text:"He leaned over to inspect. Instantly it began to shake and glow then Joe felt an energy flow through him. The ground began to vibrate...",
+      comp:'forest4', triggers:[ { at:'shake and glow', fx:'orbGlow' }, { at:'vibrate...', fx:'quake', pause:1400 } ] },
+    { text:"The orb shot into the air and a glowing purple swirl appeared in the stone with runes lighting up! Joe was in shock...suddenly he felt a force...",
+      comp:'forest5', triggers:[ { at:'felt a force...', pause:900 } ] },
+    { text:"Out of his control, he moves closer to the portal when suddenly... He vanishes into thin air...No where to be seen...Is this that last of Joe?",
+      comp:'forest6', triggers:[ { at:'suddenly...', comp:'forest7', pause:1300 } ],
+      end:{ delay:1600, run:function(){ dimScene(function () { runScene(curScene + 1); }); } } },   // the forest dims; the last lines type over it
+    { text:"Well, it is for now anyway. But perhaps there’s more to be discovered later on...I’ll leave you with Designer Joe now, also quite a magical guy...",
+      triggers:[ { at:'anyway.', fx:'black', pause:1300 }, { at:'later on...', fx:'loaderIn', pause:1300 } ],   // cut to black on 'anyway.'; the evolution row comes up behind the banner on 'later on'
+      end:{ delay:2200, run:function(){ endPartOneDone(); } } },   // the banner goes a few seconds into the loader, before the loader ends
+    /* ---- Part Two picks up here (the fight) ---- */
     { text:"He went toe to toe with the beast in an epic battle lasting for days, facing fire and all his might and...Wait a minute...I think this is the wrong story...",
       comp:'castle1', read:500, triggers:[ { at:'facing fire', comp:'castle2' }, { at:'Wait a minute', comp:'castle3' } ] },   // short read: less time on confused Joe
     { text:"Ah yes, sorry. Oops, that's a different Joe. This one is the story of a Designer...yet still an all great and powerful Designer...",
@@ -245,7 +325,7 @@
   '#jjst-dark{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.8s ease;background:radial-gradient(ellipse at 50% 62%,rgba(4,8,22,.18) 0%,rgba(3,6,18,.55) 62%,rgba(2,4,14,.78) 100%);}'+
   '#jjst-dark.on{opacity:1;}'+   // over the cave board, under the chest / bones / Trogdor
   '#jjst-night{position:absolute;inset:0;opacity:0;transition:opacity .9s ease;pointer-events:none;}'+   // sits between the sky and the boards (DOM order)
-  '#jjst-night.on{opacity:1;}#jjst-night svg{width:100%;height:100%;display:block;}'+
+  '#jjst-night.on{opacity:1;}#jjst-night svg{width:100%;height:100%;display:block;}#jjst-night.over{z-index:1;}#jjst-night.over svg{height:62%;}'+   // over a board: the sky band only
   '#jjst-night .jjst-moonw{transform-box:fill-box;transform-origin:50% 50%;animation:jjstMoonW 7s ease-in-out infinite;}'+
   '#jjst-night .jjst-mpulse{animation:jjstMPulse 7s ease-in-out infinite;}'+
   '#jjst-night .jjst-tw{animation:jjstTw var(--d,3s) ease-in-out var(--o,0s) infinite;filter:drop-shadow(0 0 4px rgba(255,255,255,.95)) drop-shadow(0 0 10px rgba(199,231,255,.7));}'+
@@ -268,6 +348,7 @@
     'background:radial-gradient(ellipse at 50% 58%,var(--gc,rgba(255,255,255,.4)) 0%,transparent 62%);filter:blur(18px);'+
     'opacity:0;transform:scale(.92);transition:opacity .45s ease,transform .45s ease;}'+
   '#jjst .jjst-aura.hov .aglow{opacity:1;transform:scale(1);}'+
+  '@font-face{font-family:"Sketch Gothic School";src:url("' + GB + 'sketch-gothic-school.ttf") format("truetype");font-display:swap;}'+
   '#jjst .jjst-aura .alabel{position:absolute;left:50%;top:-4%;transform:translate(-50%,8px);padding:6px 16px;border-radius:999px;'+
     'background:rgba(10,14,26,.72);border:1px solid rgba(255,255,255,.28);color:#fff;font-size:clamp(12px,1.05vw,17px);font-weight:700;letter-spacing:.04em;white-space:nowrap;'+
     'opacity:0;transition:opacity .35s ease,transform .35s cubic-bezier(.34,1.56,.64,1);}'+
@@ -275,10 +356,14 @@
   '#jjst .jjst-aura.lit .aglow{opacity:1;transform:scale(1);}'+
   '#jjst .jjst-layer.pop{animation:jjstPop .55s cubic-bezier(.34,1.56,.64,1);transform-origin:50% 100%;}'+
   '#jjst .jjst-layer.hearthy{transform-origin:50% 100%;transition:transform .35s cubic-bezier(.34,1.56,.64,1);}#jjst .jjst-layer.hearthy.warm{transform:scale(1.14);}'+
-  'body.jj-modal-open #jjst>:not(.jjst-ov),body.jj-modal-open #jj-sc-hud,body.jj-modal-open .menu-links,body.jj-modal-open .menu-button,body.jj-modal-open #jj-sound-btn,body.jj-modal-open #jj-sound-mist{pointer-events:none!important;}'+   // achievements / Storytime prompt open → the scene and page chrome sleep while the active overlay remains usable
+  'body.jj-modal-open #jjst>:not(.jjst-ov),body.jj-modal-open #jj-sound-btn,body.jj-modal-open #jj-sound-mist{pointer-events:none!important;}'+   // achievements / Storytime prompt open → the scene and page chrome sleep while the active overlay remains usable
   '#jjst .jjst-layer.sky{animation:jjst-float 7s ease-in-out infinite;transition:scale .35s ease,filter .3s ease;z-index:2;}#jjst .jjst-layer.sky:hover{scale:1.12;}'+
   '#jjst .jjst-layer.sky.gone{opacity:0;translate:28vw -45vh;scale:.25;transition:translate 1.1s cubic-bezier(.5,0,.8,1),scale 1.1s cubic-bezier(.5,0,.8,1),opacity .5s ease .5s;pointer-events:none!important;}'+
   '@keyframes jjst-float{0%,100%{transform:translate(0,0) rotate(-3deg);}50%{transform:translate(1.2vw,-2.4vh) rotate(3deg);}}'+
+  '#jjst .jjst-layer.portal{z-index:0;filter:drop-shadow(0 0 40px rgba(150,60,255,.35));animation:jjstPortal 4s ease-in-out infinite;}@keyframes jjstPortal{0%,100%{filter:drop-shadow(0 0 30px rgba(150,60,255,.3));}50%{filter:drop-shadow(0 0 70px rgba(190,90,255,.6));}}'+
+  '#jjst .jjst-layer.orbit{z-index:0;pointer-events:none!important;animation:jjstOrbit 14s linear infinite;filter:drop-shadow(0 0 16px rgba(255,190,80,.55));}'+
+  '@keyframes jjstOrbit{0.00%{translate:calc(var(--pw) * 0.0000) calc(var(--pw) * -0.0000)}3.12%{translate:calc(var(--pw) * 0.0842) calc(var(--pw) * -0.0546)}6.25%{translate:calc(var(--pw) * 0.1556) calc(var(--pw) * -0.1072)}9.38%{translate:calc(var(--pw) * 0.2033) calc(var(--pw) * -0.1556)}12.50%{translate:calc(var(--pw) * 0.2200) calc(var(--pw) * -0.1980)}15.62%{translate:calc(var(--pw) * 0.2033) calc(var(--pw) * -0.2328)}18.75%{translate:calc(var(--pw) * 0.1556) calc(var(--pw) * -0.2587)}21.88%{translate:calc(var(--pw) * 0.0842) calc(var(--pw) * -0.2746)}25.00%{translate:calc(var(--pw) * 0.0000) calc(var(--pw) * -0.2800)}28.12%{translate:calc(var(--pw) * -0.0842) calc(var(--pw) * -0.2746)}31.25%{translate:calc(var(--pw) * -0.1556) calc(var(--pw) * -0.2587)}34.38%{translate:calc(var(--pw) * -0.2033) calc(var(--pw) * -0.2328)}37.50%{translate:calc(var(--pw) * -0.2200) calc(var(--pw) * -0.1980)}40.62%{translate:calc(var(--pw) * -0.2033) calc(var(--pw) * -0.1556)}43.75%{translate:calc(var(--pw) * -0.1556) calc(var(--pw) * -0.1072)}46.88%{translate:calc(var(--pw) * -0.0842) calc(var(--pw) * -0.0546)}50.00%{translate:calc(var(--pw) * -0.0000) calc(var(--pw) * -0.0000)}53.12%{translate:calc(var(--pw) * 0.0842) calc(var(--pw) * 0.0546)}56.25%{translate:calc(var(--pw) * 0.1556) calc(var(--pw) * 0.1072)}59.38%{translate:calc(var(--pw) * 0.2033) calc(var(--pw) * 0.1556)}62.50%{translate:calc(var(--pw) * 0.2200) calc(var(--pw) * 0.1980)}65.62%{translate:calc(var(--pw) * 0.2033) calc(var(--pw) * 0.2328)}68.75%{translate:calc(var(--pw) * 0.1556) calc(var(--pw) * 0.2587)}71.88%{translate:calc(var(--pw) * 0.0842) calc(var(--pw) * 0.2746)}75.00%{translate:calc(var(--pw) * 0.0000) calc(var(--pw) * 0.2800)}78.12%{translate:calc(var(--pw) * -0.0842) calc(var(--pw) * 0.2746)}81.25%{translate:calc(var(--pw) * -0.1556) calc(var(--pw) * 0.2587)}84.38%{translate:calc(var(--pw) * -0.2033) calc(var(--pw) * 0.2328)}87.50%{translate:calc(var(--pw) * -0.2200) calc(var(--pw) * 0.1980)}90.62%{translate:calc(var(--pw) * -0.2033) calc(var(--pw) * 0.1556)}93.75%{translate:calc(var(--pw) * -0.1556) calc(var(--pw) * 0.1072)}96.88%{translate:calc(var(--pw) * -0.0842) calc(var(--pw) * 0.0546)}100.00%{translate:calc(var(--pw) * -0.0000) calc(var(--pw) * 0.0000)}}'+
+  '#jjst .jjst-layer.portal:hover{filter:drop-shadow(0 0 60px rgba(200,110,255,.8));}#jjst .jjst-layer.nope{animation:jjstNope .5s ease;}@keyframes jjstNope{0%,100%{translate:0 0;}25%{translate:-6px 0;filter:drop-shadow(0 0 60px rgba(255,0,245,.9));}75%{translate:6px 0;}}#jjst .jjst-layer.lit{animation:none;filter:drop-shadow(0 0 90px rgba(255,80,255,.95)) brightness(1.15);}'+
   '#jjst .jjst-layer.prop{transition:filter .3s ease,opacity .6s ease;}#jjst .jjst-layer.prop:hover{filter:drop-shadow(0 0 10px rgba(255,240,180,.95)) drop-shadow(0 0 28px rgba(255,220,120,.6));}'+
   '#jjst .jjst-layer.taken{animation:jjstTaken .7s cubic-bezier(.4,0,.7,1) forwards!important;pointer-events:none!important;}'+
   '@keyframes jjstTaken{0%{translate:0 0;scale:1;rotate:0deg;opacity:1;}30%{translate:0 -3vh;scale:1.12;rotate:-8deg;opacity:1;}100%{translate:0 -12vh;scale:.25;rotate:30deg;opacity:0;}}'+
@@ -307,10 +392,50 @@
   '@keyframes jjstFleeC{0%,21%{transform:translate(0,0) scale(1);opacity:1;}75%{opacity:1;}100%{transform:translate(13vw,-6vh) scale(.28);opacity:0;}}'+
   gallopFrames()+
   '.jjst-layer.morph{transition:left .8s cubic-bezier(.4,0,.2,1),right .8s cubic-bezier(.4,0,.2,1),bottom .8s cubic-bezier(.4,0,.2,1),width .8s cubic-bezier(.4,0,.2,1),opacity .55s ease;}'+
+  '@keyframes jjstPan{from{transform:scale(1.2) translateX(8.5%);}to{transform:scale(1.2) translateX(-8.5%);}}'+
+  '#jjst .jjst-bg.pan{animation:jjstPan 15s linear infinite alternate;}'+                                   // the land slides against the ride                                   // the land slides against the ride
+  '@keyframes jjstShake{0%,100%{translate:0 0;}25%{translate:3px -2px;}50%{translate:-3px 1px;}75%{translate:2px 2px;}}'+
+  '.jjst-layer.glow{filter:drop-shadow(0 0 10px #ffd76a) drop-shadow(0 0 26px rgba(255,215,106,.75)) brightness(1.15);animation:jjstShake .11s linear infinite;transition:filter .6s ease;}'+
+  '@keyframes jjstQuake{0%,100%{translate:0 0;}20%{translate:-6px 4px;}40%{translate:6px -3px;}60%{translate:-4px -4px;}80%{translate:4px 3px;}}'+
+  '#jjst.quake #jjst-bgwrap,#jjst.quake #jjst-layers{animation:jjstQuake .45s ease-in-out 3;}'+
+  '#jjst .jjst-layer.cut{transition:none!important;}'+
+  /* forest spirits: the whole head tilts slowly on its neck, holds, tilts the other way, then a quick rattle — kodama */
+  '@keyframes jjstKodama{0%,100%{rotate:0deg;}12%{rotate:-7deg;}30%{rotate:-7deg;}42%{rotate:6deg;}58%{rotate:6deg;}61%{rotate:-9deg;}63%{rotate:9deg;}65%{rotate:-8deg;}67%{rotate:7deg;}69%{rotate:-5deg;}71%{rotate:3deg;}74%{rotate:0deg;}}'+
+  '#jjst .jjst-layer.kodama{transform-origin:50% 88%;animation:jjstKodama 7s ease-in-out infinite;}'+
+  '@keyframes jjstRattle{0%,100%{rotate:0deg;}10%{rotate:-13deg;}25%{rotate:12deg;}40%{rotate:-11deg;}55%{rotate:10deg;}70%{rotate:-7deg;}85%{rotate:4deg;}}'+
+  '#jjst .jjst-layer.kodama.rattle{animation:jjstRattle .7s linear 1;}'+
+  '@keyframes jjstJolt{0%{translate:0 0;scale:1;}12%{translate:0 -3vh;scale:1.04 .96;}30%{translate:1vw -1vh;scale:.98 1.03;}48%{translate:-.6vw 0;}66%{translate:.4vw 0;}100%{translate:0 0;scale:1;}}#jjst .jjst-layer.jolt{animation:jjstJolt 1s ease-out 1!important;}'+
+  /* snow: a layer of drifting flakes over the mountains, and a soft cap of snow settling on the banner */
+  '#jjst-snow{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;transition:opacity 1.6s ease;overflow:hidden;}#jjst-snow.on{opacity:1;}'+
+  '#jjst-snow i{position:absolute;top:-4vh;border-radius:50%;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.9);opacity:.85;animation:jjstSnow var(--d,9s) linear var(--dl,0s) infinite;will-change:transform;}'+
+  '@keyframes jjstSnow{0%{transform:translate3d(0,0,0);}25%{transform:translate3d(calc(var(--sw) * .6),27vh,0);}50%{transform:translate3d(calc(var(--sw) * -.2),54vh,0);}75%{transform:translate3d(calc(var(--sw) * .8),81vh,0);}100%{transform:translate3d(var(--sw),110vh,0);}}'+
+  '#jjst-cap .jjst-capsnow{position:absolute;left:.8%;width:96.2%;top:-2.4%;height:25.5%;object-fit:fill;pointer-events:none;opacity:0;transition:opacity 3s ease;z-index:2;}#jjst-cap.snowy .jjst-capsnow{opacity:1;}'+
+  '#jjst-snow i.fk{border-radius:0;background:none;box-shadow:none;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%271.6%27 stroke-linecap=%27round%27%3E%3Cpath d=%27M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1M12 5l-2 2M12 5l2 2M12 19l-2-2M12 19l2-2M5 12l2-2M5 12l2 2M19 12l-2-2M19 12l-2 2%27/%3E%3C/svg%3E");background-size:contain;filter:drop-shadow(0 0 3px rgba(255,255,255,.9));animation:jjstSnow var(--d,9s) linear var(--dl,0s) infinite,jjstSpin var(--sp,7s) linear infinite;}'+
+  '@keyframes jjstSpin{to{rotate:360deg;}}'+
+  /* enchanted-forest sparkle: motes twinkle in place and drift slowly up */
+  '#jjst-sparkle{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;transition:opacity 1.4s ease;overflow:hidden;}#jjst-sparkle.on{opacity:1;}'+
+  '#jjst-sparkle i{position:absolute;border-radius:50%;background:var(--c,#fff7d6);box-shadow:0 0 6px var(--c,#fff2b8),0 0 14px var(--c,rgba(190,255,225,.7));animation:jjstTwk var(--d,3s) ease-in-out var(--dl,0s) infinite,jjstFloat var(--fd,12s) ease-in-out var(--dl,0s) infinite alternate;}'+
+  '#jjst-sparkle i.st{border-radius:0;background:none;box-shadow:none;background-image:radial-gradient(circle,#fff 0 18%,transparent 19%),conic-gradient(from 0deg,transparent 0 40deg,var(--c,#fff6c8) 45deg 50deg,transparent 55deg 130deg,var(--c,#fff6c8) 135deg 140deg,transparent 145deg 220deg,var(--c,#fff6c8) 225deg 230deg,transparent 235deg 310deg,var(--c,#fff6c8) 315deg 320deg,transparent 325deg);filter:drop-shadow(0 0 4px var(--c,#fff2b8));}'+
+  '#jjst .jjst-layer.shards{filter:drop-shadow(0 0 10px rgba(255,120,220,.85)) drop-shadow(0 0 22px rgba(200,120,255,.6));animation:jjstShardGlow 2.6s ease-in-out infinite;}@keyframes jjstShardGlow{0%,100%{filter:drop-shadow(0 0 8px rgba(255,120,220,.7)) drop-shadow(0 0 18px rgba(200,120,255,.45));}50%{filter:drop-shadow(0 0 16px rgba(255,140,230,1)) drop-shadow(0 0 34px rgba(210,130,255,.8));}}'+
+  '#jjst-cap .jjst-capdeco{position:absolute;right:12%;bottom:91%;height:34%;display:flex;align-items:flex-end;gap:.5vw;pointer-events:none;opacity:0;transition:opacity 1.2s ease;z-index:2;}#jjst-cap.forest .jjst-capdeco,#jjst-cap.forest .jjst-capcrystal{opacity:1;}'+   // perched ON the stone
+  '#jjst-cap .jjst-capdeco img{height:100%;width:auto;display:block;}#jjst-cap .jjst-capdeco img.sp{transform-origin:50% 88%;animation:jjstKodama 6.4s ease-in-out -1.7s infinite;}#jjst-cap .jjst-capdeco img.mu{height:62%;}'+
+  '#jjst-cap .jjst-capcrystal{position:absolute;left:12.5%;bottom:91%;height:30%;width:auto;pointer-events:none;opacity:0;transition:opacity 1.2s ease;z-index:2;filter:drop-shadow(0 0 8px rgba(255,120,220,.8)) drop-shadow(0 0 18px rgba(200,120,255,.5));}'+
+  '#jjst-sparkle.portal::before{content:"";position:absolute;left:58%;bottom:26vh;width:44vw;height:44vw;transform:translateX(0);border-radius:50%;background:radial-gradient(circle,rgba(214,120,255,.42) 0%,rgba(255,106,213,.22) 32%,rgba(125,249,255,.10) 52%,transparent 70%);filter:blur(6px);animation:jjstGlow 3.2s ease-in-out infinite;}'+
+  '@keyframes jjstGlow{0%,100%{opacity:.7;scale:.94;}50%{opacity:1;scale:1.06;}}'+
+  '@keyframes jjstTwk{0%,100%{opacity:.15;scale:.6;}50%{opacity:1;scale:1.25;}}@keyframes jjstFloat{to{translate:var(--fx,0) var(--fy,-4vh);}}'+
+  /* the first scene's hints */
+  '#jjst-hints{position:absolute;inset:0;z-index:7;pointer-events:none;opacity:0;transition:opacity .7s ease;}#jjst-hints.on{opacity:1;}'+
+  '#jjst-hints .ar{position:absolute;width:30px;height:30px;translate:-50% -100%;animation:jjstArrow 1.3s ease-in-out infinite;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));transition:opacity .4s ease;}#jjst-hints .ar svg{width:100%;height:100%;fill:#FF00F5;}'+
+  '@keyframes jjstArrow{0%,100%{transform:translateY(-8px);}50%{transform:translateY(2px);}}'+
+  '#jjst-hint{position:absolute;left:50%;top:22%;transform:translate(-50%,-50%);isolation:isolate;padding:14px 24px;border-radius:24.5px;color:#fff;font-size:15px;letter-spacing:.06em;white-space:nowrap;}#jjst-hint>span{position:relative;z-index:1;}'+
+  '#jjst .jjst-layer.trogfly{transform-origin:50% 50%;animation:jjstTrog 9.5s ease-in-out .6s both;}@keyframes jjstTrog{0%{scale:.25;opacity:0;}14%{scale:1;opacity:.9;}86%{scale:1;opacity:.9;}100%{scale:.25;opacity:0;}}'+
+  /* the montage bars */
+  '#jjst-bars .b{position:absolute;left:0;right:0;height:calc(9vh + 16px);background:#000;z-index:6;transition:transform 1.4s cubic-bezier(.22,1,.36,1);}#jjst-bars .t{top:0;transform:translateY(-101%);}#jjst-bars .d{bottom:0;transform:translateY(101%);}#jjst-bars.on .b{transform:none;}'+
   '.jjst-layer.enter{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1);}'+
   '.jjst-layer.enter.in{opacity:1;transform:translateY(0);}'+
   '#jjst-black{position:absolute;left:50%;top:55%;width:0;height:0;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 90px 24px rgba(255,176,84,.35) inset,0 0 0 9999px #05080f;z-index:8;pointer-events:none;}'+
   '#jjst-fade{position:absolute;inset:0;background:#05080f;opacity:0;z-index:10;pointer-events:none;transition:opacity '+T.endFade+'ms ease;}'+
+  '#jjst-cap{z-index:11!important;}'+                                                                              // the banner reads over the end dim / black
   '#jjst-loader{position:absolute;inset:0;z-index:20;background:#05080f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .6s ease;}'+
   '#jjst-loader.hide{opacity:0;pointer-events:none;}'+
   '#jjst-loader .ring{width:46px;height:46px;border-radius:50%;border:4px solid rgba(244,197,96,.22);border-top-color:#f4c560;animation:jjst-spin .9s linear infinite;}'+
@@ -335,8 +460,16 @@
   '#jjst [data-jj="btn"]>*:not(.jj-btn-fill):not(.jj-btn-pink),#jjst [data-jj="cta"]>*:not(.jj-cta-fill):not(.jj-cta-pink){position:relative;z-index:2;transition:color .3s ease,fill .3s ease;}'+
   '#jjst [data-jj="btn"]:hover,#jjst [data-jj="btn"]:hover *{color:#fff!important;}#jjst [data-jj="btn"]:hover path{fill:#fff!important;}'+
   '#jjst .jj-btn-pink,#jjst .jj-cta-pink{position:absolute;border-radius:50%;background:#FF00F5;opacity:.9;pointer-events:none;z-index:1;transform:scale(0);transition:transform .4s ease-out,opacity .4s ease;}'+
-  '#jjst-skipcta.on{opacity:1;pointer-events:auto;transform:none;}'+
+  '#jjst-skipcta{display:none!important;}'+
   '#jjst-skipcta .button-text{white-space:nowrap;}'+
+  /* the transport: previous / pause / next, top centre, three HUD-style pills (jj-score paints their ::before theme for theme) */
+  '.nav{pointer-events:none;}.nav>*{pointer-events:auto;}.nav-container{pointer-events:none;}.nav-container>*{pointer-events:auto;}'+   // the nav's full-width bands (.nav and .nav-container) were swallowing clicks on the transport beneath them — only the logo, the pills and the menu catch the mouse
+  '#jjst-ctl{position:absolute;left:50%;top:30px;transform:translateX(-50%);z-index:12;display:flex;gap:8px;opacity:0;pointer-events:none;transition:opacity .6s ease;}'+
+  '@media (max-width:1100px){#jjst-ctl{top:96px;}}'+                                                              // under the nav band when the pills crowd the centre
+  '#jjst-ctl.on{opacity:1;pointer-events:auto;}body.jj-menu-open #jjst-ctl,body.jj-modal-open #jjst-ctl{opacity:0!important;pointer-events:none!important;}'+
+  '#jjst-ctl .jb{position:relative;isolation:isolate;width:48px;height:48px;border:0;background:none;padding:0;border-radius:24.5px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;}'+
+  '#jjst-ctl .jb>*{position:relative;z-index:1;}#jjst-ctl .jb svg{width:18px;height:18px;display:block;fill:currentColor;}#jjst-ctl .jb:hover::before{filter:brightness(1.25);}'+
+  '#jjst-ctl .jb[disabled]{opacity:.35;cursor:default;}#jjst-ctl .jb .pl{display:none;}#jjst.paused #jjst-ctl .jb .pl{display:block;}#jjst.paused #jjst-ctl .jb .pa{display:none;}'+
   '#jjst-skipcta .ico{width:1.6vw;height:1.6vw;min-width:18px;min-height:18px;display:block;}'+
   '.jjst-ov{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s ease,visibility 0s linear .3s;}'+
   '.jjst-ov.on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .3s ease,visibility 0s;}'+
@@ -381,10 +514,11 @@
   function sched(fn, ms){ var rec = { fn: fn, due: performance.now() + ms, t: 0 };
     rec.t = setTimeout(function () { delete TIMERS[rec.t]; fn(); }, ms); TIMERS[rec.t] = rec; return rec.t; }
   function unsched(id){ if (id == null) return; clearTimeout(id); var r = TIMERS[id]; if (r) { clearTimeout(r.t); delete TIMERS[id]; } }
-  function pauseStory(){ if (storyPaused) return; storyPaused = true; var now = performance.now();
+  function pauseStory(softAnims){ if (storyPaused) return; storyPaused = true; var now = performance.now();
     Object.keys(TIMERS).forEach(function (k) { var r = TIMERS[k]; clearTimeout(r.t); r.rem = Math.max(0, r.due - now); });
     pausedVideos = []; document.querySelectorAll('#jjst video').forEach(function (v) { if (!v.paused && !v.ended) { pausedVideos.push(v); v.pause(); } });
-    try { document.getElementById('jjst').getAnimations({ subtree: true }).forEach(function (a) { if (a.playState === 'running') a.pause(); }); } catch (e) {}
+    var freeze = function () { if (!storyPaused) return; try { document.getElementById('jjst').getAnimations({ subtree: true }).forEach(function (a) { if (a.playState === 'running') a.pause(); }); } catch (e) {} };
+    if (softAnims) setTimeout(freeze, 1900); else freeze();      // softAnims: the new shot's crossfade/moves are allowed to land first
     pausedHowls = []; try { (window.Howler ? Howler._howls : []).forEach(function (h) { if (h.playing()) { pausedHowls.push(h); h.pause(); } }); } catch (e) {}
   }
   function resumeStory(){ if (!storyPaused) return; storyPaused = false;
@@ -395,14 +529,71 @@
     pausedHowls.forEach(function (h) { try { h.play(); } catch (e) {} }); pausedHowls = [];
   }
   var bgWrap, layersWrap, curComp = null, curBg = null, curBgLayer = null, animTimers = [], layerRecs = {};
-  function showBg(name){
-    if (name === curBg) return; curBg = name;
+  var BG_TR = ', transform 1.6s ease-in-out, filter 1.2s ease';
+  var snowEl = null, sparkEl = null, hintEl = null, hintT = 0;
+  function setSparkle(mode){                                // the enchanted forest: motes of light, a fresh scatter every shot; 'portal' = denser and coloured, clustered round the portal
+    if (sparkEl) { var old = sparkEl; sparkEl = null; old.classList.remove('on'); setTimeout(function () { old.remove(); }, 1500); }
+    if (capEl) { capEl.classList.toggle('forest', !!mode);          // a tree spirit and a mushroom perch on the banner through the forest
+      if (mode && !capEl.querySelector('.jjst-capdeco')) { var cd = document.createElement('div'); cd.className = 'jjst-capdeco'; cd.innerHTML = '<img class="sp" alt="" src="' + F('spirit-3') + '"><img class="mu" alt="" src="' + F('mush-purple') + '">'; capEl.appendChild(cd);
+        var cc = document.createElement('img'); cc.className = 'jjst-capcrystal'; cc.alt = ''; cc.src = F('shards'); capEl.appendChild(cc); } }
+    if (!mode) return;
+    var portal = mode === 'portal', near = mode === 'near', n = portal ? 150 : 70, sc = near ? 1.9 : 1;
+    var cols = portal ? ['#ff6ad5', '#c77dff', '#7df9ff', '#ffe27a', '#b8ffd9', '#ffffff', '#ff9de2', '#9d6bff', '#5ee7ff', '#ffd166'] : ['#fff7d6', '#e6ffe9', '#fff2b8', '#d8f3ff'];
+    sparkEl = document.createElement('div'); sparkEl.id = 'jjst-sparkle'; if (portal) sparkEl.classList.add('portal'); var h = '';
+    for (var i = 0; i < n; i++) {
+      var cl = portal && i % 4 !== 0, big = i % 4 === 0, sz = ((big ? (7 + Math.random() * 8) : (2 + Math.random() * 3.5)) * sc).toFixed(1), c = cols[i % cols.length];
+      var x = cl ? (54 + Math.random() * 46) : Math.random() * 100, y = cl ? (12 + Math.random() * 60) : (8 + Math.random() * 62);
+      h += '<i' + (big ? ' class="st"' : '') + ' style="left:' + x.toFixed(1) + '%;top:' + y.toFixed(1) + '%;width:' + sz + 'px;height:' + sz + 'px;--c:' + c + ';--d:' + ((portal ? 1.4 : 2.4) + Math.random() * 2.4).toFixed(1) + 's;--dl:-' + (Math.random() * 5).toFixed(1) + 's;--fd:' + (7 + Math.random() * 9).toFixed(1) + 's;--fx:' + (Math.random() * 6 - 3).toFixed(1) + 'vw;--fy:' + (-(3 + Math.random() * 7)).toFixed(1) + 'vh"></i>'; }
+    sparkEl.innerHTML = h; layersWrap.parentNode.insertBefore(sparkEl, layersWrap.nextSibling);
+    setTimeout(function () { if (sparkEl) sparkEl.classList.add('on'); }, 30);
+  }
+  /* the first scene: a bobbing arrow over everything that can be pressed, and a themed hint pill in the middle */
+  function setHints(layers){
+    clearInterval(hintT); hintT = 0;
+    if (!layers) { if (hintEl) { hintEl.classList.remove('on'); setTimeout(function () { if (hintEl) { hintEl.remove(); hintEl = null; } }, 700); } return; }
+    if (!hintEl) { hintEl = document.createElement('div'); hintEl.id = 'jjst-hints';
+      hintEl.innerHTML = '<div id="jjst-hint"><span>Hint: Some things are interactive...</span></div>' + layers.filter(function (L) { return L.hint; }).map(function (L) { return '<i class="ar" data-k="' + L.key + '"><svg viewBox="0 0 24 24"><path d="M12 20 4 10h5V4h6v6h5z"/></svg></i>'; }).join('');
+      layersWrap.parentNode.appendChild(hintEl); setTimeout(function () { if (hintEl) hintEl.classList.add('on'); }, 1600); }
+    var place = function () { if (!hintEl) return; hintEl.querySelectorAll('.ar').forEach(function (a) { var rec = layerRecs[a.getAttribute('data-k')]; if (!rec) { a.style.opacity = '0'; return; }
+      var r = rec.el.getBoundingClientRect(); if (!r.width) { a.style.opacity = '0'; return; } a.style.opacity = '';
+      var cx = r.left + r.width * (a.getAttribute('data-k') === 'dragonloop' ? .62 : .5), top = r.top + r.height * (a.getAttribute('data-k') === 'dragonloop' ? .22 : 0);
+      a.style.left = cx + 'px'; a.style.top = (top - 14) + 'px'; }); };
+    place(); hintT = setInterval(place, 400);
+  }
+  /* the montage bars: letterbox top and bottom, under the nav and the banner */
+  var barsEl = null;
+  function setBars(on){
+    if (!barsEl) { barsEl = document.createElement('div'); barsEl.id = 'jjst-bars'; barsEl.innerHTML = '<div class="b t"></div><div class="b d"></div>'; layersWrap.parentNode.appendChild(barsEl); void barsEl.offsetWidth; }
+    barsEl.classList.toggle('on', on);
+  }
+  function setSnow(on){                                     // the mountains: flakes drift down the frame; a cap of snow settles on the banner
+    if (on && !snowEl) { snowEl = document.createElement('div'); snowEl.id = 'jjst-snow'; var h = '';
+      for (var i = 0; i < 60; i++) { var fk = i % 3 === 0, sz = fk ? (9 + Math.random() * 9).toFixed(1) : (2 + Math.random() * 5).toFixed(1);   // every third one is a proper snowflake
+        h += '<i' + (fk ? ' class="fk"' : '') + ' style="--sp:' + (5 + Math.random() * 6).toFixed(1) + 's;left:' + (Math.random() * 100).toFixed(1) + '%;width:' + sz + 'px;height:' + sz + 'px;--d:' + (7 + Math.random() * 8).toFixed(1) + 's;--dl:-' + (Math.random() * 14).toFixed(1) + 's;--sw:' + (2 + Math.random() * 6).toFixed(1) + 'vw;opacity:' + (.45 + Math.random() * .5).toFixed(2) + '"></i>'; }
+      snowEl.innerHTML = h; layersWrap.parentNode.insertBefore(snowEl, layersWrap.nextSibling);
+      if (capEl && !capEl.querySelector('.jjst-capsnow')) { var cs = document.createElement('img'); cs.className = 'jjst-capsnow'; cs.alt = ''; cs.src = F('banner-snow'); capEl.appendChild(cs); } }
+    if (snowEl) snowEl.classList.toggle('on', on);
+    if (capEl) capEl.classList.toggle('snowy', on);
+  }
+  var cutNow = false, blackout = false;                    // blackout: the scene is under full black (the banner and controls stay); lifted by the next non-village comp                                        // comp.cut: a film cut — no crossfade on the board, no glide on the figures
+  var slideT = 0;
+  function dressBg(el, c){                                   // per-comp board treatment: a dim, a pan against the ride, the camera's zoom, a slide with a figure (the horse drifting at the dismount)
+    c = c || {}; el.classList.toggle('pan', !!c.pan); clearTimeout(slideT);
+    el.style.transformOrigin = c.zoom ? c.zoom.ox + ' ' + c.zoom.oy : '50% 50%';
+    el.style.transform = c.zoom ? 'scale(' + c.zoom.s + ')' : ''; el.style.filter = c.bgFx || '';
+    if (c.slide) { var sl = c.slide, go = function () { el.style.transition = 'opacity ' + T.bgFade + 'ms ease, transform ' + (sl.dur || 0) + 'ms ease-in-out, filter 1.2s ease'; el.style.transform = 'translateX(' + sl.dx + ')'; };
+      if (sl.delay) slideT = setTimeout(go, sl.delay); else go(); }
+  }
+  function showBg(name, c){
+    if (name === curBg) { if (curBgLayer) { curBgLayer.style.transition = cutNow ? 'none' : 'opacity ' + T.bgFade + 'ms ease' + BG_TR; dressBg(curBgLayer, c); } return; }
+    curBg = name;
     var incoming = document.createElement('img'); incoming.className = 'jjst-bg'; incoming.src = F(name);
-    incoming.style.opacity = '0'; bgWrap.appendChild(incoming);
+    incoming.style.opacity = '0'; dressBg(incoming, c); bgWrap.appendChild(incoming);
     var outgoing = curBgLayer; void incoming.offsetWidth;
-    incoming.style.transition = 'opacity ' + T.bgFade + 'ms ease'; incoming.style.opacity = '1';
-    if (outgoing) { outgoing.style.transition = 'opacity ' + T.bgFade + 'ms ease'; outgoing.style.opacity = '0';
-      setTimeout(function () { if (outgoing.parentNode) outgoing.remove(); }, T.bgFade + 80); }
+    incoming.style.transition = cutNow ? 'none' : 'opacity ' + T.bgFade + 'ms ease' + BG_TR; incoming.style.opacity = '1';
+    if (outgoing) { if (cutNow) { if (outgoing.parentNode) outgoing.remove(); } else {
+      outgoing.style.transition = 'opacity ' + T.bgFade + 'ms ease'; outgoing.style.opacity = '0';
+      setTimeout(function () { if (outgoing.parentNode) outgoing.remove(); }, T.bgFade + 80); } }
     curBgLayer = incoming;
   }
   function clearAnims(){ animTimers.forEach(function (t) { clearInterval(t); unsched(t); }); animTimers = []; }
@@ -524,13 +715,15 @@
       else if (el.currentTime >= L.seg[1]) el.currentTime = L.seg[0]; });
   }
   function wireWarm(el, L){                                  // a bed-sound prop (the hearth): grows on hover, its bed swells with it
-    if (!L.hoverBoost || el._warmWired) return; el._warmWired = true; el.style.pointerEvents = 'auto'; el.setAttribute('data-cursor', 'hover');
+    if (!L.hoverBoost) return; el.style.pointerEvents = 'auto'; el.setAttribute('data-cursor', 'hover');   // re-applied every pass
+    if (el._warmWired) return; el._warmWired = true;
     el.addEventListener('pointerenter', function () { el.classList.add('warm'); if (compHowl) try { compHowl.fade(compHowl.volume(), compVol * L.hoverBoost, 400); } catch (e) {} });
     el.addEventListener('pointerleave', function () { el.classList.remove('warm'); if (compHowl) try { compHowl.fade(compHowl.volume(), compVol, 600); } catch (e) {} });
   }
-  function wireTap(el, L, k){                                 // a pressable prop (the chest, the bones, the chickens)
-    if (!L.tap || el._tapWired) return; el._tapWired = true;
-    el.style.pointerEvents = 'auto'; el.style.cursor = 'pointer'; el.setAttribute('data-cursor', 'hover');
+  function wireTap(el, L, k){                                 // a pressable prop (the chest, the bones, the chickens, the spirits)
+    if (!L.tap) return;
+    el.style.pointerEvents = 'auto'; el.style.cursor = 'pointer'; el.setAttribute('data-cursor', 'hover');   // re-applied every pass: a morph rewrites cssText and would leave it unpressable
+    if (el._tapWired) return; el._tapWired = true;
     el.addEventListener('click', function (e) { e.stopPropagation(); runFx(L.tap, k, e); });
     if (L.hoverSnd) el.addEventListener('pointerenter', function () { var n = performance.now(); if (n - (el._hs || 0) < 1500) return; el._hs = n; oneShot(L.hoverSnd, .3); });   // the rattle
     if (L.hoverPlay && el.tagName === 'VIDEO') {                // an idle clip that only moves while the pointer is on it
@@ -540,12 +733,33 @@
   }
   function runFx(name, key, e){
     if (name === 'bedOut') { fadeBed(2500); return; }
+    if (name === 'wake') {                                     // a prod at the sleeping Trogdor: he jolts, a big snort, and Rise and Shine
+      var wk = layerRecs[key]; if (!wk || wk.el._jolt) return; wk.el._jolt = true;
+      wk.el.classList.remove('jolt'); void wk.el.offsetWidth; wk.el.classList.add('jolt'); setTimeout(function () { wk.el.classList.remove('jolt'); wk.el._jolt = false; }, 1100);
+      oneShot('dragon-snore', .5);
+      if (e && window.jjScore) window.jjScore.award('wake', { x: e.clientX, y: e.clientY });
+      return;
+    }
+    if (name === 'blackout') { blackout = true; var bf = document.getElementById('jjst-fade'); bf.style.transition = 'opacity 1.6s ease'; bf.style.opacity = '1'; return; }
+    if (name === 'barsIn') { setBars(true); return; }
+    if (name === 'barsOut') { setBars(false); return; }
+    if (name === 'spirit') {                                   // a tap on a tree spirit: it rattles, and Forest Friend (→ the Tree Spirit companion)
+      var sp = layerRecs[key]; if (sp) { sp.el.classList.remove('rattle'); void sp.el.offsetWidth; sp.el.classList.add('rattle'); setTimeout(function () { sp.el.classList.remove('rattle'); }, 750); }
+      oneShot('bone-jiggle', .25);
+      if (window.jjScore) window.jjScore.award('spirit', { x: e ? e.clientX : null, y: e ? e.clientY : null });
+      return;
+    }
+    if (name === 'orbGlow') { var og = layerRecs.orb; if (og) { og.el.src = F('orb-active'); og.src = F('orb-active'); og.el.style.width = '8.5vw'; og.el.style.rotate = '0deg'; og.el.classList.add('glow'); } return; }   // it wakes: the lit art, shivering
+    if (name === 'black') { toBlack(); return; }
+    if (name === 'quake') { var q = document.getElementById('jjst'); q.classList.remove('quake'); void q.offsetWidth; q.classList.add('quake'); setTimeout(function () { q.classList.remove('quake'); }, 1600); return; }
+    if (name === 'loaderIn') { endLoaderIn(); return; }
     if (name === 'dark' || name === 'darkOff') { var on = name === 'dark', dk = document.getElementById('jjst-dark'), sg = document.getElementById('jjst'); if (dk) dk.classList.toggle('on', on); if (sg) sg.classList.toggle('moody', on); return; }
     if (name === 'chick') {                                    // the bones twitch, the chicken squawks and hops, then it's back to shivering (wireSeg)
       var cr = layerRecs[key]; if (!cr || cr.el._hop) return; var v = cr.el, hl = v._segL;
       v._hop = true; try { v.currentTime = hl.hop[0]; } catch (x) {}
       var pv = v.play(); if (pv && pv.catch) pv.catch(function () {});
       setTimeout(function () { oneShot('chicken-squawk', .45); }, 350);
+      if (window.jjScore) window.jjScore.award('chick-cave', { x: e ? e.clientX : null, y: e ? e.clientY : null });   // → the Armoured Chicken in the store
       return;
     }
     if (name === 'chicks') {                                   // the village three: squawk + hop, once through; a second prod replays from the calm still
@@ -554,6 +768,16 @@
       oneShot('chickens-squawk', .45);
       var gp = gv.play(); if (gp && gp.catch) gp.catch(function () {});
       var gfree = function () { gv._busy = false; }; gv.addEventListener('ended', gfree, { once: true }); setTimeout(gfree, 5500);
+      if (e && window.jjScore) window.jjScore.award('chick-village', { x: e.clientX, y: e.clientY });   // the visitor's prod earns it, not Trogdor's automatic startle   // → the Battle Chicken in the store
+      return;
+    }
+    if (name === 'portal') {                                   // the secret: only the Special cursor opens it (five stars + the big well-done)
+      var pr = layerRecs[key]; if (!pr || pr.el.classList.contains('lit')) return;
+      var special = document.documentElement.getAttribute('data-jj-cursor') === 'mixed';
+      if (!special) { pr.el.classList.remove('nope'); void pr.el.offsetWidth; pr.el.classList.add('nope'); oneShot('bone-jiggle', .15); return; }   // a purple shiver: something is here, but not for this cursor
+      pr.el.classList.add('lit');                             // NOT taken[]: a taken key is filtered out of the next comp — that pulled the whole portal at the vanish (s81). It stays, blazing
+      if (pr.aura) sparkleBurst(pr.aura, 14); oneShot('chest-sparkle', .3);
+      if (window.jjScore) window.jjScore.award('portal', { x: e ? e.clientX : null, y: e ? e.clientY : null });
       return;
     }
     if (name === 'ufo') {                                      // the sky alien bolts up and away; Stopped an Alien Invasion (+10)
@@ -608,7 +832,8 @@
     }
     animTimers.push(t);
   }
-  function fadeRemove(el){ if (el.tagName === 'VIDEO') { if (el._howl) { var hw = el._howl; el._howl = null; try { hw.fade(hw.volume(), 0, 450); } catch (e0) {} setTimeout(function () { try { hw.unload(); } catch (e2) {} }, 600); } setTimeout(function () { try { el.pause(); } catch (e) {} }, 620); }   // pause AFTER the fade — the pause handler would cut the howl dead
+  function fadeRemove(el){ if (cutNow) { if (el._howl) { try { el._howl.unload(); } catch (e0) {} el._howl = null; } if (el.parentNode) el.remove(); return; }
+    if (el.tagName === 'VIDEO') { if (el._howl) { var hw = el._howl; el._howl = null; try { hw.fade(hw.volume(), 0, 450); } catch (e0) {} setTimeout(function () { try { hw.unload(); } catch (e2) {} }, 600); } setTimeout(function () { try { el.pause(); } catch (e) {} }, 620); }   // pause AFTER the fade — the pause handler would cut the howl dead
     el.style.transition = 'opacity .5s ease'; el.style.opacity = '0';
     setTimeout(function () { if (el.parentNode) el.remove(); }, 560); }
   function keyOf(L, idx){ return L.key || (L.anim ? 'anim:' + L.anim[0] : L.src) || ('i' + idx); }
@@ -623,10 +848,12 @@
   function applyMove(el, L){                                 // slow secondary move within a shot (e.g. Joe rides into the distance)
     if (!L.to) return; var t = L.to;
     animTimers.push(sched(function () {
+      el.classList.remove('cut');                              // a move after a cut still glides (the orb's flight)
+      void el.offsetWidth;                                     // commit the start position first, or the glide is skipped and he is simply "already there" (off the far edge)
       var e = t.ease || 'ease-in-out', d = t.dur || 4000;
       el.style.transition = ['left', 'right', 'top', 'bottom', 'width'].map(function (p) { return p + ' ' + d + 'ms ' + e; }).join(',');
       t.css.split(';').forEach(function (decl) { var c = decl.indexOf(':'); if (c > 0) el.style.setProperty(decl.slice(0, c).trim(), decl.slice(c + 1).trim()); });
-    }, t.delay || 0));
+    }, Math.max(80, t.delay || 0)));
   }
   function mountLayer(el, L){                                // behind:true → under the scene board (over the sky): shows only through holes like the tavern window
     if (L.behind) bgWrap.insertBefore(el, bgWrap.querySelector('.jjst-bg')); else layersWrap.appendChild(el);
@@ -661,7 +888,8 @@
                          '<source src="' + GB + 'story-' + L.vid + '.webm' + AV + '" type="video/webm">';
           el.style.cssText = L.css + ';opacity:0'; mountLayer(el, L);
           reveal(el, L);
-          if (!L.idle) { var pr = el.play(); if (pr && pr.catch) pr.catch(function () {}); }   // blocked → the poster stands in
+          if (!L.idle && !storyPaused) { var pr = el.play(); if (pr && pr.catch) pr.catch(function () {}); }   // blocked → the poster stands in
+          else if (!L.idle) pausedVideos.push(el);                                                         // born under a pause: it starts with the resume
           rec = layerRecs[k] = { el: el, src: first };
           rec.aura = makeAura(L, el);
           if (L.snd) attachSound(el, L.snd);
@@ -699,6 +927,7 @@
         rec = layerRecs[k] = { el: el, src: first };
         if (L.aura || L.hero) rec.aura = makeAura(L, el);
       }
+      if (cutNow) el.classList.add('cut');                   // a film cut: the figure is simply there, in its new place
       applyScale(el, L, startSc);
       if (L.cls && /\b(idle|scared)\b/.test(L.cls)) {        // each character on its own beat + tempo
         var trem = /\bscared\b/.test(L.cls);
@@ -767,8 +996,10 @@
     if (name === 'village1' && typeof curComp === 'string' && curComp.indexOf('village') === 0) return; // don't restart the village once it's running (2nd caption keeps comp:'village1')
     curComp = name;
     var c = COMP[name]; if (!c) return;
-    swapAt = c.swapAt || 0;
-    showBg(c.bg); setNight(c.bg); buildLayers(c.layers); setCompSound(c.snd); playCue(c.cue);
+    swapAt = c.swapAt || 0; cutNow = !!c.cut;
+    if (blackout && name.indexOf('village') !== 0) { blackout = false; var bo = document.getElementById('jjst-fade'); setTimeout(function () { bo.style.transition = 'opacity 1.4s ease'; bo.style.opacity = '0'; }, 250); }
+    setSnow(!!c.snow); setSparkle(c.sparkle || false); setHints(name === 'cavern' ? c.layers : null);
+    showBg(c.bg, c); setNight(c.bg); buildLayers(c.layers); setCompSound(c.snd); playCue(c.cue);
     if (name !== 'cavern') runFx('darkOff');            // the darkness belongs to the cave
     if (name === 'village1') { runVillageSeq();      // start the equal-timed dragon-fire sequence
       panelTimers.push(sched(function () { runFx('chicks', 'chicks'); }, 2500)); }   // the three by the house jump when Trogdor's fire starts (2.2s into his clip)
@@ -779,21 +1010,63 @@
     b.style.transition = 'width ' + T.revealDur + 'ms ease, height ' + T.revealDur + 'ms ease';
     b.style.width = '260vmax'; b.style.height = '260vmax';
     setTimeout(function () { b.style.display = 'none'; }, T.revealDur + 120); }
-  function fadeToBlack(){ var f = document.getElementById('jjst-fade'); void f.offsetWidth; f.style.opacity = '1';
-    if (window.jjScore) { window.jjScore.award('storytime'); window.jjScore.award('storytime-star'); } // theme + star; only the whole tale, never Skip
-    setTimeout(function () {
-      if (window.jjStory && window.jjStory.unlock) window.jjStory.unlock();
-      setCompSound(null); playCue(null); releaseAmbient();
-      window.scrollTo(0, 0);
-      var w = document.getElementById('jjst');                 // lift the black away → My Story is revealed beneath
-      if (w) { w.style.transition = 'opacity 1.4s ease'; w.style.opacity = '0';
-        setTimeout(function () { if (w.parentNode) w.remove(); }, 1500); }
-    }, T.endFade + 300); }
+  function liftStory(){                                    // lift the black away → My Story is revealed beneath
+    if (window.jjStory && window.jjStory.unlock) window.jjStory.unlock();
+    window.scrollTo(0, 0);
+    var w = document.getElementById('jjst');
+    if (w) { w.style.transition = 'opacity 1.4s ease'; w.style.opacity = '0'; setTimeout(function () { if (w.parentNode) w.remove(); }, 1500); }
+  }
+  function fadeToBlack(){ var f = document.getElementById('jjst-fade'); void f.offsetWidth; f.style.opacity = '1';   // Part Two's ending (the fight)
+    if (window.jjScore) window.jjScore.award('storytime');
+    setTimeout(function () { setCompSound(null); playCue(null); releaseAmbient(); liftStory(); }, T.endFade + 300); }
+  /* ---- Part One's ending: Joe is gone, the forest fades to black, the last lines type ON the black and the "To be continued"
+     evolution loader comes up BEHIND the banner — the loader is slipped under #jjst, and #jjst goes see-through except for the
+     banner. The loader holds until the last line has been read, then goes to black, and My Story is underneath. ---- */
+  var endDrv = null, endTyped = false, endT = 0, ending = false;   // ending: the last two lines are running (dim → black → loader); resetEnd clears it
+  function dimScene(next){                                 // Joe is gone: the forest dims (not out) under "Well, it is for now anyway."
+    ending = true; var f = document.getElementById('jjst-fade'); f.style.transition = 'opacity 1.6s ease'; void f.offsetWidth; f.style.opacity = '.84';
+    if (window.jjScore) window.jjScore.award('storytime');   // the tale row pays the theme AND a star; only the whole tale, never Skip
+    setCompSound(null); playCue(null);
+    setTimeout(function () { if (next) next(); }, 1300);
+  }
+  function toBlack(){                                      // 'anyway.' → black. From here #jjst is only the banner: the black is the fade layer, then the loader's own
+    var f = document.getElementById('jjst-fade'); f.style.transition = 'opacity .7s ease'; f.style.opacity = '1';
+    clearTimeout(endT); endT = setTimeout(function () {
+      if (!ending) return;                                   // stepped back out before the black landed: leave the scene alone
+      ['jjst-bgwrap', 'jjst-layers', 'jjst-dark', 'jjst-night'].forEach(function (id) { var e = document.getElementById(id); if (e) e.style.visibility = 'hidden'; });
+      document.getElementById('jjst').style.background = 'transparent';
+    }, 800);
+  }
+  function endLoaderIn(){
+    if (!ending || !(window.JJLoader && window.JJLoader.start)) return;
+    var o = evoOpts(); o.variant = 'pill'; o.layout = 'mystory'; o.bg = GB + 'loader-pill-mystory.webp'; o.assets.push(o.bg);   // Joe's pill loader (Sep '26)
+    o.title = 'To be continued\u2026'; o.msg1 = 'To be continued'; o.msg2 = 'Hint: Check the achievements to find out more'; o.minTime = 7000; o.maxWait = 90000;
+    o.driver = function (onP, onD) { endDrv = { onP: onP, onD: onD }; var p = 0;
+      var iv = setInterval(function () { p = Math.min(.92, p + .018); onP(p); if (p >= .92) clearInterval(iv); }, 150);   // the row paints in at a steady pace while the line types
+      if (endTyped) onD(); };
+    o.onReady = liftStory;
+    JJLoader.start(o);
+    var ld = document.getElementById('jjld'); if (ld) ld.style.zIndex = '1999';   // under #jjst (z 2000): the banner reads over it
+    releaseAmbient();
+    var f = document.getElementById('jjst-fade'); f.style.transition = 'opacity 1s ease'; f.style.opacity = '0';   // the loader's own black is underneath: one continuous black, then its scene eases in
+  }
+  function resetEnd(){                                     // stepping back from the ending: the forest returns, the black lifts, the loader (if up) goes
+    ending = false; clearTimeout(endT); var f = document.getElementById('jjst-fade'); if (f) { f.style.transition = 'opacity .4s ease'; f.style.opacity = '0'; }
+    ['jjst-bgwrap', 'jjst-layers', 'jjst-dark', 'jjst-night'].forEach(function (id) { var e = document.getElementById(id); if (e) e.style.visibility = ''; });
+    var sg = document.getElementById('jjst'); if (sg) sg.style.background = '';
+    var ld = document.getElementById('jjld'); if (ld) ld.remove(); endDrv = null; endTyped = false;
+    [capEl, prog, document.getElementById('jjst-skipcta')].forEach(function (e) { if (e) { e.style.opacity = ''; e.style.pointerEvents = ''; } });
+  }
+  function endPartOneDone(){                               // the last line has been read: the banner goes, the loader finishes on its own clock, My Story is under it
+    endTyped = true;
+    [capEl, prog, document.getElementById('jjst-skipcta'), document.getElementById('jjst-ctl')].forEach(function (e) { if (e) { e.style.transition = 'opacity .8s ease'; e.style.opacity = '0'; e.style.pointerEvents = 'none'; } });
+    if (endDrv) endDrv.onD(); else liftStory(); }
 
   /* ---- typing + scene runner ---- */
   var textEl, capEl, prog, fill;
   /* the bar rolls continuously: it eases to the scene's start, then runs linearly to its end over the
      scene's expected length (typing + reading), like a video's playhead — no jumps between captions */
+  function pauseMs(s){ return (s.triggers || []).reduce(function (a, t) { return a + (t.pause || 0); }, 0); }
   function typeDuration(text){ var d = 0;
     for (var i = 1; i <= text.length; i++) { var ch = text.charAt(i - 1), t = T.typeSpeed;
       if (ch === '…') t = T.pauseEllipsis;
@@ -801,21 +1074,25 @@
       else if (ch === '!' || ch === '?') t = T.pauseDot;
       d += t; } return d; }
   var progT = null;
-  function rollProgress(i, ms){ var N = SCENES.length; clearTimeout(progT);
-    fill.style.transition = 'width .35s ease'; fill.style.width = (i / N * 100) + '%';           // ease to the scene's start (matters on Previous)
-    progT = setTimeout(function () { fill.style.transition = 'width ' + ms + 'ms linear'; fill.style.width = ((i + 1) / N * 100) + '%'; }, 380); }
+  function firstCastle(){ for (var si = 0; si < SCENES.length; si++) if (SCENES[si].comp === 'castle1') return si; return 0; }
+  function partBounds(){ var a = PART2 ? firstCastle() : 0, b = a; while (b < SCENES.length - 1 && !SCENES[b].end) b++; return [a, b]; }   // this part's first and last scene
+  function rollProgress(i, ms){ var pb = partBounds(), N = pb[1] - pb[0] + 1, ii = i - pb[0]; clearTimeout(progT);
+    fill.style.transition = 'width .35s ease'; fill.style.width = (ii / N * 100) + '%';           // ease to the scene's start (matters on Previous)
+    progT = setTimeout(function () { fill.style.transition = 'width ' + ms + 'ms linear'; fill.style.width = ((ii + 1) / N * 100) + '%'; }, 380); }
   var typeFF = null;                                       // while a line is typing: call to land it instantly
   function typeText(text, triggers, done){
-    var trs = (triggers || []).map(function (tr) { var k = text.indexOf(tr.at); return { idx: k < 0 ? -1 : k + tr.at.length, comp: tr.comp, fx: tr.fx, fired: false }; });
+    var trs = (triggers || []).map(function (tr) { var k = text.indexOf(tr.at); return { idx: k < 0 ? -1 : k + tr.at.length, comp: tr.comp, fx: tr.fx, pause: tr.pause || 0, fired: false }; });
+    var holdMs = 0;                                          // a trigger's `pause`: the line waits here (the picture is doing the talking)
     /* measure the finished line first, then lock the block to that height: the banner centres a
        block of the final size, so the text ends up in the middle and nothing shifts while typing */
     textEl.style.height = 'auto'; textEl.style.visibility = 'hidden'; textEl.textContent = text;
     textEl.style.height = textEl.offsetHeight + 'px'; textEl.style.visibility = '';
     textEl.textContent = ''; var i = 0; unsched(textEl._tw);
     var finished = false;
-    function fireTo(n){ for (var j = 0; j < trs.length; j++) { if (!trs[j].fired && trs[j].idx >= 0 && n >= trs[j].idx) { trs[j].fired = true; if (trs[j].comp) setComp(trs[j].comp); if (trs[j].fx) runFx(trs[j].fx); } } }
+    function fireTo(n){ for (var j = 0; j < trs.length; j++) { if (!trs[j].fired && trs[j].idx >= 0 && n >= trs[j].idx) { trs[j].fired = true; if (trs[j].comp) setComp(trs[j].comp); if (trs[j].fx) runFx(trs[j].fx); holdMs += trs[j].pause; } } }
     function finish(){ if (finished) return; finished = true; unsched(textEl._tw); typeFF = null;
-      textEl.textContent = text; fireTo(text.length); if (done) done(); }
+      textEl.textContent = text; fireTo(text.length); var h = holdMs; holdMs = 0;
+      if (done) { if (h) sched(done, h); else done(); } }           // a pause on the line's last word still holds the picture
     typeFF = finish;
     function step(){
       i++; textEl.textContent = text.slice(0, i);
@@ -825,6 +1102,7 @@
       if (ch === '…') delay = T.pauseEllipsis;
       else if (ch === '.') { if (text.charAt(i) === '.') delay = T.typeSpeed; else if (text.charAt(i - 2) === '.') delay = T.pauseEllipsis; else delay = T.pauseDot; }
       else if (ch === '!' || ch === '?') delay = T.pauseDot;
+      if (holdMs) { delay += holdMs; holdMs = 0; }
       textEl._tw = sched(step, delay);
     }
     textEl._tw = sched(step, T.typeSpeed);
@@ -832,10 +1110,11 @@
   var advTimer = null, curAdvance = null, curScene = 0, boxEnd = 0;    // the pending auto-advance + its manual twin; boxEnd = when this caption is due to end
   function runScene(i){
     if (i >= SCENES.length) return;
-    var s = SCENES[i]; curScene = i;
+    var s = SCENES[i]; curScene = i; if (window.jjStory && window.jjStory.ctlSync) setTimeout(window.jjStory.ctlSync, 0);
+    if (barsEl || i === 5) setBars(i === 5);                  // jumped in: the letterbox is on only for the ride into the forest (scene 4 raises it on 'set off', 5 drops it at the dismount)
     var readMs = s.end ? s.end.delay : (s.read != null ? s.read : Math.max(T.readMin, s.text.length * T.readPerChar));
-    boxEnd = performance.now() + typeDuration(s.text) + readMs;
-    rollProgress(i, typeDuration(s.text) + readMs);
+    boxEnd = performance.now() + typeDuration(s.text) + pauseMs(s) + readMs;
+    rollProgress(i, typeDuration(s.text) + pauseMs(s) + readMs);
     if (s.comp) setComp(s.comp);
     curAdvance = null;
     typeText(s.text, s.triggers, function () {
@@ -851,7 +1130,7 @@
     if (i < 0) return; stopLayerSounds();
     unsched(advTimer); advTimer = null; curAdvance = null; typeFF = null;
     if (textEl) unsched(textEl._tw); clearPanels();
-    if (i >= SCENES.length) { var last = SCENES[SCENES.length - 1]; if (last.end) last.end.run(); return; }
+    var pbj = partBounds(); if (i > pbj[1]) { var last = SCENES[pbj[1]]; if (last.end) last.end.run(); return; }   // past this part's last line = its ending
     runScene(i);
   }
   /* the ambient music returns (My Story is about to appear) */
@@ -879,7 +1158,7 @@
   /* ---- mount + choreography ---- */
   var PRELOAD = ['cav-bg','cav-dragon-loop-poster','cav-chest-closed','cav-chest-open','tav-joe-loop-poster','tav-crowd-poster','vil-dragon-loop-poster','vil-dragon-fire-poster','cav-dragon-1','vil-bg','vil-dragon-1','vil-dragon-2','vil-dragon-3','vil-dragon-4',
     'vil-char-1','vil-char-2','vil-char-3','vil-char-4','vil-char-5','vil-char-7','vil-pitch-drop','tav-bg-2','tav-joe','tav-char-1','tav-char-2','tav-char-3',
-    'wood-bg','wood-joe-loop3-poster','wood-char-1-loop-poster','wood-char-2-loop-poster','cas-bg','cas-joe-sword2-poster','cas-joe-shield-poster',
+    'wood-bg','wood-joe-loop3-poster','wood-char-1-loop-poster','wood-char-2-loop-poster','hills-bg','mtn-bg','forest-bg','ride-loop-poster','ride-dismount-poster','forest-far','forest-near','tav-trogdor-fly-poster','banner-snow','forest-joe','arch-off','orb-ground','orb-active','portal-grass','spirit-1','spirit-3','mush-purple','mush-blue','mush-yellow','shards','portal-loop-poster','cas-bg','cas-joe-sword2-poster','cas-joe-shield-poster',
     'cas-dragon-fc-poster','cas-pants2-poster','cas-hurrah2-poster','cas-smoke-poster'];
   function mount(){
     if (document.getElementById('jjst')) return;
@@ -906,7 +1185,7 @@
     });
     /* Skip: freeze everything, ask. 'X seconds left' = the rest of this caption + every caption after it. */
     function storyLeft(){ var ms = Math.max(0, boxEnd - performance.now());
-      for (var k = curScene + 1; k < SCENES.length; k++) { var sc = SCENES[k]; ms += typeDuration(sc.text) + (sc.end ? sc.end.delay + 800 : Math.max(T.readMin, sc.text.length * T.readPerChar)); }
+      for (var k = curScene + 1; k <= partBounds()[1]; k++) { var sc = SCENES[k]; ms += typeDuration(sc.text) + pauseMs(sc) + (sc.end ? sc.end.delay + 800 : Math.max(T.readMin, sc.text.length * T.readPerChar)); }
       return Math.ceil(ms / 1000); }
     /* hover fill + pink press on the three buttons (site-footer wires these on load, before our markup exists) */
     function pressFx(el, kind) { el.setAttribute('data-jj', kind); if (el.querySelector('.jj-' + kind + '-fill')) return;
@@ -919,6 +1198,8 @@
     pressFx(document.getElementById('jjst-nosnd'), 'cta'); pressFx(document.getElementById('jjst-yessnd'), 'cta');
     wireStageHits(document.getElementById('jjst'));
     window.addEventListener('jj:score:pause', function () { pauseStory(); clearHits(); document.querySelectorAll('#jjst .warm').forEach(function (n) { n.classList.remove('warm'); }); });
+    window.addEventListener('jj:menu:open', function () { pauseStory(); });                       // the tale holds still behind the main menu
+    window.addEventListener('jj:menu:close', function () { if (!ov.classList.contains('on') && !document.body.classList.contains('jj-modal-open')) resumeStory(); });
     window.addEventListener('jj:score:resume', function () { if (!ov.classList.contains('on')) resumeStory(); });
     var ov = document.getElementById('jjst-skipov');
     document.getElementById('jjst-skipcta').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation();
@@ -927,6 +1208,27 @@
     document.getElementById('jjst-skipgo').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); ov.classList.remove('on'); document.body.classList.remove('jj-modal-open'); storyPaused = false; skipStory(); });
     ov.addEventListener('click', function (e) { e.stopPropagation(); });
     prog = document.getElementById('jjst-progress'); fill = document.getElementById('jjst-progress-fill');
+    /* ---- previous / pause / next (also ← space →) ---- */
+    var ctl = document.createElement('div'); ctl.id = 'jjst-ctl';
+    ctl.innerHTML = '<button type="button" class="jb" id="jjst-prev" aria-label="Previous scene" data-cursor="hover"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM19 5v14L9 12z"/></svg></button>' +
+      '<button type="button" class="jb" id="jjst-pause" aria-label="Pause" data-cursor="hover"><svg class="pa" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg><svg class="pl" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>' +
+      '<button type="button" class="jb" id="jjst-next" aria-label="Next scene" data-cursor="hover"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM5 5v14l10-7z"/></svg></button>';
+    wrap.appendChild(ctl);
+    function ctlSync(){ var pb = partBounds(); document.getElementById('jjst-prev').disabled = curScene <= pb[0]; document.getElementById('jjst-next').disabled = curScene >= pb[1]; wrap.classList.toggle('paused', storyPaused); }
+    var ctlLast = 0;
+    function ctlGo(d){ if (endTyped) return; var nowT = performance.now(); if (nowT - ctlLast < 450) return; ctlLast = nowT;
+      var wasPaused = storyPaused; if (wasPaused) resumeStory();
+      var pb = partBounds(), i = Math.max(pb[0], Math.min(pb[1], curScene + d)); if (i === curScene && d > 0) return; resetEnd(); jumpScene(i);
+      if (wasPaused) { pauseStory(true); setTimeout(function () { if (storyPaused) { document.querySelectorAll('#jjst video').forEach(function (v) { if (!v.paused) { pausedVideos.push(v); v.pause(); } }); } }, 600); }   // stepping while paused stays paused: the shot lands, then freezes
+      ctlSync(); }
+    function ctlPause(){ if (storyPaused) resumeStory(); else pauseStory(); ctlSync(); }
+    document.getElementById('jjst-prev').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); ctlGo(-1); });
+    document.getElementById('jjst-next').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); ctlGo(1); });
+    document.getElementById('jjst-pause').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); ctlPause(); });
+    document.addEventListener('keydown', function (e) { if (!ctl.classList.contains('on') || document.body.classList.contains('jj-modal-open') || document.body.classList.contains('jj-menu-open')) return;
+      if (/^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || '')) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); ctlGo(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); ctlGo(-1); } else if (e.key === ' ') { e.preventDefault(); ctlPause(); } });
+    window.jjStory.ctlSync = ctlSync;
 
 
     /* ---- the gate: the evolution loader (jj-loader.js, variant C) fronts the whole page when
@@ -934,6 +1236,7 @@
        of Joe paint themselves in. Falls back to the little built-in loader if jj-loader is absent. */
     function beginStory() {
       var ld = document.getElementById('jjst-loader'); if (ld) ld.classList.add('hide');
+      if (PART2) { for (var si = 0; si < SCENES.length; si++) if (SCENES[si].comp === 'castle1') { START_SCENE = si; break; } }
       PRELOAD.forEach(function (n) { var im = new Image(); im.src = F(n); });   // the rest of the boards — AFTER the loader, so they never race it
       warmClips();                                                            // and the video clips, one at a time, in the order the tale needs them
       if (window.JJ_STORY_HOLD) {                      // preview mode: instant reveal, no typing/choreography
@@ -945,9 +1248,9 @@
       setTimeout(function () { revealFromBlack(); bedLive(); }, T.revealAt);
       setTimeout(function () {
         var go = function () {                                             // the box, the skip CTA, the nav, the first line — same beats as before
-          capEl.classList.add('on'); prog.classList.add('on'); document.getElementById('jjst-skipcta').classList.add('on');
+          capEl.classList.add('on'); prog.classList.add('on'); document.getElementById('jjst-ctl').classList.add('on');   // (the Skip CTA is retired — the transport covers it)
           setTimeout(navDrop, T.menuDropAt - T.boxFadeAt);
-          setTimeout(function () { runScene(0); }, T.firstTypeAt - T.boxFadeAt);
+          setTimeout(function () { runScene(START_SCENE); }, T.firstTypeAt - T.boxFadeAt);
         };
         if (soundOff()) askSound(go); else go();                          // muted visitors get a word first; nothing is typing yet, so nothing to pause
       }, T.boxFadeAt);
@@ -974,43 +1277,35 @@
       document.body.classList.add('jj-modal-open'); so.classList.add('on');
     }
     if (window.JJLoader && window.JJLoader.start) {
-      var EVO = [], EVOG = [], EVOB = [];
-      for (var ev = 1; ev <= 7; ev++) {
-        EVO.push(GB + 'joe-evo-' + ev + '.webp');
-        EVOG.push(GB + 'joe-evo-grey-' + ev + '.webp');
-        EVOB.push(GB + 'joe-evo-' + ev + 'b.webp');
+      document.getElementById('jjst-loader').classList.add('hide');            // plain dark page while the art warms
+      var ASSETS = [F('cav-bg'), F('cav-dragon-1'), F('vil-bg'), F('tav-bg-2'), F('wood-bg'), F('hills-bg'), F('mtn-bg'), F('forest-bg'), F('cas-bg'), BANNER];
+      if (PART2) {                                                             // Part Two: the portal loader, the big hint, straight into the fight
+        setComp('castle1');
+        JJLoader.start({ variant: 'portal', frames: [F('portal-1'), F('portal-2'), F('portal-3'), F('portal-4')], assets: ASSETS.concat([F('portal-1'), F('portal-2'), F('portal-3'), F('portal-4')]),
+          title: 'The Tale of Trogdor & Joe the Righteous \u00b7 Part Two', msg1: 'Grab your popcorn, it\u2019s about to go down', msg2: 'Hint: I like using my special cursor for this', minTime: 5000, maxWait: 18000, decode: true, onReady: beginStory });
+      } else {                                                                 // Part One: Joe squares up to Trogdor (the still plate until the Seedance clip lands as loader-fight.webm/.mov)
+        setComp('cavern');                                                     // first chapter up (hidden by the black)
+        JJLoader.start({ variant: 'pill', layout: 'storytime', bg: GB + 'loader-pill-storytime.webp',            // Joe's pill loader (Sep '26): the fight clip in the moonlit frame
+          img: GB + 'loader-fight-poster.webp', clip: { webm: GB + 'loader-fight.webm', mov: GB + 'loader-fight.mov' }, assets: ASSETS.concat([GB + 'loader-pill-storytime.webp']),
+          title: 'The Tale of Trogdor & Joe the Righteous', msg1: 'Hint: This is an interactive story',
+          minTime: 4500, maxWait: 18000, decode: true, onReady: beginStory });
       }
-      document.getElementById('jjst-loader').classList.add('hide');            // plain dark page while the figures warm
-      /* the seven figures used to lose the download race against ~40 scene fetches and turn up at 50%+.
-         Warm their grey+colour art first (14 small files, dark page, ≤3s), THEN raise the loader and
-         start the cavern — the loader's own list hits cache for them, so the row is there from frame one. */
-      warmImages(EVO.concat(EVOG), 3000, function () {
-      setComp('cavern');                                                     // first chapter up (hidden by the black)
-      JJLoader.start({
-        variant: 'evolution',
-        assets: [F('cav-bg'), F('cav-dragon-1'), F('vil-bg'), F('tav-bg-2'), F('wood-bg'), F('cas-bg'), BANNER].concat(EVO, EVOG, EVOB),
-        stages: EVO, stagesGrey: EVOG, stagesB: EVOB,
-        /* measured content boxes per stage (from the loader A/B page) — seats + fill spans */
-        stageBounds: [[0.390,0.590],[0.292,0.655],[0.278,0.740],[0.165,0.780],[0.163,0.805],[0.090,0.880],[0.115,0.838]],
-        stageBoundsX: [[0.393,0.632],[0.268,0.733],[0.350,0.685],[0.237,0.750],[0.360,0.757],[0.212,0.757],[0.372,0.728]],
-        title: 'The Tale of Trogdor & Joe the Brave',
-        msg1: 'Please keep the sound on,', msg2: 'This is an interactive journey \u2014 engage with the characters to get more out of it\u2026',
-        minTime: 4500, maxWait: 18000, decode: true,
-        onReady: beginStory
-      });
-      });
     } else {
-      setComp('cavern');
+      setComp(PART2 ? 'castle1' : 'cavern');
       preloadCritical(beginStory);
     }
   }
+  /* the seven evolution figures — the "To be continued…" loader between the tale and My Story */
+  function evoOpts() { var EVO = [], EVOG = [], EVOB = []; for (var ev = 1; ev <= 7; ev++) { EVO.push(GB + 'joe-evo-' + ev + '.webp'); EVOG.push(GB + 'joe-evo-grey-' + ev + '.webp'); EVOB.push(GB + 'joe-evo-' + ev + 'b.webp'); }
+    return { variant: 'evolution', assets: EVO.concat(EVOG, EVOB), stages: EVO, stagesGrey: EVOG, stagesB: EVOB,
+      stageBounds: [[0.390,0.590],[0.292,0.655],[0.278,0.740],[0.165,0.780],[0.163,0.805],[0.090,0.880],[0.115,0.838]], stageBoundsX: [[0.393,0.632],[0.268,0.733],[0.350,0.685],[0.237,0.750],[0.360,0.757],[0.212,0.757],[0.372,0.728]] }; }
   /* The clips are the only heavy assets not covered by the loader. Fetch them sequentially in story order
      (one format only — whichever this browser will actually play) so each sits in the HTTP cache before its
      scene mounts; the <video> then loads instantly instead of showing its poster while it buffers. */
   function warmClips(){
     var probe = document.createElement('video'), hevc = !!probe.canPlayType('video/mp4; codecs="hvc1"');
     var seen = {}, order = [];
-    ['cavern','village1','village2','tavern','tavern2','woodland','castle1','castle2','castle3','castle4','castle5','castle6'].forEach(function (n) {
+    ['cavern','village1','village2','tavern','tavern2','woodland','hills','forest1','forest5','forest7','castle1','castle2','castle3','castle4','castle5','castle6'].forEach(function (n) {
       ((COMP[n] || {}).layers || []).forEach(function (L) { if (L.vid && !seen[L.vid]) { seen[L.vid] = true; order.push(L.vid); } }); });
     var i = 0;
     function next(){ if (i >= order.length || !window.fetch) return; var u = GB + 'story-' + order[i++] + (hevc ? '.mov' : '.webm') + AV;

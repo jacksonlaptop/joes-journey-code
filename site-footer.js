@@ -117,6 +117,16 @@ document.addEventListener("DOMContentLoaded", function () {
   if (window.jjAudio.sounds.indexOf(ambient) === -1) window.jjAudio.sounds.push(ambient);
   window.jjAudio.ambient = ambient;
   window.jjAudio.ambientTarget = TARGET_VOLUME;
+  ambient._src = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a19b8f4191d4fbca53259a5_Lotro-ambient.mp3';
+  /* music themes (jj-score's store): swap the ambient track in place — the new one picks up wherever the old one was in its fade */
+  window.jjAudio.swapAmbient = function (src) {
+    if (!src || ambient._src === src) return;
+    var old = ambient, wasOn = false, vol = 0; try { wasOn = old.playing(); vol = old.volume(); } catch (e) {}
+    var n = new Howl({ src: [src], loop: true, volume: 0, html5: false }); n._src = src;
+    ambient = n; window.jjAudio.ambient = n; window.jjAudio.sounds.push(n);
+    if (wasOn) { n.play(); n.fade(0, window.jjAudio.muted ? 0 : TARGET_VOLUME, 1500); faded = true; }
+    try { old.fade(vol, 0, 900); setTimeout(function () { try { old.stop(); old.unload(); } catch (e) {} }, 1000); } catch (e) {}
+  };
 
   var faded = false;
   function playWithFade() {
@@ -189,54 +199,93 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!wrap || !btn || !list || document.getElementById('jj-menu-meta')) return;
 
     var st = document.createElement('style'); st.id = 'jj-menu-polish'; st.textContent =
-      'body.jj-menu-open *{pointer-events:none!important}body.jj-menu-open .menu-wrap,body.jj-menu-open .menu-wrap *,body.jj-menu-open .menu-container,body.jj-menu-open .menu-container *,body.jj-menu-open #jj-sc-hud,body.jj-menu-open #jj-sc-hud *{pointer-events:auto!important}' +
+      'body.jj-menu-open *{pointer-events:none!important}body.jj-menu-open .menu-wrap,body.jj-menu-open .menu-wrap *,body.jj-menu-open .menu-container,body.jj-menu-open .menu-container *,body.jj-menu-open .nav-logo-link,body.jj-menu-open .nav-logo-link *,body.jj-menu-open #jj-sound-btn,body.jj-menu-open #jj-sound-btn *,body.jj-menu-open .audio-container-controller,body.jj-menu-open .audio-container-controller *,body.jj-menu-open #jj-sc-hud,body.jj-menu-open #jj-sc-hud *,body.jj-menu-open #jj-co-nav,body.jj-menu-open #jj-co-nav *{pointer-events:auto!important}' +
       'body.jj-menu-open{overflow:hidden!important}body.jj-menu-open .menu-wrap{isolation:isolate;cursor:default}' +
-      '.menu-wrap .images-row{position:fixed!important;inset:8vh -18vw 7vh 2vw!important;width:auto!important;height:auto!important;display:flex!important;align-items:center!important;gap:1.2vw!important;z-index:-1!important;transform:translateX(0);opacity:.7;filter:saturate(.82)}' +
-      '.menu-wrap .menu-hover-image{position:relative!important;inset:auto!important;width:36vw!important;height:72vh!important;min-width:36vw!important;object-fit:cover!important;border:1px solid rgba(255,255,255,.28)!important;border-radius:20px!important;clip-path:polygon(10% 0,100% 0,90% 100%,0 100%);transform:rotate(-3deg);box-shadow:0 30px 90px rgba(0,0,0,.55)!important}' +
+      '.menu-wrap::before{content:"";position:fixed;inset:0;z-index:-3;background:rgba(4,7,16,.92);-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);pointer-events:none;opacity:0;transition:opacity .9s ease}' +   // the dim + blur eases in behind the wipe, never snaps
+      'body.jj-menu-open .menu-wrap::before{opacity:1}' +
+      /* Close pressed: everything the menu put on screen — the art, the links, the rail, the moon, the companion card — is gone
+         before the circle wipe starts, so the wipe closes over an empty dark room */
+      'body.jj-menu-closing .menu-wrap::before{opacity:0!important;transition:opacity .45s ease!important}' +
+      'body.jj-menu-closing .menu-wrap .images-row,body.jj-menu-closing .menu-wrap .flex-down,body.jj-menu-closing #jj-menu-meta,body.jj-menu-closing .jjmm-moon,body.jj-menu-closing #jj-co-nav{opacity:0!important;transition:opacity .16s ease!important;pointer-events:none!important}' +
+      '.menu-wrap .jjmm-moon{position:fixed;left:25vw;top:-7vh;width:20vw;height:auto;z-index:1;pointer-events:none;opacity:0;transform:scale(.5);transform-origin:50% 55%;filter:drop-shadow(0 0 40px rgba(198,220,255,.45)) drop-shadow(0 0 120px rgba(140,175,255,.28));transition:opacity .12s ease}' +
+      '.menu-wrap .jjmm-moon.out{opacity:0!important;animation:none!important;transform:scale(1)!important;transition:opacity .34s ease!important}' +
+      'body.jj-menu-open .menu-wrap .jjmm-moon{opacity:1;animation:jjmmMoonIn 2.6s cubic-bezier(.16,1,.3,1) 1.4s both,jjmmMoonGlow 7.5s ease-in-out 4s infinite;transition:opacity 1.1s ease 1.4s}' +
+      '@keyframes jjmmMoonIn{from{transform:scale(.5);filter:drop-shadow(0 0 40px rgba(198,220,255,.45)) drop-shadow(0 0 120px rgba(140,175,255,.28));}to{transform:scale(1);filter:drop-shadow(0 0 40px rgba(198,220,255,.45)) drop-shadow(0 0 120px rgba(140,175,255,.28));}}' +
+      '@keyframes jjmmMoonGlow{0%,100%{transform:scale(1);filter:drop-shadow(0 0 40px rgba(198,220,255,.45)) drop-shadow(0 0 120px rgba(140,175,255,.28))}50%{transform:scale(1.06);filter:drop-shadow(0 0 95px rgba(220,236,255,.95)) drop-shadow(0 0 230px rgba(150,185,255,.62))}}' +
+      '.menu-wrap .flex-down.left,.menu-wrap .flex-down{position:relative;z-index:3}' +   // the menu dims and blurs the page behind it; the preview art (z-index -1) still reads over the top
+      '.menu-wrap .menu-hover-image{filter:saturate(1.02)}' +
+      '.menu-wrap .images-row{pointer-events:none!important;position:fixed!important;inset:6vh -18vw 5vh 2vw!important;width:auto!important;height:auto!important;display:flex!important;align-items:center!important;gap:1.2vw!important;z-index:-1!important;transform:translateX(0);opacity:.9}' +
+      '.menu-wrap .menu-hover-image{pointer-events:none!important;position:relative!important;inset:auto!important;width:36vw!important;height:72vh!important;min-width:36vw!important;object-fit:cover!important;border:1px solid rgba(255,255,255,.28)!important;border-radius:20px!important;clip-path:polygon(10% 0,100% 0,90% 100%,0 100%);transform:rotate(-3deg);box-shadow:0 30px 90px rgba(0,0,0,.55)!important}' +
       '.menu-wrap .menu-hover-image:nth-child(even){transform:rotate(3deg) translateY(4vh)}' +
       '.menu-wrap .flex-down.left,.menu-wrap .flex-down{position:relative;z-index:3}' +
       '.menu-wrap .menu-open-link{position:relative;transition:color .25s ease,text-shadow .25s ease!important}' +
       '.menu-wrap .menu-open-link:hover{color:#fff!important;text-shadow:0 0 28px rgba(255,0,245,.55)}' +
-      '.menu-wrap .menu-open-link[aria-current="page"]::before{content:"";position:absolute;left:-28px;top:50%;width:10px;height:10px;border-radius:50%;background:#FF00F5;box-shadow:0 0 16px #FF00F5;transform:translateY(-50%)}' +
-      '#jj-menu-meta{position:fixed;left:5vw;right:5vw;top:120px;bottom:4vh;z-index:6;display:block;color:#fff;font-family:"Joes Journey Headline",sans-serif;pointer-events:none!important}' +
-      '#jj-menu-meta .jjmm-left{position:absolute;left:0;top:0;pointer-events:none!important}' +
+      '.menu-wrap .menu-open-link[aria-current="page"]{color:#fff!important}' +
+      '.menu-wrap .menu-open-link[aria-current="page"]>div{position:relative;display:inline-block;padding-left:16px}' +
+      '.menu-wrap .menu-open-link[aria-current="page"]>div::before{content:"";position:absolute;left:-8px;top:50%;width:10px;height:10px;border-radius:50%;background:#FF00F5;box-shadow:0 0 16px #FF00F5;transform:translateY(-50%);animation:jjMenuDot 1.6s ease-in-out infinite}@keyframes jjMenuDot{0%,100%{transform:translateY(-50%) scale(1);box-shadow:0 0 10px #FF00F5}50%{transform:translateY(-50%) scale(1.35);box-shadow:0 0 22px #FF00F5,0 0 0 6px rgba(255,0,245,.18)}}' +
+      '#jj-menu-meta{position:fixed;left:5vw;right:5vw;top:120px;bottom:4vh;z-index:6;display:block;color:#fff;font-family:"Joes Journey Headline",sans-serif;pointer-events:none!important;opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .7s cubic-bezier(.22,1,.36,1)}#jj-menu-meta.in{opacity:1;transform:none}' +
+      '#jj-menu-meta .jjmm-left{position:absolute;left:50%;bottom:0;transform:translateX(-50%);text-align:center;pointer-events:none!important}' +
+      '#jj-menu-meta .jjmm-pct{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:9px}#jj-menu-meta .jjmm-pct b{color:#fff;font-weight:700}' +
       '#jj-menu-meta .jjmm-theme{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.62);margin-bottom:10px}#jj-menu-meta .jjmm-theme b{color:#fff}' +
-      '#jj-menu-meta .jjmm-actions{position:absolute;right:0;bottom:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}' +
-      '#jj-menu-meta button,#jj-menu-meta a{width:52px;height:52px;border-radius:50%;border:1px solid rgba(255,255,255,.65);background:rgba(4,7,14,.62);backdrop-filter:blur(12px);color:#fff;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font:700 18px/1 "Joes Journey Headline",sans-serif;cursor:pointer;transition:transform .25s ease,background .25s ease,box-shadow .25s ease}' +
-      '#jj-menu-meta a img{width:24px;height:24px;object-fit:contain;filter:brightness(0) invert(1)}' +
+      '#jj-menu-meta .jjmm-actions{position:fixed;left:32px;right:auto;bottom:32px;pointer-events:auto!important;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-start}' +
+      '#jj-menu-meta button,#jj-menu-meta a{position:relative;width:52px;height:52px;border-radius:50%;border:1px solid rgba(255,255,255,.65);background:rgba(4,7,14,.62);color:#fff;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font:700 18px/1 "Joes Journey Headline",sans-serif;cursor:pointer;transition:transform .25s ease,background .25s ease,box-shadow .25s ease}' +
+      '#jj-menu-meta a img{width:32px;height:32px;object-fit:contain;transition:opacity .2s ease}#jj-menu-meta a img.f{position:absolute;left:50%;top:50%;translate:-50% -50%;opacity:0}#jj-menu-meta a:hover img.f{opacity:1}#jj-menu-meta a:hover img:not(.f){opacity:0}' +
       '#jj-menu-meta button.wide{width:auto;border-radius:26px;padding:0 18px;gap:9px;font-size:13px;text-transform:uppercase;letter-spacing:.06em}' +
       '#jj-menu-meta button:hover,#jj-menu-meta a:hover{transform:translateY(-4px);background:rgba(255,0,245,.25);box-shadow:0 10px 28px rgba(255,0,245,.28)}' +
-      '#jj-menu-meta .jjmm-score{display:flex;gap:8px;align-items:center;font-size:14px}#jj-menu-meta .jjmm-score img{width:22px;height:22px;object-fit:contain}' +
+      '#jj-menu-meta .jjmm-score{display:flex;gap:8px;align-items:center;justify-content:center;font-size:14px}#jj-menu-meta .jjmm-score img{width:22px;height:22px;object-fit:contain}' +
       'html[data-jj-theme="medieval"] #jj-menu-meta{--jj-accent:#FFC531}html[data-jj-theme="retro"] #jj-menu-meta{--jj-accent:#FFD400}html[data-jj-theme="alien"] #jj-menu-meta{--jj-accent:#4FE3FF}' +
-      '#jj-menu-meta .jjmm-left::after{content:"";display:block;margin-top:12px;width:110px;height:2px;background:var(--jj-accent,#FF00F5);box-shadow:0 0 12px var(--jj-accent,#FF00F5)}' +
+      '#jj-menu-meta .jjmm-left::after{content:"";display:block;margin:12px auto 0;width:110px;height:2px;background:var(--jj-accent,#FF00F5);box-shadow:0 0 12px var(--jj-accent,#FF00F5)}' +
       '@media(max-width:760px){.menu-wrap .images-row{opacity:.36!important}.menu-wrap .menu-hover-image{width:78vw!important;min-width:78vw!important}#jj-menu-meta{left:24px;right:24px;top:100px;bottom:22px}#jj-menu-meta .jjmm-actions{left:0;right:auto;justify-content:flex-start}#jj-menu-meta button.wide{height:46px}}';
     document.head.appendChild(st);
 
+    var moon = document.createElement('img'); moon.className = 'jjmm-moon'; moon.alt = '';
+    moon.src = 'data:image/svg+xml;utf8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 200%27%3E%3Cdefs%3E%3CradialGradient id=%27o%27%3E%3Cstop offset=%27.52%27 stop-color=%27%23c8d8ff%27 stop-opacity=%27.22%27/%3E%3Cstop offset=%27.78%27 stop-color=%27%23a8c0ff%27 stop-opacity=%27.09%27/%3E%3Cstop offset=%271%27 stop-color=%27%2393aaff%27 stop-opacity=%270%27/%3E%3C/radialGradient%3E%3CradialGradient id=%27i%27%3E%3Cstop offset=%27.42%27 stop-color=%27%23ffffff%27 stop-opacity=%27.5%27/%3E%3Cstop offset=%27.74%27 stop-color=%27%23dbe7ff%27 stop-opacity=%27.3%27/%3E%3Cstop offset=%271%27 stop-color=%27%23c3d4ff%27 stop-opacity=%270%27/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx=%27100%27 cy=%27100%27 r=%27100%27 fill=%27url(%23o)%27/%3E%3Ccircle cx=%27100%27 cy=%27100%27 r=%2772%27 fill=%27url(%23i)%27/%3E%3Ccircle cx=%27100%27 cy=%27100%27 r=%2746%27 fill=%27%23ffffff%27/%3E%3Cellipse cx=%2785%27 cy=%2782%27 rx=%278%27 ry=%277%27 fill=%27%23e6e6ee%27/%3E%3Cellipse cx=%27114%27 cy=%2796%27 rx=%276%27 ry=%275.5%27 fill=%27%23e6e6ee%27/%3E%3Cellipse cx=%2796%27 cy=%27118%27 rx=%279%27 ry=%277.5%27 fill=%27%23e6e6ee%27/%3E%3Cellipse cx=%2776%27 cy=%27107%27 rx=%274.5%27 ry=%274%27 fill=%27%23e6e6ee%27/%3E%3C/svg%3E';
+    wrap.appendChild(moon);                                        // the moon itself, over the art and under the links
     var meta = document.createElement('div'); meta.id = 'jj-menu-meta';
-    meta.innerHTML = '<div class="jjmm-left"><div class="jjmm-theme">Current theme · <b>Classic</b></div><div class="jjmm-score"><span class="js">0</span><img src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/score-star.webp" alt="stars"><span class="jc">0</span><img src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/score-coin.webp" alt="coins"></div></div><div class="jjmm-actions"><button type="button" class="wide jt">Themes</button><button type="button" class="wide jsop">Shop</button><a href="mailto:jackson.laptop95@gmail.com" aria-label="Email Joe"><img src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/icon-mail-fill.png" alt=""></a><a href="https://www.linkedin.com/in/joseph-jackson-ui/" target="_blank" rel="noopener" aria-label="Joe on LinkedIn"><img src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/icon-linkedin-fill.png" alt=""></a><a href="/contact" aria-label="Contact Joe"><img src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/icon-phone-fill.png" alt=""></a></div>';
+    meta.innerHTML = '<div class="jjmm-left"><div class="jjmm-theme">Current theme · <b>Classic</b></div><div class="jjmm-pct"><span class="pa">Achievements <b>0/0</b> · 0%</span><span class="ps">Store <b>0/0</b> · 0%</span></div></div><div class="jjmm-actions"><a href="mailto:jackson.laptop95@gmail.com" aria-label="Email Joe" data-cursor="external"><img src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/icon-mail.webp" alt=""><img class="f" src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/icon-mail-fill.webp" alt=""></a><a href="https://www.linkedin.com/in/joseph-jackson-ui/" target="_blank" rel="noopener" aria-label="Joe on LinkedIn" data-cursor="external"><img src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/icon-linkedin.webp" alt=""><img class="f" src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/icon-linkedin-fill.webp" alt=""></a><a href="/contact" aria-label="Joe on WhatsApp" data-cursor="external"><img src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/icon-phone.webp" alt=""><img class="f" src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/icon-phone-fill.webp" alt=""></a></div>';
     wrap.appendChild(meta);
 
     function update() {
       var score = window.jjScore, key = score ? score.theme() : (document.documentElement.getAttribute('data-jj-theme') || 'classic');
       var names = { classic:'Classic', medieval:'Medieval', retro:'Retro', alien:'Space', mixed:'Special' };
       meta.querySelector('.jjmm-theme b').textContent = names[key] || 'Classic';
-      if (score) { meta.querySelector('.js').textContent = score.stars(); meta.querySelector('.jc').textContent = score.coins(); }
+      var pct = function (n, t) { return t ? Math.round(n / t * 100) : 0; };
+      try { var A = score && score.ACH ? score.ACH : [], ad = A.filter(function (a) { return score.has(a.id); }).length;
+        meta.querySelector('.pa').innerHTML = 'Achievements <b>' + ad + '/' + A.length + '</b> · ' + pct(ad, A.length) + '%'; } catch (e) {}
+      try { var c = window.jjCompanion && window.jjCompanion.count ? window.jjCompanion.count() : null;
+        if (c) meta.querySelector('.ps').innerHTML = 'Store <b>' + c.own + '/' + c.total + '</b> · ' + pct(c.own, c.total) + '%'; } catch (e) {}
+
       Array.prototype.forEach.call(list.querySelectorAll('a[href]'), function (a) {
         var p; try { p = new URL(a.href, location.href).pathname.replace(/\/$/,'') || '/'; } catch(e) { return; }
         var here = location.pathname.replace(/\/$/,'') || '/'; if (p === here && !/credits=1/.test(a.href)) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');
       });
     }
     function closeThen(fn) { if (document.body.classList.contains('jj-menu-open')) btn.click(); setTimeout(fn, 180); }
-    meta.querySelector('.jt').addEventListener('click', function () { closeThen(function () { if (window.jjScore) window.jjScore.open(); }); });
-    meta.querySelector('.jsop').addEventListener('click', function () { closeThen(function () { if (window.jjScore) window.jjScore.store(); }); });
 
     function visible() { var c = getComputedStyle(wrap), r = wrap.getBoundingClientRect(); return r.width > 2 && r.height > 2 && c.display !== 'none' && c.visibility !== 'hidden' && parseFloat(c.opacity || 1) > .02; }
-    function sync() { var on = visible(); document.body.classList.toggle('jj-menu-open', on); meta.style.display = on ? 'flex' : 'none'; if (on) update(); }
-    meta.style.display = 'none'; btn.addEventListener('click', function () { setTimeout(sync, 80); setTimeout(sync, 700); });
+    var inT = null;
+    /* The moon leaves by fading, never by shrinking: pin its current size inline before the
+       body.jj-menu-open rule (and with it the grow animation) is taken away. */
+    var moonClosing = false;                                       // Close has been pressed: the menu is still fading out, so don't let sync() bring the moon back
+    function moonOut() { moonClosing = true; if (moon.classList.contains('out')) return; moon.style.transform = 'scale(1)'; moon.classList.add('out'); }
+    function moonIn() { moon.classList.remove('out'); moon.style.transform = ''; }
+    function sync() { var on = visible(); if (!on) { moonOut(); moonClosing = false; document.body.classList.remove('jj-menu-closing'); } document.body.classList.toggle('jj-menu-open', on); meta.style.display = on ? 'flex' : 'none'; if (on) update();
+      if (on && !moonClosing) moonIn();
+      if (on) { if (!meta.classList.contains('in') && !inT) inT = setTimeout(function () { inT = null; meta.classList.add('in'); }, 1150); } else { clearTimeout(inT); inT = null; meta.classList.remove('in'); }
+      if (on !== sync._was) { sync._was = on; try { window.dispatchEvent(new Event(on ? 'jj:menu:open' : 'jj:menu:close')); } catch (e) {} } }   // NOT jj:score:pause — that pauses the global GSAP timeline, which is what animates this menu   // the rail is the LAST thing to arrive: after the links have staggered in
+    meta.style.display = 'none'; btn.addEventListener('click', function () {
+      if (document.body.classList.contains('jj-menu-open')) { moonOut(); document.body.classList.add('jj-menu-closing'); }   // Close: the room empties first, then the wipe
+      else document.body.classList.remove('jj-menu-closing');
+      setTimeout(sync, 80); setTimeout(sync, 700); setTimeout(sync, 1400); });
+    document.addEventListener('keydown', function (e) {           // Esc opens and closes the menu anywhere on the site (unless a modal has the keyboard)
+      if (e.key !== 'Escape' || e.defaultPrevented) return;
+      if (/^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || '')) return;
+      if (document.body.classList.contains('jj-modal-open') && !document.body.classList.contains('jj-menu-open')) return;
+      e.preventDefault(); btn.click(); });
     document.addEventListener('wheel', function (e) { if (document.body.classList.contains('jj-menu-open') && !(e.target.closest && e.target.closest('.menu-wrap'))) e.preventDefault(); }, { passive:false, capture:true });
     document.addEventListener('touchmove', function (e) { if (document.body.classList.contains('jj-menu-open') && !(e.target.closest && e.target.closest('.menu-wrap'))) e.preventDefault(); }, { passive:false, capture:true });
     new MutationObserver(sync).observe(wrap, { attributes:true, attributeFilter:['class','style'] });
-    window.addEventListener('jj:score', update); setInterval(function () { if (document.body.classList.contains('jj-menu-open')) update(); }, 1000);
+    window.addEventListener('jj:score', update); setInterval(function () { if (document.body.classList.contains('jj-menu-open')) { sync(); update(); } }, 500);   // re-check visibility too: a Themes/Store click closes the menu without a class change we can see
     sync();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready); else ready();
@@ -376,7 +425,26 @@ document.addEventListener("DOMContentLoaded", function () {
     tryTrigger();
   }
 
+  /* The Joe's Journey title is a Rive with a Webflow interaction on it, so it autoplays and
+     fades itself in the moment the page loads — under the loader, finished before anyone sees it.
+     Hold it at frame one with a class Webflow can't override, and stop the state machine as soon
+     as the instance exists; jjStartIntroRive below is what actually lets it play. */
+  (function holdIntroRive() {
+    var st = document.createElement('style');
+    st.textContent = 'html:not(.jj-rive-go) .rive{opacity:0!important}';
+    (document.head || document.documentElement).appendChild(st);
+    var n = 0;
+    (function grab() {
+      var pl = window.Webflow && Webflow.require && Webflow.require('rive');
+      var el = document.querySelector('.rive');
+      var inst = pl && el && pl.getInstance(el);
+      if (inst && inst.rive) { try { inst.rive.stop(); } catch (e) {} return; }
+      if (++n < 60) setTimeout(grab, 200);
+    })();
+  })();
+
   function jjStartIntroRive() {
+    document.documentElement.classList.add('jj-rive-go');
     var attempts = 0;
     function tryTrigger() {
       var rivePlugin = window.Webflow && Webflow.require && Webflow.require('rive');
@@ -427,7 +495,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var flyRiveEl = document.querySelector('.fly-rive');
 if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1'; }
 
-    jjStartFlyRive();
+    if (!window.jjFlyerIn) jjStartFlyRive();   // the local flyer (homepage-footer.js) replaces the Rive blob
     var overlay   = document.querySelector('.joes-journey-overlay');
     var introSec  = document.querySelector('.intro-section');
     var introWrap = document.querySelector('.intro-reveal_wrapper');
@@ -489,19 +557,23 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     // speech — and reveals only when downloaded + decoded. No loader script = no gate.
     var WF1 = 'https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/';
     var WF2 = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/';
-    var GH  = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
+    var GH  = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
+    /* HEAVY = only what the LANDING itself needs, so the loader is short. Everything the
+       Big Bang and the scenes after "Click to begin" need is in LATER, fetched quietly
+       from the moment the landing appears — the visitor is reading the title and waiting
+       on the CTA for ~7s, which is more than enough time. */
     var HEAVY = [
+      WF1 + '6a19b8f4191d4fbca532592c_rive-animation.riv',      // the Joe's Journey title
+      WF1 + '6a19b8f4191d4fbca532593b_Waves.riv',               // landing backdrop
+      WF1 + '6a19b8f4191d4fbca5325935_Bigbang.riv'              // tiny, and it fires the instant the CTA is clicked
+    ];
+    var LATER = [
       WF1 + '6a19b8f4191d4fbca5325984_code-loop.riv',
-      WF1 + '6a19b8f4191d4fbca532593b_Waves.riv',
-      WF1 + '6a19b8f4191d4fbca532592c_rive-animation.riv',
-      WF1 + '6a19b8f4191d4fbca5325935_Bigbang.riv',
       WF1 + '6a19b8f4191d4fbca5325938_rocket-2.riv',
       WF1 + '6a19b8f4191d4fbca5325956_Roads-new.riv',
       WF1 + '6a19b8f4191d4fbca532595e_mars-2.riv',
-      WF1 + '6a19b8f4191d4fbca532597d_fly-2.riv',
       WF1 + '6a7ce4c53f264355f46a1d4e_wizard-speech.mp3',
-      WF1 + '6a200195245a88910104f066_Sprite%20philios.svg',
-      WF1 + '6a2001955bebd2a24a80cc47_sprite%20philosopher%20-%20thinking.svg',
+      GH + 'bb-wizard.webm',                                   // the Big Bang wizard (was the two philosopher SVGs)
       WF2 + '6a0d815469fc93c75834b57d_Spright%20top%20right.svg',
       WF2 + '6a0d8154cab30401d9e344dd_Sprite%20top%20left.svg',
       WF2 + '6a0d8154e295fd12e49f8f0e_Sprite%20top%20middle.svg',
@@ -509,11 +581,14 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
       WF2 + '6a102060d6130fe4145e128e_happy%20boy.svg',
       'https://cdn.prod.website-files.com/615edb5c549d52cd108ed268/6718f10874b12a196e30db11_Starry%20Board.svg',
       // doorway beat (homepage-footer.js spawnDoorway) — lottie json + world glimpses
-      GH + 'Flow%202%20(2).json',
+      GH + 'arch-still.webp', GH + 'arch-hole.png', GH + 'world-tavern.webp', GH + 'world-village.webp', GH + 'world-woods.webp', GH + 'world-cave.webp',
       GH + 'story-vil-bg.webp',
       GH + 'story-wood-bg.webp',
       GH + 'story-cas-bg.webp'
     ];
+    document.addEventListener('jj:entrance', function () {
+      LATER.forEach(function (u, i) { setTimeout(function () { fetch(u, { mode: 'no-cors', cache: 'force-cache' }).catch(function () {}); }, i * 120); });
+    }, { once: true });
     if (window.JJLoader) {
       JJLoader.start({
         variant: 'precam',    // dark moon-window scene, rolling jelly precam guy (see page-loader README)
@@ -521,7 +596,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
         body:  GH + 'blob-body.webp',
         eye:   GH + 'blob-eye.webp',
         grass: GH + 'loader-grass.webp',
-        minTime: 4500,   // the show always plays at least this long (anti-snap)
+        minTime: 2800,   // the show always plays at least this long (anti-snap); the reveal now costs ~.76s of its own, so this came down to keep the total the same
         maxWait: 20000,  // hard safety — never traps the visitor
         decode: true,
         onReady: runEntrance
@@ -791,6 +866,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     if (onContactPage()) return;
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     var el = e.target && e.target.closest ? e.target.closest('a, button, [role="button"], .w-inline-block, .w-nav-link') : null;
+    if (el && el.closest('#jj-ach, #jj-sc-hud, .jj-tmenu, #jj-first, #jj-co')) return;   // the score UI mentions "Credits Complete" — that is not the Credits link
     if (el && isCredits(labelOf(el))) { e.preventDefault(); location.href = '/contact?credits=1'; }
   }, true);
 
@@ -800,6 +876,28 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
 })();
 
 
+/* ===== Back: the project picker and every case study get a way back (picker → home, case study → picker).
+   The classic glass pill — 50% white border, black .4 + blur, wipe hover, pink press — under the logo. ===== */
+(function () {
+  var path = location.pathname.replace(/\/+$/, '');
+  if (!/^\/case-studies(\/|$)/.test(path)) return;
+  var toPicker = path !== '/case-studies';
+  var st = document.createElement('style');
+  st.textContent = '#jj-back{position:fixed;left:32px;top:112px;z-index:9000;display:inline-flex;align-items:center;gap:8px;padding:11px 18px 11px 14px;border-radius:999px;' +
+      'border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;text-decoration:none;' +
+      'font-size:11px;letter-spacing:.14em;text-transform:uppercase;overflow:hidden;isolation:isolate;opacity:0;transform:translateY(-6px);transition:opacity .6s ease .9s,transform .6s ease .9s;}' +
+    '#jj-back.in{opacity:1;transform:none;}' +
+    '#jj-back::before{content:"";position:absolute;inset:0;background:rgba(255,255,255,.5);transform:translateX(-101%);transition:transform .35s cubic-bezier(.2,.7,.3,1);z-index:-1;}' +
+    '#jj-back:hover::before{transform:none;}#jj-back:active{background:#FF00F5;border-color:#FF00F5;}' +
+    '#jj-back svg{width:14px;height:14px;display:block;}' +
+    'body.jj-modal-open #jj-back,body.jj-menu-open #jj-back{opacity:0;pointer-events:none;transition:opacity .2s ease;}';
+  document.head.appendChild(st);
+  var a = document.createElement('a'); a.id = 'jj-back'; a.href = toPicker ? '/case-studies' : '/'; a.setAttribute('data-cursor', 'hover'); a.setAttribute('data-jj', 'btn');
+  a.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg><span>' + (toPicker ? 'All projects' : 'Back') + '</span>';
+  function mount() { if (document.body) { document.body.appendChild(a); setTimeout(function () { a.classList.add('in'); }, 400); } else setTimeout(mount, 50); }
+  mount();
+})();
+
 /* ===== Super menu: Storytime link + interactive overhaul =====
    Site-wide. Takes over the open-menu behavior injected by the Webflow embed:
    the original links are clone-replaced (strips the embed's listeners), a
@@ -808,12 +906,14 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
    pull, staggered entrance + scramble sweep when the menu opens, and a peeking
    alien. The Menu/Close button hover embed is left untouched. */
 (function () {
-  var GH = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
-  var IMGS = {
-    'work': GH + 'story-cas-designer-2.webp',
-    'storytime': GH + 'storybook.png',
-    'contact': GH + 'dragon-rest.png',
-    'credits': GH + 'philosopher.png'
+  var GH = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';   // JJ_SCORE_BASE: the local preview serves the staged art
+  var IMGS = {                                     // the user's menu art (jj-menu-*.png, keyed to menu-*.webp)
+    'home': GH + 'menu-home.webp',
+    'work': GH + 'menu-work.webp',
+    'storytime': GH + 'menu-story.webp',
+    'part two': GH + 'menu-part2.webp',
+    'contact': GH + 'menu-contact.webp',
+    'credits': GH + 'menu-credits.webp'
   };
   var GLYPHS = 'abcdefghijklmnopqrstuvwxyz<>-_\\/[]{}=+*^?#'.split('');
 
@@ -836,6 +936,23 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
       if (work && work.nextSibling) list.insertBefore(st, work.nextSibling);
       else list.appendChild(st);
     }
+    /* Part Two of the tale: always listed, disabled with a lock until the 'tale2' achievement (the tale, then the quiz); a locked click opens that achievement.
+       The super menu below clones every link, so nothing here holds a reference — the lock is re-found by class and the click is delegated. */
+    if (!list.querySelector('.jj-tale2')) {
+      var p2 = document.createElement('a'); p2.href = '/storytime?part=2'; p2.className = 'menu-open-link w-inline-block jj-tale2 locked'; p2.innerHTML = '<div><span class="jjmm-new">New!</span>Part Two</div>';
+      var stl = Array.prototype.slice.call(list.querySelectorAll('.menu-open-link')).filter(function (a) { return /storytime/i.test(a.textContent); })[0];
+      if (stl && stl.nextSibling) list.insertBefore(p2, stl.nextSibling); else list.appendChild(p2);
+      var lockSt = document.createElement('style'); lockSt.textContent = '.menu-wrap .jj-tale2{position:relative;}.menu-wrap .jj-tale2.locked{opacity:.45;cursor:not-allowed;}.menu-wrap .jj-tale2.locked *{cursor:not-allowed;}.menu-wrap .jj-tale2 .jjmm-new{display:none;font-family:inherit;font-size:14px;line-height:1;font-weight:700;letter-spacing:.12em;text-transform:uppercase;vertical-align:middle;margin-right:14px;padding:7px 12px 6px;border-radius:999px;background:var(--jj-pill,#FF00F5);border:0;color:var(--jj-pill-ink,#fff);box-shadow:0 0 18px var(--jj-pill-glow,rgba(255,0,245,.45));}html[data-jj-theme="medieval"] .menu-wrap,html[data-jj-theme="mixed"] .menu-wrap{--jj-pill:#FFC531;--jj-pill-ink:#3a2a12;--jj-pill-glow:rgba(255,197,49,.45);}html[data-jj-theme="retro"] .menu-wrap{--jj-pill:#FFD400;--jj-pill-ink:#0b1e5a;--jj-pill-glow:rgba(255,212,0,.45);}html[data-jj-theme="alien"] .menu-wrap{--jj-pill:#4FE3FF;--jj-pill-ink:#08111f;--jj-pill-glow:rgba(79,227,255,.45);}.menu-wrap .jj-tale2.fresh .jjmm-new{display:inline-block;}.menu-wrap .jj-tale2.locked:hover{color:inherit!important;text-shadow:none!important;}' +
+        '.menu-wrap .jj-tale2.locked>div{position:relative;display:inline-block!important;}.menu-wrap .jj-tale2.locked>div::after{content:"";position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:.4em;width:.55em;height:.55em;background:url("data:image/svg+xml;utf8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%272.4%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Crect x=%274%27 y=%2710.5%27 width=%2716%27 height=%2711%27 rx=%272.5%27/%3E%3Cpath d=%27M7.5 10.5V7.5a4.5 4.5 0 0 1 9 0v3%27/%3E%3C/svg%3E") center/contain no-repeat;}';
+      document.head.appendChild(lockSt);
+    }
+    window.jjSyncTale2 = function () { var ok = !!(window.jjScore && window.jjScore.has && window.jjScore.has('tale2'));
+      var seen = false; try { seen = localStorage.getItem('jjTale2Seen') === '1'; } catch (e) {}
+      document.querySelectorAll('.jj-tale2').forEach(function (a) { a.classList.toggle('fresh', ok && !seen); a.classList.toggle('locked', !ok); a.setAttribute('aria-disabled', ok ? 'false' : 'true'); if (ok) a.removeAttribute('data-cursor'); else a.setAttribute('data-cursor', 'none'); }); };
+    window.jjSyncTale2(); window.addEventListener('jj:score', window.jjSyncTale2); setTimeout(window.jjSyncTale2, 1500); setTimeout(window.jjSyncTale2, 4000);
+    document.addEventListener('click', function (e) { var a = e.target && e.target.closest && e.target.closest('.jj-tale2'); if (!a) return; window.jjSyncTale2();
+      if (!a.classList.contains('locked')) { try { localStorage.setItem('jjTale2Seen', '1'); } catch (x) {} window.jjSyncTale2(); return; }
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); var b = document.querySelector('.menu-container'); if (b && document.body.classList.contains('jj-menu-open')) b.click(); setTimeout(function () { if (window.jjScore) window.jjScore.goto('tale2'); }, 260); }, true);
     Array.prototype.forEach.call(list.querySelectorAll('.menu-open-link'), function (a) {
       var t = (a.textContent || '').trim().toLowerCase();
       if (t === 'contact') a.setAttribute('href', '/contact');
@@ -861,7 +978,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
         var im = document.createElement('img');
         im.className = 'menu-hover-image';
         im.alt = '';
-        var key = (a.textContent || '').trim().toLowerCase();
+        var key = (a.querySelector('.jjmm-new') ? a.textContent.replace(a.querySelector('.jjmm-new').textContent, '') : a.textContent || '').trim().toLowerCase();
         im.src = IMGS[key] || defaultSrc;
         row.appendChild(im);
         imgs.push(im);
@@ -878,7 +995,6 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
           y: idx === activeIdx ? 0 : dist * 140,
           rotateZ: idx === activeIdx ? 0 : dist * 3 * dir,
           scale: idx === activeIdx ? 1.08 : 0.94,
-          filter: 'blur(' + (idx === activeIdx ? 0 : Math.min(dist * 2, 8)) + 'px)',
           duration: 0.8, delay: dist * 0.03, ease: 'power3.inOut', overwrite: 'auto'
         });
       });
@@ -889,8 +1005,10 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
       var d = a.querySelector('div');
       if (!d) return null;
       if (d._jjChars) return d._jjChars;
-      var text = d.textContent.trim();
+      var pill = d.querySelector('.jjmm-new');                     // the Part Two pill is a real node, not letters — keep it out of the scramble
+      var text = (pill ? d.textContent.replace(pill.textContent, '') : d.textContent).trim();
       d.textContent = '';
+      if (pill) d.appendChild(pill);
       d._jjChars = text.split('').map(function (ch) {
         var s = document.createElement('span');
         s.textContent = ch;
@@ -921,15 +1039,39 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
       });
     }
 
+    /* Resting state: with the pointer off the links the whole strip drops away and the
+       last-hovered scene takes a 20% black wash, so it reads as "nothing selected" but still shows where you were. */
+    var curIdx = 0, idleOn = false, idleT = null;
+    function setIdle(on) {
+      if (on === idleOn) return;
+      idleOn = on;
+      if (row) gsap.to(row, { yPercent: on ? 15 : 0, duration: 0.85, ease: 'power3.inOut' });
+      imgs.forEach(function (img, idx) {
+        gsap.to(img, { filter: 'saturate(1.02) brightness(' + (on && idx === curIdx ? 0.8 : 1) + ')', duration: 0.5, ease: 'power2.out' });
+      });
+    }
+    // The menu always opens in the resting state (art low, last-hovered scene dimmed) until the pointer finds a link
+    window.addEventListener('jj:menu:open', function () { idleOn = false; if (row) gsap.set(row, { yPercent: 0 }); setTimeout(function () { setIdle(true); }, 1200); });
+    var mwrap = document.querySelector('.menu-wrap');
+    if (mwrap) mwrap.addEventListener('mousemove', function (e) {
+      var over = e.target && e.target.closest && e.target.closest('.menu-open-link');
+      if (over) { clearTimeout(idleT); idleT = null; setIdle(false); }
+      else if (!idleT) idleT = setTimeout(function () { idleT = null; setIdle(true); }, 140);
+    });
+
     links.forEach(function (a, i) {
       a.style.willChange = 'transform';
       a.addEventListener('mouseenter', function () {
+        if (a.classList.contains('locked')) return;
+        clearTimeout(idleT); idleT = null;
+        curIdx = i; setIdle(false);
         if (row) gsap.to(row, { x: (-i * 42) + 'vw', duration: 1.0, ease: 'power3.inOut' });
         setActive(i);
         scramble(a);
       });
       // Magnetic pull toward the cursor; elastic snap home on leave
       a.addEventListener('mousemove', function (e) {
+        if (a.classList.contains('locked')) return;
         var r = a.getBoundingClientRect();
         gsap.to(a, {
           x: (e.clientX - (r.left + r.width / 2)) * 0.18,
@@ -983,6 +1125,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
             if (row && row.parentNode) {
               gsap.fromTo(row.parentNode, { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.9, ease: 'power2.out' });
             }
+            idleOn = false; if (row) gsap.set(row, { yPercent: 0 }); setTimeout(function () { setIdle(true); }, 1100);
             setTimeout(function () { if (isOpen) peek(); }, 900);
           } else if (!vis) {
             isOpen = false;

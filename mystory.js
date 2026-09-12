@@ -7,7 +7,7 @@
    the NEXT ↓ button, and the bottom era anchor nav (click = scroll to era).
 
    WEBFLOW: load before </body> on the Storytime page (after storytime.js):
-     <script src="https://raw.githack.com/jacksonlaptop/joes-journey-code/main/mystory.js?v=1"></script>
+     <script src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/mystory.js?v=1"></script>
    It appends itself to <body> (or to #jj-mystory-mount if that div exists).
    All copy/eras/years live in the CONFIG below.
    ============================================================================ */
@@ -15,28 +15,28 @@
   window.JJ_MYSTORY_BUILD = 'M111 - Big Bang and quiz achievements wired';
   try { console.log('%c[JJ] mystory.js build: ' + window.JJ_MYSTORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
-  var GB = 'https://raw.githack.com/jacksonlaptop/joes-journey-code/main/';
+  var GB = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
   /* demo pages can point at local copies via window.JJ_SPRITE_BASE */
   var SB = window.JJ_SPRITE_BASE || GB;
 
   /* ---------------- CONFIG — every word of the story ---------------- */
   /* The full evolution sprite line, extracted from the design frames themselves. */
   var SPRITES = [
-    SB + 'story-sprite-01-amoeba.png',
-    SB + 'story-sprite-02-fish.png',
-    SB + 'story-sprite-03-walker.png',
-    SB + 'story-sprite-04-ape.png',
-    SB + 'story-sprite-05-caveman.png',
-    SB + 'story-sprite-06-greek.png',
-    SB + 'story-sprite-07-roman.png',
-    SB + 'story-sprite-08-peasant.png',
-    SB + 'story-sprite-09-villager.png',
-    SB + 'story-sprite-10-knight.png',
-    SB + 'story-sprite-11-painter.png',
-    SB + 'story-sprite-12-scholar.png',
-    SB + 'story-sprite-13-modern.png',
-    SB + 'story-sprite-14-scientist.png',
-    SB + 'story-sprite-15-astronaut.png'
+    SB + 'story-sprite-01-amoeba.webp',
+    SB + 'story-sprite-02-fish.webp',
+    SB + 'story-sprite-03-walker.webp',
+    SB + 'story-sprite-04-ape.webp',
+    SB + 'story-sprite-05-caveman.webp',
+    SB + 'story-sprite-06-greek.webp',
+    SB + 'story-sprite-07-roman.webp',
+    SB + 'story-sprite-08-peasant.webp',
+    SB + 'story-sprite-09-villager.webp',
+    SB + 'story-sprite-10-knight.webp',
+    SB + 'story-sprite-11-painter.webp',
+    SB + 'story-sprite-12-scholar.webp',
+    SB + 'story-sprite-13-modern.webp',
+    SB + 'story-sprite-14-scientist.webp',
+    SB + 'story-sprite-15-astronaut.webp'
   ];
   /* icons per era, EXACTLY as the design frames: first = active (big + 100%), rest = the
      upcoming evolution, ghosted with size/opacity falloff */
@@ -61,27 +61,27 @@
   var LOGOS = {
     /* the agency slide, laid out to My Story - Agency 1.svg */
     12: [
-      { t: 'BBC',          src: 'ag-bbc.png',        x: 41.98, y: 25.0,  w: 16.29, r: 2.11,  fx: 'boom' },
-      { t: 'AXA',          src: 'ag-axa.png',        x: 17.45, y: 28.06, w: 8.4,   r: -3.58, fx: 'shield' },
-      { t: 'Lab',          src: 'ag-lab.png',        x: 70.88, y: 22.47, w: 6.58,  r: 6.37,  fx: 'wire' },
-      { t: 'Carter Jonas', src: 'ag-cj.png',         x: 82.5,  y: 33.5,  w: 10.69, r: 6.27,  fx: 'house' },
-      { t: 'Art Basel',    src: 'ag-artbasel.png',   x: 6.73,  y: 50.04, w: 6.08,  r: 6.07,  fx: 'easel' },
-      { t: 'Tui',          src: 'ag-tui.png',        x: 80.0,  y: 67.52, w: 9.17,  r: 6.38,  fx: 'travel' },
-      { t: 'Mnemoscene',   src: 'ag-mnemoscene.png', x: 33.56, y: 69.60, w: 7.13,  r: 0.25,  fx: 'vr' },
-      { t: 'UCL',          src: 'ag-ucl.png',        x: 59.66, y: 75.21, w: 6.82,  r: 4.86,  fx: 'grad' },
-      { t: 'Screwfix',     src: 'ag-screwfix.png',   x: 15.30, y: 75.67, w: 7.5,   r: -3.81, fx: 'screw' }
+      { t: 'BBC',          src: 'ag-bbc.webp',        x: 41.98, y: 25.0,  w: 16.29, r: 2.11,  fx: 'boom' },
+      { t: 'AXA',          src: 'ag-axa.webp',        x: 17.45, y: 28.06, w: 8.4,   r: -3.58, fx: 'shield' },
+      { t: 'Lab',          src: 'ag-lab.webp',        x: 70.88, y: 22.47, w: 6.58,  r: 6.37,  fx: 'wire' },
+      { t: 'Carter Jonas', src: 'ag-cj.webp',         x: 82.5,  y: 33.5,  w: 10.69, r: 6.27,  fx: 'house' },
+      { t: 'Art Basel',    src: 'ag-artbasel.webp',   x: 6.73,  y: 50.04, w: 6.08,  r: 6.07,  fx: 'easel' },
+      { t: 'Tui',          src: 'ag-tui.webp',        x: 80.0,  y: 67.52, w: 9.17,  r: 6.38,  fx: 'travel' },
+      { t: 'Mnemoscene',   src: 'ag-mnemoscene.webp', x: 33.56, y: 69.60, w: 7.13,  r: 0.25,  fx: 'vr' },
+      { t: 'UCL',          src: 'ag-ucl.webp',        x: 59.66, y: 75.21, w: 6.82,  r: 4.86,  fx: 'grad' },
+      { t: 'Screwfix',     src: 'ag-screwfix.webp',   x: 15.30, y: 75.67, w: 7.5,   r: -3.81, fx: 'screw' }
     ],
     /* the awards slide, laid out to My Story - Awards 1.svg. The two agencies draw a little design
        illustration when pressed; the BIMAs are the actual silver awards, so they get the shine on
        hover and the confetti on press. */
     13: [
-      { t: 'Foolproof',            src: 'aw-2.png',     x: 13.28, y: 29.90, w: 13.09, r: -3.68, fx: 'cursor2' },
-      { t: 'UIC Digital × Fantasy', src: 'aw-3.png', x: 70.62, y: 24.24, w: 17.27, r: 0, fx: 'grid' },
+      { t: 'Foolproof',            src: 'aw-2.webp',     x: 13.28, y: 29.90, w: 13.09, r: -3.68, fx: 'cursor2' },
+      { t: 'UIC Digital × Fantasy', src: 'aw-3.webp', x: 70.62, y: 24.24, w: 17.27, r: 0, fx: 'grid' },
       { t: 'BIMA Awards Winner 2021 — Best Digital Transformation, Silver',
-        src: 'aw-bima1.png', x: 16.63, y: 62.90, w: 10.39, r: 4.82,  fx: 'boom', shine: true },
+        src: 'aw-bima1.webp', x: 16.63, y: 62.90, w: 10.39, r: 4.82,  fx: 'boom', shine: true },
       { t: 'BIMA Awards Winner 2024 — Best Digital Transformation, Silver',
-        src: 'aw-bima2.png', x: 73.88, y: 65.29, w: 10.45, r: -3.47, fx: 'boom', shine: true },
-      { t: 'Joe',                  src: 'aw-5.png',     x: 45.60, y: 65.55, w: 9.96,  r: 0,     fx: 'boom' }
+        src: 'aw-bima2.webp', x: 73.88, y: 65.29, w: 10.45, r: -3.47, fx: 'boom', shine: true },
+      { t: 'Joe',                  src: 'aw-5.webp',     x: 45.60, y: 65.55, w: 9.96,  r: 0,     fx: 'boom' }
     ]
   };
   var CLUSTERS = [
@@ -148,7 +148,7 @@
     { y: 2015, co: 'Hanoi Rocks Hostel',    loc: 'Hanoi, Vietnam', role: 'Western Manager',    logo: 'job-hanoi.png' },
     { y: 2016, co: 'GigPower',              loc: 'Melbourne, Aus', role: 'Sound & Stage Crew', logo: 'job-gigpower.png' },
     { y: 2017, co: 'DingoBlue',             loc: 'Bundaberg, Aus', role: 'Tomato Picker',      logo: 'job-dingoblue.png' },
-    { y: 2018, co: 'Skyrock Projects',      loc: 'Taipei, Taiwan', role: 'Web Dev & Design',   logo: 'job-skyrock.png' },
+    { y: 2018, co: 'Skyrock Projects',      loc: 'Taipei, Taiwan', role: 'Web Dev & Design',   logo: 'job-skyrock.webp' },
     { y: 2020, co: 'Mnemoscene (Contract)', loc: 'Brighton, UK',   role: 'UX Research & Design', logo: 'job-mnemoscene.png' },
     { y: 2021, co: 'Foolproof Agency',      loc: 'London, UK',     role: 'Visual Designer',    logo: 'job-foolproof.png' },
     { y: 2022, co: 'Lab Agency (Contract)', loc: 'Remote',         role: 'Senior UI/UX Design', logo: 'job-lab.png' },
@@ -166,10 +166,10 @@
         /* the studios that started it, drifting around the headline. Each falls back to its name in
            a pill until the artwork is dropped in. */
         logos: [
-          { t: 'Disney',        src: 'studio-disney.png',     x: 7.5, y: 20, w: 14.5, r: -4 },
-          { t: 'Pixar',         src: 'studio-pixar.png',      x: 79,  y: 17, w: 13,   r: 3.5 },
-          { t: 'DreamWorks',    src: 'studio-dreamworks.png', x: 5,   y: 56, w: 15,   r: 3 },
-          { t: 'Studio Ghibli', src: 'studio-ghibli.png',     x: 80,  y: 58, w: 14.5, r: -3.5 }
+          { t: 'Disney',        src: 'studio-disney.webp',     x: 7.5, y: 20, w: 14.5, r: -4 },
+          { t: 'Pixar',         src: 'studio-pixar.webp',      x: 79,  y: 17, w: 13,   r: 3.5 },
+          { t: 'DreamWorks',    src: 'studio-dreamworks.webp', x: 5,   y: 56, w: 15,   r: 3 },
+          { t: 'Studio Ghibli', src: 'studio-ghibli.webp',     x: 80,  y: 58, w: 14.5, r: -3.5 }
         ] } },
     { era: 1, cap: 'I\u2019d had a very stereotypical small town upbringing',
       sub: 'Played sports, games, hung out with my friends, etc...' },
@@ -330,9 +330,9 @@
     11: [
       /* the two vikings from the app, side by side down the left exactly as My Story covid2.svg
          has them. Their labels stay hidden until they're clicked. */
-      { src: 'char-greybeard.png', x: 8.63, y: 36.83, w: 9.30, rot: -9.57, deco: true, tap: true,
+      { src: 'char-greybeard.webp', x: 8.63, y: 36.83, w: 9.30, rot: -9.57, deco: true, tap: true,
         cap: 'This is Greybeard the Grey, a name that brings fear into the hearts of the Anglo-Saxons!' },
-      { src: 'char-george.png', x: 20.5, y: 24.44, w: 7.23, rot: 4.56, deco: true, tap: true,
+      { src: 'char-george.webp', x: 20.5, y: 24.44, w: 7.23, rot: 4.56, deco: true, tap: true,
         cap: 'Meet George! He guides the user through the app as they go' },
       /* the promo sits bottom-middle under the copy — the design has it 405 wide, taken in a touch */
       { src: 'geoquest-promo.jpg', x: 53.5, y: 61.5, w: 21.5, rot: 2, yt: 'AmPcWjaTHH4', hoverCap: false,
@@ -344,14 +344,14 @@
     10: [
       { src: 'taiwan-01.jpg', x: 64, y: 11, w: 21, rot: 3.95 },
       { src: 'taiwan-02.jpg', x: 9.8, y: 66.5, w: 23, rot: -5.93 },
-      { src: 'skyrock.png', x: 69.8, y: 72.3, w: 12.5, rot: 2.03, deco: true, logo: true }
+      { src: 'skyrock.webp', x: 69.8, y: 72.3, w: 12.5, rot: 2.03, deco: true, logo: true }
     ],
     /* step 8 — Mexico for Día de los Muertos. The design frame has one photo top-right (1118.65, 86,
        230×307, 8.55°) and the philosopher bottom-left. The photos are a CLUSTER (see below) so they
        behave exactly like the travel sets; `deco` keeps the philosopher out of the hover/blow-up
        machinery — he just floats, and `alt` gives him a second face to switch to when prodded. */
     8: [
-      { src: 'story-philosopher-think.png', alt: 'story-philosopher-happy.png',
+      { src: 'story-philosopher-think.webp', alt: 'story-philosopher-happy.webp',
         x: 7.62, y: 61.83, w: 14.08, rot: 0, deco: true }
     ]
   };
@@ -973,6 +973,7 @@
   '#jjms-detail .jjd-out{color:rgba(255,255,255,.55);font-size:16px;font-weight:600;margin-left:-3px;}' +
   '#jjms-detail .jjd-src{color:#F5C518;font-size:13px;font-weight:800;letter-spacing:.09em;margin-left:5px;}' +
   /* ---- the Super Reel phone: a reels feed drawn entirely in code ---- */
+  '#jjms .srwanda{position:absolute;z-index:3;pointer-events:none;height:auto;animation:jjmsWanda 6s ease-in-out infinite;}@keyframes jjmsWanda{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-1.6vh) rotate(3deg);}}' +
   '#jjms .srphone{position:absolute;z-index:3;cursor:pointer;line-height:0;' +
     'animation:jjPhoneDrift 13.5s ease-in-out infinite;}' +
   '#jjms .srclip{display:block;position:relative;overflow:hidden;aspect-ratio:9/19;border-radius:14%/6.6%;' +
@@ -1279,10 +1280,13 @@
   '#jjms-hd .ic img.act{opacity:1;animation:jjmsIdle 1.6s ease-in-out infinite;}' +
   '@keyframes jjmsIdle{0%,100%{transform:translateY(0) scaleY(1);}50%{transform:translateY(-4px) scaleY(1.05);}}' +
   /* next button */
-  '#jjms-next{position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:940;background:rgba(10,14,26,.78);' +
-    'border:1px solid rgba(255,255,255,.16);border-radius:10px;color:#fff;font:inherit;font-size:13px;letter-spacing:.14em;' +
-    'padding:12px 20px;cursor:pointer;display:flex;gap:10px;align-items:center;opacity:0;pointer-events:none;transition:opacity .5s ease,border-color .2s;}' +
-  '#jjms-next.on{opacity:1;pointer-events:auto;}#jjms-next:hover{border-color:#FF00F5;}' +
+  /* NEXT is a pill in the site's button language: jj-score paints its ::before exactly like the HUD pills (glass on Classic,
+     the blue panel on Space, the stone block on Medieval/Special, the pixel pill on Retro) — nothing is styled twice here */
+  '#jjms-next{position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:940;background:none;border:0;isolation:isolate;' +
+    'border-radius:24.5px;color:#fff;font:inherit;font-size:13px;font-weight:700;letter-spacing:.14em;' +
+    'padding:14px 22px;cursor:pointer;display:flex;gap:10px;align-items:center;opacity:0;pointer-events:none;transition:opacity .5s ease;}' +
+  '#jjms-next>*{position:relative;z-index:1;}' +
+  '#jjms-next.on{opacity:1;pointer-events:auto;}#jjms-next:hover::before{filter:brightness(1.25);}' +
   '#jjms-next .ar{display:inline-block;animation:jjmsA 1.6s ease-in-out infinite;}' +
   '@keyframes jjmsA{0%,100%{transform:translateY(-2px);}50%{transform:translateY(3px);}}' +
   /* era nav */
@@ -1513,7 +1517,7 @@
     return B.map(function (b) { return { x: b.x, y: b.y }; });
   }
 
-  CSS += 'body.jj-modal-open #jjms *,body.jj-modal-open #jjms-fly *,body.jj-modal-open #jj-sc-hud,body.jj-modal-open .menu-links,body.jj-modal-open .menu-button,body.jj-modal-open #jj-sound-btn,body.jj-modal-open #jj-sound-mist{pointer-events:none!important;}';
+  CSS += 'body.jj-modal-open #jjms *,body.jj-modal-open #jjms-fly *,body.jj-modal-open #jj-sound-btn,body.jj-modal-open #jj-sound-mist{pointer-events:none!important;}';
 
   function init() {
     /* this page always opens on the story's first frame, so don't let the browser restore a
@@ -1609,7 +1613,7 @@
           '--dr:' + (0.9 + p0 % 3 * 0.45).toFixed(2) + 'deg;' +
           'animation-duration:' + (10.5 + p0 * 1.6).toFixed(1) + 's;animation-delay:-' + (p0 * 2.6).toFixed(1) + 's">' +
           '<img src="' + SB + P.src + '" alt="" decoding="async">' +
-          (P.logo ? '<img class="lgtint" src="' + SB + 'skyrock-blue.png" alt="" decoding="async">' : '') +
+          (P.logo ? '<img class="lgtint" src="' + SB + 'skyrock-blue.webp" alt="" decoding="async">' : '') +
           (P.deco ? (P.cap && !P.tap ? '<span class="dcap">' + esc(P.cap) + '</span>' : '') :
             (P.cap && P.hoverCap !== false ? '<span class="phcap">' + esc(P.cap) + '</span>' : '')) +
           '</span></span></span>';
@@ -1657,7 +1661,8 @@
           '<span class="srrail"><span class="sric">' + SR_ICON.heart + '</span>' +
             '<span class="sric">' + SR_ICON.chat + '</span><span class="sric">' + SR_ICON.send + '</span></span>' +
           '<span class="srsearch">' + SR_ICON.search + '</span>' +
-          '<span class="srnotch"></span></span></span>';
+          '<span class="srnotch"></span></span></span>' +
+          '<video class="srwanda" muted loop autoplay playsinline poster="' + SB + 'wanda-wand-poster.webp" style="left:' + (s.srp.x - 9.5) + '%;top:' + (s.srp.y + 6) + '%;width:' + (s.srp.w * .75) + 'vw"><source src="' + SB + 'wanda-wand.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + SB + 'wanda-wand.webm" type="video/webm"></video>';   // Wanda waves her wand beside the Super Reel phone
       }
       /* the award itself — drawn, since the design frame has no trophy asset. Same celebration as
          the marked word, so either one sets it off. */
@@ -1921,7 +1926,7 @@
 
     /* era header / next / nav */
     var hd = document.createElement('div'); hd.id = 'jjms-hd'; document.body.appendChild(hd);
-    var nx = document.createElement('button'); nx.id = 'jjms-next'; nx.innerHTML = 'NEXT <span class="ar">↓</span>'; document.body.appendChild(nx);
+    var nx = document.createElement('button'); nx.id = 'jjms-next'; nx.innerHTML = '<span>NEXT</span><span class="ar">↓</span>'; nx.setAttribute('data-jj', 'btn'); nx.setAttribute('data-cursor', 'hover'); document.body.appendChild(nx);
     var nav = document.createElement('div'); nav.id = 'jjms-nav';
     var nh = '';
     for (var e = 0; e < ERAS.length; e++) {
@@ -2131,7 +2136,7 @@
       if (loop) { try { loop.pause(); } catch (e0) {} }
       if (yt) {                                                      /* the school films live on YouTube — nothing to host */
         ytBox.innerHTML = '<iframe src="https://www.youtube.com/embed/' + encodeURIComponent(yt) +
-          '?autoplay=1&rel=0&modestbranding=1&playsinline=1&origin=' + encodeURIComponent(location.origin) +
+          '?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=' + encodeURIComponent(location.origin) +
           '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" ' +
           'allowfullscreen title="' + esc(phw.getAttribute('data-cap') || 'Video') + '"></iframe>';
       } else {
@@ -3276,9 +3281,27 @@
         '?autoplay=1&rel=0&modestbranding=1&playsinline=1&origin=' + encodeURIComponent(location.origin) +
         '" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="Secret video"></iframe></div>' +
         '<button type="button" class="qagain" style="--qd:.4s">Back</button>', function () {
+        watchSecretPlay(quiz.querySelector('.qvid iframe'));
         quiz.querySelector('.qagain').addEventListener('click', function (e) {
           e.stopPropagation(); unduckMusic(); quizResults();
         });
+      });
+    }
+    /* The secret video is the Babadook one: pressing play on it earns 'babadook', which hands over the
+       Babadook alien. YouTube only reports its state once the page says it is listening (enablejsapi=1 +
+       a 'listening' handshake); state 1 is playing. Checked by origin, and only awarded once. */
+    var secretListen = false;
+    function watchSecretPlay(frame) {
+      if (!frame) return;
+      var hello = function () { try { frame.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 'jjsecret', channel: 'widget' }), '*'); } catch (e) {} };
+      frame.addEventListener('load', hello); setTimeout(hello, 800); setTimeout(hello, 2500);
+      if (secretListen) return; secretListen = true;
+      window.addEventListener('message', function (e) {
+        if (!/(^|\.)youtube(-nocookie)?\.com$/.test((function () { try { return new URL(e.origin).hostname; } catch (x) { return ''; } })())) return;
+        var d; try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (x) { return; }
+        if (!d) return;
+        var playing = (d.event === 'onStateChange' && d.info === 1) || (d.event === 'infoDelivery' && d.info && d.info.playerState === 1);
+        if (playing && window.jjScore) window.jjScore.award('babadook');
       });
     }
     function quizResults() {

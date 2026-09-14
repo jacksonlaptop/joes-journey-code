@@ -855,6 +855,8 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
         } else if (t === 'contact') {
           var h = a.getAttribute('href');
           if (!h || h === '#' || h === '') { a._jjMenuWired = 1; a.setAttribute('href', '/contact'); }
+        } else if (t === 'work') {
+          a._jjMenuWired = 1; a.setAttribute('href', '/?choose=work');   // Work opens the Story Time / Work chooser with Work picked — the picker, in place (2026-09-12)
         }
       }
     } catch (e) {}
@@ -890,9 +892,9 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     '#jj-back::before{content:"";position:absolute;inset:0;background:rgba(255,255,255,.5);transform:translateX(-101%);transition:transform .35s cubic-bezier(.2,.7,.3,1);z-index:-1;}' +
     '#jj-back:hover::before{transform:none;}#jj-back:active{background:#FF00F5;border-color:#FF00F5;}' +
     '#jj-back svg{width:14px;height:14px;display:block;}' +
-    'body.jj-modal-open #jj-back,body.jj-menu-open #jj-back{opacity:0;pointer-events:none;transition:opacity .2s ease;}';
+    'body.jj-modal-open #jj-back,body.jj-menu-open #jj-back{opacity:0;pointer-events:none;transition:opacity .2s ease;}body.jj-menu-open #jj-ach,body.jj-menu-open #jj-ach *{pointer-events:auto!important}';
   document.head.appendChild(st);
-  var a = document.createElement('a'); a.id = 'jj-back'; a.href = toPicker ? '/case-studies' : '/'; a.setAttribute('data-cursor', 'hover'); a.setAttribute('data-jj', 'btn');
+  var a = document.createElement('a'); a.id = 'jj-back'; a.href = toPicker ? '/?choose=work' : '/';   // back from a case study → the Work chooser on the homepage (the picker page is retired) a.setAttribute('data-cursor', 'hover'); a.setAttribute('data-jj', 'btn');
   a.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg><span>' + (toPicker ? 'All projects' : 'Back') + '</span>';
   function mount() { if (document.body) { document.body.appendChild(a); setTimeout(function () { a.classList.add('in'); }, 400); } else setTimeout(mount, 50); }
   mount();
@@ -952,11 +954,12 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     window.jjSyncTale2(); window.addEventListener('jj:score', window.jjSyncTale2); setTimeout(window.jjSyncTale2, 1500); setTimeout(window.jjSyncTale2, 4000);
     document.addEventListener('click', function (e) { var a = e.target && e.target.closest && e.target.closest('.jj-tale2'); if (!a) return; window.jjSyncTale2();
       if (!a.classList.contains('locked')) { try { localStorage.setItem('jjTale2Seen', '1'); } catch (x) {} window.jjSyncTale2(); return; }
-      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); var b = document.querySelector('.menu-container'); if (b && document.body.classList.contains('jj-menu-open')) b.click(); setTimeout(function () { if (window.jjScore) window.jjScore.goto('tale2'); }, 260); }, true);
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); if (window.jjScore) window.jjScore.goto('tale2'); }, true);   // goto() closes the menu itself (once) and waits for it — pressing the button here too re-opened it under the panel
     Array.prototype.forEach.call(list.querySelectorAll('.menu-open-link'), function (a) {
       var t = (a.textContent || '').trim().toLowerCase();
       if (t === 'contact') a.setAttribute('href', '/contact');
       if (t === 'credits') a.setAttribute('href', '/contact?credits=1');
+      if (t === 'work') a.setAttribute('href', '/?choose=work');
     });
 
     // Clone-replace links: strips the Webflow embed's hover listeners so we own the show

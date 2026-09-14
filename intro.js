@@ -58,8 +58,15 @@ document.addEventListener("DOMContentLoaded", function () {
 // animations until site-footer.js dispatches jj:entrance from the loader's
 // onReady. Without the loader (other pages, or if it fails to load) run now.
 function jjOnEntrance(fn) {
-  if (!window.JJLoader || window.__jjEntranceDone) { fn(); return; }
-  document.addEventListener("jj:entrance", function () { fn(); }, { once: true });
+  // The decision is deferred to DOMContentLoaded so script order can never race it:
+  // if this file parses before jj-loader.js has defined window.JJLoader, an immediate
+  // check would decide "no loader" and run every landing animation under the loader.
+  function decide() {
+    if (!window.JJLoader || window.__jjEntranceDone) { fn(); return; }
+    document.addEventListener("jj:entrance", function () { fn(); }, { once: true });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", decide);
+  else decide();
 }
 
 // Intro Reveal animations
@@ -243,6 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
     wheelMultiplier: 0.5,
     smoothTouch: true,
   });
+  window.lenis = lenis;   // exposed so page code (e.g. the My Story big-bang hold) can stop/start it
 
   // Ensure the page always loads at the top — re-assert after the browser's scroll restoration so a
   // Back navigation can't leave us parked at the (now black) end of the scroll.
@@ -356,6 +364,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 (e.type === "keydown" && ["ArrowUp", "PageUp", "Home"].indexOf(e.key) !== -1);
               if (!back) return;
               cancelCaseRedirect();
+              if (window.jjChoose) window.jjChoose.close();   // the Story Time / Work chooser, if it is up
               lenis.start();
               gsap.to(".next-section-button", { opacity: 1, duration: 0.5, ease: "power2.out" });
             };
@@ -375,7 +384,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 opacity: 1,
                 duration: 0.4,
                 ease: "power2.inOut",
-                onComplete: () => { window.location.href = `${currentURL}/case-studies`; },
+                onComplete: () => { window.location.href = `${currentURL}/?choose=choice`; },   // the picker page is retired: the choice lives on the homepage
               });
             };
             ScrollTrigger.create({
@@ -389,7 +398,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Fade out the on-screen UI quickly
                 gsap.to(".next-section-button", { opacity: 0, duration: 0.3, ease: "power2.out" });
-                gsap.to(".fly-rive", { opacity: 0, duration: 0.3, ease: "power2.out" });
+                gsap.to(".fly-rive, #jj-flyer", { opacity: 0, duration: 0.3, ease: "power2.out" });
 
                 // Short beat (1s), then a smooth fade-to-deep-space into the case studies page.
                 // Scrolling / keying back up during the beat cancels it and re-enables scrolling.
@@ -397,7 +406,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.addEventListener("wheel", onBackScroll, { passive: true });
                 window.addEventListener("touchmove", onBackScroll, { passive: true });
                 window.addEventListener("keydown", onBackScroll);
-                window.__jjCaseRedirect = setTimeout(goCaseStudies, 400);
+                window.__jjCaseRedirect = setTimeout(() => { if (window.jjChoose) window.jjChoose.open(); else goCaseStudies(); }, 400);   // the chooser (homepage-footer.js) — Story Time or Work; the old straight exit stays as the fallback
               },
             });
           }

@@ -206,7 +206,7 @@
   /* the Big Bang finale — where the story hands over to the rest of the site */
   var FINALE_CAP = 'And with one last bang… a whole new universe to explore';
   var LINKS = [
-    { label: 'Work', href: '/case-studies', hue: '#FF00F5' },
+    { label: 'Work', href: '/?choose=work', hue: '#FF00F5' },
     { label: 'Contact', href: '/contact', hue: '#7d5bff' },
     { label: 'Credits', href: '/contact#credits', hue: '#4aa8ff' }   // confirm the credits URL
   ];
@@ -1926,6 +1926,7 @@
 
     /* era header / next / nav */
     var hd = document.createElement('div'); hd.id = 'jjms-hd'; document.body.appendChild(hd);
+    (function regFollow(){ if (window.jjCompanion && window.jjCompanion.follow) window.jjCompanion.follow('mystory', function () { if (document.getElementById('jjst')) return null; return hd.querySelector('.hin .ic img.act'); }); else setTimeout(regFollow, 600); })();   // the companion keeps to the era's active sprite
     var nx = document.createElement('button'); nx.id = 'jjms-next'; nx.innerHTML = '<span>NEXT</span><span class="ar">↓</span>'; nx.setAttribute('data-jj', 'btn'); nx.setAttribute('data-cursor', 'hover'); document.body.appendChild(nx);
     var nav = document.createElement('div'); nav.id = 'jjms-nav';
     var nh = '';

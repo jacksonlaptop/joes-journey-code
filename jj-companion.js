@@ -1,4 +1,4 @@
-/* jj-companion.js — companions + the store (build c14: the Battle Chicken outfit clip is in; the Tree Spirit companion (kodama tilt in code, unlocked by a tap in the enchanted forest); c13: companions float right, out of the way, when they drift over UI; c12: the roaming clips are in — every alien outfit, the Babadook and the three chickens play one Seedance take each: roam at 60%, the expression at full speed, a 6s float on the stillest frame after it, then away into the distance; Babadook gifted by the quiz's secret video; c11: three chickens join the companions; menu decorations sit beside the logo, top left; decorations smaller, feet on the frame top everywhere; decorations = the 15 My Story era sprites, 5 at a time, still on every modal and floating in the menu; dragons grow in, play their clip from the top and shrink away before it ends; cursor-vs-theme question on the first mismatched pick; owned counts for the header).
+/* jj-companion.js — companions + the store (build c26: a shelf counter on the Decorations tab (n / 5, five slots, 'Shelf full' when it is); the decorations on the shelf are pressable (EDIT cursor) and open the Decorations tab; the preview clip never restarts (outfit / size / board changes carry on from where it was, on the page too); a full-screen view — the companion alone on the Joe's Journey swirl or any board, just a close; the 'None' backdrop is a patch of night sky; the preview can sit on any of the tale's boards (cave, village, tavern, woods, hills, mountains, forest, castle) or none; CHANGE ↗ cursor over the companion; the decoration shelf stands on the stone frames; 'Take them / Drop them'; the preview shows the companion at actual size for the size picked; the active button (Playing / Wearing / With you) is a gold button of its own; the decoration shelf clears the stone frames on the first card and the sound prompt; pick the companion's size (small / medium / large); the preview crops in close; the Companions tab is the alien's home — big looping preview, Take him / Drop him, an outfit dropdown of what you own (pink dot = not worn yet), the Companion Store beneath (available / how to unlock / bought); the alien is everyone's from the start; Chickens & Dragons is its own tab; c17: the companion has a hover and a press opens the store on its outfits; no companion in the tale; companions follow a character when a page hands them one (Storytime's Joe / hero, My Story's era sprite), over the tale; c15: parks 15vh lower under the flyer; no pink companions on the project picker (its purple soft-light wash is counted now); c14: the Battle Chicken outfit clip is in; the Tree Spirit companion (kodama tilt in code, unlocked by a tap in the enchanted forest); c13: companions float right, out of the way, when they drift over UI; c12: the roaming clips are in — every alien outfit, the Babadook and the three chickens play one Seedance take each: roam at 60%, the expression at full speed, a 6s float on the stillest frame after it, then away into the distance; Babadook gifted by the quiz's secret video; c11: three chickens join the companions; menu decorations sit beside the logo, top left; decorations smaller, feet on the frame top everywhere; decorations = the 15 My Story era sprites, 5 at a time, still on every modal and floating in the menu; dragons grow in, play their clip from the top and shrink away before it ends; cursor-vs-theme question on the first mismatched pick; owned counts for the header).
    Loads after jj-score.js. Registers the Store's tabs (Characters, Outfits, Music, Cursors) with jjScore and renders them into the panel.
    Companions: the alien (wearing one of the outfits from the Outfits tab), two dragons, and the My Story era sprites. The alien and
    the sprites park top-left and bob; dragons patrol the top of the page, fly out when their clip ends and fly back in somewhere else.
@@ -9,7 +9,7 @@
   if (window.jjCompanion) return;
   var GB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
   var KEY = 'jjCompanion', C; try { C = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { C = {}; }
-  C.owned = C.owned || {}; C.comp = C.comp || null; C.outfit = C.outfit || null; C.seen = C.seen || {}; C.deco = C.deco || []; C.keepCur = !!C.keepCur; C.cursor = C.cursor || null;
+  C.owned = C.owned || {}; if (!C.owned.alien) C.owned.alien = Date.now(); C.worn = C.worn || {}; C.size = C.size || 'm'; C.pvBg = C.pvBg || ''; C.fsBg = C.fsBg || 'jj'; C.comp = C.comp || null;   // fsBg: the backdrop in the full-screen view (default: the Joe's Journey swirl)   // pvBg: the backdrop behind the preview (a Storytime board, or none)   // size: s / m / l — how big the companion is on the page   // the alien is everyone's from the start — it only needs taking along; worn: outfits tried on (the pink dot marks the rest) C.outfit = C.outfit || null; C.seen = C.seen || {}; C.deco = C.deco || []; C.keepCur = !!C.keepCur; C.cursor = C.cursor || null;
   var cursor = 'classic';                                      // resolved in applyCursor(): the kept choice, else the pack that matches the theme
   var MAX_DECO = 5;                                           // decorations on display at once
   var PREVIEW_ALL = true;                                     // TESTING: every cursor pack counts as owned. Set false to sell them.
@@ -31,7 +31,7 @@
   ];
   var ERAS = [['The Blob', 'Precambrian Joe. Mostly goo, one eye, big plans.'], ['The Caveman', 'Prehistoric Joe and his trusty club.'], ['The Roman', 'Ancient Joe, helmet, sword and a frown.'], ['The Knight', 'Medieval Joe with the J shield.'], ['The Painter', 'Renaissance Joe, beret and brush.'], ['The Astronaut', 'Information Age Joe, phone in hand.']];   // era-fly-0..5 from My Story
   var COMPS = [
-    { id: 'alien',   group: 'alien',  name: 'Your alien',    img: 'co-alien-plain.webp', price: { s: 1 }, desc: 'A little alien who floats along with you. Dress them in the Outfits tab.' },
+    { id: 'alien',   group: 'alien',  name: 'Your alien',    img: 'co-alien-plain.webp', price: null, desc: 'Yours from the start. Take them with you, and dress them from the Companion Store below.' },
     { id: 'trogdor', group: 'dragon', name: 'Trogdor',       video: 'co-trogdor-loop', poster: 'co-trogdor-loop-poster.webp', price: { s: 1 },  faceLeft: true,  rate: .5, desc: 'The Burninator himself, patrolling the top of the page. He can’t be dressed, he’s a dragon.' },
     { id: 'trog8',   group: 'dragon', name: '8-bit Trogdor', video: 'retro-trog-loop',  poster: 'retro-trog-loop-poster.webp',  price: { c: 20 }, gate: 'credits', faceLeft: false, desc: 'The pixel dragon from the credits game, patrolling the top of the page.' },
     { id: 'chick',     group: 'chicken', name: 'Chicken',          img: 'co-chick.webp', loopVid: 'story-vil-chicken', price: { c: 5 }, desc: 'The lone chicken from the village. Struts along beside you, entirely unbothered.' },
@@ -47,7 +47,7 @@
   var DECOBY = {}; DECOS.forEach(function (d) { DECOBY[d.id] = d; });
   var BYID = {}; COMPS.forEach(function (c) { BYID[c.id] = c; }); var OUT = {}; OUTFITS.forEach(function (o) { OUT[o.id] = o; });
   var GROUPS = [['alien', ''], ['dragon', 'Dragons'], ['chicken', 'Chickens'], ['spirit', 'Forest spirits'], ['story', 'From my story']];
-  var TABS = [['chars', 'Companions'], ['deco', 'Decorations'], ['outfits', 'Outfits'], ['music', 'Music'], ['cursor', 'Cursors']];
+  var TABS = [['chars', 'Companions'], ['pets', 'Chickens & Dragons'], ['deco', 'Decorations'], ['music', 'Music'], ['cursor', 'Cursors']];   // Outfits live inside Companions now (the Companion Store); every other creature is under Chickens & Dragons
 
   /* ---- helpers through jjScore ---- */
   function J() { return window.jjScore; }
@@ -65,7 +65,11 @@
   var arrived = false;                                        // companions are the last thing to arrive on a page
   function mountCo() {
     if (co) return; co = document.createElement('div'); co.id = 'jj-co'; co.setAttribute('aria-hidden', 'true'); inner = document.createElement('div'); inner.className = 'jjco-bob'; co.appendChild(inner); document.body.appendChild(co);
-    inner.addEventListener('click', poke);
+    inner.setAttribute('data-cursor', 'change');
+    inner.addEventListener('click', function (e) {              // a press on the companion: a hop, and the store opens on its outfits (or the companions, for one that cannot be dressed)
+      e.stopPropagation(); poke();
+      if (window.jjScore && window.jjScore.setStoreTab) window.jjScore.setStoreTab('chars');   // the Companions tab: the preview, the outfit dropdown, the Companion Store
+    });
     liftUI(); setInterval(liftUI, 2000);                           // pages build lazily; catch new UI as it appears
     inner.style.transition = 'transform 1.6s cubic-bezier(.22,1,.36,1), scale .3s ease'; setInterval(function () { park(); dodge(); }, 450);
     setInterval(function () { if (co) co.classList.toggle('hide', hidden() || !arrived); syncDeco(); menuCard(); }, 300);
@@ -78,17 +82,18 @@
   /* Some pages lay a tinted full-screen wash over their backdrop (the project picker's .gradient-overlay, z6): a
      companion underneath it goes red. So the companion sits just above the highest such wash, and the UI it lifts
      sits above that again — the order (backdrop → companion → UI) never changes, only the numbers. */
-  var WASH_SEL = '.gradient-overlay, .intro-section, #threejs-container';
+  var WASH_SEL = '.gradient-overlay, .intro-section, #threejs-container, .fade-reveal, .case-study-select';   // .case-study-select: the picker's full-screen card container (z80) — below it the companion could never be pressed   // .fade-reveal: the picker's fixed purple soft-light wash (z25, opacity .9) — under it every companion went pink
   var coZ = 2, lifted = [];
   function washZ() {
     var z = 1;
     try { document.querySelectorAll(WASH_SEL).forEach(function (el) { var r = el.getBoundingClientRect(); if (r.width < innerWidth * .8) return;
-      var v = parseInt(getComputedStyle(el).zIndex, 10); if (v === v && v < 50) z = Math.max(z, v); }); } catch (e) {}
+      var v = parseInt(getComputedStyle(el).zIndex, 10); if (v === v && v < 100) z = Math.max(z, v); }); } catch (e) {}   // < 100: the picker's card container sits at 80
     return z;
   }
   function liftUI() {
     try {
       var z = washZ() + 1;
+      if (document.getElementById('jjst') && followEl()) z = 2001;   // over the tale (z 2000), under the nav and every modal
       if (z !== coZ) { coZ = z; if (co) co.style.setProperty('z-index', String(coZ), 'important'); lifted.forEach(function (el) { el.style.zIndex = String(coZ + 3); }); }
       document.querySelectorAll(UI_SEL).forEach(function (el) {
         if (el._jjLift || el.closest('#jj-co, #jj-ach, #jj-first')) return; el._jjLift = true;
@@ -204,10 +209,23 @@
   /* Where the companion should sit on THIS page, before any dodging: floating just behind Joe's flying head while he
      is on screen, and centre-top on My Story (down the left is where its era headings and art live). */
   var parked = false;
+  /* Following: a page can hand the companion a character to tag along with (Storytime: Joe in each scene, or the scene's
+     hero; My Story: the era's active sprite). Several pages may register; the first that returns a live element wins. */
+  var followers = {};
+  function follow(key, fn) { if (typeof key === 'function') { fn = key; key = 'page'; } if (fn) followers[key] = fn; else delete followers[key]; }
+  function followEl() {
+    var ks = Object.keys(followers);
+    for (var i = 0; i < ks.length; i++) { try { var el = followers[ks[i]](); if (el && el.isConnected) { var r = el.getBoundingClientRect(); if (r.width > 4 && r.height > 4 && r.bottom > 0 && r.top < innerHeight && getComputedStyle(el).opacity !== '0') return el; } } catch (e) {} }
+    return null;
+  }
   function parkAnchor() {
+    var fe = followEl();
+    if (fe) { var fr = fe.getBoundingClientRect(), fw = (inner && inner.getBoundingClientRect().width) || 80;   // beside the character's shoulder, on whichever side has room
+      var x = fr.right - fr.width * .08; if (x + fw > innerWidth - 8) x = fr.left - fw + fr.width * .08;
+      return { x: x, y: Math.max(8, fr.top - fw * .3), follow: true }; }
     var fly = document.getElementById('jj-flyer');
     if (fly && fly.classList.contains('on')) { var r = fly.getBoundingClientRect();
-      if (r.width) return { x: r.left - r.width * .9, y: r.bottom - r.height * .1 }; }   // bottom-left of him, out of the text's way
+      if (r.width) return { x: r.left - r.width * .9, y: r.bottom + innerHeight * .15 }; }   // bottom-left of him and 15vh lower, out of the text's way (Joe: 'too close')
     var cta = document.querySelector('.enter-link_wrapper');
     if (cta && getComputedStyle(cta).display !== 'none') return { x: 128, y: 214 };   // the landing: down and right of the top-left peeking alien
     var ms = document.getElementById('jjms-bg');
@@ -222,10 +240,11 @@
     var x = Math.max(8, Math.min(innerWidth - w - 8, a.centre ? a.x - w / 2 : a.x));
     co.style.setProperty('left', Math.round(x) + 'px', 'important');
     co.style.setProperty('top', Math.round(a.y) + 'px', 'important');
+    co.classList.toggle('follow', !!a.follow);
     parked = true;
   }
   function hidden() {                                          // modals, the menu, the credits game, and the Storytime tale itself
-    return document.body.classList.contains('jj-modal-open') || document.body.classList.contains('jj-menu-open') || !!document.getElementById('jj-hud') || !!document.getElementById('jjst');
+    return document.body.classList.contains('jj-modal-open') || document.body.classList.contains('jj-menu-open') || !!document.getElementById('jj-hud') || (!!document.getElementById('jjst') && !followEl());   // in the tale only while it has a character to follow
   }
   function clip(name, poster, loop, rate) {
     var v = document.createElement('video'); v.muted = true; v.loop = !!loop; v.playsInline = true; v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); if (poster) v.poster = GB + poster;
@@ -233,12 +252,18 @@
     v.addEventListener('playing', function () { v.removeAttribute('poster'); if (rate) v.playbackRate = rate; }, { once: true }); return v;
   }
   function play(v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+  var SCALE = { s: .72, m: 1, l: 1.45 };
+  var JJ_SWIRL = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0c90afafa53a631f4ff3ac_Starry%20Board%20-%20Background.svg';   // the site's own swirl board
+  var pvT = 0;                                                  // where the preview clip has got to — every re-render and the full-screen view pick up from here
+  var PVBG = [['', 'None'], ['cav', 'Cave'], ['vil', 'Village'], ['tav', 'Tavern'], ['wood', 'Woods'], ['hills', 'Hills'], ['mtn', 'Mountains'], ['forest', 'Forest'], ['cas', 'Castle']];   // the tale's boards, behind the preview
+  function applySize() { if (co) co.style.setProperty('--co-scale', String(SCALE[C.size] || 1)); }
   function fillCo() {
-    if (!co) return; stopRoam(); var c = BYID[C.comp]; inner.innerHTML = ''; inner.className = 'jjco-bob'; cur = c || null; vid = null; flying = false;
+    if (!co) return; applySize(); var keepT = (cur && cur.id === 'alien' && vid && !vid.paused && (BYID[C.comp] || {}).id === 'alien') ? vid.currentTime : 0;   // outfit swap: the clip carries on from where it was
+    stopRoam(); var c = BYID[C.comp]; inner.innerHTML = ''; inner.className = 'jjco-bob'; cur = c || null; vid = null; flying = false;
     co.className = c ? 'on ' + (c.group === 'dragon' ? 'dragon' : c.big ? 'wander' : 'spot') : ''; co.style.left = ''; co.style.transition = ''; if (!arrived) co.classList.add('hide');
     if (!c) return;
     if (c.group === 'dragon') { vid = clip(c.video, c.poster, false, c.rate); inner.appendChild(vid); enterDragon(c, STOPS[1 + Math.floor(Math.random() * 2)]); }
-    else if (roamFile(c)) { var rf = roamFile(c); co.classList.add('roam'); vid = clip(rf, rf + '-poster.webp', false); inner.appendChild(vid); startRoam(rf); }
+    else if (roamFile(c)) { var rf = roamFile(c); co.classList.add('roam'); vid = clip(rf, rf + '-poster.webp', false); inner.appendChild(vid); if (keepT) { var kv = vid, kt = keepT, seek = function () { try { kv.currentTime = kt; } catch (e) {} }; if (kv.readyState >= 1) seek(); else kv.addEventListener('loadedmetadata', seek, { once: true }); } startRoam(rf); }
     else if (c.clips) { vid = clip('co-' + clipId(c) + '-idle', thumb(c).replace(GB, ''), true); inner.appendChild(vid); play(vid); }
     else if (c.loopVid) { vid = clip(c.loopVid, c.img, true); inner.appendChild(vid); play(vid); }   // a companion that already has a keyed loop of its own
     else { var im = document.createElement('img'); im.className = 'jjco-img' + (c.anim ? ' anim-' + c.anim : ''); im.src = thumb(c); im.alt = ''; inner.appendChild(im); }   // c.anim: a CSS-animated still (the tree spirit)
@@ -326,12 +351,12 @@
 
   /* ---- store ---- */
   var curTab = 'chars';
-  function rerender() { if (!J() || !document.querySelector('#jj-ach.on.store')) return; var list = document.querySelector('#jj-ach .list'), st = list ? list.scrollTop : 0; J().setStoreTab(curTab || 'chars'); if (list) list.scrollTop = st; }
+  function rerender() { if (!J() || !document.querySelector('#jj-ach.on.store')) return; var pvv0 = document.querySelector('#jj-ach video.jjco-pv'); if (pvv0) pvT = pvv0.currentTime; var list = document.querySelector('#jj-ach .list'), st = list ? list.scrollTop : 0; J().setStoreTab(curTab || 'chars'); if (list) list.scrollTop = st; }
   function card(o) {
     return '<div class="row shop ' + (o.owned ? 'done' : o.locked ? 'lock' : '') + (o.on ? ' equipped' : '') + '" data-item="' + o.id + '"><i class="rbg"></i>' +
       '<div class="ico"><img src="' + o.thumb + '" alt=""></div><div class="mid"><div class="nm">' + o.name + (o.on ? ' <span class="jjco-tag">' + (o.onLabel || 'With you') + '</span>' : '') + (o.soon ? ' <span class="jjco-tag soon">Being animated</span>' : '') + '</div><div class="ds">' + o.desc + '</div>' +
       '<div class="pr">' + (o.price ? priceHtml(o.price) : '') + (o.locked ? '<span class="jjco-btn lock">Locked</span>' + (o.gate ? ' <button type="button" class="jjco-link" data-goto="' + o.gate + '" data-cursor="hover">see how</button>' : '') :
-        o.owned ? '<button type="button" class="jjco-btn own" data-act="' + (o.ownAct || 'take') + '" data-item="' + o.id + '" data-cursor="hover">' + (o.ownLabel || 'Take with you') + '</button>' + (o.extra || '') :
+        o.owned ? '<button type="button" class="jjco-btn own' + (o.on ? ' on' : '') + '" data-act="' + (o.ownAct || 'take') + '" data-item="' + o.id + '" data-cursor="hover">' + (o.ownLabel || 'Take with you') + '</button>' + (o.extra || '') :
         '<button type="button" class="jjco-btn buy" data-item="' + o.id + '" data-cursor="hover">Buy</button>') + '</div></div>' +
       '<i class="wmw"><img class="wm" src="' + o.thumb + '" alt=""></i></div>';
   }
@@ -339,37 +364,55 @@
   function render(tab, list) {
     curTab = tab; var html = '';
     if (tab === 'chars') {
-      GROUPS.forEach(function (g) {
-        html += head(g[1]);
-        COMPS.filter(function (c) { return c.group === g[0]; }).sort(function (a, b) { return (owned(b.id) ? 1 : 0) - (owned(a.id) ? 1 : 0); }).forEach(function (c) {
-          var ok = gateOk(c), on = C.comp === c.id;
-          html += card({ id: c.id, name: c.name, desc: ok || owned(c.id) ? c.desc : 'Unlocks with ' + achName(c.gate) + '. ' + c.desc, thumb: thumb(c), price: c.price, owned: owned(c.id), locked: !ok && !owned(c.id), gate: c.gate, on: on, soon: !c.video && !c.clips && !c.loopVid && !roamFile(c), ownLabel: on ? 'Send home' : 'Take with you',
-            extra: c.id === 'alien' ? ' <button type="button" class="jjco-btn" data-act="outfits" data-item="alien" data-cursor="hover">Customise →</button>' : '' });
-        });
-      });
+      document.querySelectorAll('#jj-ach .card > .jjco-ddm').forEach(function (n) { n.remove(); });
+      var alienOut = C.comp === 'alien', other = C.comp && C.comp !== 'alien' ? BYID[C.comp] : null;
+      var wornId = C.outfit && owned('outfit:' + C.outfit) ? C.outfit : null, wornO = wornId ? OUT[wornId] : null;
+      var pvw = Math.round(210 * (SCALE[C.size] || 1));   // about twice the size they are on the page, so the character reads; it still grows and shrinks with the size picked
+      var rf = roamFile(BYID.alien), pv = rf ? '<video class="jjco-pv" style="width:' + pvw + 'px" autoplay muted loop playsinline poster="' + GB + rf + '-poster.webp"><source src="' + GB + rf + '.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + GB + rf + '.webm" type="video/webm"></video>' : '<img class="jjco-pv still" style="width:' + pvw + 'px" src="' + GB + alienImg() + '" alt="">';
+      var ownedFits = OUTFITS.filter(function (o) { return owned('outfit:' + o.id); }), fresh = ownedFits.filter(function (o) { return !C.worn[o.id]; }).length;
+      var ddItems = '<div class="ti' + (!wornId ? ' on' : '') + '" role="button" tabindex="0" data-act="wear" data-item="outfit:plain" data-cursor="hover"><img class="mi" src="' + GB + 'co-alien-plain.webp" alt=""><span class="tx">Plain</span>' + (!wornId ? '<i class="tick">✓</i>' : '') + '</div>' +
+        ownedFits.map(function (o) { return '<div class="ti' + (wornId === o.id ? ' on' : '') + '" role="button" tabindex="0" data-act="wear" data-item="outfit:' + o.id + '" data-cursor="hover"><img class="mi" src="' + GB + o.img + '" alt=""><span class="tx">' + o.name + '</span>' + (wornId === o.id ? '<i class="tick">✓</i>' : (!C.worn[o.id] ? '<i class="jjco-dot"></i>' : '')) + '</div>'; }).join('');
+      html += '<div class="jjco-hero">' +
+        '<div class="jjco-prevw"><div class="jjco-prev' + (alienOut ? ' out' : '') + (C.pvBg ? ' bg' : '') + '"' + (C.pvBg ? ' style="background-image:url(' + GB + 'story-' + C.pvBg + '-bg.webp)"' : '') + '>' + (C.pvBg ? '' : '<i class="jjco-sky"></i>') + pv + '<button type="button" class="jjco-fs" aria-label="View full screen" title="Full screen" data-cursor="hover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>' +
+          '<div class="jjco-bgs">' + PVBG.map(function (b) { return '<button type="button" class="' + (C.pvBg === b[0] ? 'on' : '') + (b[0] ? '' : ' none') + '" data-act="pvbg" data-item="' + b[0] + '" title="' + b[1] + '" aria-label="' + b[1] + '" data-cursor="hover"' + (b[0] ? ' style="background-image:url(' + GB + 'story-' + b[0] + '-bg.webp)"' : '') + '></button>'; }).join('') + '</div></div>' +
+        '<div class="jjco-side">' +
+          '<div class="jjco-nm">Your alien' + (alienOut ? ' <span class="jjco-tag">With you</span>' : '') + '</div>' +
+          '<div class="jjco-ds">' + (other ? other.name + ' is with you instead. Take your alien to swap back.' : alienOut ? 'Floating along with you across the site.' : 'Yours from the start — take them along, then dress them.') + '</div>' +
+          '<button type="button" class="jjco-switch' + (alienOut ? ' on' : '') + '" data-act="take" data-item="alien" data-cursor="hover"><i></i><span>' + (alienOut ? 'Drop them' : 'Take them') + '</span></button>' +
+          '<div class="jjco-ddw"><div class="jjco-lbl">Outfit' + (fresh ? ' <i class="jjco-dot"></i>' : '') + '</div>' +
+            '<button type="button" class="jjco-dd" data-act="dd" data-cursor="hover"><img src="' + GB + (wornO ? wornO.img : 'co-alien-plain.webp') + '" alt=""><span>' + (wornO ? wornO.name : 'Plain') + '</span><svg viewBox="0 0 12 7" fill="none"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+            '<div class="jj-tmenu jjco-ddm">' + ddItems + '</div></div>' +
+          '<div class="jjco-ddw"><div class="jjco-lbl">Size</div><div class="jjco-seg">' + [['s', 'Small'], ['m', 'Medium'], ['l', 'Large']].map(function (z) { return '<button type="button" class="' + (C.size === z[0] ? 'on' : '') + '" data-act="size" data-item="' + z[0] + '" data-cursor="hover">' + z[1] + '</button>'; }).join('') + '</div></div>' +
+        '</div></div>';
+      html += head('Companion Store');
+      var avail = [], locked = [], bought = [];
+      OUTFITS.forEach(function (o) { var have = owned('outfit:' + o.id), ok = gateOk(o); (have ? bought : ok ? avail : locked).push(o); });
+      var section = function (title, arr) { if (!arr.length) return; html += '<div class="jjco-sub">' + title + '</div>';
+        arr.forEach(function (o) { var ok = gateOk(o), have = owned('outfit:' + o.id), on = have && wornId === o.id;
+          html += card({ id: 'outfit:' + o.id, name: o.name, desc: ok || have ? o.desc : 'Unlocks with ' + achName(o.gate) + '. ' + o.desc, thumb: GB + o.img, price: have ? null : o.price, owned: have, locked: !ok && !have, gate: o.gate, on: on, onLabel: 'Wearing', soon: !ROAM['co-alien-' + o.id], ownAct: 'wear', ownLabel: on ? 'Wearing' : 'Wear' + (!C.worn[o.id] ? ' <i class="jjco-dot in"></i>' : '') }); }); };
+      section('Available', avail); section('How to unlock', locked); section('Bought', bought);
       var st = J() ? J().state() : {}, dn = new Date(), today = dn.getFullYear() + '-' + (dn.getMonth() + 1) + '-' + dn.getDate(), got = st.daily === today;
       html += '<div class="row shop note"><i class="rbg"></i><div class="ico"><img src="' + (J() ? J().ico('coin') : '') + '" alt=""></div><div class="mid"><div class="nm">Daily bonus</div><div class="ds">' + (got ? 'Collected today. Come back tomorrow for another +10 coins.' : 'Come back tomorrow for +10 coins, every day you visit.') + '</div></div></div>';
     }
+    else if (tab === 'pets') {
+      html += '<div class="row shop note"><i class="rbg"></i><div class="ico"><img src="' + GB + 'co-trogdor-loop-poster.webp" alt=""></div><div class="mid"><div class="nm">Chickens &amp; Dragons</div><div class="ds">Other creatures to take along. Each one replaces your alien while it is with you — take the alien again to swap back.</div></div></div>';
+      GROUPS.forEach(function (g) {
+        if (g[0] === 'alien') return;
+        html += head(g[1]);
+        COMPS.filter(function (c) { return c.group === g[0]; }).sort(function (a, b) { return (owned(b.id) ? 1 : 0) - (owned(a.id) ? 1 : 0); }).forEach(function (c) {
+          var ok = gateOk(c), on = C.comp === c.id;
+          html += card({ id: c.id, name: c.name, desc: (ok || owned(c.id) ? '' : 'Unlocks with ' + achName(c.gate) + '. ') + c.desc + ' Replaces your alien.', thumb: thumb(c), price: c.price, owned: owned(c.id), locked: !ok && !owned(c.id), gate: c.gate, on: on, soon: !c.video && !c.clips && !c.loopVid && !roamFile(c) && !c.anim, ownLabel: on ? 'Send home' : 'Take with you' });
+        });
+      });
+    }
     else if (tab === 'deco') {
-      var nOn = C.deco.length, lastEra = null;
+      var nOn = C.deco.length, lastEra = null, full = nOn >= MAX_DECO;
       html += '<div class="row shop note"><i class="rbg"></i><div class="ico"><img src="' + GB + 'story-sprite-10-knight.webp" alt=""></div><div class="mid"><div class="nm">Decorations</div><div class="ds">The little Joes from every era of My Story. They sit along the top of the big panels and in the menu. Collect them all; ' + MAX_DECO + ' can be out at once (' + nOn + ' of ' + MAX_DECO + ' on display).</div></div></div>';
+      html += '<div class="jjco-count' + (full ? ' full' : '') + '"><span>On display</span><i>' + Array.apply(null, Array(MAX_DECO)).map(function (_, n) { return '<b class="' + (n < nOn ? 'on' : '') + '"></b>'; }).join('') + '</i><em>' + nOn + ' / ' + MAX_DECO + '</em>' + (full ? '<small>Shelf full — put one away to add another</small>' : '') + '</div>';
       DECOS.forEach(function (d) {
         if (d.era !== lastEra) { lastEra = d.era; html += head(d.era); }
         var have = owned('deco:' + d.id), on = C.deco.indexOf(d.id) >= 0;
-        html += card({ id: 'deco:' + d.id, name: d.name, desc: d.desc, thumb: GB + d.img, price: d.price, owned: have, locked: false, on: on, onLabel: 'On display', ownAct: 'deco', ownLabel: on ? 'Put away' : 'Put on display' });
-      });
-    }
-    else if (tab === 'outfits') {
-      if (!owned('alien')) html += '<div class="row shop note"><i class="rbg"></i><div class="ico"><img src="' + GB + 'co-alien-plain.webp" alt=""></div><div class="mid"><div class="nm">Outfits are for your alien</div><div class="ds">Buy the alien in Companions first, then dress them here.</div></div></div>';
-      /* Dressing the alien also brings it out as your companion, so the labels say what will happen:
-         With you = out and wearing this · Bring alien = it's the alien's outfit, someone else is out · Dress alien / Go plain = put it on */
-      var alienOut = C.comp === 'alien', selTag = alienOut ? 'With you' : 'Alien\u2019s outfit';
-      if (owned('alien') && !alienOut) html += '<div class="row shop note"><i class="rbg"></i><div class="ico"><img src="' + GB + alienImg() + '" alt=""></div><div class="mid"><div class="nm">Your alien isn\u2019t with you right now</div><div class="ds">Dressing them brings them along as your companion.</div></div></div>';
-      var plainOn = !C.outfit || !owned('outfit:' + C.outfit);
-      html += card({ id: 'outfit:plain', name: 'Plain', desc: 'No outfit, just the alien.', thumb: GB + 'co-alien-plain.webp', price: null, owned: true, on: plainOn, onLabel: selTag, ownAct: 'wear', ownLabel: plainOn ? (alienOut ? 'With you' : 'Bring alien') : 'Go plain' });
-      OUTFITS.slice().sort(function (a, b) { return (owned('outfit:' + b.id) ? 1 : 0) - (owned('outfit:' + a.id) ? 1 : 0); }).forEach(function (o) {
-        var ok = gateOk(o), have = owned('outfit:' + o.id), on = have && C.outfit === o.id;
-        html += card({ id: 'outfit:' + o.id, name: o.name, desc: ok || have ? o.desc : 'Unlocks with ' + achName(o.gate) + '. ' + o.desc, thumb: GB + o.img, price: o.price, owned: have, locked: !ok && !have, gate: o.gate, on: on, onLabel: selTag, soon: !ROAM['co-alien-' + o.id], ownAct: 'wear', ownLabel: on ? (alienOut ? 'With you' : 'Bring alien') : 'Dress alien' });   // 'Being animated' only while its clip is still to come
+        html += card({ id: 'deco:' + d.id, name: d.name, desc: d.desc, thumb: GB + d.img, price: d.price, owned: have, locked: false, on: on, onLabel: 'On display', ownAct: 'deco', ownLabel: on ? 'Put away' : (full ? 'Shelf full' : 'Put on display') });
       });
     }
     else if (tab === 'music') {
@@ -382,17 +425,63 @@
         html += card({ id: 'cursor:' + id, name: r[1], desc: have || ok ? r[2] : 'Unlocks with ' + achName(r[4]) + '. ' + r[2], thumb: GB + 'store-cursor-' + id + '.webp', price: r[3] && !have ? { c: r[3] } : null, owned: have, locked: !have && !ok, gate: r[4], on: on, onLabel: 'In use', ownAct: 'cursor', ownLabel: on ? 'In use' : 'Use this' }); });
     }
     list.innerHTML = html; bind(list);
+    var pvv = list.querySelector('video.jjco-pv'); if (pvv) seekOn(pvv, pvT);
+    var fsb = list.querySelector('.jjco-fs'); if (fsb) fsb.addEventListener('click', function (e) { e.stopPropagation(); openFull(); });
+  }
+  /* the outfit dropdown lives at card level while open: inside the scrolling list its lower items fell under the MORE fade
+     and out of the list's clip, so they could be seen but not pressed */
+  function toggleDd() {
+    var dm = document.querySelector('#jj-ach .jjco-ddm'), dd = document.querySelector('#jj-ach .jjco-dd'), card = document.querySelector('#jj-ach .card'); if (!dm || !dd || !card) return;
+    if (dm.classList.contains('on')) { dm.classList.remove('on'); return; }
+    var cr = card.getBoundingClientRect(), cs = getComputedStyle(card), br = dd.getBoundingClientRect(), bl = parseFloat(cs.borderLeftWidth) || 0, bt = parseFloat(cs.borderTopWidth) || 0;
+    if (dm.parentNode !== card) card.appendChild(dm);
+    dm.style.position = 'absolute'; dm.style.left = Math.round(br.left - cr.left - bl) + 'px'; dm.style.width = Math.round(br.width) + 'px'; dm.style.zIndex = '30';
+    var below = cr.bottom - br.bottom - 24, above = br.top - cr.top - 24, need = 44 * dm.children.length + 12;   // open whichever way shows more of the list; the rest scrolls inside it
+    if (below >= need || below >= above) { dm.style.top = Math.round(br.bottom - cr.top - bt + 8) + 'px'; dm.style.transform = 'none'; dm.style.maxHeight = Math.min(360, below) + 'px'; }
+    else { dm.style.top = Math.round(br.top - cr.top - bt - 8) + 'px'; dm.style.transform = 'translateY(-100%)'; dm.style.maxHeight = Math.min(360, above) + 'px'; }
+    dm.classList.add('on');
+    if (!card._jjDdClose) { card._jjDdClose = true; card.addEventListener('click', function (e) { var m = card.querySelector('.jjco-ddm.on'); if (m && !e.target.closest('.jjco-ddw, .jjco-ddm')) m.classList.remove('on'); }); }
+  }
+  function seekOn(v, t) {                                       // a preview clip: same pace as before, and it carries on from where the last one was (the clips are timed alike)
+    v.playbackRate = .85;
+    var go = function () { try { if (t && isFinite(v.duration)) v.currentTime = t % v.duration; } catch (e) {} var pp = v.play(); if (pp && pp.catch) pp.catch(function () {}); };
+    if (v.readyState >= 1) go(); else v.addEventListener('loadedmetadata', go, { once: true });
+    v.addEventListener('timeupdate', function () { pvT = v.currentTime; });
+  }
+  /* the full-screen view: the companion alone, big, on the Joe's Journey swirl (or any board), just a close */
+  function fsBgUrl(id) { return id === 'jj' ? JJ_SWIRL : id ? GB + 'story-' + id + '-bg.webp' : ''; }
+  function openFull() {
+    var card = document.querySelector('#jj-ach .card'); if (!card || card.querySelector('.jjco-full')) return;
+    var small = document.querySelector('#jj-ach video.jjco-pv'); if (small) pvT = small.currentTime;
+    var rf = roamFile(BYID.alien), pv = rf ? '<video class="jjco-pv big" autoplay muted loop playsinline poster="' + GB + rf + '-poster.webp"><source src="' + GB + rf + '.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + GB + rf + '.webm" type="video/webm"></video>' : '<img class="jjco-pv big still" src="' + GB + alienImg() + '" alt="">';
+    var full = document.createElement('div'); full.className = 'jjco-full';
+    full.innerHTML = '<div class="fbg"></div>' + pv +
+      '<div class="jjco-bgs fs">' + [['jj', 'Joe\u2019s Journey']].concat(PVBG.filter(function (b) { return b[0]; })).map(function (b) { return '<button type="button" class="' + (C.fsBg === b[0] ? 'on' : '') + '" data-fsbg="' + b[0] + '" title="' + b[1] + '" aria-label="' + b[1] + '" data-cursor="hover" style="background-image:url(' + fsBgUrl(b[0]) + ')"></button>'; }).join('') + '</div>' +
+      '<button type="button" class="jjco-fsx" aria-label="Close" data-cursor="hover"><svg viewBox="0 0 16 16" fill="none"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>';
+    card.appendChild(full);
+    var setBg = function () { full.querySelector('.fbg').style.backgroundImage = 'url(' + fsBgUrl(C.fsBg) + ')'; full.querySelectorAll('.jjco-bgs button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-fsbg') === C.fsBg); }); };
+    setBg();
+    full.querySelectorAll('.jjco-bgs button').forEach(function (b) { b.addEventListener('click', function (e) { e.stopPropagation(); C.fsBg = b.getAttribute('data-fsbg'); save(); setBg(); }); });
+    var close = function () { var bv = full.querySelector('video.jjco-pv'); if (bv) pvT = bv.currentTime; full.remove(); var sv = document.querySelector('#jj-ach video.jjco-pv'); if (sv) { try { sv.currentTime = pvT; } catch (e) {} } };
+    full.querySelector('.jjco-fsx').addEventListener('click', function (e) { e.stopPropagation(); close(); });
+    full.addEventListener('click', function (e) { e.stopPropagation(); });
+    var bv = full.querySelector('video.jjco-pv'); if (bv) seekOn(bv, pvT);
+    requestAnimationFrame(function () { full.classList.add('on'); });
   }
   function bind(list) {
+    list.addEventListener('click', function (e) { var dm = list.querySelector('.jjco-ddm'); if (dm && dm.classList.contains('on') && !e.target.closest('.jjco-ddw')) dm.classList.remove('on'); });
     list.querySelectorAll('.jjco-btn.buy').forEach(function (b) { b.addEventListener('click', function (e) { e.stopPropagation(); buy(b.getAttribute('data-item')); }); });
     list.querySelectorAll('.jjco-link[data-goto]').forEach(function (b) { b.addEventListener('click', function (e) { e.stopPropagation(); var g = b.getAttribute('data-goto'); if (g && J()) J().goto(g); }); });
     list.querySelectorAll('[data-act]').forEach(function (b) { b.addEventListener(b.tagName === 'INPUT' ? 'change' : 'click', function (e) { e.stopPropagation(); act(b.getAttribute('data-act'), b.getAttribute('data-item')); }); });
   }
-  function wear(id) { C.outfit = id === 'plain' ? null : id; save(); if (owned('alien') && C.comp !== 'alien') setComp('alien'); else if (C.comp === 'alien') fillCo(); }   // dressing the alien brings it out as your companion
+  function wear(id) { C.outfit = id === 'plain' ? null : id; if (id !== 'plain') C.worn[id] = 1; save(); if (owned('alien') && C.comp !== 'alien') setComp('alien'); else if (C.comp === 'alien') fillCo(); }   // dressing the alien brings it out as your companion
   function act(a, id) {
     hideToast();                                             // pressing anything on a card answers the standing question by dismissing it
     if (a === 'take') { if (C.comp === id) setComp(null); else setComp(id); rerender(); return; }
-    if (a === 'outfits') { if (J()) J().setStoreTab('outfits'); return; }
+    if (a === 'outfits') { if (J()) J().setStoreTab('chars'); return; }
+    if (a === 'pvbg') { C.pvBg = id || ''; save(); rerender(); return; }
+    if (a === 'size') { C.size = id; save(); applySize(); rerender(); return; }
+    if (a === 'dd') { toggleDd(); return; }
     if (a === 'wear') { wear(id.replace('outfit:', '')); rerender(); return; }
     if (a === 'music') { var m = id.replace('music:', ''); if (J() && J().music(m)) rerender(); return; }
     if (a === 'cursor') { var cid = id.replace('cursor:', ''); pickCursor(cid); rerender(); if (cid !== (PACK_FOR[themeNow()] || 'classic') && !C.dontAskCur) askKeep(); return; }
@@ -416,14 +505,14 @@
   }
   /* ---- decorations: a shelf along the top of the big panel's frame, and one in the menu ---- */
   var decoSig = '';
-  function decoHtml() { return C.deco.map(function (id, i) { var d = DECOBY[id]; return d ? '<img src="' + GB + d.img + '" alt="" style="animation-delay:' + (-i * 1.1) + 's;height:' + Math.round(46 * (d.h || 1)) + 'px">' : ''; }).join(''); }
+  function decoHtml() { return C.deco.map(function (id, i) { var d = DECOBY[id]; return d ? '<img src="' + GB + d.img + '" alt="" data-cursor="edit" data-deco="' + id + '" style="animation-delay:' + (-i * 1.1) + 's;height:' + Math.round(46 * (d.h || 1)) + 'px">' : ''; }).join(''); }   // a press on a decoration opens the Decorations tab
   function count() { var own = 0, total = 0;   // the header's "owned" count
     COMPS.forEach(function (c) { total++; if (owned(c.id)) own++; }); OUTFITS.forEach(function (o) { total++; if (owned('outfit:' + o.id)) own++; }); DECOS.forEach(function (d) { total++; if (owned('deco:' + d.id)) own++; });
     CURSORS.forEach(function (r) { if (r[3]) { total++; if (owned('cursor:' + r[0])) own++; } }); return { own: own, total: total }; }
   function syncDeco(force) {
     var sig = C.deco.join(','), hosts = [];
     document.querySelectorAll('#jj-ach .card, #jj-first .card, .jjst-ov .card, #jj-menu-meta').forEach(function (h) { hosts.push(h); });
-    hosts.forEach(function (h) { var el = h.querySelector(':scope > .jjco-deco'); if (!el) { el = document.createElement('div'); el.className = 'jjco-deco'; h.appendChild(el); el._sig = null; } if (el._sig !== sig || force) { el.innerHTML = decoHtml(); el._sig = sig; } });
+    hosts.forEach(function (h) { var el = h.querySelector(':scope > .jjco-deco'); if (!el) { el = document.createElement('div'); el.className = 'jjco-deco'; h.appendChild(el); el._sig = null; el.addEventListener('click', function (e) { if (!e.target.closest('img[data-deco]')) return; e.stopPropagation(); if (J() && J().setStoreTab) J().setStoreTab('deco'); }); } if (el._sig !== sig || force) { el.innerHTML = decoHtml(); el._sig = sig; } });
   }
   /* the one question about cursors, asked the first time a pick doesn't match the theme */
   function askKeep() {
@@ -449,14 +538,53 @@
   }
 
   /* ---- styles ---- */
+  (function () { var st = document.createElement('style'); st.id = 'jjco-hero-style'; st.textContent =
+    '#jj-ach .jjco-hero{display:grid;grid-template-columns:minmax(200px,280px) 1fr;gap:18px;align-items:center;padding:6px 4px 16px;position:relative;text-align:left;}' +
+    '#jj-ach .jjco-prevw{min-width:0;}#jj-ach .jjco-prev.bg{background-size:cover;background-position:50% 60%;}#jj-ach .jjco-prev.bg::before{color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8);opacity:.8;}' +
+    '#jj-ach .jjco-bgs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}#jj-ach .jjco-bgs button{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06) center/cover no-repeat;cursor:pointer;padding:0;transition:transform .15s ease,border-color .15s ease;}#jj-ach .jjco-bgs button:hover{transform:scale(1.12);}#jj-ach .jjco-bgs button.on{border-color:#FFC531;box-shadow:0 0 0 2px rgba(255,197,49,.35);}#jj-ach .jjco-bgs button.none::after{content:"";position:absolute;}' +
+    '#jj-ach .jjco-prev{position:relative;height:250px;border-radius:22px;overflow:hidden;background:radial-gradient(circle at 50% 30%,#1a2650 0%,#0b1230 45%,#04060e 100%);border:1px solid rgba(255,255,255,.28);display:flex;align-items:flex-end;justify-content:center;}#jj-ach .jjco-prev .jjco-sky{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.9) 0 1px,transparent 2px),radial-gradient(circle at 72% 14%,rgba(255,255,255,.8) 0 1px,transparent 2px),radial-gradient(circle at 86% 62%,rgba(255,255,255,.7) 0 1.5px,transparent 2.5px),radial-gradient(circle at 34% 78%,rgba(255,255,255,.6) 0 1px,transparent 2px),radial-gradient(circle at 58% 48%,rgba(255,255,255,.5) 0 1px,transparent 2px),radial-gradient(circle at 10% 60%,rgba(255,255,255,.5) 0 1px,transparent 2px);}' +
+    '#jj-ach .jjco-prev{align-items:center;}#jj-ach .jjco-prev .jjco-pv{height:auto;max-height:100%;max-width:100%;flex:0 0 auto;object-fit:contain;display:block;background:transparent;}#jj-ach .jjco-prev::before{content:"Preview";position:absolute;right:12px;top:12px;font-size:10px;letter-spacing:.14em;opacity:.55;text-transform:uppercase;}#jj-ach .jjco-prev img.jjco-pv{animation:jjcoBob 2.8s ease-in-out infinite;}' +
+    '#jj-ach .jjco-prev.out::after{content:"WITH YOU";position:absolute;left:12px;top:12px;font-size:10px;letter-spacing:.14em;font-weight:700;padding:5px 9px;border-radius:999px;background:#FFC531;color:#1a1a1a;}' +
+    '#jj-ach .jjco-side{display:flex;flex-direction:column;gap:10px;min-width:0;}#jj-ach .jjco-nm{font-size:22px;font-weight:700;}#jj-ach .jjco-ds{font-size:14px;opacity:.85;line-height:1.35;}' +
+    '#jj-ach .jjco-switch{display:inline-flex;align-items:center;gap:10px;align-self:flex-start;white-space:nowrap;height:40px;padding:0 14px 0 6px;border-radius:999px;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.35);color:#fff;font:700 13px/1 inherit;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;}' +
+    '#jj-ach .jjco-switch i{width:40px;height:22px;border-radius:999px;background:rgba(255,255,255,.22);position:relative;transition:background .25s ease;}#jj-ach .jjco-switch i::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .25s ease;}' +
+    '#jj-ach .jjco-switch.on i{background:#FF00F5;}#jj-ach .jjco-switch.on i::after{left:21px;}' +
+    '#jj-ach .jjco-lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.7;margin-bottom:6px;display:flex;align-items:center;gap:8px;}' +
+    '#jj-ach .jjco-ddw{position:relative;}#jj-ach .jjco-dd{display:flex;width:100%;max-width:320px;box-sizing:border-box;align-items:center;gap:10px;height:44px;padding:0 14px 0 8px;border-radius:999px;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.35);color:#fff;font:700 14px/1 inherit;cursor:pointer;min-width:0;}' +
+    '#jj-ach .jjco-dd img{width:30px;height:30px;object-fit:contain;}#jj-ach .jjco-dd span{flex:1 1 auto;text-align:left;}#jj-ach .jjco-dd svg{width:12px;height:7px;}' +
+    '#jj-ach .jjco-ddm{top:calc(100% + 8px);left:0;width:100%;max-width:320px;min-width:0;box-sizing:border-box;max-height:280px;overflow:auto;z-index:5;transform-origin:top left;}#jj-ach .jjco-ddm .ti .tick{opacity:1;color:#FFC531;font-style:normal;margin-left:auto;}' +
+    '.jjco-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#FF00F5;box-shadow:0 0 0 0 rgba(255,0,245,.6);animation:jjcoDot 1.6s ease-out infinite;flex:0 0 auto;margin-left:auto;}.jjco-dot.in{margin-left:6px;vertical-align:middle;}@keyframes jjcoDot{0%{box-shadow:0 0 0 0 rgba(255,0,245,.6);}100%{box-shadow:0 0 0 9px rgba(255,0,245,0);}}' +
+    '#jj-ach .jjco-seg{display:inline-flex;border:1px solid rgba(255,255,255,.5);border-radius:999px;overflow:hidden;background:rgba(0,0,0,.35);}#jj-ach .jjco-seg{display:flex;width:100%;max-width:320px;box-sizing:border-box;}#jj-ach .jjco-seg button{border:0;background:transparent;color:#fff;font:700 9.5px/1 inherit;letter-spacing:.02em;text-transform:uppercase;padding:0 3px;height:34px;cursor:pointer;opacity:.7;flex:1 1 0;min-width:0;white-space:nowrap;}#jj-ach .jjco-seg button.on{background:rgba(255,255,255,.22);opacity:1;}' +
+    '#jj-ach.t-medieval .card>.jjco-deco,#jj-ach.t-mixed .card>.jjco-deco{bottom:calc(100% + var(--sw) - 5px);}' +   // on the stone frames the little Joes stand on the top edge of the stone
+    'html[data-jj-theme="medieval"] #jj-first .card>.jjco-deco,html[data-jj-theme="mixed"] #jj-first .card>.jjco-deco,html[data-jj-theme="retro"] #jj-first .card>.jjco-deco,html[data-jj-theme="medieval"] .jjst-ov .card>.jjco-deco,html[data-jj-theme="mixed"] .jjst-ov .card>.jjco-deco,html[data-jj-theme="retro"] .jjst-ov .card>.jjco-deco{bottom:calc(100% + 28px);}' +   // the same logic as the achievements panel: these frames are 32px thick, so the shelf stands on the frame's top edge rather than inside it
+    '.jjco-btn.on,#jj-ach.t-classic .jjco-btn.on,#jj-ach.t-medieval .jjco-btn.on,#jj-ach.t-retro .jjco-btn.on,#jj-ach.t-alien .jjco-btn.on,#jj-ach.t-mixed .jjco-btn.on,#jj-ach.t-mixed .jjco-btn.on:hover,#jj-ach.t-medieval .jjco-btn.on:hover{background:#FFC531!important;border:2px solid #FFC531!important;border-image:none!important;border-radius:999px!important;box-shadow:none!important;color:#1a1a1a!important;cursor:default;text-shadow:none!important;filter:none!important;transform:none!important;}' +   // the active state is its own button
+    // Retro's navy panel needs light text; the cream shop rows keep their own dark ink.
+    '#jj-ach.t-retro .jjco-nm{color:#fff;}#jj-ach.t-retro .jjco-ds,#jj-ach.t-retro .jjco-lbl,#jj-ach.t-retro .jjco-sub{color:#e5edff;opacity:1;}' +
+    '#jj-ach.t-retro .jjco-lbl,#jj-ach.t-retro .jjco-sub{font-size:12px;letter-spacing:.08em;}' +
+    '#jj-ach.t-retro .jjco-switch,#jj-ach.t-retro .jjco-dd,#jj-ach.t-retro .jjco-seg{background:#0b1e5a;border-color:#b9cfff;color:#fff;}' +
+    '#jj-ach.t-retro .jjco-seg button{font-family:"Joes Journey Headline",sans-serif;font-size:13px;font-weight:700;letter-spacing:0;padding:0 8px;min-height:44px;opacity:1;color:#fff;}#jj-ach.t-retro .jjco-seg button.on{background:#ffe9a6;color:#0b1e5a;box-shadow:inset 0 -3px 0 #b07000;}' +
+    '#jj-ach.t-retro .jjco-prev::before{color:#fff;opacity:1;background:#0b1e5a;padding:4px 6px;border-radius:3px;text-shadow:none;}' +
+    '#jj-ach.t-retro .jjco-btn.buy{background:#0b1e5a;border-color:#0b1e5a;color:#fff;}#jj-ach.t-retro .jjco-btn.buy:hover{background:#173577;}#jj-ach.t-retro .row .jjco-link{color:#0b1e5a;}' +
+    '#jj-ach.t-retro .jjco-sub,#jj-ach.t-retro .jjco-h,#jj-ach.t-retro .jjco-hero{color:#fff8e6!important;}' +   // never blue on blue (rule 28)
+    '#jj-ach .jjco-fs{position:absolute;right:10px;bottom:10px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.45);background:rgba(0,0,0,.45);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;z-index:3;transition:background .2s ease,transform .2s ease;}#jj-ach .jjco-fs svg{width:16px;height:16px;}#jj-ach .jjco-fs:hover{background:rgba(0,0,0,.7);transform:scale(1.08);}' +
+    '#jj-ach .jjco-full{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;overflow:hidden;opacity:0;transition:opacity .35s ease;background:#04060e;}#jj-ach .jjco-full.on{opacity:1;}' +
+    '#jj-ach .jjco-full .fbg{position:absolute;inset:-4%;background:#04060e center/cover no-repeat;filter:brightness(.85);}' +
+    '#jj-ach .jjco-full .jjco-pv.big{position:relative;z-index:1;height:66%;width:auto;max-width:92%;object-fit:contain;filter:drop-shadow(0 18px 30px rgba(0,0,0,.55));}#jj-ach .jjco-full img.jjco-pv.big{animation:jjcoBob 2.8s ease-in-out infinite;}' +
+    '#jj-ach .jjco-full .jjco-bgs{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);margin:0;z-index:2;padding:8px 12px;border-radius:999px;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);flex-wrap:nowrap;}' +
+    '#jj-ach .jjco-fsx{position:absolute;right:16px;top:16px;z-index:2;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.45);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;}#jj-ach .jjco-fsx svg{width:16px;height:16px;}#jj-ach .jjco-fsx:hover{background:rgba(0,0,0,.75);}' +
+    '#jj-ach .jjco-count{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 6px 10px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.9;}#jj-ach .jjco-count i{display:inline-flex;gap:5px;}#jj-ach .jjco-count i b{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.55);display:block;}#jj-ach .jjco-count i b.on{background:#FFC531;border-color:#FFC531;box-shadow:0 0 8px rgba(255,197,49,.6);}#jj-ach .jjco-count em{font-style:normal;}#jj-ach .jjco-count small{flex:1 0 100%;font-size:12px;font-weight:400;letter-spacing:0;text-transform:none;opacity:.8;color:#FF00F5;}' +   // the shelf counter: five slots, how many are out
+    '#jj-ach.t-medieval .jjco-prev{background:radial-gradient(circle at 50% 30%,#1a2650 0%,#0b1230 45%,#04060e 100%)!important;border-color:#3a2a12!important;}#jj-ach.t-medieval .jjco-prev::before{color:#fff;}' +   // medieval: the preview keeps a night sky — the companion flies on dark pages, not parchment
+    '#jj-ach .jjco-sub{font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.6;margin:14px 6px 6px;}' +
+    '@media(max-width:640px){#jj-ach .jjco-hero{grid-template-columns:1fr;}#jj-ach .jjco-prev{max-width:260px;margin:0 auto;}}';
+    document.head.appendChild(st); })();
   var css = document.createElement('style'); css.id = 'jj-co-style';
   css.textContent =
-    '#jj-co{position:fixed;z-index:9990;pointer-events:none;opacity:0;transition:opacity .6s ease,left 1.2s cubic-bezier(.22,1,.36,1),transform 1.2s cubic-bezier(.5,0,.8,1);animation:jjcoDrift 14s ease-in-out infinite;}#jj-co.on{opacity:1;}#jj-co.hide{opacity:0!important;pointer-events:none!important;}' +
+    '#jj-co{position:fixed;z-index:9990;pointer-events:none;opacity:0;transition:opacity .6s ease,left 1.2s cubic-bezier(.22,1,.36,1),transform 1.2s cubic-bezier(.5,0,.8,1);animation:jjcoDrift 14s ease-in-out infinite;}#jj-co.on{opacity:1;}#jj-co.hide{opacity:0!important;pointer-events:none!important;}#jj-co.follow{transition:opacity .6s ease,left 1.4s cubic-bezier(.22,1,.36,1),top 1.4s cubic-bezier(.22,1,.36,1),transform 1.2s cubic-bezier(.5,0,.8,1)!important;animation:none!important;}' +
     '@keyframes jjcoDrift{0%,100%{translate:0 0;}30%{translate:10px -12px;}60%{translate:-6px -6px;}}' +
     '#jj-co.spot{left:28px;top:130px;}#jj-co.dragon{top:96px;left:50%;margin-left:-70px;}' +
-    '#jj-co .jjco-bob{pointer-events:auto;cursor:pointer;animation:jjcoBob 2.8s ease-in-out infinite;transition:scale .3s ease;}#jj-co.hide .jjco-bob{pointer-events:none;}#jj-co .jjco-bob:hover{scale:1.06;}@keyframes jjcoBob{0%,100%{translate:0 0;}50%{translate:0 -7px;}}' +
+    '#jj-co .jjco-bob{pointer-events:auto;cursor:none;animation:jjcoBob 2.8s ease-in-out infinite;transition:scale .3s ease;}#jj-co.hide .jjco-bob{pointer-events:none;}#jj-co .jjco-bob:hover{scale:1.1;filter:drop-shadow(0 0 10px rgba(255,214,120,.85)) drop-shadow(0 0 24px rgba(255,197,49,.45));}#jj-co .jjco-bob{transition:scale .3s ease,filter .3s ease;}@keyframes jjcoBob{0%,100%{translate:0 0;}50%{translate:0 -7px;}}' +
     '#jj-co .jjco-bob.jump{animation:jjcoJump .7s cubic-bezier(.34,1.56,.64,1);}@keyframes jjcoJump{0%{translate:0 0;rotate:0deg;}30%{translate:0 -34px;rotate:-8deg;}60%{translate:0 -10px;rotate:6deg;}100%{translate:0 0;rotate:0deg;}}' +
-    '#jj-co .jjco-img,#jj-co .jjco-vid{display:block;width:120px;height:auto;max-width:none;background:transparent!important;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35));}#jj-co.dragon .jjco-vid{width:140px;}' +
+    '#jj-co .jjco-img,#jj-co .jjco-vid{display:block;width:calc(120px * var(--co-scale,1));height:auto;max-width:none;background:transparent!important;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35));}#jj-co.dragon .jjco-vid{width:calc(140px * var(--co-scale,1));}' +
     '#jj-co.dragon{transition:opacity .9s ease,transform .9s cubic-bezier(.22,1,.36,1);}#jj-co.dragon.pre{opacity:0;transform:scale(.35);}#jj-co.dragon.gone{opacity:0;transform:scale(.25) translateY(-60px);transition:opacity .85s ease,transform .9s cubic-bezier(.5,0,.8,1);}' +
     '#jj-co.bye{transform:translate(-40vw,-40vh) scale(.3);opacity:0;transition:transform 1s cubic-bezier(.5,0,.8,1),opacity .5s ease .4s;}' +
     '@media (max-width:640px){#jj-co.spot{left:10px;top:100px;scale:.8;}}' +
@@ -464,11 +592,11 @@
     /* the tree spirit, kodama-style: the head tilts on its neck, holds, tilts back, then a quick rattle */
     '@keyframes jjcoKodama{0%,100%{rotate:0deg;}12%{rotate:-14deg;}34%{rotate:-11deg;}46%{rotate:7deg;}60%{rotate:5deg;}63%{rotate:-10deg;}65%{rotate:10deg;}67%{rotate:-8deg;}69%{rotate:7deg;}71%{rotate:-4deg;}74%{rotate:0deg;}}' +
     '#jj-co .jjco-img.anim-kodama{transform-origin:50% 88%;animation:jjcoKodama 7s ease-in-out infinite;}' +
-    '#jj-co.wander{left:0;top:0;animation:jjcoWander 30s ease-in-out infinite;}#jj-co.wander .jjco-img{width:150px;animation:jjcoFlap 1.3s ease-in-out infinite;}#jj-co.wander .jjco-bob{animation:none;}' +
+    '#jj-co.wander{left:0;top:0;animation:jjcoWander 30s ease-in-out infinite;}#jj-co.wander .jjco-img{width:calc(150px * var(--co-scale,1));animation:jjcoFlap 1.3s ease-in-out infinite;}#jj-co.wander .jjco-bob{animation:none;}' +
     '@keyframes jjcoWander{0%,100%{transform:translate(3vw,17vh);}25%{transform:translate(6vw,14vh);}50%{transform:translate(8vw,18vh);}75%{transform:translate(5vw,21vh);}}@keyframes jjcoFlap{0%,100%{translate:0 0;rotate:-5deg;}50%{translate:0 -10px;rotate:5deg;}}' +
     /* decorations: perched on the top edge of the panel frame, and above the current-theme line in the menu */
     '.jjco-deco{position:absolute;left:0;right:0;display:flex;justify-content:center;align-items:flex-end;gap:22px;pointer-events:none;z-index:3;}#jj-ach .card>.jjco-deco{bottom:calc(100% + var(--sw) - 24px);}#jj-ach.t-classic .card>.jjco-deco,#jj-ach.t-alien .card>.jjco-deco{bottom:calc(100% + 17px);}#jj-ach.t-retro .card>.jjco-deco{bottom:calc(100% + 12px);}#jj-menu-meta>.jjco-deco{position:fixed;left:136px;top:14px;right:auto;bottom:auto;height:80px;width:auto;justify-content:flex-start;align-items:center;gap:18px;}' +
-    '.jjco-deco img{width:auto;height:46px;max-width:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.4));}#jj-menu-meta>.jjco-deco img{animation:jjcoBob 3.2s ease-in-out infinite;animation-delay:0s!important;}#jj-first .card>.jjco-deco{bottom:calc(100% + var(--sw,32px) - 22px);}#jj-first.t-classic .card>.jjco-deco,#jj-first.t-alien .card>.jjco-deco{bottom:calc(100% - 1px);}.jjst-ov .card{position:relative;}.jjst-ov .card>.jjco-deco{bottom:calc(100% - 2px);}' +
+    '.jjco-deco img{width:auto;height:46px;max-width:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.4));pointer-events:auto;cursor:none;transition:scale .25s ease,filter .25s ease;}.jjco-deco img:hover{scale:1.15;filter:drop-shadow(0 6px 10px rgba(0,0,0,.4)) drop-shadow(0 0 10px rgba(255,214,120,.85));}#jj-menu-meta>.jjco-deco img{animation:jjcoBob 3.2s ease-in-out infinite;animation-delay:0s!important;}#jj-first .card>.jjco-deco{bottom:calc(100% + var(--sw,32px) - 22px);}#jj-first.t-classic .card>.jjco-deco,#jj-first.t-alien .card>.jjco-deco{bottom:calc(100% - 1px);}.jjst-ov .card{position:relative;}.jjst-ov .card>.jjco-deco{bottom:calc(100% - 2px);}' +
     /* the cursor question */
     '#jjco-ask{position:fixed;inset:0;z-index:10001;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s ease;font-family:"Joes Journey Headline",sans-serif;}#jjco-ask.on{opacity:1;pointer-events:auto;}' +
     '#jjco-ask .card{width:min(520px,90vw);padding:30px 32px 26px;border-radius:22px;border:1.5px solid rgba(255,255,255,.5);background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);color:#fff;text-align:center;}#jjco-ask h3{margin:0 0 10px;font-size:24px;}#jjco-ask p{margin:0 0 18px;font-size:15px;line-height:1.45;color:#d6dbea;}' +
@@ -497,21 +625,20 @@
        The clip carries all the motion, so no page drift and no idle bob; the box never takes a click. */
     '#jj-co.roam{left:6px;top:104px;scale:1;animation:none;transition:opacity .5s ease;}' +
     '#jj-co.roam.rfade{opacity:0!important;}' +
-    '#jj-co.roam .jjco-bob{pointer-events:none!important;cursor:default;animation:none;}' +
-    '#jj-co.roam .jjco-bob:hover{scale:1;}' +
+    '#jj-co.roam .jjco-bob{animation:none;}' +   // the roaming clips are pressable too (they open the store)
     '#jj-co.roam .jjco-vid{width:min(360px,34vw);}' +
     /* the hold: the My Story era float — one continuous rise and fall with a slow rock over it, four rises in 6s, rest to rest */
     '#jj-co.roam .jjco-bob.hold .jjco-vid{transform-origin:50% 60%;animation:jjCoBob 1.5s ease-in-out 4,jjCoTilt 6s ease-in-out 1;}' +
     '@keyframes jjCoBob{0%,100%{translate:0 0}50%{translate:0 -12px}}' +
     '@keyframes jjCoTilt{0%{rotate:0deg}12.5%{rotate:5deg}37.5%{rotate:-5deg}62.5%{rotate:5deg}87.5%{rotate:-5deg}100%{rotate:0deg}}' +
     /* companions float over the page but never take a click — whatever is underneath (the CV orb, a link) always wins */
-    '#jj-co,#jj-co *{pointer-events:none!important;cursor:inherit!important;}' +
+    '#jj-co,#jj-co *{pointer-events:none!important;cursor:inherit!important;}#jj-co:not(.hide) .jjco-bob{pointer-events:auto!important;cursor:none!important;}' +
     /* half size, every companion (Joe, 2026-09-10): the alien still, the roaming clips, both Trogdors, the era characters */
-    '#jj-co .jjco-img,#jj-co .jjco-vid{width:60px;}' +
-    '#jj-co.dragon .jjco-vid{width:90px;}#jj-co.dragon{margin-left:-45px;}' +
+    '#jj-co .jjco-img,#jj-co .jjco-vid{width:calc(60px * var(--co-scale,1));}' +
+    '#jj-co.dragon .jjco-vid{width:calc(90px * var(--co-scale,1));}#jj-co.dragon{margin-left:-45px;}' +
     /* companions sit just in front of the page's background and behind every piece of UI: see liftUI() */
     '#jj-co{z-index:2!important;}' +
-    '#jj-co.wander .jjco-img{width:75px;}' +
+    '#jj-co.wander .jjco-img{width:calc(75px * var(--co-scale,1));}' +
     '#jj-co.roam .jjco-vid{width:min(180px,17vw);}' +
     '@keyframes jjCoBob{0%,100%{translate:0 0}50%{translate:0 -7px}}';   // the hold float scaled down with them
   document.head.appendChild(css);
@@ -526,7 +653,7 @@
     giftOutfits();
     window.addEventListener('jj:score', function () { giftOutfits(); var p = document.getElementById('jj-ach'); if (p && p.classList.contains('store')) rerender(); });
   }
-  window.jjCompanion = { comps: COMPS, outfits: OUTFITS, decos: DECOS, count: count, state: function () { return JSON.parse(JSON.stringify(C)); }, take: setComp, wear: wear, poke: poke,
+  window.jjCompanion = { follow: follow, comps: COMPS, outfits: OUTFITS, decos: DECOS, count: count, state: function () { return JSON.parse(JSON.stringify(C)); }, take: setComp, wear: wear, poke: poke,
     reset: function () { C = { owned: {}, comp: null, outfit: null, seen: {}, deco: [] }; save(); fillCo(); syncDeco(true); },
     give: function (id) { C.owned[id] = Date.now(); save(); } };
   if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);

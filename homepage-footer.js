@@ -1148,7 +1148,7 @@
       ['left','right','top','bottom'].forEach(function(k){ if(cfg[k]!==undefined) g.style[k]=cfg[k]; });
       g.style.opacity = '0';
       g.style.transformOrigin = 'center center';
-      g.style.animation = (idx % 2 ? 'jj-spin-reverse ' : 'jj-spin ') + (50 + Math.random() * 20) + 's linear infinite';
+      g.style.animation = (idx % 2 ? 'jj-swirl-reverse ' : 'jj-swirl ') + (9 + Math.random() * 7).toFixed(1) + 's cubic-bezier(.45,0,.55,1) ' + (-Math.random() * 12).toFixed(1) + 's infinite';
       document.body.appendChild(g);
       (function (gx) { setTimeout(function () { gx.style.transition = 'opacity 3s ease'; gx.style.opacity = '0.85'; }, 2200 + Math.random() * 1500); })(g);
     });
@@ -1315,9 +1315,10 @@
       st.id = 'jj-matrix-style';
       st.textContent =
         '.jj-matrix-on .horizontal-content_wrapper, .jj-matrix-on .horizontal-content_wrapper * {' +
-        ' color:#00ff41 !important; text-shadow:0 0 8px rgba(0,255,70,0.6), 0 0 20px rgba(0,255,70,0.3); }' +
+        ' color:#00ff41 !important; }' +
+        '.jj-matrix-on .horizontal-content_wrapper h1, .jj-matrix-on .horizontal-content_wrapper h2, .jj-matrix-on .horizontal-content_wrapper h3 { text-shadow:0 0 12px rgba(0,255,70,0.5); }' +   // the glow only on the headings: on every node it repainted the whole wrapper each scroll frame
         'body.jj-matrix-mode .fly-rive, body.jj-matrix-mode .jj-poke-sprite, body.jj-matrix-mode .jj-alien-sprite { z-index:6 !important; }' +
-        '@keyframes jj-matrix-glitch { 0%,100%{transform:translate(0,0) skewX(0);filter:none;} 10%{transform:translate(-12px,0) skewX(-9deg);filter:hue-rotate(45deg) contrast(1.5);} 26%{transform:translate(11px,0) skewX(6deg);filter:none;} 42%{transform:translate(-7px,0) skewX(-3deg);filter:hue-rotate(-30deg);} 60%{transform:translate(8px,0);filter:contrast(1.3);} 78%{transform:translate(-4px,0);filter:none;} }';
+        '@keyframes jj-matrix-glitch { 0%,100%{transform:translate(0,0) skewX(0);} 10%{transform:translate(-12px,0) skewX(-9deg);} 26%{transform:translate(11px,0) skewX(6deg);} 42%{transform:translate(-7px,0) skewX(-3deg);} 60%{transform:translate(8px,0);} 78%{transform:translate(-4px,0);} }';
       document.head.appendChild(st);
     }
 
@@ -1334,19 +1335,19 @@
     else document.body.appendChild(layer);
 
     var guy = document.createElement('img');
-    guy.src = MATRIX_GUY;
+    guy.decoding = 'async'; guy.src = MATRIX_GUY;
     guy.style.cssText = 'position:fixed;left:50%;bottom:0;width:150px;height:auto;z-index:9990;pointer-events:none;opacity:0;transform:translate(-50%,115%);transition:transform 0.6s cubic-bezier(0.34,1.5,0.64,1), opacity 0.5s ease;';
     document.body.appendChild(guy);
 
     var ctx = canvas.getContext('2d');
     var GLYPHS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホ0123456789'.split('');
-    var fontSize = 16, cols = 0, drops = [], W = 0, H = 0, running = false, rafId = null, frame = 0;
+    var fontSize = 18, cols = 0, drops = [], W = 0, H = 0, running = false, rafId = null, frame = 0, cells = [];   // 18px → fewer columns; cells: each column's glyphs, reshuffled now and then instead of every frame
     function resize() {
       W = window.innerWidth; H = window.innerHeight;
       canvas.width = W; canvas.height = H;
       cols = Math.ceil(W / fontSize);
       drops = [];
-      for (var c = 0; c < cols; c++) drops[c] = Math.random() * (H / fontSize);
+      for (var c = 0; c < cols; c++) { drops[c] = Math.random() * (H / fontSize); cells[c] = []; for (var g = 0; g < 10; g++) cells[c][g] = GLYPHS[(Math.random() * GLYPHS.length) | 0]; }
     }
     resize();
     window.addEventListener('resize', resize);
@@ -1354,18 +1355,19 @@
       if (!running) return;
       rafId = requestAnimationFrame(loop);
       frame++;
-      if (frame % 2) return; // ~30fps is plenty for rain
+      if (frame % 3) return; // ~20fps is plenty for rain
       ctx.clearRect(0, 0, W, H);
       ctx.font = 'bold ' + fontSize + 'px monospace';
       for (var c = 0; c < cols; c++) {
         var x = c * fontSize, head = drops[c];
-        for (var t = 0; t < 12; t++) {
+        if (Math.random() < .08) cells[c][(Math.random() * 10) | 0] = GLYPHS[(Math.random() * GLYPHS.length) | 0];
+        for (var t = 0; t < 10; t++) {
           var row = head - t;
           if (row < 0) break;
           var y = row * fontSize;
           if (y > H + fontSize) continue;
-          ctx.fillStyle = (t === 0) ? 'rgba(215,255,215,0.95)' : 'rgba(0,255,70,' + Math.max(0, 0.85 - t * 0.09) + ')';
-          ctx.fillText(GLYPHS[(Math.random() * GLYPHS.length) | 0], x, y);
+          ctx.fillStyle = (t === 0) ? 'rgba(215,255,215,0.95)' : 'rgba(0,255,70,' + Math.max(0, 0.85 - t * 0.1) + ')';
+          ctx.fillText(cells[c][t], x, y);
         }
         drops[c] += 0.5 + Math.random() * 0.5;
         if (head * fontSize > H && Math.random() > 0.97) drops[c] = 0;
@@ -2055,7 +2057,7 @@
       g.style.left = (4 + i * 18 + Math.random() * 6) + '%';
       g.style.top  = (10 + Math.random() * 65) + '%';
       g.style.transformOrigin = 'center center';
-      g.style.animation = (i % 2 ? 'jj-spin-reverse ' : 'jj-spin ') + (40 + Math.random() * 30) + 's linear infinite';
+      g.style.animation = (i % 2 ? 'jj-swirl-reverse ' : 'jj-swirl ') + (9 + Math.random() * 7).toFixed(1) + 's cubic-bezier(.45,0,.55,1) ' + (-Math.random() * 12).toFixed(1) + 's infinite';   // drift, a burst of spin, settle — each on its own clock
       inner.appendChild(g);
     }
     return inner;
@@ -2198,7 +2200,7 @@
    set LOOP_END to where the loop should wrap and FLYOFF to where the exit starts; the click then plays that instead of the CSS fly-off. ===== */
 (function () {
   var PGB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';   // JJ_SCORE_BASE: local preview override
-  var VISITS = [ [0.18, 0.30, 'right', '18vh'], [0.48, 0.60, 'left', '42vh'], [0.78, 0.90, 'right', '28vh'] ];
+  var VISITS = [ [0.18, 0.30, 'right', '18vh'], [0.48, 0.60, 'right', '42vh'], [0.78, 0.90, 'right', '28vh'] ];   // always from the RIGHT, facing into the page (rule 26) — the middle visit used to come from the left
   var LOOP_END = 6.0, FLYOFF = 6.1, LOOP_RATE = 0.55;   // the shifty loop runs at just over half speed so he lingers; the exit plays at full speed   // hs-alien = shiftygrumpy alien.mp4 re-cut: 0–3s shifty hover, 3–6s the same played backwards (no jump at the wrap), 6.1s → angrier, shoots off up-right, gone by 9.6s
   var st = document.createElement('style');
   st.textContent = '#jj-hs-alien{position:fixed;z-index:60;width:clamp(120px,12vw,200px);height:auto;pointer-events:auto;cursor:pointer;opacity:0;transition:transform 1.1s cubic-bezier(.22,1,.36,1),opacity .6s ease;}' +
@@ -2216,7 +2218,7 @@
   function show(k) { var vis = VISITS[k]; v.className = vis[2] + ' in'; v.style.bottom = vis[3]; v.style.top = 'auto'; v.playbackRate = LOOP_RATE; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
   function hide() { v.classList.remove('in'); }
   function tick() {
-    if (v._flying) return;
+    if (v._flying || v._caught) return;
     var hsw = document.querySelector('.horizontal-scroll-wrapper'); if (!hsw) return;
     var t = (hsw.style && hsw.style.transform) || '', m = t.match(/translate(?:3d|X)?\(\s*(-?[\d.]+)/), x = m ? Math.abs(parseFloat(m[1])) : 0;
     var max = Math.max(1, hsw.scrollWidth - window.innerWidth), P = Math.min(1, x / max), k = -1;
@@ -2228,9 +2230,9 @@
     if (window.jjScore) window.jjScore.award('alien-catch', { x: e.clientX, y: e.clientY });   // pays once; later pokes are just for fun
     if (FLYOFF != null) { v.loop = false; v.playbackRate = 1; try { v.currentTime = FLYOFF; } catch (x) {} var p = v.play(); if (p && p.catch) p.catch(function () {}); v.style.transition = 'opacity .4s ease';
       var gone = function () { if (!v._flying) return; v.style.opacity = '0';   // he gets angrier and shoots off in the clip; then, out of sight, he calms down and drifts back in from the start of his loop
-        setTimeout(function () { v.pause(); try { v.currentTime = 0; } catch (x) {} v.loop = true; v._flying = false; if (cur >= 0) { v.style.opacity = ''; show(cur); } }, 1800); };
+        setTimeout(function () { v.pause(); v.classList.remove('in'); v._caught = true; }, 1800); };   // caught: he is gone until the page is reloaded (rule 26)
       v.addEventListener('ended', gone, { once: true }); setTimeout(gone, 5000); }
-    else { v.classList.add('off'); setTimeout(function () { v.classList.remove('off'); v._flying = false; }, 2600); }
+    else { v.classList.add('off'); setTimeout(function () { v._caught = true; }, 2600); }
   });
   function arm() { var hsw = document.querySelector('.horizontal-scroll-wrapper'); if (!hsw) return setTimeout(arm, 1500);
     new MutationObserver(tick).observe(hsw, { attributes: true, attributeFilter: ['style'] }); window.addEventListener('resize', tick); tick(); }
@@ -2262,3 +2264,348 @@
     if (window.jjBB && window.jjBB.resume) window.jjBB.resume();
   });
 })();
+
+/* ===== THE CHOOSER — the end of the horizontal scroll: Story Time or Work (Joe's frames, 2026-09-12) =====
+   intro.js opens this at the last trigger (window.jjChoose.open) and closes it on a scroll back up (window.jjChoose.close);
+   /?choose=work (the menu's Work link) opens it straight away with Work already picked; /?choose=choice opens the choice itself. Two halves, feathered into each
+   other down the middle: the Story Time menu art ghosted at 20% on the left, the Work art on the right. Hover a side and
+   it lights, dreamily: a white glow that breathes, a slow pink/blue wash, a fresh scatter of forest sparkles; the other
+   side dims. Story Time carries the loader's Joe-vs-Trogdor fight and the stone arch cycling the tale's worlds (70%,
+   90% when lit, 100% once picked). The wizard bottom-left is the narrator: he loops the whole time and, when a side is
+   picked, grows and casts his spark; the other side sinks to 10% and blurs, the picked side spreads to 90%. Story Time
+   then fades to black and leaves for the tale; Work stays and becomes the picker — the three case studies, a Back pill,
+   and the 10% strip of Story Time that reopens the choice. Captions type on their own clock, then "Take your pick!".
+   Everything freezes on jj:score:pause (the first-unlock card) and picks up on jj:score:resume.
+   Sounds (silent until the files land at the repo root): choose-boo.mp3 on Work, choose-cheer.mp3 then
+   choose-narr-1.mp3 ("oooo I love story time") and choose-narr-2.mp3 ("oh me too") on Story Time. */
+(function () {
+  var GB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
+  var FONT = "'Joes Journey Headline', 'Quicksand', sans-serif";
+  var CS = [{"href": "/case-studies/bbc-mobile", "key": "bbc-mobile", "ar": "548/235", "rot": "-3deg", "css": "left:10%;top:12%;width:34%", "pick": "left:6%;top:36%;width:24%", "sats": [{"f": "cs-bbc-mobile-sat0.webp", "l": -9.9, "t": -52.7, "w": 27.7},
+    {"f": "cs-bbc-mobile-sat1.webp", "l": 78.1, "t": -52.0, "w": 14.8},
+    {"f": "cs-bbc-mobile-sat2.webp", "l": 28.5, "t": 127.3, "w": 30.3},
+    {"f": "cs-bbc-mobile-sat3.webp", "l": 85.2, "t": 88.1, "w": 24.5}]},
+    {"href": "/case-studies/art-basel", "key": "artbasel", "ar": "558/384", "rot": "-22deg", "css": "left:52%;top:30%;width:34%", "pick": "left:38%;top:30%;width:24%", "sats": [{"f": "cs-artbasel-sat0.webp", "l": 15.2, "t": -53.2, "w": 38.0},
+    {"f": "cs-artbasel-sat1.webp", "l": 88.5, "t": 18.0, "w": 34.4},
+    {"f": "cs-artbasel-sat2.webp", "l": 20.3, "t": 72.4, "w": 13.6},
+    {"f": "cs-artbasel-sat3.webp", "l": 74.6, "t": 93.3, "w": 20.3}]},
+    {"href": "/case-studies/bbc-ctv-design-system", "key": "bbc-ctv", "ar": "569/381", "rot": "-15deg", "css": "left:20%;top:58%;width:34%", "pick": "left:70%;top:30%;width:24%", "sats": [{"f": "cs-bbc-ctv-sat0.webp", "l": 3.9, "t": -36.4, "w": 19.5},
+    {"f": "cs-bbc-ctv-sat1.webp", "l": 85.1, "t": 8.4, "w": 16.9},
+    {"f": "cs-bbc-ctv-sat2.webp", "l": 13.7, "t": 92.1, "w": 20.6},
+    {"f": "cs-bbc-ctv-sat3.webp", "l": 72.6, "t": 97.1, "w": 22.8}]}];   // the three case studies: the logo (cs-<theme>-<key>-main) + its satellites, from Joe's five-theme icon pack (same boxes as the split frames); l/t/w are % of the logo box; rot levels the frame a little
+  var THEME_MAP = { classic: 'classic', medieval: 'medieval', retro: 'retro', alien: 'space', mixed: 'special' };   // jj-score's theme ids → Joe's icon sets (Sep 12 pack)
+  function csTheme() { return THEME_MAP[document.documentElement.getAttribute('data-jj-theme')] || 'classic'; }
+  function csSrc(key, slot) { return GB + 'cs-' + csTheme() + '-' + key + '-' + slot + '.webp'; }
+  function retheme() { if (!root) return; root.querySelectorAll('.jjch-cs').forEach(function (a) { var key = a.getAttribute('data-key'); a.querySelector('.core').src = csSrc(key, 'main'); a.querySelectorAll('.sat').forEach(function (im, i) { im.src = csSrc(key, 'sat' + i); }); }); }
+  var LINES = ['Well, what do you want to see next?',
+               'You can find out about my epic journey in Story Time (recommended)',
+               'Or if you want to find out about the amazing projects I’ve worked on…'];
+  var LAST = 'Take your pick!';
+  var WORLDS = ['story-portal-4', 'world-village', 'world-woods', 'world-cave', 'world-tavern'];   // the arch opening: the portal's purple first, then the tale's worlds
+  var SPARK = ['#ff6ad5', '#c77dff', '#7df9ff', '#ffe27a', '#b8ffd9', '#ffffff', '#ff9de2', '#9d6bff', '#5ee7ff', '#ffd166'];
+  var WIZ = { IN: 2.5, OUT: 12.2, X: .5, SP_IN: 6.2, SP_OUT: 9.2 };            // the wizard clip: his standing stretch (looped) and the wand-raise (the spark)
+  var SP = { star: 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0d67bb5517ed8efe956552_Star%2016.svg', moon: 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0d67bbb86603f359ae1311_289a8c92ed8a9b7dd3efdae788f3d0ae_Moon.svg', galaxy: 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0d67bbf7e371947907a091_Galaxy%2010.svg' };   // the site's space kit
+  var root = null, isOpen = false, paused = false, picked = null, busy = false, timers = [], ivals = [], sfxAt = {}, worldIx = 0, wizA = null, wizB = null, wizSwapping = false, pausedVids = [];
+
+  function style() {
+    if (document.getElementById('jj-choose-style')) return;
+    var s = document.createElement('style'); s.id = 'jj-choose-style';
+    s.textContent =
+      '#jj-choose{position:fixed;inset:0;z-index:9000;opacity:0;pointer-events:none;transition:opacity 1.8s ease;font-family:' + FONT + ';color:#fff;overflow:hidden;background:radial-gradient(ellipse at 50% 60%,#0b1230 0%,#04060e 100%);}' +
+      '#jj-choose.on{opacity:1;pointer-events:auto;}' +
+      '#jj-choose.black::after{content:"";position:absolute;inset:0;background:#000;opacity:0;animation:jjchBlack 1.1s ease forwards;z-index:50;}@keyframes jjchBlack{to{opacity:1;}}' +
+      /* the halves: hit areas 50/50, the picked one spreads to 90 */
+      '.jjch-half{position:absolute;top:0;bottom:0;width:50%;cursor:pointer;transition:width .9s cubic-bezier(.65,0,.35,1),filter .8s ease,opacity .8s ease,translate 1.8s cubic-bezier(.22,1,.36,1);translate:0 3vh;}#jj-choose.on .jjch-half{translate:0 0;}' +
+      '.jjch-half.story{left:0;}.jjch-half.work{right:0;}' +
+      '.jjch-clip{position:absolute;inset:0;overflow:hidden;}' +
+      '.story .jjch-clip{-webkit-mask-image:linear-gradient(to right,#000 72%,transparent 100%);mask-image:linear-gradient(to right,#000 72%,transparent 100%);}' +
+      '.work .jjch-clip{-webkit-mask-image:linear-gradient(to left,#000 72%,transparent 100%);mask-image:linear-gradient(to left,#000 72%,transparent 100%);}' +
+      '.pick-story .story .jjch-clip,.pick-work .work .jjch-clip{-webkit-mask-image:none;mask-image:none;}' +
+      /* the other side dims under a plain dark layer (a filter over half the screen was the lag) */
+      '.jjch-dim{position:absolute;inset:0;background:#04060e;opacity:0;pointer-events:none;transition:opacity .8s ease;}' +
+      '#jj-choose.hot .jjch-half:not(.lit) .jjch-dim{opacity:.6;}' +
+            '#jj-choose.pick-story .jjch-half.story,#jj-choose.pick-work .jjch-half.work{width:90%;cursor:default;}' +
+      '#jj-choose.pick-story .jjch-half.work,#jj-choose.pick-work .jjch-half.story{width:10%;opacity:.1;filter:blur(6px) brightness(.6);}' +
+      '#jj-choose.pick-story .jjch-half.work:hover,#jj-choose.pick-work .jjch-half.story:hover{opacity:.3;filter:blur(3px);}' +
+      /* the ghosted art, feathered past the seam */
+      '.jjch-bg{position:absolute;inset:10%;background-position:50% 50%;background-size:contain;background-repeat:no-repeat;opacity:.2;transition:opacity .9s ease,transform 8s ease;-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 38%,transparent 74%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 38%,transparent 74%);}' +   // 10% margin all round, the art at its own aspect (the STORYTIME lettering reads), edges feathered away
+      '.jjch-half.lit .jjch-bg{opacity:.34;}' +
+      '.pick-story .story .jjch-bg,.pick-work .work .jjch-bg{opacity:.3;}' +
+      /* space behind everything: the landing's swirl backdrop (dark), pulsing stars, glowing moons, spiralling galaxies, and slow drifting dots as on the picker */
+      '.jjch-space{position:absolute;inset:0;pointer-events:none;overflow:hidden;}' +
+      '.jjch-space .sw{position:absolute;inset:-6%;background:var(--sw) center/cover no-repeat;opacity:.34;}' +
+      '.jjch-space img{position:absolute;pointer-events:none;height:auto;transform-origin:center center;}' +
+      '.jjch-space img.moon{filter:drop-shadow(0 0 14px rgba(255,255,255,.75)) drop-shadow(0 0 30px rgba(255,255,255,.4));animation:jjchMoon var(--md) ease-in-out infinite var(--dl)!important;}@keyframes jjchMoon{0%,100%{opacity:.7;}50%{opacity:1;}}' +
+      /* while the chooser is up the page behind it is not painted at all */
+      'body.jj-choose-open .sticky-scroll-wrapper,body.jj-choose-open #jj-anim-stars-wrap,body.jj-choose-open #jj-bg-back-wrap,body.jj-choose-open #jj-bg-front-wrap,body.jj-choose-open .moon-background,body.jj-choose-open #jj-flyer,body.jj-choose-open #jj-co,body.jj-choose-open .fly-rive{visibility:hidden!important;}' +
+      '.jjch-stars{position:absolute;inset:0;pointer-events:none;overflow:hidden;}' +
+      '.jjch-stars i{position:absolute;bottom:-4vh;border-radius:50%;background:#fff;opacity:var(--o);animation:jjchStar var(--sd) linear infinite var(--dl);}' +
+      '@keyframes jjchStar{to{translate:var(--sx) -112vh;}}' +
+      /* the light: soft, dreamy — a breathing white glow and a slow pink/blue wash */
+      '.jjch-glow,.jjch-dream{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .9s ease;}' +
+      '.jjch-glow{background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,.42) 0%,rgba(255,255,255,.14) 42%,rgba(255,255,255,0) 74%);will-change:opacity;}' +
+      '.jjch-dream{background:radial-gradient(circle at 28% 32%,rgba(255,0,245,.34) 0%,rgba(255,0,245,0) 52%),radial-gradient(circle at 72% 70%,rgba(62,209,255,.34) 0%,rgba(62,209,255,0) 52%);will-change:transform,opacity;}' +
+      '.jjch-half.lit .jjch-glow{opacity:1;animation:jjchBreathe 3s ease-in-out infinite;}' +
+      '.jjch-half.lit .jjch-dream{opacity:1;animation:jjchDream 9s ease-in-out infinite alternate;}' +
+      '@keyframes jjchBreathe{0%,100%{opacity:.55;}50%{opacity:1;}}' +
+      '@keyframes jjchDream{0%{transform:translate(-4%,-3%) scale(1.1) rotate(0deg);opacity:.7;}50%{opacity:1;}100%{transform:translate(4%,3%) scale(1.25) rotate(8deg);opacity:.8;}}' +
+      /* the forest sparkles, a fresh scatter every time a side lights */
+      '.jjch-sparks{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .7s ease;}' +
+      '.jjch-half.lit .jjch-sparks{opacity:1;}' +
+      '.jjch-sparks i{position:absolute;border-radius:50%;background:radial-gradient(circle,#fff 0%,var(--c) 35%,transparent 70%);animation:jjchTw var(--d) ease-in-out infinite var(--dl);}' +
+      '.jjch-sparks i.st{border-radius:0;background:transparent;box-shadow:none;}' +
+      '.jjch-sparks i.st::before{content:"";position:absolute;inset:0;background:var(--c);clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);filter:drop-shadow(0 0 6px var(--c));}' +
+      '@keyframes jjchTw{0%,100%{opacity:0;scale:.3;}50%{opacity:1;scale:1.2;}}' +
+      '@keyframes jjchDrift{from{translate:0 0;}to{translate:var(--fx) var(--fy);}}' +
+      /* titles */
+      '.jjch-title{position:absolute;font-size:clamp(46px,6.6vw,118px);font-weight:700;letter-spacing:.01em;text-shadow:0 0 26px rgba(255,255,255,.28),0 4px 22px rgba(0,0,0,.5);transition:transform .6s cubic-bezier(.34,1.56,.64,1),text-shadow .5s ease,opacity .5s ease,left .9s ease,top .9s ease,font-size .9s ease;white-space:nowrap;pointer-events:none;}' +
+      '.jjch-half.story .jjch-title{left:14%;top:44%;}' +
+      '.jjch-half.work .jjch-title{left:12%;top:47%;}' +
+      '.jjch-half.lit .jjch-title{transform:scale(1.12) rotate(-3deg);text-shadow:0 0 18px #fff,0 0 42px rgba(255,0,245,.7),0 0 80px rgba(62,209,255,.7);}' +
+      '.pick-work .work .jjch-title{opacity:0;}' +
+      '.pick-story .story .jjch-title{left:6%;top:40%;transform:scale(1.12) rotate(-4deg);}' +
+      /* Work: the three case studies; once picked they spread out as the picker */
+      '.jjch-cs{position:absolute;display:block;opacity:.62;rotate:var(--rot);pointer-events:none;transition:opacity .45s ease,transform .45s cubic-bezier(.34,1.56,.64,1),filter .45s ease,left .9s ease,top .9s ease,width .9s ease;transform-origin:50% 50%;overflow:visible;}' +
+      '.jjch-cs .core{display:block;width:100%;height:auto;position:relative;z-index:1;}' +
+      '.jjch-cs .sat{position:absolute;height:auto;opacity:.75;transition:opacity .4s ease;}' +
+      '.jjch-half.lit .jjch-cs,.pick-work .jjch-cs{opacity:1;filter:drop-shadow(0 0 10px rgba(255,255,255,.45));}.pick-work .jjch-cs{pointer-events:auto;}' +   // the projects only become their own links once Work is picked; before that a click on one is a click on Work
+      '.jjch-half.lit .jjch-cs .sat,.pick-work .jjch-cs:hover .sat{opacity:1;animation:jjchSat var(--sd) ease-in-out infinite alternate var(--dl);}' +   // the bits float round the logo while Work is lit, or that project is hovered
+      '@keyframes jjchSat{0%{translate:0 0;rotate:-5deg;}50%{translate:var(--sx) var(--sy);}100%{translate:calc(var(--sx) * -.6) calc(var(--sy) * .8);rotate:6deg;}}' +
+      '.pick-work .jjch-cs:hover{transform:scale(1.08);filter:drop-shadow(0 0 14px #fff) drop-shadow(0 0 30px rgba(255,0,245,.9));}' +
+      CS.map(function (c, i) { return '.pick-work a.jjch-cs:nth-of-type(' + (i + 1) + '){' + c.pick.split(';').map(function (d) { return d + ' !important'; }).join(';') + ';}'; }).join('') +   // !important: it has to beat the inline choice layout   // the picker layout, once Work is picked
+      '.jjch-cs .lbl{position:absolute;left:50%;top:100%;transform:translate(-50%,10px);white-space:nowrap;font-size:clamp(14px,1.3vw,22px);letter-spacing:.12em;opacity:0;transition:opacity .4s ease;text-shadow:0 2px 12px rgba(0,0,0,.8);}' +
+      '.pick-work .jjch-cs:hover .lbl{opacity:1;}' +
+      /* Story Time: the fight, the arch — 70%, 90% lit, 100% picked */
+      '.jjch-fight,.jjch-arch,.jjch-hero{opacity:.7;transition:opacity .6s ease,left .9s ease,top .9s ease,right .9s ease,bottom .9s ease,width .9s ease;}' +
+      '.jjch-half.lit .jjch-fight,.jjch-half.lit .jjch-arch,.jjch-half.lit .jjch-hero{opacity:.9;}.pick-story .story .jjch-fight,.pick-story .story .jjch-arch,.pick-story .story .jjch-hero,.pick-work .work .jjch-hero{opacity:1;}' +
+      /* Joe's hero pieces (Sep 13): the storybook with its portal on Story Time, Joe riding his board on Work — both drift gently */
+      '.jjch-hero{position:absolute;pointer-events:none;height:auto;filter:drop-shadow(0 14px 26px rgba(0,0,0,.5));animation:jjchHero 5.2s ease-in-out infinite;}' +
+      '@keyframes jjchHero{0%,100%{translate:0 0;rotate:-1.5deg;}50%{translate:0 -1.8vh;rotate:1.5deg;}}' +
+      '.story .jjch-hero{right:2%;top:50%;width:30%;}.pick-story .story .jjch-hero{right:8%;top:40%;width:26%;}' +   // the storybook sits under the title, sized to it
+      '.work .jjch-hero{right:-6%;bottom:-2%;width:46%;animation-delay:-2.6s;opacity:.32!important;filter:saturate(.65) brightness(.75);-webkit-mask-image:radial-gradient(ellipse 60% 60% at 55% 55%,#000 40%,transparent 82%);mask-image:radial-gradient(ellipse 60% 60% at 55% 55%,#000 40%,transparent 82%);}' +   // Joe on his board fades into the backdrop rather than fronting it
+      '.jjch-half.lit .jjch-hero.jjch-hero{}.work.lit .jjch-hero{opacity:.45!important;}.pick-work .work .jjch-hero{right:1%;bottom:2%;width:22%;opacity:.5!important;}' +
+      '.jjch-fight{position:absolute;right:-4%;top:14%;width:62%;aspect-ratio:908/471;pointer-events:none;object-fit:contain;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5));}' +
+      '.pick-story .jjch-fight{width:44%;right:auto;left:48%;top:20%;}' +
+      '.jjch-arch{position:absolute;left:31%;top:5%;width:30%;aspect-ratio:720/617;pointer-events:none;filter:drop-shadow(0 0 16px rgba(255,205,110,.55)) drop-shadow(0 0 34px rgba(170,90,255,.45));}' +
+      '.pick-story .jjch-arch{left:22%;top:4%;width:22%;}' +
+      '.jjch-arch .w{position:absolute;inset:0;background-size:cover;background-position:50% 60%;-webkit-mask:url(' + GB + 'arch-hole.png) center/100% 100% no-repeat;mask:url(' + GB + 'arch-hole.png) center/100% 100% no-repeat;opacity:0;transition:opacity 1.2s ease,transform 3.2s ease;transform:scale(1.12);}' +
+      '.jjch-arch .w.on{opacity:1;transform:scale(1);}' +
+      '.jjch-arch img.a{position:absolute;inset:0;width:100%;height:100%;}' +
+      '.jjch-arch .bub{position:absolute;width:24%;aspect-ratio:1;border-radius:50%;overflow:hidden;box-shadow:0 0 0 3px #FFC93D,0 0 0 6px #8B5CF6,0 0 22px rgba(255,200,90,.7),0 0 40px rgba(139,92,246,.5);animation:jjchBob var(--bd) ease-in-out infinite var(--bl);}' +
+      '.jjch-arch .bub img{display:block;width:100%;height:100%;object-fit:cover;}' +
+      '@keyframes jjchBob{0%,100%{translate:0 0;}50%{translate:0 -9px;}}' +
+      /* the wizard — the narrator, bottom-left, always on; grows for the spark */
+      '.jjch-wiz{position:absolute;left:-6%;bottom:-2vh;height:51vh;aspect-ratio:4/3;pointer-events:none;z-index:20;transform-origin:35% 100%;transition:transform 1.1s cubic-bezier(.34,1.4,.64,1);}' +
+      '#jj-choose.spark .jjch-wiz{transform:scale(1.28) translateX(4%);}' +
+      '.jjch-wiz video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;opacity:0;transition:opacity .5s ease;background:transparent;}' +
+      '.jjch-wiz video.on{opacity:1;}' +
+      '.jjch-wiz .burst{position:absolute;left:58%;top:22%;width:0;height:0;pointer-events:none;}' +
+      '.jjch-wiz .burst i{position:absolute;left:0;top:0;width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c),0 0 18px var(--c);opacity:0;animation:jjchBurst 1.5s ease-out forwards var(--dl);}' +
+      '@keyframes jjchBurst{0%{opacity:0;translate:0 0;scale:.3;}12%{opacity:1;}100%{opacity:0;translate:var(--fx) var(--fy);scale:1.4;}}' +
+      /* the captions */
+      '.jjch-cap{position:absolute;left:calc(24% + 16px);right:52%;bottom:22vh;font-size:clamp(18px,2.1vw,36px);line-height:1.15;font-weight:700;text-shadow:0 2px 20px rgba(0,0,0,.75),0 0 30px rgba(0,0,0,.5);pointer-events:none;min-height:2.3em;z-index:15;transition:opacity .6s ease,font-size .6s ease;}' +
+      '.jjch-cap.big{text-align:center;font-size:clamp(34px,5vw,86px);left:0;right:0;bottom:9vh;}' +
+      '@media(max-width:900px){.jjch-cap{left:30%;right:6%;bottom:14vh;}}' +
+      '.pick-work .jjch-cap,.pick-story .jjch-cap{opacity:0;}' +
+      '.jjch-cap .w{display:inline-block;white-space:nowrap;}.jjch-cap i{font-style:normal;opacity:0;transition:opacity .12s ease;}.jjch-cap i.on{opacity:1;}' +
+      '.jjch-cap b{font-weight:inherit;display:inline-block;width:.08em;height:1em;background:#fff;vertical-align:-.15em;margin-left:.08em;animation:jjchCaret 1s steps(1) infinite;}' +
+      '@keyframes jjchCaret{50%{opacity:0;}}' +
+      /* Back (the picker) */
+      '.jjch-back{position:absolute;left:var(--lx,32px);top:16vh;z-index:30;display:inline-flex;align-items:center;gap:10px;height:49px;padding:0 24px 0 18px;border:0;background:transparent;color:#fff;font:700 15px/1 ' + FONT + ';letter-spacing:.14em;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .5s ease;}' +
+      '.jjch-back svg{position:relative;z-index:1;width:22px;height:22px;display:block;}' +
+      '.jjch-back span{position:relative;z-index:1;}.pick-work .jjch-back{opacity:1;pointer-events:auto;transition-delay:.9s;}' +
+      '#jj-choose-exit{position:fixed;inset:0;z-index:2147483646;pointer-events:none;opacity:0;transition:opacity .55s ease;background:radial-gradient(ellipse at center,#0a1024 0%,#04060e 100%);}' +
+      '@media(max-width:760px){.jjch-title{font-size:9vw;}.jjch-cap{left:4%;right:4%;font-size:5.4vw;bottom:34vh;}.jjch-wiz{height:30vh;}}';
+    document.head.appendChild(s);
+  }
+
+  function vid(name, cls, poster) {
+    var v = document.createElement('video'); v.className = cls || ''; v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.preload = 'auto';
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); if (poster !== false) v.poster = GB + name + '-poster.webp';
+    v.innerHTML = '<source src="' + GB + name + '.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + GB + name + '.webm" type="video/webm">';
+    return v;
+  }
+  function play(v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+  function sparks(box) {                                                     // a fresh scatter every time a side lights
+    var h = '';
+    for (var i = 0; i < 36; i++) {
+      var big = i % 4 === 0, sz = big ? (9 + Math.random() * 10) : (2 + Math.random() * 4), c = SPARK[i % SPARK.length];
+      h += '<i' + (big ? ' class="st"' : '') + ' style="left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 100).toFixed(1) + '%;width:' + sz.toFixed(1) + 'px;height:' + sz.toFixed(1) + 'px;--c:' + c +
+           ';--d:' + (2.4 + Math.random() * 2.8).toFixed(1) + 's;--dl:-' + (Math.random() * 5).toFixed(1) + 's;--fd:' + (8 + Math.random() * 10).toFixed(1) + 's;--fx:' + (Math.random() * 6 - 3).toFixed(1) + 'vw;--fy:' + (-(3 + Math.random() * 8)).toFixed(1) + 'vh"></i>';
+    }
+    box.innerHTML = h;
+  }
+  function burst(box) {                                                      // the wizard's spark: motes fly out from the wand
+    var h = '';
+    for (var i = 0; i < 46; i++) { var a = Math.random() * Math.PI * 2, r = 8 + Math.random() * 22;
+      h += '<i style="--c:' + SPARK[i % SPARK.length] + ';--fx:' + (Math.cos(a) * r).toFixed(1) + 'vw;--fy:' + (Math.sin(a) * r - 6).toFixed(1) + 'vh;--dl:' + (Math.random() * .5).toFixed(2) + 's"></i>'; }
+    box.innerHTML = h; timers.push(setTimeout(function () { box.innerHTML = ''; }, 2400));
+  }
+  function muted() { try { if (sessionStorage.getItem('jjUserMuted') === '1') return true; } catch (e) {} return !!(window.jjAudio && window.jjAudio.muted); }
+  function sfx(name, vol, delay) {                                           // one-shots from the repo root: choose-<name>.mp3 (silent until Joe's files land)
+    if (!window.Howl || muted()) return;
+    var now = performance.now(); if (sfxAt[name] && now - sfxAt[name] < 6000) return; sfxAt[name] = now;
+    var go = function () { if (!isOpen || muted() || paused) return; try { var h = new Howl({ src: [GB + 'choose-' + name + '.mp3'], volume: vol || .8, onloaderror: function () {} }); h.play(); } catch (e) {} };
+    if (delay) timers.push(setTimeout(go, delay)); else go();
+  }
+  /* the wizard: two copies of one clip. The standing stretch loops (B fades in over A's last half second, then they swap);
+     the spark seeks the current copy to the wand-raise, plays it through, and drops back into the loop. */
+  function wizArm(v, at) { var f = function () { try { v.currentTime = at; } catch (e) {} }; if (v.readyState >= 1) f(); else v.addEventListener('loadedmetadata', f, { once: true }); }
+  function wizStart(box) {
+    var vs = box.querySelectorAll('video'); wizA = vs[0]; wizB = vs[1]; wizSwapping = false;
+    wizArm(wizA, WIZ.IN); wizArm(wizB, WIZ.IN); wizA.classList.add('on'); wizB.classList.remove('on'); play(wizA); try { wizB.pause(); } catch (e) {}
+    ivals.push(setInterval(function () {
+      if (!isOpen || paused || busy) return;
+      if (!wizSwapping && wizA.currentTime >= WIZ.OUT - WIZ.X) {
+        wizSwapping = true; try { wizB.currentTime = WIZ.IN; } catch (e) {} play(wizB); wizB.classList.add('on'); wizA.classList.remove('on');
+        timers.push(setTimeout(function () { try { wizA.pause(); wizA.currentTime = WIZ.IN; } catch (e) {} var t = wizA; wizA = wizB; wizB = t; wizSwapping = false; }, WIZ.X * 1000 + 60));
+      }
+    }, 80));
+  }
+  function wizSpark(done) {
+    busy = true; root.classList.add('spark'); burst(root.querySelector('.jjch-wiz .burst'));
+    try { wizA.currentTime = WIZ.SP_IN; } catch (e) {} play(wizA);
+    var t0 = performance.now(), ms = (WIZ.SP_OUT - WIZ.SP_IN) * 1000;
+    var iv = setInterval(function () { if (paused) { t0 += 80; return; } if (performance.now() - t0 >= ms || wizA.currentTime >= WIZ.SP_OUT) { clearInterval(iv); try { wizA.currentTime = WIZ.IN; } catch (e) {} busy = false; root.classList.remove('spark'); if (done) done(); } }, 80);
+    ivals.push(iv);
+  }
+  function typeLines(cap) {
+    var li = 0; cap.classList.remove('big');
+    function line() {
+      if (!isOpen || picked) return;
+      var last = li >= LINES.length, txt = last ? LAST : LINES[li++];
+      if (last) cap.classList.add('big');
+      var h = txt.split(' ').map(function (w) { var o = '<span class="w">'; for (var i = 0; i < w.length; i++) o += '<i>' + w[i] + '</i>'; return o + '</span>'; }).join(' ');
+      cap.innerHTML = h; var ch = cap.querySelectorAll('i'), k = 0, caret = document.createElement('b'); if (ch.length) ch[0].before(caret);
+      (function step() { if (!isOpen) return; if (paused) { timers.push(setTimeout(step, 120)); return; }
+        if (k < ch.length) { ch[k].classList.add('on'); ch[k].after(caret); k++; timers.push(setTimeout(step, 34)); }   // the caret sits right after the last letter typed
+        else if (!last) timers.push(setTimeout(line, 1700)); else { var c = cap.querySelector('b'); if (c) c.remove(); } })();
+    }
+    timers.push(setTimeout(line, 2200));                                     // after the arrival has landed
+  }
+  function showLast(cap) { cap.classList.add('big'); cap.innerHTML = LAST.split(' ').map(function (w) { var o = '<span class="w">'; for (var i = 0; i < w.length; i++) o += '<i class="on">' + w[i] + '</i>'; return o + '</span>'; }).join(' '); }
+  function exitTo(href) {
+    var ov = document.getElementById('jj-choose-exit'); if (!ov) { ov = document.createElement('div'); ov.id = 'jj-choose-exit'; document.body.appendChild(ov); }
+    var amb = window.jjAudio && window.jjAudio.ambient; if (amb) { try { amb.fade(amb.volume(), 0, 450); } catch (e) {} }
+    requestAnimationFrame(function () { ov.style.opacity = '1'; });
+    setTimeout(function () { window.location.href = href; }, 600);
+  }
+
+  function pick(side, instant) {                                             // a side is chosen: the other sinks and blurs, the wizard casts, the picked one spreads
+    if (picked || busy) return; picked = side; root.classList.remove('hot'); root.querySelectorAll('.lit').forEach(function (h) { h.classList.remove('lit'); });
+    var go = function () {
+      root.classList.add('pick-' + side);
+      root.querySelectorAll('.jjch-half').forEach(function (h) { h.setAttribute('data-cursor', h.classList.contains(side) ? 'none' : 'hover'); });   // the picked side is no longer a choice: no orb; the strip is a plain hover
+      if (side === 'story') timers.push(setTimeout(function () { root.classList.add('black'); timers.push(setTimeout(function () { window.location.href = '/storytime'; }, 1150)); }, 1400));
+    };
+    if (instant) { go(); return; }
+    timers.push(setTimeout(go, 700));                                        // the spread starts while he casts
+    wizSpark(null);
+  }
+  function unpick() {                                                        // Back, or the strip: the choice again
+    if (!picked || picked === 'story') return; root.classList.remove('pick-work', 'pick-story'); picked = null; showLast(root.querySelector('.jjch-cap'));
+    root.querySelectorAll('.jjch-half').forEach(function (h) { h.setAttribute('data-cursor', h.classList.contains('story') ? 'story' : 'work'); });
+  }
+
+  function build() {
+    if (root) return root; style();
+    root = document.createElement('div'); root.id = 'jj-choose'; root.setAttribute('aria-label', 'What next: Story Time or Work');
+    function half(kind, bg, title) {
+      var h = document.createElement('div'); h.className = 'jjch-half ' + kind; h.setAttribute('data-cursor', 'page');
+      h.innerHTML = '<div class="jjch-clip"><div class="jjch-bg" style="background-image:url(' + GB + bg + ')"></div><div class="jjch-dim"></div><div class="jjch-glow"></div><div class="jjch-dream"></div><div class="jjch-sparks"></div></div><div class="jjch-title">' + title + '</div>';
+      h.addEventListener('mouseenter', function () { if (picked || paused) return; root.classList.add('hot'); h.classList.add('lit'); sparks(h.querySelector('.jjch-sparks'));
+        if (kind === 'work') sfx('boo', .8); else { sfx('cheer', .8); sfx('narr-1', 1, 900); sfx('narr-2', 1, 2600); } });
+      h.addEventListener('mouseleave', function () { root.classList.remove('hot'); h.classList.remove('lit'); });
+      h.addEventListener('click', function (e) {
+        if (e.target.closest('.jjch-cs, .jjch-back')) return; e.preventDefault();
+        if (picked && picked !== kind) { unpick(); return; }                 // the 10% strip reopens the choice
+        if (!picked) pick(kind);
+      });
+      return h;
+    }
+    var story = half('story', 'menu-story.webp', 'Story Time'), work = half('work', 'menu-work.webp', 'Work');
+    story.setAttribute('data-cursor', 'story'); work.setAttribute('data-cursor', 'work');   // Joe's two orbs on the Special cursor; other packs show their page arrow
+    var wclip = work.querySelector('.jjch-clip');
+    CS.forEach(function (c) { var a = document.createElement('a'); a.className = 'jjch-cs'; a.href = c.href; a.setAttribute('data-key', c.key); a.style.cssText = c.css + ';aspect-ratio:' + c.ar + ';--rot:' + c.rot; a.setAttribute('data-cursor', 'project');
+      a.innerHTML = '<img class="core" alt="" src="' + csSrc(c.key, 'main') + '">' + c.sats.map(function (x, i) { return '<img class="sat" alt="" src="' + csSrc(c.key, 'sat' + i) + '" style="left:' + x.l + '%;top:' + x.t + '%;width:' + x.w + '%;--sd:' + (3.2 + i * .7).toFixed(1) + 's;--dl:-' + (i * 1.1).toFixed(1) + 's;--sx:' + (i % 2 ? 9 : -8) + 'px;--sy:' + (i % 3 ? -10 : 8) + 'px">'; }).join('');   // the cursor's own VIEW PROJECT ring says it — no caption under the card
+      a.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); if (picked === 'work') exitTo(c.href); else if (!picked) pick('work'); }); wclip.appendChild(a); });
+    var back = document.createElement('button'); back.type = 'button'; back.className = 'jjch-back'; back.setAttribute('data-cursor', 'hover'); back.setAttribute('data-jj', 'btn'); back.innerHTML = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>BACK</span>';
+    back.addEventListener('click', function (e) { e.stopPropagation(); unpick(); });
+    /* Story Time's cast */
+    var sclip = story.querySelector('.jjch-clip');
+    var arch = document.createElement('div'); arch.className = 'jjch-arch';
+    WORLDS.forEach(function (w, i) { var d = document.createElement('div'); d.className = 'w' + (i === 0 ? ' on' : ''); d.style.backgroundImage = 'url(' + GB + w + '.webp)'; arch.appendChild(d); });
+    var ai = document.createElement('img'); ai.className = 'a'; ai.alt = ''; ai.src = GB + 'arch-still.webp'; arch.appendChild(ai);
+    [[-14, 22], [88, 18], [-16, 70], [92, 68]].forEach(function (p, i) { var b = document.createElement('div'); b.className = 'bub'; b.style.cssText = 'left:' + p[0] + '%;top:' + p[1] + '%;--bd:' + (2.8 + i * .35) + 's;--bl:-' + (i * .7) + 's'; b.innerHTML = '<img alt="" src="' + GB + WORLDS[i + 1] + '.webp">'; arch.appendChild(b); });
+    sclip.appendChild(arch);
+    var hs = document.createElement('img'); hs.className = 'jjch-hero'; hs.alt = ''; hs.src = GB + 'choose-storybook.webp'; sclip.appendChild(hs);
+    var hw = document.createElement('img'); hw.className = 'jjch-hero'; hw.alt = ''; hw.src = GB + 'choose-joeboard.webp'; wclip.appendChild(hw);
+    var wiz = document.createElement('div'); wiz.className = 'jjch-wiz'; wiz.appendChild(vid('bb-wizard', '', false)); wiz.appendChild(vid('bb-wizard', '', false)); var bu = document.createElement('div'); bu.className = 'burst'; wiz.appendChild(bu);
+    var cap = document.createElement('div'); cap.className = 'jjch-cap';
+    var space = document.createElement('div'); space.className = 'jjch-space';
+    var bgImg = document.getElementById('jj-bg-back'), swUrl = bgImg && (bgImg.currentSrc || bgImg.src);
+    var sp = swUrl ? '<div class="sw" style="--sw:url(' + swUrl + ')"></div>' : '';
+    for (var k = 0; k < 26; k++) { var ss = (8 + Math.random() * 22).toFixed(0); sp += '<img alt="" src="' + SP.star + '" style="left:' + (Math.random() * 98).toFixed(1) + '%;top:' + (Math.random() * 94).toFixed(1) + '%;width:' + ss + 'px;animation:jj-twinkle ' + (1.5 + Math.random() * 2.5).toFixed(1) + 's ease-in-out ' + (Math.random() * 3).toFixed(1) + 's infinite">'; }
+    for (var k = 0; k < 4; k++) { var ms = (50 + Math.random() * 60).toFixed(0); sp += '<img class="moon" alt="" src="' + SP.moon + '" style="left:' + (6 + k * 26 + Math.random() * 8).toFixed(1) + '%;top:' + (k % 2 ? 78 + Math.random() * 12 : 4 + Math.random() * 10).toFixed(1) + '%;width:' + ms + 'px;--md:' + (3.5 + Math.random() * 2).toFixed(1) + 's;--dl:-' + (Math.random() * 3).toFixed(1) + 's">'; }
+    for (var k = 0; k < 6; k++) { var gs = (30 + Math.random() * 30).toFixed(0); sp += '<img alt="" src="' + SP.galaxy + '" style="left:' + (3 + k * 16 + Math.random() * 8).toFixed(1) + '%;top:' + (8 + Math.random() * 70).toFixed(1) + '%;width:' + gs + 'px;animation:' + (k % 2 ? 'jj-swirl-reverse ' : 'jj-swirl ') + (9 + Math.random() * 7).toFixed(1) + 's cubic-bezier(.45,0,.55,1) ' + (-Math.random() * 12).toFixed(1) + 's infinite">'; }
+    space.innerHTML = sp;
+    var stars = document.createElement('div'); stars.className = 'jjch-stars'; var sh = '';
+    for (var i = 0; i < 22; i++) { var sz = (1 + Math.random() * 2.2).toFixed(1); sh += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;width:' + sz + 'px;height:' + sz + 'px;--o:' + (.25 + Math.random() * .6).toFixed(2) + ';--sd:' + (28 + Math.random() * 40).toFixed(0) + 's;--dl:-' + (Math.random() * 60).toFixed(0) + 's;--sx:' + (Math.random() * 10 - 5).toFixed(1) + 'vw"></i>'; }
+    stars.innerHTML = sh;
+    root.appendChild(space); root.appendChild(stars); root.appendChild(story); root.appendChild(work); root.appendChild(back); root.appendChild(wiz); root.appendChild(cap);
+    var lg = document.querySelector('.nav-logo-link, .nav-logo, .nav a[href="/"]'); if (lg) { var lr = lg.getBoundingClientRect(); if (lr.width) root.style.setProperty('--lx', Math.round(lr.left) + 'px'); }   // Back lines up with the J
+    document.body.appendChild(root);
+    return root;
+  }
+  function clearAll() { timers.forEach(clearTimeout); timers = []; ivals.forEach(clearInterval); ivals = []; }
+  var heldVids = [], heldAnims = [];
+  function holdBehind() {                                                    // the page underneath keeps its GSAP ticker, its char-float loop and its clips running; none of it is visible, so hold it
+    try { if (window.gsap) gsap.globalTimeline.pause(); } catch (e) {}
+    try { heldAnims = document.getAnimations().filter(function (a) { var t = a.effect && a.effect.target; return a.playState === 'running' && t && !t.closest('#jj-choose, #jj-ach, #jj-first, #jj-sc-hud, .nav, .menu-wrap'); }); heldAnims.forEach(function (a) { a.pause(); }); } catch (e) { heldAnims = []; }
+    heldVids = []; document.querySelectorAll('video').forEach(function (v) { if (!v.closest('#jj-choose') && !v.paused) { heldVids.push(v); v.pause(); } });
+    if (window.jjBB && window.jjBB.pause) window.jjBB.pause();
+  }
+  function releaseBehind() {
+    try { if (window.gsap) gsap.globalTimeline.resume(); } catch (e) {}
+    heldAnims.forEach(function (a) { try { if (a.playState === 'paused') a.play(); } catch (e) {} }); heldAnims = [];
+    heldVids.forEach(play); heldVids = [];
+    if (window.jjBB && window.jjBB.resume) window.jjBB.resume();
+  }
+  function open(opts) {
+    opts = opts || {}; if (isOpen) { if (opts.pick && !picked) pick(opts.pick, true); return; } build(); isOpen = true; picked = null; busy = false; document.body.classList.add('jj-choose-open'); holdBehind();
+    root.classList.remove('pick-work', 'pick-story', 'black', 'spark', 'hot');
+    var cap = root.querySelector('.jjch-cap'); cap.innerHTML = ''; cap.classList.remove('big');
+    root.querySelectorAll('video').forEach(play);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { root.classList.add('on'); }); });
+    wizStart(root.querySelector('.jjch-wiz'));
+    var ws = root.querySelectorAll('.jjch-arch .w');                         // the doorway: the worlds take turns in the opening
+    ivals.push(setInterval(function () { if (paused) return; worldIx = (worldIx + 1) % ws.length; ws.forEach(function (w, i) { w.classList.toggle('on', i === worldIx); }); }, 2600));
+    ivals.push(setInterval(function () { document.querySelectorAll('video').forEach(function (v) { if (!v.closest('#jj-choose') && !v.paused) { heldVids.push(v); v.pause(); } }); }, 1000));   // clips that start up behind us later (the companion, a peeking alien) are held too — hidden video still decodes
+    if (opts.pick) { showLast(cap); pick(opts.pick, true); } else typeLines(cap);
+  }
+  function close() {
+    if (!isOpen) return; isOpen = false; clearAll(); document.body.classList.remove('jj-choose-open'); releaseBehind();
+    root.classList.remove('on', 'hot', 'pick-work', 'pick-story', 'spark', 'black'); picked = null; busy = false; root.querySelectorAll('.lit').forEach(function (h) { h.classList.remove('lit'); });
+    root.querySelectorAll('video').forEach(function (v) { try { v.pause(); } catch (e) {} });
+  }
+  /* the first-unlock card (and the achievements) hold the world still — this holds the chooser with it */
+  window.addEventListener('jj:score:pause', function () { if (!isOpen || paused) return; paused = true;
+    pausedVids = []; root.querySelectorAll('video').forEach(function (v) { if (!v.paused) { pausedVids.push(v); v.pause(); } });
+    try { root.getAnimations({ subtree: true }).forEach(function (a) { if (a.playState === 'running') a.pause(); }); } catch (e) {} });
+  window.addEventListener('jj:score:resume', function () { if (!paused) return; paused = false;
+    pausedVids.forEach(play); pausedVids = [];
+    try { root.getAnimations({ subtree: true }).forEach(function (a) { if (a.playState === 'paused') a.play(); }); } catch (e) {} });
+  new MutationObserver(function () { if (root) retheme(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-jj-theme'] });   // the project art follows the theme
+  window.jjChoose = { open: open, close: close, isOpen: function () { return isOpen; } };
+  /* /?choose=work — the menu's Work link: the chooser straight away, Work already picked (the picker, in place) */
+  var q = /[?&]choose=(work|story|choice|1)\b/.exec(location.search);   // /?choose=choice (or =1): the choice itself, without the horizontal scroll
+  if (q && location.pathname === '/') { var start = function () { try { if (window.lenis && window.lenis.stop) window.lenis.stop(); } catch (e) {} open(/^(work|story)$/.test(q[1]) ? { pick: q[1] } : {}); };
+    var t0 = performance.now(), waitLd = function () { if (document.getElementById('jjld') && performance.now() - t0 < 40000) { setTimeout(waitLd, 200); return; } setTimeout(start, 300); };   // under the site loader it would have typed half a line before anyone saw it
+    if (document.readyState === 'complete') setTimeout(waitLd, 400); else window.addEventListener('load', function () { setTimeout(waitLd, 400); }); }
+})();
+
+/* the swirl galaxies: a slow drift, a burst of spin, a settle — on a loop (the old 40–70s constant turn read as still) */
+(function () { var st = document.createElement('style'); st.id = 'jj-swirl-style'; st.textContent =
+  '@keyframes jj-swirl{0%{transform:rotate(0deg);}38%{transform:rotate(40deg);}52%{transform:rotate(700deg);}64%{transform:rotate(760deg);}100%{transform:rotate(800deg);}}' +
+  '@keyframes jj-swirl-reverse{0%{transform:rotate(0deg);}38%{transform:rotate(-40deg);}52%{transform:rotate(-700deg);}64%{transform:rotate(-760deg);}100%{transform:rotate(-800deg);}}';
+  document.head.appendChild(st); })();

@@ -219,6 +219,8 @@ document.addEventListener("DOMContentLoaded", function () {
       '.menu-wrap .menu-hover-image:nth-child(even){transform:rotate(3deg) translateY(4vh)}' +
       '.menu-wrap .flex-down.left,.menu-wrap .flex-down{position:relative;z-index:3}' +
       '.menu-wrap .menu-open-link{position:relative;transition:color .25s ease,text-shadow .25s ease!important}' +
+      '.menu-wrap .menu-open-link>div{white-space:nowrap}' +   // a link never breaks mid-word (Storytim / e on narrow screens)
+      '@media (max-width:1000px){.menu-wrap .menu-open-link{font-size:clamp(34px,7.2vw,72px)!important;line-height:1.12!important}}' +
       '.menu-wrap .menu-open-link:hover{color:#fff!important;text-shadow:0 0 28px rgba(255,0,245,.55)}' +
       '.menu-wrap .menu-open-link[aria-current="page"]{color:#fff!important}' +
       '.menu-wrap .menu-open-link[aria-current="page"]>div{position:relative;display:inline-block;padding-left:16px}' +
@@ -257,7 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       Array.prototype.forEach.call(list.querySelectorAll('a[href]'), function (a) {
         var p; try { p = new URL(a.href, location.href).pathname.replace(/\/$/,'') || '/'; } catch(e) { return; }
-        var here = location.pathname.replace(/\/$/,'') || '/'; if (p === here && !/credits=1/.test(a.href)) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');
+        var here = location.pathname.replace(/\/$/,'') || '/'; var lc = (/[?&]choose=([a-z0-9]+)/.exec(a.href) || [])[1] || '', hc = (/[?&]choose=([a-z0-9]+)/.exec(location.search) || [])[1] || ''; var lp = (/[?&]part=([a-z0-9]+)/.exec(a.href) || [])[1] || '', hp = (/[?&]part=([a-z0-9]+)/.exec(location.search) || [])[1] || ''; if (p === here && !/credits=1/.test(a.href) && lc === hc && lp === hp) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');   // Work lives at /?choose=work: it is current only there, and Home only without it
       });
     }
     function closeThen(fn) { if (document.body.classList.contains('jj-menu-open')) btn.click(); setTimeout(fn, 180); }
@@ -814,6 +816,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     var f = document.createElement('div'); f.className = 'jj-btn-fill';
     el.insertBefore(f, el.firstChild);
     el.addEventListener('pointerdown', function (e) {
+      if (/^(medieval|retro)$/.test(document.documentElement.getAttribute('data-jj-theme') || '')) return;   // rounded pills only
       var rect = el.getBoundingClientRect();
       var x = e.clientX - rect.left, y = e.clientY - rect.top;
       var maxDist = Math.max(Math.hypot(x, y), Math.hypot(rect.width - x, y), Math.hypot(x, rect.height - y), Math.hypot(rect.width - x, rect.height - y));
@@ -894,7 +897,8 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     '#jj-back svg{width:14px;height:14px;display:block;}' +
     'body.jj-modal-open #jj-back,body.jj-menu-open #jj-back{opacity:0;pointer-events:none;transition:opacity .2s ease;}body.jj-menu-open #jj-ach,body.jj-menu-open #jj-ach *{pointer-events:auto!important}';
   document.head.appendChild(st);
-  var a = document.createElement('a'); a.id = 'jj-back'; a.href = toPicker ? '/?choose=work' : '/';   // back from a case study → the Work chooser on the homepage (the picker page is retired) a.setAttribute('data-cursor', 'hover'); a.setAttribute('data-jj', 'btn');
+  var a = document.createElement('a'); a.id = 'jj-back'; a.href = toPicker ? '/?choose=work' : '/';   // back from a case study → the Work chooser on the homepage (the picker page is retired)
+  a.setAttribute('data-cursor', 'hover'); a.setAttribute('data-jj', 'btn');
   a.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg><span>' + (toPicker ? 'All projects' : 'Back') + '</span>';
   function mount() { if (document.body) { document.body.appendChild(a); setTimeout(function () { a.classList.add('in'); }, 400); } else setTimeout(mount, 50); }
   mount();
@@ -1151,3 +1155,23 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
 (function () { var st = document.createElement('style'); st.id = 'jj-sub-centre';
   st.textContent = '#jj-subtitle{top:50%!important;bottom:auto!important;transform:translate(-50%,-50%)!important;width:86%!important;max-width:980px!important;font-size:clamp(26px,3.6vw,58px)!important;line-height:1.15!important;font-weight:700;}';
   (document.head || document.documentElement).appendChild(st); })();
+
+/* ===== Modal guard (2026-09-17). While ANY overlay is up — the achievements / store panel, a first-unlock card, a Storytime
+   dialog, a My Story lightbox (html.jjms-lb), the companion's full-screen view — nothing in the nav underneath can be pressed,
+   and for a beat AFTER it closes too: the press that closes a modal must never land on the Menu / pills sitting under its X.
+   RULE 0 said "behind and unclickable"; this makes it true for every overlay in one place. ===== */
+(function () {
+  if (window.__jjModalGuard) return; window.__jjModalGuard = true;
+  var st = document.createElement('style');
+  st.textContent = 'body.jj-modal-open .nav,html.jjms-lb .nav,body.jj-guard .nav{pointer-events:none!important;}body.jj-modal-open .nav *,html.jjms-lb .nav *,body.jj-guard .nav *{pointer-events:none!important;}';
+  document.head.appendChild(st);
+  var until = 0, was = false;
+  function up() { return document.body.classList.contains('jj-modal-open') || document.documentElement.classList.contains('jjms-lb') || !!document.getElementById('jjco-full') || !!document.getElementById('jjco-vid'); }
+  function setG(on) { var b = document.body.classList; if (on !== b.contains('jj-guard')) b.toggle('jj-guard', on); }   // NEVER re-add a class that is already there: even a no-op classList.add queues a mutation record, and this observer would then feed itself for ever (it froze the page)
+  function sync() { var now = up(); if (was && !now) { until = performance.now() + 500; setG(true); setTimeout(function () { if (!up()) setG(false); }, 520); } else if (now) setG(true); was = now; }
+  var mo = new MutationObserver(sync); mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  mo.observe(document.body, { attributes: true, attributeFilter: ['class'], childList: true });   // html + body classes, and overlays appended to body — no subtree
+  ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click', 'touchstart', 'touchend'].forEach(function (t) {
+    window.addEventListener(t, function (e) { if (!(up() || performance.now() < until)) return;
+      var tg = e.target; if (tg && tg.closest && tg.closest('.nav') && !tg.closest('#jj-ach,#jj-first,.jj-tmenu.stp,.jj-tmenu.thp')) { e.stopImmediatePropagation(); e.preventDefault(); } }, true); });
+})();

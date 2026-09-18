@@ -1,4 +1,4 @@
-/* jj-companion.js — companions + the store (build c26: a shelf counter on the Decorations tab (n / 5, five slots, 'Shelf full' when it is); the decorations on the shelf are pressable (EDIT cursor) and open the Decorations tab; the preview clip never restarts (outfit / size / board changes carry on from where it was, on the page too); a full-screen view — the companion alone on the Joe's Journey swirl or any board, just a close; the 'None' backdrop is a patch of night sky; the preview can sit on any of the tale's boards (cave, village, tavern, woods, hills, mountains, forest, castle) or none; CHANGE ↗ cursor over the companion; the decoration shelf stands on the stone frames; 'Take them / Drop them'; the preview shows the companion at actual size for the size picked; the active button (Playing / Wearing / With you) is a gold button of its own; the decoration shelf clears the stone frames on the first card and the sound prompt; pick the companion's size (small / medium / large); the preview crops in close; the Companions tab is the alien's home — big looping preview, Take him / Drop him, an outfit dropdown of what you own (pink dot = not worn yet), the Companion Store beneath (available / how to unlock / bought); the alien is everyone's from the start; Chickens & Dragons is its own tab; c17: the companion has a hover and a press opens the store on its outfits; no companion in the tale; companions follow a character when a page hands them one (Storytime's Joe / hero, My Story's era sprite), over the tale; c15: parks 15vh lower under the flyer; no pink companions on the project picker (its purple soft-light wash is counted now); c14: the Battle Chicken outfit clip is in; the Tree Spirit companion (kodama tilt in code, unlocked by a tap in the enchanted forest); c13: companions float right, out of the way, when they drift over UI; c12: the roaming clips are in — every alien outfit, the Babadook and the three chickens play one Seedance take each: roam at 60%, the expression at full speed, a 6s float on the stillest frame after it, then away into the distance; Babadook gifted by the quiz's secret video; c11: three chickens join the companions; menu decorations sit beside the logo, top left; decorations smaller, feet on the frame top everywhere; decorations = the 15 My Story era sprites, 5 at a time, still on every modal and floating in the menu; dragons grow in, play their clip from the top and shrink away before it ends; cursor-vs-theme question on the first mismatched pick; owned counts for the header).
+/* jj-companion.js — companions + the store (build c30: grandad's clip on the Videos shelf; c29: a Videos tab (free, unlocked by achievements), the decoration shelf reads on parchment; c28: a fresh visitor has no shelf yet, which stopped the menu's companion card ever appearing; c27: a shelf preview on the Decorations tab — the five slots with what is out, bobbing; press one to put it away; a shelf counter on the Decorations tab (n / 5, five slots, 'Shelf full' when it is); the decorations on the shelf are pressable (EDIT cursor) and open the Decorations tab; the preview clip never restarts (outfit / size / board changes carry on from where it was, on the page too); a full-screen view — the companion alone on the Joe's Journey swirl or any board, just a close; the 'None' backdrop is a patch of night sky; the preview can sit on any of the tale's boards (cave, village, tavern, woods, hills, mountains, forest, castle) or none; CHANGE ↗ cursor over the companion; the decoration shelf stands on the stone frames; 'Take them / Drop them'; the preview shows the companion at actual size for the size picked; the active button (Playing / Wearing / With you) is a gold button of its own; the decoration shelf clears the stone frames on the first card and the sound prompt; pick the companion's size (small / medium / large); the preview crops in close; the Companions tab is the alien's home — big looping preview, Take him / Drop him, an outfit dropdown of what you own (pink dot = not worn yet), the Companion Store beneath (available / how to unlock / bought); the alien is everyone's from the start; Chickens & Dragons is its own tab; c17: the companion has a hover and a press opens the store on its outfits; no companion in the tale; companions follow a character when a page hands them one (Storytime's Joe / hero, My Story's era sprite), over the tale; c15: parks 15vh lower under the flyer; no pink companions on the project picker (its purple soft-light wash is counted now); c14: the Battle Chicken outfit clip is in; the Tree Spirit companion (kodama tilt in code, unlocked by a tap in the enchanted forest); c13: companions float right, out of the way, when they drift over UI; c12: the roaming clips are in — every alien outfit, the Babadook and the three chickens play one Seedance take each: roam at 60%, the expression at full speed, a 6s float on the stillest frame after it, then away into the distance; Babadook gifted by the quiz's secret video; c11: three chickens join the companions; menu decorations sit beside the logo, top left; decorations smaller, feet on the frame top everywhere; decorations = the 15 My Story era sprites, 5 at a time, still on every modal and floating in the menu; dragons grow in, play their clip from the top and shrink away before it ends; cursor-vs-theme question on the first mismatched pick; owned counts for the header).
    Loads after jj-score.js. Registers the Store's tabs (Characters, Outfits, Music, Cursors) with jjScore and renders them into the panel.
    Companions: the alien (wearing one of the outfits from the Outfits tab), two dragons, and the My Story era sprites. The alien and
    the sprites park top-left and bob; dragons patrol the top of the page, fly out when their clip ends and fly back in somewhere else.
@@ -9,7 +9,7 @@
   if (window.jjCompanion) return;
   var GB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
   var KEY = 'jjCompanion', C; try { C = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { C = {}; }
-  C.owned = C.owned || {}; if (!C.owned.alien) C.owned.alien = Date.now(); C.worn = C.worn || {}; C.size = C.size || 'm'; C.pvBg = C.pvBg || ''; C.fsBg = C.fsBg || 'jj'; C.comp = C.comp || null;   // fsBg: the backdrop in the full-screen view (default: the Joe's Journey swirl)   // pvBg: the backdrop behind the preview (a Storytime board, or none)   // size: s / m / l — how big the companion is on the page   // the alien is everyone's from the start — it only needs taking along; worn: outfits tried on (the pink dot marks the rest) C.outfit = C.outfit || null; C.seen = C.seen || {}; C.deco = C.deco || []; C.keepCur = !!C.keepCur; C.cursor = C.cursor || null;
+  C.owned = C.owned || {}; if (!C.owned.alien) C.owned.alien = Date.now(); C.worn = C.worn || {}; if (!Array.isArray(C.deco)) C.deco = []; C.seen = C.seen || {}; C.size = C.size || 'm'; C.pvBg = C.pvBg || ''; C.fsBg = C.fsBg || 'jj'; C.comp = C.comp || null;   // fsBg: the backdrop in the full-screen view (default: the Joe's Journey swirl)   // pvBg: the backdrop behind the preview (a Storytime board, or none)   // size: s / m / l — how big the companion is on the page   // the alien is everyone's from the start — it only needs taking along; worn: outfits tried on (the pink dot marks the rest) C.outfit = C.outfit || null; C.seen = C.seen || {}; C.deco = C.deco || []; C.keepCur = !!C.keepCur; C.cursor = C.cursor || null;
   var cursor = 'classic';                                      // resolved in applyCursor(): the kept choice, else the pack that matches the theme
   var MAX_DECO = 5;                                           // decorations on display at once
   var PREVIEW_ALL = true;                                     // TESTING: every cursor pack counts as owned. Set false to sell them.
@@ -47,7 +47,7 @@
   var DECOBY = {}; DECOS.forEach(function (d) { DECOBY[d.id] = d; });
   var BYID = {}; COMPS.forEach(function (c) { BYID[c.id] = c; }); var OUT = {}; OUTFITS.forEach(function (o) { OUT[o.id] = o; });
   var GROUPS = [['alien', ''], ['dragon', 'Dragons'], ['chicken', 'Chickens'], ['spirit', 'Forest spirits'], ['story', 'From my story']];
-  var TABS = [['chars', 'Companions'], ['pets', 'Chickens & Dragons'], ['deco', 'Decorations'], ['music', 'Music'], ['cursor', 'Cursors']];   // Outfits live inside Companions now (the Companion Store); every other creature is under Chickens & Dragons
+  var TABS = [['chars', 'Companions'], ['pets', 'Chickens & Dragons'], ['deco', 'Decorations'], ['music', 'Music'], ['cursor', 'Cursors'], ['videos', 'Videos']];   // Outfits live inside Companions now (the Companion Store); every other creature is under Chickens & Dragons
 
   /* ---- helpers through jjScore ---- */
   function J() { return window.jjScore; }
@@ -72,7 +72,7 @@
     });
     liftUI(); setInterval(liftUI, 2000);                           // pages build lazily; catch new UI as it appears
     inner.style.transition = 'transform 1.6s cubic-bezier(.22,1,.36,1), scale .3s ease'; setInterval(function () { park(); dodge(); }, 450);
-    setInterval(function () { if (co) co.classList.toggle('hide', hidden() || !arrived); syncDeco(); menuCard(); }, 300);
+    setInterval(function () { if (co) co.classList.toggle('hide', hidden() || !arrived); try { syncDeco(); } catch (e) {} menuCard(); }, 300);
     whenLast(function () { arrived = true; if (co) co.classList.toggle('hide', hidden()); });
   }
   /* Companions are a background layer: every piece of UI must paint above them. Anything interactive or
@@ -163,6 +163,7 @@
           '#jj-co-nav .ch{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#fff;padding:5px 11px;border-radius:999px;cursor:pointer;' +
             'border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.4);backdrop-filter:blur(6px);transition:background .2s ease;}' +
           '#jj-co-nav .ch:hover{background:rgba(255,255,255,.5);}#jj-co-nav .ch:active{background:#FF00F5;border-color:#FF00F5;}' +
+          '#jj-co-nav.tight .nm{display:none;}' +
           '@media (max-width:900px){#jj-co-nav{display:none;}}';
         document.head.appendChild(ms);
       }
@@ -180,6 +181,17 @@
     card.classList.toggle('out', !!(moon && moon.classList.contains('out')) || !document.body.classList.contains('jj-menu-open'));
     var pills = nav.querySelector('.menu-links, .nav-container'), pr = pills && pills.getBoundingClientRect(), nr = nav.getBoundingClientRect();
     if (pr && pr.height) card.style.top = Math.round(pr.top + pr.height / 2 - nr.top) + 'px';   // on the pills' centre line
+    /* rule 24 for the card too: centred when there is room; when the pills reach the middle it drops the name and tucks in beside the J; no room there either (the moon) = not shown */
+    var inn = nav.querySelector('.innav'), ir = inn && inn.getBoundingClientRect(), lg = nav.querySelector('.nav-logo-link'), lr = lg && lg.getBoundingClientRect();
+    if (ir && ir.width && lr) {
+      card.classList.remove('tight'); card.style.left = ''; card.style.transform = ''; card.style.visibility = '';
+      var cw = card.offsetWidth, mid = nr.left + nr.width / 2;
+      if (mid + cw / 2 > ir.left - 14) {
+        card.classList.add('tight'); card.style.left = Math.round(lr.right + 14 - nr.left) + 'px'; card.style.transform = 'translate(0,-50%)';
+        var mr = moon && moon.getBoundingClientRect(), end = lr.right + 14 + card.offsetWidth;
+        if (end > ir.left - 10 || (mr && mr.width && end > mr.left + mr.width * .12 && lr.right + 14 < mr.right)) card.style.visibility = 'hidden';
+      }
+    }
     var c = BYID[C.comp], im = card.querySelector('img'), src = c ? thumb(c) : '';
     if (im.getAttribute('src') !== src) { im.setAttribute('src', src); im.style.display = src ? '' : 'none'; }
     var nm = card.querySelector('.nm'), want = menuName();
@@ -360,6 +372,30 @@
         '<button type="button" class="jjco-btn buy" data-item="' + o.id + '" data-cursor="hover">Buy</button>') + '</div></div>' +
       '<i class="wmw"><img class="wm" src="' + o.thumb + '" alt=""></i></div>';
   }
+  /* Videos (free): the films that used to interrupt My Story. Each waits behind an achievement; nothing but a poster loads
+     until it is opened, so they cost the pages nothing. mp4 = our own file, yt = a YouTube id (nocookie embed). */
+  var VIDEOS = [
+    { id: 'flobby',    name: 'The Flobby & Bobby Show', desc: 'My first animation, made when I was 12. If the psych Doctors saw this one at the time\u2026', by: 'vid-anim', mp4: 'vid-flobby.mp4', poster: 'vid-flobby.jpg' },
+    { id: 'patient12', name: 'Patient 12', desc: 'A school film. I even made a few\u2026interesting ones.', by: 'vid-school', yt: 'qXvA3WWhkSY', poster: 'vid-patient12.jpg' },
+    { id: 'siblings',  name: 'Siblings', desc: 'The other school film. Take your pick.', by: 'vid-school', yt: 'Sf4OV3aJ4SM', poster: 'vid-siblings.jpg' },
+    { id: 'babadook',  name: 'Ba-ba-ba\u2026 DOOK!', desc: 'The secret one from the end of the quiz.', by: 'vid-babadook', yt: '3KxokmSclbE', poster: 'https://i.ytimg.com/vi/3KxokmSclbE/hqdefault.jpg' },
+    { id: 'grandad',   name: 'The Voice of Storytime', desc: 'The crazy old man himself. Press it for sound.', by: 'vid-grandad', mp4: 'vid-grandad.mp4', poster: 'vid-grandad.jpg' }
+  ];
+  function openVideo(id) { var V = VIDEOS.filter(function (v) { return v.id === id; })[0]; if (!V || document.getElementById('jjco-vid')) return;
+    if (!document.getElementById('jjco-vid-style')) { var vs = document.createElement('style'); vs.id = 'jjco-vid-style';
+      vs.textContent = '#jjco-vid{position:fixed;inset:0;z-index:2147483000;background:rgba(3,5,12,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;opacity:0;transition:opacity .35s ease;}#jjco-vid.on{opacity:1;}' +
+        '#jjco-vid .fr{width:min(88vw,calc(76vh * 16 / 9));aspect-ratio:16/9;background:#000;border-radius:14px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.7);}#jjco-vid .fr>*{width:100%;height:100%;display:block;border:0;}' +
+        '#jjco-vid h3{margin:0;color:#fff;font-size:clamp(18px,1.8vw,28px);}#jjco-vid .x{position:absolute;top:24px;right:24px;width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.4);color:#fff;font-size:22px;cursor:pointer;}';
+      document.head.appendChild(vs); }
+    var o = document.createElement('div'); o.id = 'jjco-vid'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-label', V.name);
+    o.innerHTML = '<button type="button" class="x" aria-label="Close" data-cursor="hover">\u2715</button><div class="fr">' +
+      (V.mp4 ? '<video src="' + GB + V.mp4 + '" poster="' + GB + V.poster + '" controls playsinline autoplay></video>' : '<iframe src="https://www.youtube-nocookie.com/embed/' + V.yt + '?autoplay=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>') + '</div><h3>' + V.name + '</h3>';
+    var amb = null, av = 0; try { amb = window.jjAudio && window.jjAudio.ambient; if (amb && amb.playing()) { av = amb.volume(); amb.fade(av, 0, 400); } else amb = null; } catch (e) { amb = null; }
+    function close() { o.classList.remove('on'); setTimeout(function () { o.remove(); }, 380); try { if (amb) amb.fade(0, av, 800); } catch (e) {} document.removeEventListener('keydown', esc, true); }
+    function esc(e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } }
+    o.addEventListener('click', function (e) { e.stopPropagation(); if (e.target === o || e.target.closest('.x')) close(); });
+    document.addEventListener('keydown', esc, true); document.body.appendChild(o); setTimeout(function () { o.classList.add('on'); }, 30);
+  }
   function head(t) { return t ? '<div class="jjco-h">' + t + '</div>' : ''; }
   function render(tab, list) {
     curTab = tab; var html = '';
@@ -408,6 +444,7 @@
     else if (tab === 'deco') {
       var nOn = C.deco.length, lastEra = null, full = nOn >= MAX_DECO;
       html += '<div class="row shop note"><i class="rbg"></i><div class="ico"><img src="' + GB + 'story-sprite-10-knight.webp" alt=""></div><div class="mid"><div class="nm">Decorations</div><div class="ds">The little Joes from every era of My Story. They sit along the top of the big panels and in the menu. Collect them all; ' + MAX_DECO + ' can be out at once (' + nOn + ' of ' + MAX_DECO + ' on display).</div></div></div>';
+      html += '<div class="jjco-shelf' + (full ? ' full' : '') + '"><div class="jjco-shelf-slots">' + Array.apply(null, Array(MAX_DECO)).map(function (_, n) { var d = DECOBY[C.deco[n]]; return d ? '<button type="button" class="slot" data-act="deco" data-item="deco:' + d.id + '" title="' + d.name + ' — put away" data-cursor="hover" style="animation-delay:' + (-n * 1.1) + 's"><img src="' + GB + d.img + '" alt="" style="height:' + Math.round(50 * (d.h || 1)) + 'px"></button>' : '<span class="slot empty" aria-hidden="true"></span>'; }).join('') + '</div><div class="jjco-shelf-ledge"></div><div class="jjco-shelf-lbl">On display' + (nOn ? ' — press one to put it away' : '') + '</div></div>';
       html += '<div class="jjco-count' + (full ? ' full' : '') + '"><span>On display</span><i>' + Array.apply(null, Array(MAX_DECO)).map(function (_, n) { return '<b class="' + (n < nOn ? 'on' : '') + '"></b>'; }).join('') + '</i><em>' + nOn + ' / ' + MAX_DECO + '</em>' + (full ? '<small>Shelf full — put one away to add another</small>' : '') + '</div>';
       DECOS.forEach(function (d) {
         if (d.era !== lastEra) { lastEra = d.era; html += head(d.era); }
@@ -423,6 +460,11 @@
     else if (tab === 'cursor') {
       CURSORS.forEach(function (r) { var id = r[0], have = cursorOwned(id), ok = !r[4] || (J() && J().has(r[4])), on = cursor === id;
         html += card({ id: 'cursor:' + id, name: r[1], desc: have || ok ? r[2] : 'Unlocks with ' + achName(r[4]) + '. ' + r[2], thumb: GB + 'store-cursor-' + id + '.webp', price: r[3] && !have ? { c: r[3] } : null, owned: have, locked: !have && !ok, gate: r[4], on: on, onLabel: 'In use', ownAct: 'cursor', ownLabel: on ? 'In use' : 'Use this' }); });
+    }
+    if (tab === 'videos') {
+      html += head('Free to watch. Each one unlocks along the way.');
+      VIDEOS.forEach(function (v) { var ok = !!(J() && J().has(v.by));
+        html += card({ id: 'video:' + v.id, name: v.name, desc: ok ? v.desc : 'Locked. ' + achName(v.by) + ' unlocks it.', thumb: /^https?:/.test(v.poster) ? v.poster : GB + v.poster, price: null, owned: ok, locked: !ok, gate: v.by, ownAct: 'video', ownLabel: 'Watch' }); });
     }
     list.innerHTML = html; bind(list);
     var pvv = list.querySelector('video.jjco-pv'); if (pvv) seekOn(pvv, pvT);
@@ -472,12 +514,14 @@
     list.addEventListener('click', function (e) { var dm = list.querySelector('.jjco-ddm'); if (dm && dm.classList.contains('on') && !e.target.closest('.jjco-ddw')) dm.classList.remove('on'); });
     list.querySelectorAll('.jjco-btn.buy').forEach(function (b) { b.addEventListener('click', function (e) { e.stopPropagation(); buy(b.getAttribute('data-item')); }); });
     list.querySelectorAll('.jjco-link[data-goto]').forEach(function (b) { b.addEventListener('click', function (e) { e.stopPropagation(); var g = b.getAttribute('data-goto'); if (g && J()) J().goto(g); }); });
+    list.querySelectorAll('.row.shop.lock').forEach(function (r) { var g = r.querySelector('.jjco-link[data-goto]'); if (!g) return; r.style.cursor = 'pointer'; r.setAttribute('data-cursor', 'hover'); r.addEventListener('click', function (e) { e.stopPropagation(); if (J()) J().goto(g.getAttribute('data-goto')); }); });   // a locked card: pressing anywhere on it takes you to the achievement that opens it
     list.querySelectorAll('[data-act]').forEach(function (b) { b.addEventListener(b.tagName === 'INPUT' ? 'change' : 'click', function (e) { e.stopPropagation(); act(b.getAttribute('data-act'), b.getAttribute('data-item')); }); });
   }
   function wear(id) { C.outfit = id === 'plain' ? null : id; if (id !== 'plain') C.worn[id] = 1; save(); if (owned('alien') && C.comp !== 'alien') setComp('alien'); else if (C.comp === 'alien') fillCo(); }   // dressing the alien brings it out as your companion
   function act(a, id) {
     hideToast();                                             // pressing anything on a card answers the standing question by dismissing it
     if (a === 'take') { if (C.comp === id) setComp(null); else setComp(id); rerender(); return; }
+    if (a === 'video') { openVideo(id.replace('video:', '')); return; }
     if (a === 'outfits') { if (J()) J().setStoreTab('chars'); return; }
     if (a === 'pvbg') { C.pvBg = id || ''; save(); rerender(); return; }
     if (a === 'size') { C.size = id; save(); applySize(); rerender(); return; }
@@ -572,6 +616,18 @@
     '#jj-ach .jjco-full .jjco-pv.big{position:relative;z-index:1;height:66%;width:auto;max-width:92%;object-fit:contain;filter:drop-shadow(0 18px 30px rgba(0,0,0,.55));}#jj-ach .jjco-full img.jjco-pv.big{animation:jjcoBob 2.8s ease-in-out infinite;}' +
     '#jj-ach .jjco-full .jjco-bgs{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);margin:0;z-index:2;padding:8px 12px;border-radius:999px;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);flex-wrap:nowrap;}' +
     '#jj-ach .jjco-fsx{position:absolute;right:16px;top:16px;z-index:2;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.45);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;}#jj-ach .jjco-fsx svg{width:16px;height:16px;}#jj-ach .jjco-fsx:hover{background:rgba(0,0,0,.75);}' +
+    '#jj-ach .jjco-shelf{position:relative;margin:4px 6px 14px;padding:14px 12px 8px;border-radius:18px;background:radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.10),rgba(255,255,255,.02) 60%,transparent 80%);border:1px solid rgba(255,255,255,.18);}' +
+    '#jj-ach .jjco-shelf-slots{display:flex;justify-content:center;align-items:flex-end;gap:18px;min-height:64px;}' +
+    '#jj-ach .jjco-shelf .slot{width:64px;height:64px;display:flex;align-items:flex-end;justify-content:center;border:0;background:transparent;padding:0;cursor:pointer;animation:jjcoBob 2.8s ease-in-out infinite;transition:transform .2s ease,filter .2s ease;}#jj-ach .jjco-shelf .slot img{width:auto;max-width:64px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45));}#jj-ach .jjco-shelf .slot:hover{transform:translateY(-4px) scale(1.08);filter:drop-shadow(0 0 10px rgba(255,214,120,.8));}' +
+    '#jj-ach .jjco-shelf .slot.empty{animation:none;cursor:default;align-self:flex-end;height:44px;border-radius:50%;border:2px dashed rgba(255,255,255,.28);width:44px;margin:0 10px 6px;}' +
+    '#jj-ach .jjco-shelf-ledge{height:6px;margin:2px 8px 0;border-radius:3px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35) 12%,rgba(255,255,255,.35) 88%,transparent);}' +
+    /* on parchment (Medieval, Special) white strokes vanish: the shelf, its empty rings, its ledge and the counter's pips go brown there */
+    '#jj-ach.t-medieval .jjco-shelf,#jj-ach.t-mixed .jjco-shelf{background:radial-gradient(ellipse at 50% 100%,rgba(90,58,22,.16),rgba(90,58,22,.05) 60%,transparent 82%);border-color:rgba(90,58,22,.4);}' +
+    '#jj-ach.t-medieval .jjco-shelf .slot.empty,#jj-ach.t-mixed .jjco-shelf .slot.empty{border-color:rgba(90,58,22,.55);}' +
+    '#jj-ach.t-medieval .jjco-shelf-ledge,#jj-ach.t-mixed .jjco-shelf-ledge{background:linear-gradient(90deg,transparent,rgba(90,58,22,.6) 12%,rgba(90,58,22,.6) 88%,transparent);}' +
+    '#jj-ach.t-medieval .jjco-shelf-lbl,#jj-ach.t-mixed .jjco-shelf-lbl{opacity:.85;}' +
+    '#jj-ach.t-medieval .jjco-count b,#jj-ach.t-mixed .jjco-count b{border-color:rgba(90,58,22,.6)!important;}' +
+    '#jj-ach .jjco-shelf-lbl{margin-top:8px;text-align:center;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.65;}' +
     '#jj-ach .jjco-count{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 6px 10px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.9;}#jj-ach .jjco-count i{display:inline-flex;gap:5px;}#jj-ach .jjco-count i b{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.55);display:block;}#jj-ach .jjco-count i b.on{background:#FFC531;border-color:#FFC531;box-shadow:0 0 8px rgba(255,197,49,.6);}#jj-ach .jjco-count em{font-style:normal;}#jj-ach .jjco-count small{flex:1 0 100%;font-size:12px;font-weight:400;letter-spacing:0;text-transform:none;opacity:.8;color:#FF00F5;}' +   // the shelf counter: five slots, how many are out
     '#jj-ach.t-medieval .jjco-prev{background:radial-gradient(circle at 50% 30%,#1a2650 0%,#0b1230 45%,#04060e 100%)!important;border-color:#3a2a12!important;}#jj-ach.t-medieval .jjco-prev::before{color:#fff;}' +   // medieval: the preview keeps a night sky — the companion flies on dark pages, not parchment
     '#jj-ach .jjco-sub{font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.6;margin:14px 6px 6px;}' +

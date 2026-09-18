@@ -12,7 +12,7 @@
    All copy/eras/years live in the CONFIG below.
    ============================================================================ */
 (function () {
-  window.JJ_MYSTORY_BUILD = 'M111 - Big Bang and quiz achievements wired';
+  window.JJ_MYSTORY_BUILD = 'm-0917 perf governor + block captions + one games slide + header on the nav line · M111 - Big Bang and quiz achievements wired';
   try { console.log('%c[JJ] mystory.js build: ' + window.JJ_MYSTORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
   var GB = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
@@ -41,12 +41,12 @@
   /* icons per era, EXACTLY as the design frames: first = active (big + 100%), rest = the
      upcoming evolution, ghosted with size/opacity falloff */
   var ERAS = [
-    { nav: 'Precambrian', title: 'Precambrian Era', ages: 'Ages 1 – 12', years: [1995.87, 2008], icons: [1, 2, 3] },
+    { nav: 'Precambrian', title: 'Precambrian Era', ages: 'Ages 1 – 12', years: [1995.87, 2008], icons: [1, 3] },   /* 2 slides (hero, games) = 2 sprites: amoeba, walker (the fish went with the raids slide) */
     { nav: 'Prehistoric', title: 'Prehistoric Age', ages: 'Ages 13 – 18', years: [2009, 2014], icons: [4, 5] },
     { nav: 'Ancient', title: 'Ancient Era', ages: 'Ages 19 – 20', years: [2015, 2016], icons: [6, 7] },
-    { nav: 'Medieval', title: 'Medieval Era', ages: 'Ages 21 – 24', years: [2017, 2020], icons: [8, 9, 10] },
+    { nav: 'Medieval', title: 'Medieval Era', ages: 'Ages 21 – 24', years: [2017, 2020], icons: [8, 10] },   /* 2 slides (Brighton, Taipei) = peasant, knight */
     { nav: 'Renaissance', title: 'Renaissance Period', ages: 'Ages 25 – 29', years: [2021, 2025], icons: [11, 12] },
-    { nav: 'Information', title: 'Information Age', ages: 'Age 30+', years: [2026, 2026], icons: [13, 14, 15] }
+    { nav: 'Information', title: 'Information Age', ages: 'Age 30+', years: [2026, 2026], icons: [13, 14, 15] }   /* 3 slides (Super Reel, spare time, grandad) = modern, scientist, astronaut */
   ];
   /* special moments pinned on the ruler */
   var EVENTS = [
@@ -60,7 +60,7 @@
     'Book of Life and Coco\u2026)';
   var LOGOS = {
     /* the agency slide, laid out to My Story - Agency 1.svg */
-    12: [
+    8: [
       { t: 'BBC',          src: 'ag-bbc.webp',        x: 41.98, y: 25.0,  w: 16.29, r: 2.11,  fx: 'boom' },
       { t: 'AXA',          src: 'ag-axa.webp',        x: 17.45, y: 28.06, w: 8.4,   r: -3.58, fx: 'shield' },
       { t: 'Lab',          src: 'ag-lab.webp',        x: 70.88, y: 22.47, w: 6.58,  r: 6.37,  fx: 'wire' },
@@ -74,7 +74,7 @@
     /* the awards slide, laid out to My Story - Awards 1.svg. The two agencies draw a little design
        illustration when pressed; the BIMAs are the actual silver awards, so they get the shine on
        hover and the confetti on press. */
-    13: [
+    9: [
       { t: 'Foolproof',            src: 'aw-2.webp',     x: 13.28, y: 29.90, w: 13.09, r: -3.68, fx: 'cursor2' },
       { t: 'UIC Digital × Fantasy', src: 'aw-3.webp', x: 70.62, y: 24.24, w: 17.27, r: 0, fx: 'grid' },
       { t: 'BIMA Awards Winner 2021 — Best Digital Transformation, Silver',
@@ -88,55 +88,71 @@
     /* Europe sits in the middle of the screen now. Its countries still cluster BESIDE the photo
        (ccSide) rather than under it — the headline is directly below and there's no room. x centres
        the WHOLE group: photo (13) + gap (1.2) + chips (17) = 31.2vw wide, so 50 - 31.2/2 = 34.4. */
-    { step: 7, key: 'eu', x: 34.4, y: 17.5, w: 13, rot: -6.62, ar: 0.75, name: 'Europe',
+    { step: 4, key: 'eu', x: 34.4, y: 17.5, w: 13, rot: -6.62, ar: 0.75, name: 'Europe',
       files: ['trav-eu-1.jpg'],
       cc: [['Belgium', '🇧🇪'], ['Netherlands', '🇳🇱'], ['Germany', '🇩🇪'], ['Poland', '🇵🇱'], ['Czechia', '🇨🇿'], ['Slovenia', '🇸🇮'], ['Croatia', '🇭🇷']],
       ccSide: true, ccw: 17,
       cap: 'Went interrailing with my friends from school, this is the only photo that survived!' },
     /* Peru / Bolivia lives on the Mexico screen now — top left, clear of the philosopher below it
        and of the Mexico set on the right. */
-    { step: 8, key: 'pe', x: 8.5, y: 19, w: 15, rot: 3.32, ar: 0.673, name: 'Peru / Bolivia',
+    { step: 5, key: 'pe', x: 8.5, y: 19, w: 15, rot: 3.32, ar: 0.673, name: 'Peru / Bolivia',
       files: ['trav-pe-1.jpg', 'trav-pe-2.jpg', 'trav-pe-3.jpg'],
       cc: [['Peru', '🇵🇪'], ['Bolivia', '🇧🇴']], ccw: 20,
       cap: 'Ended up volunteering in a hostel (briefly), worked with the best crew in Bolivia' },
-    { step: 7, key: 'as', x: 75.17, y: 55.64, w: 14.9, rot: 4.1, ar: 1.23, name: 'Asia',
+    { step: 4, key: 'as', x: 75.17, y: 55.64, w: 14.9, rot: 4.1, ar: 1.23, name: 'Asia',
       files: ['trav-as-1.jpg', 'trav-as-2.jpg', 'trav-as-3.jpg', 'trav-as-4.jpg'],
       cc: [['Sri Lanka', '🇱🇰'], ['Nepal', '🇳🇵'], ['Vietnam', '🇻🇳'], ['Laos', '🇱🇦'], ['Thailand', '🇹🇭']], ccw: 22,
       cap: '2 Month travel ended up lasting 8 months including becoming a Western Manager of a hostel in Hanoi?' },
-    { step: 7, key: 'au', x: 13.09, y: 58.89, w: 12.3, rot: -8.97, ar: 1.30, name: 'Australia',
+    { step: 4, key: 'au', x: 13.09, y: 58.89, w: 12.3, rot: -8.97, ar: 1.30, name: 'Australia',
       files: ['trav-au-1.jpg', 'trav-au-2.jpg', 'trav-au-3.jpg', 'trav-au-4.jpg'],
       cc: [['Australia', '🇦🇺']], ccw: 12,
       cap: 'Worked at gigs and events in Melbourne and ended with my farm work in Bundaberg (also was injured by a falling sweet potato…)' },
     /* Mexico for Día de los Muertos — same collection treatment as the travel screen: mex-01 leads,
        the other three fan out on click, and the caption only shows in the modal */
-    { step: 8, key: 'mx', x: 71.5, y: 6.0, w: 13.5, rot: 8.55, ar: 1.335, name: 'Mexico',
+    { step: 5, key: 'mx', x: 71.5, y: 6.0, w: 13.5, rot: 8.55, ar: 1.335, name: 'Mexico',
       files: ['mex-01.jpg', 'mex-02.jpg', 'mex-03.jpg', 'mex-04.jpg'],
       cc: [['Mexico', '\ud83c\uddf2\ud83c\uddfd']], ccw: 13.5, ccGap: 0.5,
       cap: MEXCAP },
     /* Brighton — one photo, tagged like the countries */
-    { step: 9, key: 'br', x: 45, y: 16.5, w: 9, rot: 4.11, ar: 1.333, name: 'Brighton',
+    { step: 6, key: 'br', x: 45, y: 16.5, w: 9, rot: 4.11, ar: 1.333, name: 'Brighton',
       files: ['brighton-01.jpg'],
       cc: [['Brighton', '\ud83c\uddec\ud83c\udde7']], ccw: 9, ccGap: 0.5,
       cap: 'Me catching the Sun' },
     /* the friends set — one photo leads, the rest fan out */
-    { step: 4, key: 'fr', x: 16.41, y: 19.5, w: 17.5, rot: -6.33, ar: 0.665,
+    { step: 2, key: 'fr', x: 16.41, y: 19.5, w: 17.5, rot: -6.33, ar: 0.665,
       name: 'We re-created the same picture 5 years on and yes, that\u2019s me with our headteacher',
       files: ['friends-1.jpg', 'friends-2.jpg', 'friends-3.jpg', 'friends-4.jpg'] },
     /* the rugby pair */
-    { step: 4, key: 'rg', x: 79.6, y: 57, w: 17, rot: 14.15, ar: 1.014,
+    { step: 2, key: 'rg', x: 79.6, y: 57, w: 17, rot: 14.15, ar: 1.014,
       name: 'I think I got past one of them...',
       files: ['sport-05.jpg', 'rugby-2.jpg'] },
     /* the football run, clustered like the travel sets */
-    { step: 4, key: 'fb', x: 8.48, y: 62.45, w: 22.26, rot: -10.87, ar: 0.42,
+    { step: 2, key: 'fb', x: 8.48, y: 62.45, w: 22.26, rot: -10.87, ar: 0.42,
       name: 'Yep, thats me scoring a goal 😎, thanks for the photos Karen Brooke!',
       files: ['sport-00.jpg', 'sport-01.jpg', 'sport-02.jpg', 'sport-03.jpg', 'sport-04.jpg'] }
+    ,
+    /* ---- the spare-time slide (step 12): recent trips, GROUPED BY YEAR so they fit. A group shows its front set with the
+       others tucked behind it under a year badge; hovering the group fans them out side by side, and each one opens its own
+       modal like any travel set. `grp` = the year, `tuck` = how far (vw, vh) a back set hides toward the front one.
+       trav-dog-*, trav-es-*, trav-bk-* and trav-id-3/4 are PLACEHOLDER photos. */
+    { step: 11, key: 'es', grp: '2026', tuck: [-13.5, 1.5], x: 23.5, y: 17, w: 12.5, rot: 5.2, ar: 0.75, name: 'Spain / Portugal',
+      files: ['trav-es-1.jpg', 'trav-es-2.jpg', 'trav-es-3.jpg', 'trav-es-4.jpg'], cc: [['Spain', '\ud83c\uddea\ud83c\uddf8'], ['Portugal', '\ud83c\uddf5\ud83c\uddf9']], ccw: 14, cap: 'PLACEHOLDER caption' },
+    { step: 11, key: 'dog', grp: '2026', yr: true, x: 8.5, y: 19, w: 13, rot: -4.6, ar: 0.75, name: 'Dogsitting',
+      files: ['trav-dog-1.jpg', 'trav-dog-2.jpg', 'trav-dog-3.jpg', 'trav-dog-4.jpg', 'trav-dog-5.jpg'], cc: [['Scotland', '\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc73\udb40\udc63\udb40\udc74\udb40\udc7f'], ['England', '\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f']], ccw: 14, cap: 'PLACEHOLDER caption' },
+    { step: 11, key: 'id', grp: '2025', tuck: [14, 1.5], x: 63.5, y: 18.5, w: 11, rot: -5.4, ar: 1.143, name: 'Indonesia',
+      files: ['trav-id-1.jpg', 'trav-id-2.jpg', 'trav-id-3.jpg', 'trav-id-4.jpg'], cc: [['Indonesia', '\ud83c\uddee\ud83c\udde9']], ccw: 12, cap: 'PLACEHOLDER caption' },
+    { step: 11, key: 'nz', grp: '2025', yr: true, x: 77.5, y: 18, w: 13.5, rot: 4.8, ar: 0.75, name: 'New Zealand',
+      files: ['trav-nz-1.jpg', 'trav-nz-2.jpg', 'trav-nz-3.jpg', 'trav-nz-4.jpg', 'trav-nz-5.jpg'], cc: [['New Zealand', '\ud83c\uddf3\ud83c\uddff']], ccw: 14, cap: 'PLACEHOLDER caption' },
+    { step: 11, key: 'bk', grp: '2024', yr: true, x: 8.5, y: 64, w: 13.5, rot: -5.8, ar: 0.75, name: 'The Balkans',
+      files: ['trav-bk-1.jpg', 'trav-bk-2.jpg', 'trav-bk-3.jpg', 'trav-bk-4.jpg', 'trav-bk-5.jpg'],
+      cc: [['Serbia', '\ud83c\uddf7\ud83c\uddf8'], ['Croatia', '\ud83c\udded\ud83c\uddf7'], ['Bosnia', '\ud83c\udde7\ud83c\udde6'], ['Montenegro', '\ud83c\uddf2\ud83c\uddea'], ['Albania', '\ud83c\udde6\ud83c\uddf1']], ccw: 20, cap: 'Serbia, Croatia, Bosnia & Herzegovina, Montenegro and Albania. PLACEHOLDER caption' }
   ];
   /* flip to true to put the job rail back on the ruler (also widens the year spacing to suit) */
   var SHOW_JOBS = false;
   /* the star layers drifting at their own speeds on scroll. Each layer holds dozens of individually
      composited (animated) stars, so translating the parent forces them all to re-composite every
      frame — flip to false to leave the field still and let it scroll with the story. */
-  var SKY_PARALLAX = false;
+  var SKY_PARALLAX = true;   /* the stars drift at their own speed behind the words (Joe, 2026-09-18) */
   /* ---- every job, pinned to the ruler: the year label sits directly ABOVE its job ----
      `logo` is a filename in the sprite folder (drop the real logos in and they appear); until then
      each one falls back to a monogram tile built from the company's initials. */
@@ -157,58 +173,49 @@
   ];
   var STEPS = [
     { era: 0, cap: 'And the lord said “Let there be Joe!”', sub: 'Best experienced with sound on…' },
-    { era: 0, cap: 'I started playing games at a very young age', sub: '& I had a huuuuuge PC in my room at 7 so I loved computers' },
-    { era: 0, cap: 'Apparently I used to lead raids when I was 7', sub: '& was building guilds at 8…' },
-    /* This one plays out over three screens: the room darkens, the film starts as a speck at the
-       top and grows until it owns the screen. `tall` gives the step the room to do it in. */
-    { era: 0, cap: 'I made my first animation when I was 12', sub: 'If the psych Doctors saw this one at the time…',
-      tall: 3, grow: { src: 'vid-flobby.mp4', poster: 'vid-flobby.jpg', cap: 'The Flobby & Bobby Show',
-        /* the studios that started it, drifting around the headline. Each falls back to its name in
-           a pill until the artwork is dropped in. */
-        logos: [
-          { t: 'Disney',        src: 'studio-disney.webp',     x: 7.5, y: 20, w: 14.5, r: -4 },
-          { t: 'Pixar',         src: 'studio-pixar.webp',      x: 79,  y: 17, w: 13,   r: 3.5 },
-          { t: 'DreamWorks',    src: 'studio-dreamworks.webp', x: 5,   y: 56, w: 15,   r: 3 },
-          { t: 'Studio Ghibli', src: 'studio-ghibli.webp',     x: 80,  y: 58, w: 14.5, r: -3.5 }
-        ] } },
+    { era: 0, cap: 'I started playing games at a very young age', sub: 'Here are the ones that hit me in the nostalgia!' },   /* one games slide now (the raids / guilds slide is folded in), laid out round the text like the films */
+    /* (2026-09-17) the first-animation slide and the school-films slide are retired: the four videos move to their own
+       Videos tab so they cost My Story nothing and never break the flow. Their machinery (tall / grow / duo) stays in the code, unused. */
     { era: 1, cap: 'I\u2019d had a very stereotypical small town upbringing',
-      sub: 'Played sports, games, hung out with my friends, etc...' },
+      sub: 'Played sports, games, hung out with my friends, etc...',
+      tall: 1.7, feat: true },   /* feat: a gentler cousin of the old two-video slide — past ~1/4 of its scroll the three photo sets ride down with you, grow and loosely line up (enticing a click) over a soft dim, while the game covers and the drawing slip up and away; all gone before the films */
     { era: 1, cap: 'I started to realise that films were my passion', sub: 'I’ve rated over 1700 titles on iMDB, click on the titles to find out more…' },
-    { era: 1, cap: 'I even made a few…interesting ones in school…', sub: 'Take your pick',
-      tall: 2.6, duo: true },   /* the two school films grow into shot as you scroll */
-    { era: 2, cap: 'I travelled the world & lived/volunteered in a few places along the way' },
-    { era: 2, cap: 'On the way I met a few people building websites and travelling and it made me think…' },
+    { era: 2, cap: 'I travelled the world & lived/volunteered in a few places along the way', tall: 1.45, feat: 'row', soft: true },   /* the photo sets ride down and loosely line up, gentler than the small-town slide */
+    { era: 2, cap: 'On the way I met a few people building websites and travelling. Much like Plato it made me think\u2026', sub: 'I wonder if I could do that\u2026', tall: 1.3, feat: 'think' },   /* STAND-IN: the wizard grows into the middle, thinking, and goes before the next slide — until Joe's art of him watching someone build a website arrives (that will grow to full width here) */
     { era: 3, cap: 'So I went off to Brighton to study BSc Digital Media where I learned lots of new skills',
-      sub: 'Hint: You can interact with the skills tags\u2026Just sayin\u2019!' },
+      sub: 'Hint: You can interact with the skills tags\u2026Just sayin\u2019!', tall: 1.35, feat: 'tabs' },   /* tabs: the two stone tablets ride to the middle and grow; the room stays dark until both are broken */
     { era: 3, cap: 'I was awarded a scholarship to work in Taipei, Taiwan for a year as a Web Developer & Designer for a start-up',
-      hot: 'awarded',        /* click the word for a little celebration */
-      trophy: { x: 12, y: 24, w: 6.4 } },
-    { era: 3, cap: 'Came back to Brighton in COVID',
-      sub: '& did my final year project on ‘The Gamification and Future of e-Learning’',
-      phone: { src: 'geoquest-demo.mp4', x: 32.5, y: 12, w: 6.5,
-               cap: 'Created this demo of the app on Android Studio in XML and Javascript ' +
-                    '(wasn\u2019t required but I wanted to try it anyway!)' },
-      /* the project name is a funky underlined link — pressing it opens the case-study overview */
-      funk: { phrase: 'The Gamification and Future of e-Learning', img: 'geoquest-overview.jpg',
-              cap: 'GeoQuest — The Gamification and Future of e-Learning' } },
-    { era: 4, cap: 'Then life began...I worked with some big design agencies for some big brands',
-      sub: 'This is when I realised how much I love UI, UX, Visual and all type of design' },
-    { era: 4, cap: 'Managed to win some awards along the way',
+      hot: 'scholarship',    /* click the word for a little celebration */
+      tall: 1.35, feat: 'hero',   /* everything else slips up and away; the sealed letter (where the trophy used to be) stays, comes to the middle, grows, opens itself if nobody has, and closes again as it shrinks */
+      scroll: { x: 22, y: 27, w: 11, text: 'Dear Mr Jackson,<br>We\u2019re very happy to let you know you have received our one yearly scholarship for the InternChina - Generation UK programme! Time to pack your bags and brush up on your Mandarin!<br><b>Sincerely, Pagoda Projects</b>', logo: 'pagoda-logo.webp' } },
+    { era: 4, cap: 'I came home due to COVID...but then my design life began...',
+      sub: 'I worked with some big design agencies for some big brands and realised how much I love all types of design' },
+    { era: 4, tall: 1.3, feat: 'pair', cap: 'Managed to win some awards along the way',
       hot: 'awards',         /* gold in the headline, like the design — and it throws a party */
-      sub: 'Silver British Interactive Media Award (BIMA) for Best Digital Transformation of the year…twice' },
-    { era: 5, cap: 'I’m now leading the design for Super Reel Travel', sub: 'An AI integrated trip planning app where users search through reels for travel inspiration',
+      sub: 'The 2021 award I wasn\u2019t that heavily involved as I came late to the project in but I lead a lot of the UI for the 2024 award!' },
+    { era: 5, cap: 'I’m now leading the design for Super Reel Travel', sub: 'A video & AI travel app but the story of how that happened is a whole tale in itself! But that\u2019s a secret for now!', mystery: true,   /* mystery: once it has been read the line scrambles into alien glyphs, drifts up and is gone — then a startled alien pops up where it was */
       srp: { x: 81.5, y: 46, w: 10.5 } },          /* a drawn phone running a reels-style feed */
-    { era: 5, cap: 'In my spare time I’m creating projects like this, travelling, playing sports, learning about AI, space & history & updating my iMDB', sub: 'I couldn’t decide between history or space theme but I love evolution so lucky you, an excuse for both!' }
+    { era: 5, cap: 'In my spare time I\u2019m still travelling, learning, as well as updating my iMDB...',
+      sub: 'I couldn\u2019t decide between a history or space theme...but luckily for you anthropology is also a big passion!' },   /* the flying guy now lives only in his green-screen card below (Joe: the keyed one cluttered the slide) */
+    /* the voice behind Storytime: a blurred card you press to reveal him (the clip plays, the 'vid-grandad' achievement lands and the clip
+       joins Store > Videos for later). A normal-width slide now, so its caption lines up with the others (Joe, 2026-09-18). The wizard
+       from the Big Bang loops bottom-left: his character, keeping the old man company. */
+    { era: 5, cap: 'I\u2019m sure you want to put a face to the name - let\u2019s see if you can recognise this crazy old man\u2019s voice....', sub: 'Press it for sound',
+      reveal: { src: 'vid-grandad.mp4', poster: 'vid-grandad.jpg', cap: 'The voice of Storytime' }, wiz: true }
   ];
   /* SHOW_JOBS spreads the ruler to the design's density (116px/year) so a whole job card fits between
      one year label and the next; with the rail off it returns to the original compact 60px/year. */
   var PX_PER_YEAR = SHOW_JOBS ? 116 : 60, MARKER_VH = 0.42;
   /* the Big Bang finale — where the story hands over to the rest of the site */
   var FINALE_CAP = 'And with one last bang… a whole new universe to explore';
+  /* The universe to explore: five doors in the menu's own art, cut on the same diagonal, all touching (Joe, 2026-09-18). Each carries a
+     line and a call to action on hover; Part Two stays locked (and says why) until the History Exam has been passed. */
   var LINKS = [
-    { label: 'Work', href: '/?choose=work', hue: '#FF00F5' },
-    { label: 'Contact', href: '/contact', hue: '#7d5bff' },
-    { label: 'Credits', href: '/contact#credits', hue: '#4aa8ff' }   // confirm the credits URL
+    { key: 'work', label: 'Work', href: '/?choose=work', hue: '#FF00F5', img: 'menu-work.webp', sub: 'The projects, start to finish', cta: 'Explore the work' },
+    { key: 'contact', label: 'Contact', href: '/contact', hue: '#7d5bff', img: 'menu-contact.webp', sub: 'Say hello, I don’t bite', cta: 'Get in touch' },
+    { key: 'credits', label: 'Credits', href: '/contact?credits=1', hue: '#4aa8ff', img: 'menu-credits.webp', sub: 'Everyone and everything that helped', cta: 'Roll the credits' },
+    { key: 'storytime', label: 'Storytime', href: '/storytime', hue: '#ffb347', img: 'menu-story.webp', sub: 'Missed something in Storytime? Or maybe you just loved it so much you want to see it again', cta: 'Reload the Adventure!' },
+    { key: 'part2', label: 'Part Two', href: '/storytime?part=2', hue: '#c04dff', img: 'menu-part2.webp', sub: 'The tale continues through the portal', cta: 'Enter Part Two', lockSub: 'Locked. You need to take the History Exam first', lockCta: 'Take the History Exam' }
   ];
   /* Photo collages, keyed by step index. x/y/w are % of the viewport, lifted straight from the
      design frame (1627×1019 canvas); height follows each photo's own aspect ratio. Add a step's
@@ -217,30 +224,40 @@
      own (x/y are % of the step) instead of flowing in a row. Step 9's skills come from the design
      frame; the icons are picked to read at chip size. */
   var TAGS = {
+    /* the spare-time slide: what I am learning now, floating round the New skills cards like the skills on the Brighton slide */
+    11: [
+      { t: 'Learning new skills', i: '\ud83e\udde0', x: 48.5, y: 70.5, r: -1.6, skl: 'head' },
+      { t: 'Procreate', i: '\u270f\ufe0f', x: 62.0, y: 71.5, r: -3.2, skl: 1 },
+      { t: 'Character design', i: '\ud83d\udc7e', x: 55.5, y: 94.5, r: 2.4, skl: 1 },
+      { t: 'VR', i: '\ud83e\udd7d', x: 85.5, y: 71.5, r: 3.1, skl: 1 },
+      { t: 'Animation through AI', i: '\u2728', x: 74.0, y: 95.0, r: -2.2, skl: 1 }
+    ],
     /* What the project was built with. The design frame keeps the whole left side for George and
        Greybeard and marks out a block on the right for these, so they climb the right-hand edge. */
-    11: [
-      { t: 'JavaScript', i: '\u26a1', x: 79.0, y: 51.0, r: -2.1, fx: 'type', txt: 'console.log(\u2018\u26a1\u2019)' },
-      { t: 'XML', i: '\ud83d\udcc4', x: 82.0, y: 45.5, r: 2.2, fx: 'type', txt: '<LinearLayout/>' },
-      { t: 'Android Studio', i: '\ud83e\udd16', x: 79.0, y: 39.5, r: -3.0, fx: 'build' },
-      { t: 'After Effects', i: '\u2728', x: 82.0, y: 33.5, r: 2.6, fx: 'bounce' },
-      { t: 'Premiere Pro', i: '\ud83c\udfac', x: 79.0, y: 28.0, r: -1.7, fx: 'clip' },
-      { t: 'Framer X', i: '\ud83d\udd37', x: 82.5, y: 22.5, r: 3.2, fx: 'spin' },
-      { t: 'Figma', i: '\ud83c\udfa8', x: 79.5, y: 17.0, r: 1.9, fx: 'swirl' },
-      { t: 'Photoshop', i: '\ud83d\uddbc\ufe0f', x: 82.0, y: 11.5, r: -2.4, fx: 'paint' }
-    ],
     /* a country pill in the same style as the travel ones, tucked under the Skyrock logo */
-    10: [
+    7: [
       { t: 'Taipei, Taiwan', i: '\ud83c\uddf9\ud83c\uddfc', x: 71.5, y: 81.5, r: 2.2, sm: true }
     ],
-    9: [
-      { t: 'Backend Development', i: '\u2699\ufe0f', x: 15.0, y: 21.0, r: -2.8, fx: 'binary' },
-      { t: 'Human-Computer Interaction', i: '\ud83e\udde0', x: 63.0, y: 15.5, r: 2.1, fx: 'cursor' },
-      { t: 'Animation', i: '\ud83c\udf9e\ufe0f', x: 8.0, y: 28.5, r: 3.4, fx: 'bounce' },
-      { t: '3D Modelling', i: '\ud83e\uddca', x: 74.5, y: 30.0, r: -3.1, fx: 'spin' },
-      { t: 'UI/UX Design', i: '\ud83c\udfa8', x: 8.0, y: 62.0, r: 1.6, fx: 'draw' },
-      { t: 'Web Development', i: '\ud83c\udf10', x: 30.0, y: 70.5, r: -1.9, fx: 'type' },
-      { t: 'Digital Marketing', i: '\ud83d\udcc8', x: 66.0, y: 66.0, r: 2.7, fx: 'chart' }
+    /* Brighton: TWO tablets. Subjects on the left, Software on the right. Each tablet cracks on the first press and bursts on the
+       second, throwing its pills out to these positions (see the tablet code in mount). `grp` puts a pill on a tablet. */
+    6: [
+      { t: 'Subjects', i: '\ud83d\udcda', x: 8.0, y: 12.0, r: -2.2, grp: 'subj', head: true },
+      { t: 'Backend Development', i: '\u2699\ufe0f', x: 6.0, y: 22.0, r: -2.8, fx: 'binary', grp: 'subj' },
+      { t: 'Human-Computer Interaction', i: '\ud83e\udde0', x: 4.0, y: 31.0, r: 2.1, fx: 'cursor', grp: 'subj' },
+      { t: 'Animation', i: '\ud83c\udf9e\ufe0f', x: 9.0, y: 40.0, r: 3.4, fx: 'bounce', grp: 'subj' },
+      { t: '3D Modelling', i: '\ud83e\uddca', x: 5.0, y: 62.0, r: -3.1, fx: 'spin', grp: 'subj' },
+      { t: 'UI/UX Design', i: '\ud83c\udfa8', x: 9.0, y: 71.0, r: 1.6, fx: 'draw', grp: 'subj' },
+      { t: 'Web Development', i: '\ud83c\udf10', x: 4.0, y: 80.0, r: -1.9, fx: 'type', grp: 'subj' },
+      { t: 'Digital Marketing', i: '\ud83d\udcc8', x: 12.0, y: 89.0, r: 2.7, fx: 'chart', grp: 'subj' },
+      { t: 'Software', i: '\ud83d\udcbb', x: 82.0, y: 12.0, r: 2.2, grp: 'soft', head: true },
+      { t: 'Photoshop', i: '\ud83d\uddbc\ufe0f', x: 84.0, y: 22.0, r: -2.4, fx: 'paint', grp: 'soft' },
+      { t: 'Figma', i: '\ud83c\udfa8', x: 88.0, y: 31.0, r: 1.9, fx: 'swirl', grp: 'soft' },
+      { t: 'Framer X', i: '\ud83d\udd37', x: 83.0, y: 40.0, r: 3.2, fx: 'spin', grp: 'soft' },
+      { t: 'Premiere Pro', i: '\ud83c\udfac', x: 86.0, y: 62.0, r: -1.7, fx: 'clip', grp: 'soft' },
+      { t: 'After Effects', i: '\u2728', x: 82.0, y: 71.0, r: 2.6, fx: 'bounce', grp: 'soft' },
+      { t: 'Android Studio', i: '\ud83e\udd16', x: 87.0, y: 80.0, r: -3.0, fx: 'build', grp: 'soft' },
+      { t: 'JavaScript', i: '\u26a1', x: 83.0, y: 89.0, r: -2.1, fx: 'type', txt: 'console.log(\u2018\u26a1\u2019)', grp: 'soft' },
+      { t: 'XML', i: '\ud83d\udcc4', x: 91.0, y: 89.0, r: 2.2, fx: 'type', txt: '<LinearLayout/>', grp: 'soft' }
     ]
   };
   var PHOTOS = {
@@ -255,21 +272,28 @@
     /* content collages pulled from the design frames (My Story-1/2/3/4.svg), placed at their
        design coordinates (% of each frame). Same .phw machinery = float + 50%→100% opacity + grow on
        hover. Films (step 5) additionally carry a small caption. */
-    /* step 1 — childhood games */
+    /* step 1 — the games, all on one slide, ringed round the caption like the film posters. Every one blows up like a film:
+       `cap` is the headline, `stars` my IGN-style score out of 5 (PLACEHOLDER scores + captions until Joe sets them),
+       `note` a line under it, `extra` more covers shown in the card (Fable I-III), `party` the confetti find.
+       game-ph-*.jpg are PLACEHOLDER covers (Quake II, PES 5, Virtua Tennis, Mario Party 8, Fable II + III). */
     1: [
-      { src: 'game1-00.jpg', x: 2.03, y: 25.95, w: 14.32, rot: -6.02 },
-      { src: 'game1-04.jpg', x: 82.42, y: 16.05, w: 11.19, rot: 11.42 },
-      { src: 'game1-05.jpg', x: 92.03, y: 58.78, w: 12.29, rot: 10.82 },
-      { src: 'game1-06.jpg', x: 5.65, y: 67.52, w: 11.95, rot: -5.62 },
-      { src: 'game1-07.jpg', x: 42.84, y: 65.19, w: 10.45, rot: -7.18 }
-    ],
-    /* step 2 — MMO / guild games (raids, guilds) */
-    2: [
-      { src: 'game2-03.jpg', x: 5.41, y: 29.55, w: 11.68, rot: -15.61 },
-      { src: 'game2-04.jpg', x: 82.41, y: 16.68, w: 17.09, rot: 7.54 },
-      { src: 'game2-05.jpg', x: 88.05, y: 59.76, w: 12.57, rot: 15.71 },
-      { src: 'game2-06.jpg', x: 3.2, y: 62.48, w: 10.39, rot: -8.05 },
-      { src: 'game2-07.jpg', x: 37.0, y: 66.83, w: 9.37, rot: -10.2 }
+      { src: 'game1-00.jpg', x: 3.0,  y: 27.0, w: 10.0, rot: -6.0, game: 1, stars: 4.5, hoverCap: false, cap: 'Pokémon Red', note: 'Where the obsession started' },
+      { src: 'game1-04.jpg', x: 21.0, y: 13.0, w: 8.0,  rot: 5.0,  game: 1, stars: 4,   hoverCap: false, cap: 'SimCity 2000', note: 'My first taste of designing systems (and deleting them with a tornado)' },
+      { src: 'game1-05.jpg', x: 33.5, y: 11.5, w: 7.4,  rot: -4.0, game: 1, stars: 5,   hoverCap: false, cap: 'Super Mario 64', note: 'Still the best feeling jump in games' },
+      { src: 'game-ph-quake2.jpg', x: 45.5, y: 13.0, w: 7.6, rot: 4.0, game: 1, stars: 4, hoverCap: false, cap: 'Quake II', note: 'Far too young for this one' },
+      { src: 'game2-04.jpg', x: 57.5, y: 11.0, w: 8.6,  rot: 6.0,  game: 1, stars: 5,   hoverCap: false, cap: 'World of Warcraft', party: true, found: '★ you found my most played game ★', award: 'mostplayed', jig: 1,
+        note: 'I spent many a year playing this with my Dad and Brother...not time wasted in my eyes! (kinda)' },
+      { src: 'game2-03.jpg', x: 70.5, y: 13.5, w: 7.8,  rot: -7.0, game: 1, stars: 4.5, hoverCap: false, cap: 'Dark Age of Camelot', note: 'Leading raids at 7, building guilds at 8', jig: 1 },
+      { src: 'game-ph-pes5.jpg', x: 83.0, y: 12.0, w: 7.8, rot: 7.0, game: 1, stars: 4.5, hoverCap: false, cap: 'Pro Evolution Soccer 5', note: 'Master League, every summer' },
+      { src: 'game2-05.jpg', x: 88.5, y: 44.0, w: 8.4,  rot: 9.0,  game: 1, stars: 4.5, hoverCap: false, cap: 'The Sims 2', note: 'Mostly built houses. Rarely played the people', jig: 1 },
+      { src: 'game-ph-virtuatennis.jpg', x: 4.0, y: 52.0, w: 8.0, rot: -5.0, game: 1, stars: 4, hoverCap: false, cap: 'Virtua Tennis', note: 'The arcade one. Unbeatable with a mate' },
+      { src: 'game1-06.jpg', x: 16.0, y: 70.0, w: 8.0,  rot: -6.0, game: 1, stars: 4.5, hoverCap: false, cap: 'RollerCoaster Tycoon', note: 'UX lesson one: people will queue for anything if the path is clear' },
+      { src: 'game2-06.jpg', x: 29.0, y: 71.0, w: 8.0,  rot: 5.0,  game: 1, stars: 4,   hoverCap: false, cap: 'Counter-Strike', note: 'LAN cafes and dust2' },
+      { src: 'game1-07.jpg', x: 42.0, y: 72.0, w: 9.0,  rot: -7.0, game: 1, stars: 4.5, hoverCap: false, cap: 'Mario Kart: Super Circuit', note: 'Blue shells taught me about fairness in design', jig: 1 },
+      { src: 'game2-07.jpg', x: 55.5, y: 70.0, w: 8.0,  rot: 8.0,  game: 1, stars: 5,   hoverCap: false, cap: 'Fable, Fable II & Fable III', jig: 1,
+        extra: 'game-ph-fable2.jpg|Fable II|game-ph-fable3.jpg|Fable III',
+        note: 'The storybook worlds, the humour, the choices…these shaped how I design. And if the Storytime voiceover felt familiar, this is what I was going for…' },
+      { src: 'game-ph-marioparty8.jpg', x: 68.5, y: 71.0, w: 8.0, rot: -5.0, game: 1, stars: 4, hoverCap: false, cap: 'Mario Party 8', note: 'This still holds up very well' }
     ],
     /* step 3 — the first animation. `vid` makes the card a video: poster + play badge, and clicking it
        opens the player lightbox (same chrome as the films). */
@@ -277,7 +301,7 @@
     /* step 4 — the football run is a CLUSTER (see CLUSTERS); this is the one drawing that survived */
     /* step 4 — the small-town slide. Placements straight off My Story - Small Town.svg; the two
        game covers behave exactly like the film posters (hover caption, click to blow up). */
-    4: [
+    2: [
       { src: 'sport-08.jpg', x: 74.36, y: 16.92, w: 17.62, rot: 5.85, cap: 'The one that stood the test of time', hoverCap: false },
       { src: 'game-fifa10.jpg', x: 48.43, y: 17.61, w: 8.6, rot: 3.92, hoverCap: false,
         cap: 'Spent a lot of time on these games, this was the best (or 12)' },
@@ -285,23 +309,23 @@
         cap: 'Spent even longer on this one, an embarrassing amount...' }
     ],
     /* step 5 — favourite films. Captions live in the blown-up card only, never on hover. */
-    5: [
-      { src: 'film-02.jpg', x: 11.96, y: 48.82, w: 8.28, rot: 5.61, cap: 'Best trilogy', hoverCap: false },
-      { src: 'film-03.jpg', x: 81.37, y: 50.84, w: 8.29, rot: 7.99, cap: 'Most magical', hoverCap: false },
+    3: [
+      { jig: 1, src: 'film-02.jpg', x: 11.96, y: 48.82, w: 8.28, rot: 5.61, cap: 'Best trilogy', hoverCap: false },
+      { jig: 1, src: 'film-03.jpg', x: 81.37, y: 50.84, w: 8.29, rot: 7.99, cap: 'Most magical', hoverCap: false },
       /* the favourite — finding it sets off a Day of the Dead burst + a little marimba flourish */
-      { src: 'film-04.jpg', x: 74.19, y: 18, w: 9.22, rot: 8.11, cap: 'Probably my favourite?', hoverCap: false, pin: true,
+      { jig: 1, src: 'film-04.jpg', x: 74.19, y: 18, w: 9.22, rot: 8.11, cap: 'Probably my favourite?', hoverCap: false, pin: true,
         note: 'If you haven’t seen it you must watch it, the most beautiful film',
         party: true },
-      { src: 'film-05.jpg', x: 23.66, y: 20.53, w: 8.6, rot: -7.4, cap: 'Best Pixar', hoverCap: false },
-      { src: 'film-06.jpg', x: 26.12, y: 49.78, w: 9.53, rot: -7.92, cap: 'Best foreign animated', hoverCap: false },
+      { jig: 1, src: 'film-05.jpg', x: 23.66, y: 20.53, w: 8.6, rot: -7.4, cap: 'Best Pixar', hoverCap: false },
+      { jig: 1, src: 'film-06.jpg', x: 26.12, y: 49.78, w: 9.53, rot: -7.92, cap: 'Best foreign animated', hoverCap: false },
       { src: 'film-07.jpg', x: 61.06, y: 59.95, w: 7.17, rot: 11.12, cap: 'Most underrated', hoverCap: false },
-      { src: 'film-08.jpg', x: 49.63, y: 17.74, w: 8.2, rot: 10.53, cap: 'Favourite foreign film', hoverCap: false },
+      { jig: 1, src: 'film-08.jpg', x: 49.63, y: 17.74, w: 8.2, rot: 10.53, cap: 'Favourite foreign film', hoverCap: false },
       { src: 'film-09.jpg', x: 89.98, y: 64.1, w: 4.15, rot: -10.82, cap: 'The film that got me into films', hoverCap: false },
       { src: 'film-10.jpg', x: 73.54, y: 68.47, w: 4.02, rot: 8.3, cap: 'Most nostalgic', hoverCap: false },
       { src: 'film-11.jpg', x: 21.82, y: 83.88, w: 4.09, rot: -6.12, cap: 'Coolest film (shoutout Neo)', hoverCap: false },
       { src: 'film-12.jpg', x: 7.28, y: 72.12, w: 4.1, rot: -16.02, cap: 'Best Disney', hoverCap: false },
       { src: 'film-13.jpg', x: 6.8, y: 31.89, w: 4.1, rot: -7.02, cap: 'First Studio Ghibli', hoverCap: false },
-      { src: 'film-14.jpg', x: 46.02, y: 56.29, w: 5.16, rot: 6.81, cap: 'Best Sunday film', hoverCap: false },
+      { jig: 1, src: 'film-14.jpg', x: 46.02, y: 56.29, w: 6.4, rot: 6.81, cap: 'Best Sunday film', hoverCap: false },
       { src: 'film-15.jpg', x: 91.92, y: 41.44, w: 4.61, rot: 9.2, cap: 'Best teen film', hoverCap: false },
       { src: 'film-16.jpg', x: 87.67, y: 21.45, w: 4.12, rot: -11.85, cap: 'Most beautiful', hoverCap: false },
       { src: 'film-17.jpg', x: 80.18, y: 8.1, w: 4.18, rot: 12.43, cap: 'Coolest style', hoverCap: false },
@@ -320,38 +344,29 @@
       { src: 'film-sevensam.jpg', x: 22.5, y: 61.1, w: 5.76, rot: 4.2,
         cap: 'Watched this very young and it still holds up!', hoverCap: false }
     ],
-    /* step 6 — the school films ("take your pick"), placed from My StoryWITH VI.svg */
-    6: [
-      { src: 'vid-patient12.jpg', x: 68.03, y: 12.5, w: 25.45, rot: 8.35, yt: 'qXvA3WWhkSY', cap: 'Patient 12' },
-      { src: 'vid-siblings.jpg', x: 10.57, y: 61.33, w: 25.45, rot: -6.93, yt: 'Sf4OV3aJ4SM', cap: 'Siblings' }
-    ],
     /* step 11 — GeoQuest, the final year project. The demo is the real screen recording (344x720,
        already phone-shaped) playing silently in a phone frame; the promo is the YouTube one. */
-    11: [
-      /* the two vikings from the app, side by side down the left exactly as My Story covid2.svg
-         has them. Their labels stay hidden until they're clicked. */
-      { src: 'char-greybeard.webp', x: 8.63, y: 36.83, w: 9.30, rot: -9.57, deco: true, tap: true,
-        cap: 'This is Greybeard the Grey, a name that brings fear into the hearts of the Anglo-Saxons!' },
-      { src: 'char-george.webp', x: 20.5, y: 24.44, w: 7.23, rot: 4.56, deco: true, tap: true,
-        cap: 'Meet George! He guides the user through the app as they go' },
-      /* the promo sits bottom-middle under the copy — the design has it 405 wide, taken in a touch */
-      { src: 'geoquest-promo.jpg', x: 53.5, y: 61.5, w: 21.5, rot: 2, yt: 'AmPcWjaTHH4', hoverCap: false,
-        cap: 'Here\u2019s a promotional video I made for the project, I received 95/100 for the whole ' +
-             'Final Year Project which I was pretty happy with!' }
-    ],
-    /* step 10 — Taiwan. Two photos at their design spots, plus the Skyrock lockup: `deco` keeps it
-       out of the hover/blow-up machinery and `logo` gives it its own idle animation. */
-    10: [
+    7: [
       { src: 'taiwan-01.jpg', x: 64, y: 11, w: 21, rot: 3.95 },
       { src: 'taiwan-02.jpg', x: 9.8, y: 66.5, w: 23, rot: -5.93 },
-      { src: 'skyrock.webp', x: 69.8, y: 72.3, w: 12.5, rot: 2.03, deco: true, logo: true }
+      { src: 'skyrock.webp', x: 69.8, y: 72.3, w: 12.5, rot: 2.03, deco: true, logo: true },
+      { src: 'skyrock-linkedin.jpg', x: 80.5, y: 52, w: 14, rot: 3.4, like: true, cap: 'Spending Thanksgiving in Taiwan' }   /* framed under Skyrock, to the right; a press gives it a heart */
     ],
     /* step 8 — Mexico for Día de los Muertos. The design frame has one photo top-right (1118.65, 86,
        230×307, 8.55°) and the philosopher bottom-left. The photos are a CLUSTER (see below) so they
        behave exactly like the travel sets; `deco` keeps the philosopher out of the hover/blow-up
        machinery — he just floats, and `alt` gives him a second face to switch to when prodded. */
-    8: [
-      { src: 'story-philosopher-think.webp', alt: 'story-philosopher-happy.webp',
+    /* step 12 — New Technologies (VR for now; the looping "flying guy" clip joins these when its file lands) */
+    /* step 12 — LEARNING NEW SKILLS: Joe's own Procreate characters, the VR work and (floating over them) the flying alien he
+       animated through AI. Their tags live in TAGS[12], like the skills on the Brighton slide. Captions are PLACEHOLDERS. */
+    11: [
+      { src: 'skill-draw-1.jpg?v=3', x: 51.0, y: 78.5, w: 8.6, rot: -6.4, skl: 'lead', cap: 'Learning new skills', hoverCap: false, note: 'Character design in Procreate, layers and all. PLACEHOLDER caption' },
+      { src: 'skill-draw-2.jpg?v=3', x: 62.0, y: 80.0, w: 8.6, rot: 5.2, skl: 1, cap: 'Learning new skills', hoverCap: false, note: 'Character design in Procreate. PLACEHOLDER caption' },
+      { src: 'tech-flyer-green.jpg', vid: 'tech-flyer-green.mp4', loop: true, x: 72.0, y: 80.5, skl: 1, w: 10.5, rot: -4.6, cap: 'Animation through AI: the raw green-screen clip' },   /* the PROCESS: the clip as it came, on its green screen, looping quietly in the card (loop: plays muted while on screen; a press still opens it big) */
+      { src: 'tech-vr-2.jpg', x: 84.0, y: 79.5, skl: 1, w: 8.6, rot: 6.1, cap: 'Learning new skills', hoverCap: false, note: 'Building in VR. PLACEHOLDER caption' }
+    ],
+    5: [
+      { src: 'wiz-wand-poster.webp', once: 'wiz-wand',   /* the Big Bang's own wizard: his wand-raising moment (bb-wizard 5s to 8.8s) plays once as he grows, holds on the last frame; a prod replays it */
         x: 7.62, y: 61.83, w: 14.08, rot: 0, deco: true }
     ]
   };
@@ -403,8 +418,8 @@
   /* ---- the era mascot: flies around the screen while you\'re in its era; click it and it flies off
      then restarts. Container wanders (jjFly), the sprite inside bobs + tilts (jjFlap = looks like flight) ---- */
   /* z-index 0 + parented inside #jjms → it floats above the sky but BEHIND the photos (z1) and captions (z2) */
-  '#jjms-fly{position:fixed;left:0;top:0;width:150px;height:150px;z-index:0;pointer-events:none;opacity:0;' +
-    'transition:opacity .6s ease;will-change:transform;animation:jjFly 30s ease-in-out infinite;}' +
+  '#jjms-fly{position:fixed;left:0;top:0;width:62px;height:62px;z-index:941;pointer-events:none;opacity:0;' +
+    'transition:opacity .6s ease,transform .55s cubic-bezier(.22,1,.36,1);will-change:transform;}#jjms-fly.swap img{scale:0;}#jjms-fly img{transition:scale .22s ease;}' +   /* on the era bar now (Joe): it crosses its word with the era and hops the dash */
   '#jjms-fly.show{opacity:1;}' +
   '#jjms-fly img{width:100%;height:100%;object-fit:contain;pointer-events:auto;cursor:pointer;' +
     'animation:jjFlap 1.3s ease-in-out infinite;filter:drop-shadow(0 8px 16px rgba(0,0,0,.35));}' +
@@ -415,23 +430,31 @@
      T+0.0  the void: world fades to black, a singularity forms and pulses
      T+1.05 DETONATION: core blows, double flash, screen shake, 5 shockwaves, 90 particles, bg surge
      T+2.3  the void lifts; T+2.5 caption; T+2.75 the three planets are born  */
-  '#jjms .finale{height:100vh;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}' +
+  '#jjms .finale{min-height:100vh;padding:12vh 0 10vh;box-sizing:border-box;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:clip;}' +   /* clip, not hidden: a focus or scrollIntoView on a door could scroll the hidden box sideways and shove the whole finale left */
   '#jjms .finale.go{animation:jjmsShake .8s linear 1s both;}' +
   '@keyframes jjmsShake{0%,100%{transform:translate(0,0);}10%{transform:translate(-9px,6px);}20%{transform:translate(11px,-4px);}' +
     '30%{transform:translate(-12px,-7px);}40%{transform:translate(8px,9px);}50%{transform:translate(-6px,4px);}' +
     '60%{transform:translate(10px,-8px);}70%{transform:translate(-8px,-3px);}80%{transform:translate(5px,6px);}90%{transform:translate(-3px,2px);}}' +
   '#jjms .bang{position:absolute;inset:0;pointer-events:none;}' +
+  /* the seed: everything there is, floating in the dark, waiting for a press */
+  '#jjms .finale .seed{position:absolute;left:50%;top:46%;translate:-50% -50%;z-index:4;background:none;border:0;padding:20px;cursor:pointer;color:#fff;font:inherit;opacity:0;pointer-events:none;transition:opacity .9s ease;animation:jjmsSeedFloat 5s ease-in-out infinite;}' +
+  '#jjms .finale.armed:not(.go) .seed{opacity:1;pointer-events:auto;}#jjms .finale.go .seed{transition:opacity .25s ease;}' +
+  '#jjms .finale .seed .dust{display:block;position:relative;width:min(36vmin,320px);height:min(28vmin,250px);margin:0 auto;}#jjms .finale .seed .dust b{position:absolute;width:var(--s);height:var(--s);border-radius:50%;background:#ffd6fb;opacity:var(--o);animation:jjmsMote var(--d) ease-in-out var(--dl) infinite alternate;}' +
+  '@keyframes jjmsMote{from{transform:translate(0,0);}to{transform:translate(1.4vmin,-1.8vmin);}}#jjms .finale .seed:hover .dust b{animation-duration:1.2s;background:#fff;}' +
+  '#jjms .finale .seed span{display:block;margin-top:34px;font-size:clamp(12px,1vw,16px);font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.85;text-shadow:0 2px 12px rgba(0,0,0,.8);}' +
+  '#jjms .finale .seed:hover span{opacity:1;}' +
+  '@keyframes jjmsSeed{0%,100%{scale:1;filter:brightness(1);}50%{scale:1.6;filter:brightness(1.5);}}@keyframes jjmsSeedFloat{0%,100%{margin-top:0;}50%{margin-top:-16px;}}' +
   '#jjms .void{position:absolute;inset:0;background:#000;opacity:0;}' +
   '#jjms .finale.go .void{animation:jjmsVoidIn .55s ease both,jjmsVoidOut .9s ease 2.3s both;}' +
   '@keyframes jjmsVoidIn{from{opacity:0;}to{opacity:.92;}}' +
   '@keyframes jjmsVoidOut{from{opacity:.92;}to{opacity:0;}}' +
   '#jjms .core{position:absolute;left:50%;top:46%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;opacity:0;' +
-    'background:radial-gradient(circle,#fff 0%,#ffd7fb 45%,#FF00F5 100%);box-shadow:0 0 30px #FF00F5,0 0 70px rgba(255,0,245,.7);}' +
+    'background:#ffb3fa;}' +   /* flat: a paper disc, no glow (Joe) */
   '#jjms .finale.go .core{animation:jjmsCore 1s ease-in .12s both,jjmsCoreBlow .6s cubic-bezier(.2,.7,.3,1) 1.05s both;}' +
   '@keyframes jjmsCore{0%{opacity:0;transform:scale(.2);}35%{opacity:1;transform:scale(1.25);}55%{transform:scale(.9);}' +
     '75%{transform:scale(1.35);}92%{transform:scale(.8);}100%{opacity:1;transform:scale(1.5);}}' +
   '@keyframes jjmsCoreBlow{0%{opacity:1;transform:scale(1.5);}100%{opacity:0;transform:scale(46);}}' +
-  '#jjms .flash{position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% 46%,#fff 0%,#ffd7fb 22%,rgba(255,0,245,.5) 45%,transparent 70%);}' +
+  '#jjms .flash{position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% 46%,#fff 0%,#fff 12%,#ffd6fb 12.5%,#ffd6fb 24%,rgba(255,150,247,.6) 24.5%,rgba(255,150,247,.6) 36%,rgba(190,120,255,.28) 36.5%,rgba(190,120,255,.28) 46%,transparent 46.5%);}' +   /* flat concentric paper discs, light to lilac, not a bloom */
   '#jjms .finale.go .flash{animation:jjmsFl 1.1s ease-out 1.05s both;}' +
   '@keyframes jjmsFl{0%{opacity:0;}8%{opacity:1;}30%{opacity:.25;}45%{opacity:.95;}100%{opacity:0;}}' +
   '#jjms .ring{position:absolute;left:50%;top:46%;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;opacity:0;transform:scale(0);}' +
@@ -446,23 +469,42 @@
   '@keyframes jjmsPt{0%{opacity:1;transform:translate(0,0) rotate(var(--rot,0deg)) scale(1);}' +
     '100%{opacity:0;transform:translate(var(--tx),var(--ty)) rotate(var(--rot,0deg)) scale(.15);}}' +
   '#jjms .glowb{position:absolute;left:50%;top:52%;width:70vmin;height:44vmin;transform:translate(-50%,-50%);opacity:0;' +
-    'background:radial-gradient(ellipse,rgba(255,0,245,.16) 0%,rgba(125,91,255,.10) 45%,transparent 75%);filter:blur(8px);}' +
+    'background:radial-gradient(ellipse,rgba(255,0,245,.14) 0%,rgba(125,91,255,.08) 45%,transparent 72%);}' +
   '#jjms .finale.go .glowb{animation:jjmsGb 1.6s ease 2.4s both;}' +
   '@keyframes jjmsGb{from{opacity:0;transform:translate(-50%,-50%) scale(.6);}to{opacity:1;transform:translate(-50%,-50%) scale(1);}}' +
   '#jjms .fcap{font-size:clamp(18px,2vw,30px);font-weight:700;margin:0 0 46px;opacity:0;text-align:center;padding:0 10vw;position:relative;}' +
   '#jjms .finale.go .fcap{animation:jjmsFc .8s ease 2.5s both;}' +
   '@keyframes jjmsFc{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}' +
-  '#jjms .dests{display:flex;gap:clamp(28px,6vw,90px);position:relative;}' +
-  '#jjms .dests a{display:flex;align-items:center;justify-content:center;width:clamp(96px,11vw,140px);height:clamp(96px,11vw,140px);' +
-    'border-radius:50%;color:#fff;text-decoration:none;font-weight:800;font-size:clamp(15px,1.4vw,21px);letter-spacing:.04em;' +
-    'opacity:0;transform:scale(0);transition:box-shadow .25s ease,filter .25s ease;}' +
-  '#jjms .finale.go .dests a{animation:jjmsDp .7s cubic-bezier(.34,1.56,.64,1) both,jjmsFloat 4s ease-in-out infinite alternate;}' +
-  '#jjms .finale.go .dests a:nth-child(1){animation-delay:2.75s,3.45s;}' +
-  '#jjms .finale.go .dests a:nth-child(2){animation-delay:2.9s,3.85s;}' +
-  '#jjms .finale.go .dests a:nth-child(3){animation-delay:3.05s,3.2s;}' +
-  '@keyframes jjmsDp{from{opacity:0;transform:scale(0);}to{opacity:1;transform:scale(1);}}' +
-  '@keyframes jjmsFloat{from{margin-top:0;}to{margin-top:-14px;}}' +
-  '#jjms .dests a:hover{filter:brightness(1.15);}' +
+  /* the doors: --th is one tile's height; 1100x1375 art, clipped on the menu's diagonal, each tucked under the last so the slants touch */
+  '#jjms .dests{--th:min(44vh,23vw,440px);--tw:calc(var(--th) * .8);display:flex;position:relative;padding:0 calc(var(--tw) * .05);}' +
+  '#jjms .dests a{position:relative;display:block;width:var(--tw);height:var(--th);flex:0 0 auto;margin-left:calc(var(--tw) * -.088);color:#fff;text-decoration:none;' +
+    'clip-path:polygon(10% 0,100% 0,90% 100%,0 100%);opacity:0;transform:scale(0);transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .3s ease,filter .3s ease;will-change:transform;}' +
+  '#jjms .dests a:first-child{margin-left:0;}#jjms .dests a img{display:block;width:100%;height:100%;object-fit:cover;}' +
+  '#jjms .dests a::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,10,22,.86) 0%,rgba(6,10,22,.55) 36%,rgba(6,10,22,0) 62%);opacity:0;transition:opacity .3s ease;}' +
+  '#jjms .dests .dsub,#jjms .dests .dcta{position:absolute;left:14%;right:12%;text-align:center;opacity:0;transform:translateY(-8px);transition:opacity .3s ease,transform .35s ease;}' +
+  '#jjms .dests .dsub{top:9%;font-size:clamp(11px,.95vw,15px);line-height:1.3;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.8);}' +
+  '#jjms .dests .dcta{top:calc(9% + 4.6em);left:50%;right:auto;transform:translate(-50%,-8px);white-space:nowrap;padding:.55em 1.1em;border-radius:999px;font-size:clamp(11px,.9vw,14px);font-weight:800;background:#FF00F5;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.4);transition-delay:.05s;}' +
+  '#jjms .dests a.long .dcta{top:calc(9% + 7.2em);}' +
+  '#jjms .finale.go .dests a{opacity:.72;transform:scale(1);animation:jjmsDoor .7s cubic-bezier(.34,1.56,.64,1) both;}' +
+  '#jjms .finale.go .dests a:nth-child(1){animation-delay:2.75s;}#jjms .finale.go .dests a:nth-child(2){animation-delay:2.87s;}#jjms .finale.go .dests a:nth-child(3){animation-delay:2.99s;}' +
+  '#jjms .finale.go .dests a:nth-child(4){animation-delay:3.11s;}#jjms .finale.go .dests a:nth-child(5){animation-delay:3.23s;}' +
+  '#jjms .finale.go .dests a.in{animation:none;}@keyframes jjmsDoor{from{opacity:0;transform:scale(0);}to{opacity:.72;transform:scale(1);}}@keyframes jjmsDp{from{opacity:0;transform:scale(0);}to{opacity:1;transform:scale(1);}}' +
+  '#jjms .finale.go .dests a:hover,#jjms .finale.go .dests a:focus-visible{opacity:1;transform:translateY(-6%) scale(1.1);z-index:3;filter:drop-shadow(0 0 26px color-mix(in srgb,var(--hue) 65%,transparent));}' +
+  '#jjms .finale.go .dests:hover a:not(:hover){transform:translateY(10%) scale(.97);opacity:.5;filter:grayscale(.45) brightness(.8);}' +
+  /* the call to action follows the site theme; a locked Part Two wears the disabled grey whatever the theme */
+  'html[data-jj-theme=medieval] #jjms .dests .dcta{background:#FFC531;color:#1a1200;}html[data-jj-theme=retro] #jjms .dests .dcta{background:#FFE600;color:#101010;border-radius:0;}html[data-jj-theme=alien] #jjms .dests .dcta{background:#35d6ff;color:#061a26;}html[data-jj-theme=mixed] #jjms .dests .dcta{background:#d9c9a3;color:#2a1c08;}' +
+  '#jjms .dests a.locked .dcta.lk,html[data-jj-theme] #jjms .dests a.locked .dcta.lk{background:rgba(120,128,140,.85);color:#e8ecf2;}' +
+  '#jjms .dests a:hover::before,#jjms .dests a:focus-visible::before{opacity:1;}#jjms .dests a:hover .dsub,#jjms .dests a:hover .dcta,#jjms .dests a:focus-visible .dsub,#jjms .dests a:focus-visible .dcta{opacity:1;transform:translateY(0);}' +
+  '#jjms .dests a:hover .dcta,#jjms .dests a:focus-visible .dcta{transform:translate(-50%,0);}' +
+  /* Part Two: grey and quiet until the exam is passed; the lock copy swaps in for the door's own */
+  '#jjms .dests .lk,#jjms .dests .dlock{display:none;}#jjms .dests a.locked img{filter:grayscale(.85) brightness(.55);}#jjms .dests a.locked .dsub:not(.lk),#jjms .dests a.locked .dcta:not(.lk){display:none;}' +
+  '#jjms .dests a.locked .lk{display:block;}#jjms .dests a.locked .dcta.lk{background:#FFC93D;color:#1a1200;}' +
+  '#jjms .dests a.locked .dlock{display:block;position:absolute;left:50%;top:50%;width:2.2vw;height:2.2vw;min-width:22px;min-height:22px;translate:-50% -50%;background:url("data:image/svg+xml;utf8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Crect x=%274%27 y=%2711%27 width=%2716%27 height=%2710%27 rx=%272%27/%3E%3Cpath d=%27M8 11V7a4 4 0 0 1 8 0v4%27/%3E%3C/svg%3E") center/contain no-repeat;filter:drop-shadow(0 2px 6px rgba(0,0,0,.8));transition:opacity .3s ease;}' +
+  '#jjms .dests a.locked:hover .dlock{opacity:0;}' +
+  '@media(max-width:760px){#jjms .dests{--th:min(30vh,34vw);flex-wrap:wrap;justify-content:center;row-gap:8px;}#jjms .dests a{margin-left:calc(var(--tw) * -.06);}}' +
+  /* the site footer, lifted from the case studies, closes the page */
+  '#jjms-footer{position:relative;z-index:2;}#jjms-footer .footer-link-social .hover-button{transition:transform .3s ease;}#jjms-footer .footer-link-social:hover .hover-button{transform:translate(0,0);}' +
+  '#jjms-footer .footer-link{cursor:pointer;}' +
   '#jjms-bg.boom{animation:jjmsBgBoom 1.2s ease-out both;}' +
   '@keyframes jjmsBgBoom{0%{filter:brightness(1);}12%{filter:brightness(2.1);}40%{filter:brightness(1.25);}100%{filter:brightness(1);}}' +
   /* clip horizontal spill (posters near the edges + the overflow:visible content steps would otherwise
@@ -548,7 +590,7 @@
     'position:relative;overflow:hidden;}' +
   '#jjms .cap{font-size:clamp(22px,3.1vw,44px);font-weight:700;line-height:1.25;max-width:1060px;margin:0;text-shadow:0 2px 18px rgba(0,0,0,.45);' +
     'position:relative;z-index:2;translate:0 0;transition:translate .32s cubic-bezier(.22,1,.36,1);}' +
-  '#jjms .sub{font-size:clamp(24px,2.2vw,32px);opacity:.62;margin:18px 0 0;max-width:820px;line-height:1.45;' +
+  '#jjms .sub{font-size:clamp(16px,2vw,30px);opacity:.62;margin:18px 0 0;max-width:820px;line-height:1.45;' +
     'position:relative;z-index:2;translate:0 0;transition:translate .32s cubic-bezier(.22,1,.36,1);}' +
   /* photo collage — four layers, one transform each so they can never fight:
      .phw = design tilt + scroll parallax (--py), .phd = endless zero-g drift,
@@ -580,6 +622,13 @@
   /* every picture on the page wears the same frame: 2px white border + soft rounding + a static shadow.
      PERF: box-shadow is NOT transitioned — repainting a big blurred shadow on every hover frame is what
      made the collages feel sticky (it never shows up at 1x, only on a Retina screen). */
+  '#jjms .phw.like .hcur{position:absolute;left:0;top:0;width:34px;height:34px;translate:-50% -50%;pointer-events:none;opacity:0;z-index:9;transition:opacity .2s ease,scale .2s ease;color:#FF00F5;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5));}#jjms .phw.like:hover .hcur{opacity:1;}#jjms .phw.like:active .hcur{scale:.8;}#jjms .phw.like .hcur svg{width:100%;height:100%;fill:currentColor;}' +
+  '#jjms .phw .phonce{object-fit:contain!important;}#jjms .phw:has(.phonce.on) .phs img{opacity:0!important;}' +
+  /* the skills stack */
+  '#jjms .step:not(.skl-open) .phw.skl:not(.skl-lead) .phd{translate:var(--sx,0) var(--sy,0);rotate:var(--sr,0deg);scale:.92;}#jjms .phw.skl .phd{transition:translate .7s cubic-bezier(.22,1,.36,1),rotate .7s ease,scale .7s ease;}#jjms .phw.skl-lead{z-index:3;}' +
+  '#jjms .step:not(.skl-open) .stag.skl:not(.skl-head){opacity:0!important;pointer-events:none;}#jjms .stag.skl{transition:opacity .4s ease;}' +
+  '#jjms .phw .sklmore{position:absolute;right:-8%;bottom:-6%;padding:5px 11px;border-radius:999px;background:rgba(9,14,26,.85);border:1px solid rgba(255,255,255,.3);color:#eef2f8;font-style:normal;font-size:clamp(10px,.8vw,13px);font-weight:700;white-space:nowrap;z-index:4;transition:opacity .3s ease;}#jjms .step.skl-open .phw .sklmore{opacity:0;}#jjms .phw.like .phd{position:relative;}html.jjms-v2 #jjms .step.live .phw.like:hover img{scale:1.18;opacity:1;}' +
+  '#jjms .phw .phloop{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:calc(var(--pw,10vw) * 0.045);pointer-events:none;opacity:0;transition:opacity .6s ease;}#jjms .step.live .phw .phloop{opacity:1;transition:opacity .6s ease .5s,scale .4s ease;}#jjms .step.live .phw:hover .phloop,#jjms .step.live .phw.hot .phloop{scale:1.2;}' +
   '#jjms .phw img{display:block;width:100%;height:auto;border-radius:calc(var(--pw,10vw) * 0.045);opacity:0;scale:.68;cursor:pointer;' +
     'border:2px solid rgba(255,255,255,.55);box-sizing:border-box;' +
     'box-shadow:0 14px 34px rgba(0,0,0,.55);transition:opacity .28s ease,scale .34s cubic-bezier(.22,1,.36,1);}' +
@@ -590,7 +639,7 @@
   '@keyframes jjmsPhIn{from{opacity:0;scale:.68;}to{opacity:.5;scale:1;}}' +
   /* `.deco` — scenery like the philosopher: it drifts with everything else but sits at full opacity,
      wears no photo frame and ignores the pointer entirely (no grow, no caption, no blow-up) */
-  '#jjms .phw.deco{pointer-events:none;}' +
+  '#jjms .phw.deco{pointer-events:none;}#jjms .phw.deco[data-cursor]{pointer-events:auto;cursor:pointer;}' +
   /* a caption that STAYS under a scenery sprite (the app characters) rather than waiting for a hover */
   '#jjms .phw.deco .dcap{position:absolute;left:50%;top:calc(100% + 10px);transform:translateX(-50%) translateY(8px);' +
     'width:max(17vw,240px);text-align:center;font-size:clamp(11px,.92vw,15px);font-weight:700;' +
@@ -732,6 +781,8 @@
   /* ---- the client logos ---- */
   '#jjms .aglogo{position:absolute;z-index:4;padding:0;border:0;background:none;cursor:pointer;' +
     'line-height:0;animation:jjLogoDrift var(--ld,9s) ease-in-out var(--ldl,0s) infinite;}' +
+  /* the brands arrive one after another from all sides (the agencies slide only) */
+  '#jjms-step-8 .aglogo{opacity:0;translate:var(--fx,0) var(--fy,0);scale:.4;transition:opacity .6s ease var(--ad,0s),translate .9s cubic-bezier(.22,1,.36,1) var(--ad,0s),scale .9s cubic-bezier(.22,1,.36,1) var(--ad,0s);}#jjms-step-8.near .aglogo{opacity:1;translate:0 0;scale:1;}' +
   '#jjms .aglogo .agin{display:block;position:relative;' +
     'transition:transform .3s cubic-bezier(.22,1,.36,1),filter .3s ease;}' +
   /* a soft white glow sits behind every one by default */
@@ -805,7 +856,7 @@
   /* The same pill, placed on its own rather than flowing in a row. Two elements on purpose: .stag
      owns the position + the static tilt (on `rotate`, which composes), .sin is the pill itself and
      owns `transform` — so the drift and the click effects can take it over without fighting. */
-  '#jjms .stag{position:absolute;z-index:2;cursor:pointer;}' +
+  '#jjms .stag{position:absolute;z-index:2;cursor:pointer;}#jjms .step:not(.live) .stag{opacity:0!important;pointer-events:none;transition:opacity .35s ease;}' +   /* tags ride with their pictures, and .col steps do not clip, so a leaving slide's tags were drifting into the next one */
   '#jjms .stag .sin{display:inline-flex;align-items:center;gap:6px;' +
     'background:rgba(9,14,26,.55);border:1px solid rgba(255,255,255,.18);border-radius:999px;' +
     'padding:4px 11px;font-size:clamp(11px,.86vw,15px);font-weight:700;color:#eef2f8;white-space:nowrap;' +
@@ -931,6 +982,7 @@
     'border-radius:28px;border:6px solid #0b0f18;margin:0 auto;' +
     'box-shadow:0 26px 90px rgba(0,0,0,.75),0 0 46px rgba(255,0,245,.2);}' +
   '#jjms-player .jjp-title,#jjms-shot .jjp-title{margin:16px 0 0;text-align:center;}' +
+  '#jjms-player .jjp-later{display:none;margin:14px auto 0;padding:10px 22px;border-radius:999px;border:1px solid rgba(255,255,255,.4);background:rgba(10,14,26,.7);color:#eef2f8;font:inherit;font-weight:700;font-size:14px;cursor:pointer;transition:background .25s ease,border-color .25s ease;}#jjms-player.rv .jjp-later{display:block;}#jjms-player .jjp-later:hover{background:rgba(255,0,245,.22);border-color:rgba(255,0,245,.6);}' +
   /* the single-image lightbox */
   '#jjms-shot{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.94);z-index:410;' +
     'width:min(92vw,1180px);opacity:0;pointer-events:none;' +
@@ -968,12 +1020,20 @@
   '#jjms-detail .jjd-note{margin:-6px 0 14px;font-size:clamp(14px,1.25vw,19px);font-weight:600;line-height:1.45;' +
     'color:rgba(238,242,248,.92);text-shadow:0 2px 12px rgba(0,0,0,.9);max-width:640px;margin-left:auto;margin-right:auto;}' +
   '#jjms-detail .jjd-rate{display:inline-flex;align-items:center;gap:9px;background:rgba(0,0,0,.55);border:1px solid rgba(245,197,24,.55);padding:9px 18px;border-radius:999px;box-shadow:0 6px 22px rgba(0,0,0,.4);}' +
+  /* IGN homage for the games: their red, a five-star bar filled to my score — not the logo */
+  '#jjms-detail .jjd-ign{display:inline-flex;align-items:center;gap:10px;background:rgba(0,0,0,.6);border:1px solid rgba(225,30,38,.7);padding:8px 18px 8px 8px;border-radius:10px;box-shadow:0 6px 22px rgba(0,0,0,.4);}' +
+  '#jjms-detail .jjd-ignb{background:#E11E26;color:#fff;font-weight:900;font-size:15px;letter-spacing:.06em;padding:6px 9px;border-radius:6px;}' +
+  '#jjms-detail .jjd-igns{position:relative;display:inline-block;font-size:24px;line-height:1;letter-spacing:3px;color:rgba(255,255,255,.22);}#jjms-detail .jjd-igns::before{content:"\u2605\u2605\u2605\u2605\u2605";}' +
+  '#jjms-detail .jjd-igns i{position:absolute;left:0;top:0;height:100%;overflow:hidden;white-space:nowrap;color:#E11E26;font-style:normal;filter:drop-shadow(0 0 8px rgba(225,30,38,.6));}#jjms-detail .jjd-igns i::before{content:"\u2605\u2605\u2605\u2605\u2605";}' +
+  '#jjms-detail .jjd-ignn{color:#fff;font-size:24px;font-weight:800;}' +
+  '#jjms-detail .jjd-extra{display:flex;justify-content:center;gap:18px;margin:0 0 14px;}#jjms-detail .jjd-extra span{display:flex;flex-direction:column;align-items:center;gap:6px;}' +
+  '#jjms-detail .jjd-extra img{height:clamp(70px,11vh,120px);width:auto;border-radius:6px;box-shadow:0 8px 22px rgba(0,0,0,.55);}#jjms-detail .jjd-extra em{font-style:normal;font-size:13px;font-weight:700;opacity:.85;}' +
   '#jjms-detail .jjd-star{color:#F5C518;font-size:27px;line-height:1;filter:drop-shadow(0 0 9px rgba(245,197,24,.6));}' +
   '#jjms-detail .jjd-score{color:#fff;font-size:27px;font-weight:800;letter-spacing:.01em;}' +
   '#jjms-detail .jjd-out{color:rgba(255,255,255,.55);font-size:16px;font-weight:600;margin-left:-3px;}' +
   '#jjms-detail .jjd-src{color:#F5C518;font-size:13px;font-weight:800;letter-spacing:.09em;margin-left:5px;}' +
   /* ---- the Super Reel phone: a reels feed drawn entirely in code ---- */
-  '#jjms .srwanda{position:absolute;z-index:3;pointer-events:none;height:auto;animation:jjmsWanda 6s ease-in-out infinite;}@keyframes jjmsWanda{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-1.6vh) rotate(3deg);}}' +
+  '#jjms .srwanda{position:absolute;z-index:3;pointer-events:none;height:auto;animation:jjmsWanda 6s ease-in-out infinite;}#jjms .srwanda.cast{animation:none;transition:transform 1.1s cubic-bezier(.22,1,.36,1);z-index:7;}@keyframes jjmsWanda{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-1.6vh) rotate(3deg);}}' +
   '#jjms .srphone{position:absolute;z-index:3;cursor:pointer;line-height:0;' +
     'animation:jjPhoneDrift 13.5s ease-in-out infinite;}' +
   '#jjms .srclip{display:block;position:relative;overflow:hidden;aspect-ratio:9/19;border-radius:14%/6.6%;' +
@@ -984,7 +1044,12 @@
   '#jjms .srphone:active .srclip{transform:translateY(-4px) scale(.99);}' +
   /* 5 cards (the 5th repeats the 1st) slide up one screen at a time; holds between slides */
   '#jjms .srtrack{position:absolute;inset:0;height:500%;display:flex;flex-direction:column;' +
-    'animation:jjsrFeed 17s cubic-bezier(.7,0,.25,1) infinite;will-change:transform;}' +
+    'animation:jjsrFeed 17s cubic-bezier(.7,0,.25,1) infinite;will-change:transform;}#jjms .srtrack.js{animation:none;transition:transform .55s cubic-bezier(.7,0,.25,1);}' +
+  '#jjms .srphone{touch-action:none;}#jjms .srclip{z-index:3;}' +
+  '#jjms .srpeek{position:absolute;z-index:2;width:44%;top:50%;opacity:0;pointer-events:none;transition:translate .5s cubic-bezier(.34,1.56,.64,1),opacity .25s ease;}#jjms .srpeek img{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 12px rgba(0,0,0,.6));}' +
+  '#jjms .srpeek.l{left:0;translate:10% 0;rotate:-12deg;}#jjms .srpeek.r{right:0;top:28%;translate:-10% 0;rotate:12deg;scale:-1 1;}#jjms .srpeek.l.on{opacity:1;translate:-62% 0;}#jjms .srpeek.r.on{opacity:1;translate:62% 0;}' +
+  '#jjms .srpeek.duck{transition:translate .18s ease-in,opacity .15s ease;}' +
+  '#jjms .srq{font-style:normal;font-size:clamp(9px,.8vw,13px);margin-left:5%;white-space:nowrap;overflow:hidden;color:#fff;}#jjms .srq.no{color:#FF8FA3;}' +
   '@keyframes jjsrFeed{0%,21%{transform:translateY(0);}25%,46%{transform:translateY(-20%);}' +
     '50%,71%{transform:translateY(-40%);}75%,96%{transform:translateY(-60%);}100%{transform:translateY(-80%);}}' +
   '#jjms .srcard{position:relative;display:block;width:100%;height:20%;}' +
@@ -1269,13 +1334,13 @@
   '#jjms-hd .hout{position:absolute;left:0;top:0;width:100%;animation:jjmsHdOut .45s ease both;}' +
   '@keyframes jjmsHdIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}' +
   '@keyframes jjmsHdOut{to{opacity:0;transform:translateY(-16px);}}' +
-  '#jjms-hd .t{font-size:clamp(26px,2.6vw,40px);font-weight:800;margin:0;}' +
-  '#jjms-hd .a{font-size:clamp(14px,1.3vw,20px);opacity:.75;margin:2px 0 10px;font-weight:700;}' +
-  '#jjms-hd .ic{display:flex;gap:20px;align-items:flex-end;}' +
+  '#jjms-hd .t{font-size:clamp(20px,1.9vw,30px);font-weight:800;margin:0;line-height:1.1;}' +
+  '#jjms-hd .a{font-size:clamp(12px,1vw,15px);opacity:.75;margin:3px 0 12px;font-weight:700;line-height:1.1;}' +
+  '#jjms-hd .ic{display:flex;gap:12px;align-items:flex-end;}' +
   '#jjms-hd .ic .pw{display:inline-flex;animation:jjmsPop .5s cubic-bezier(.34,1.56,.64,1) both;}' +
   '@keyframes jjmsPop{from{opacity:0;transform:scale(.5) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}' +
   /* all sprites the SAME height — opacity is the only dimming; the active one is alive */
-  '#jjms-hd .ic img{height:58px;width:auto;opacity:.35;transition:opacity .45s ease;' +
+  '#jjms-hd .ic img{height:36px;width:auto;opacity:.35;transition:opacity .45s ease;' +
     'filter:drop-shadow(0 3px 8px rgba(0,0,0,.5));transform-origin:bottom center;}' +
   '#jjms-hd .ic img.act{opacity:1;animation:jjmsIdle 1.6s ease-in-out infinite;}' +
   '@keyframes jjmsIdle{0%,100%{transform:translateY(0) scaleY(1);}50%{transform:translateY(-4px) scaleY(1.05);}}' +
@@ -1524,6 +1589,151 @@
        previous scroll position over the top of the landing */
     try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
     var st = document.createElement('style'); st.id = 'jjms-style'; st.textContent = CSS; document.head.appendChild(st);
+    /* ---- PERF + calmer type (2026-09-17). Measured: ~375 animations running, ~180 of them nowhere near the screen, and a
+       per-letter float that read a layout box and wrote a transform for EVERY letter on EVERY frame. Three blunt rules:
+       1. anything in a step that is not the current one (or its neighbours) is paused — whatever it is, now or in future;
+       2. the sky's stars / moons / nebulae only tick while they are on screen (IntersectionObserver, see governSky);
+       3. captions move as ONE block (JJ_MS_TEXT picks the style) — no per-letter scatter, no per-letter float.
+       will-change is dropped everywhere except the current step: hundreds of promoted layers were costing more than they saved. */
+    var TXT = window.JJ_MS_TEXT || 'wordsfocus';   /* Joe's pick (2026-09-17): word by word IN, focus pull OUT. 'rise' | 'drift' | 'zoom' | 'fade' are the scroll-scrubbed block styles */
+    var K = { rise: ['translate:0 46px', 'translate:0 -46px'], drift: ['translate:-60px 0', 'translate:60px 0'], zoom: ['scale:.9', 'scale:1.08'], fade: ['', ''] }[TXT] || ['translate:0 46px', 'translate:0 -46px'];
+    var st2 = document.createElement('style'); st2.id = 'jjms-perf'; st2.textContent =
+      '#jjms .step:not(.near) *,#jjms .step:not(.near) *::before,#jjms .step:not(.near) *::after{animation-play-state:paused!important;will-change:auto!important;}' +
+      '#jjms-sky .jj-off,#jjms-sky .jj-off *{animation-play-state:paused!important;}' +
+      '#jjms-sky .jj-dodge{opacity:0!important;transition:opacity .35s ease!important;}' +
+      '#jjms .step .ch:not(.mch){animation:none!important;translate:none!important;rotate:none!important;transform:none!important;will-change:auto!important;}' +
+      '#jjms .step .ch.mch{display:inline-block;animation:none!important;transition:transform 3.4s cubic-bezier(.3,0,.6,1),opacity 3s ease .3s,color .3s ease,text-shadow .3s ease;color:#7CF9C4;text-shadow:0 0 12px rgba(124,249,196,.9);}' +
+      '#jjms .step .ch.mch.go{opacity:0!important;}' +
+      '#jjms .jjms-shock{position:absolute;left:50%;top:58%;width:min(15vw,24vh);translate:-50% 40%;scale:.2;opacity:0;z-index:6;pointer-events:none;transition:translate .45s cubic-bezier(.34,1.7,.5,1),scale .45s cubic-bezier(.34,1.7,.5,1),opacity .25s ease;}#jjms .jjms-shock.on{translate:-50% 0;scale:1;opacity:1;animation:jjmsShock .14s linear 5 .45s;}#jjms .jjms-shock img{display:block;width:100%;height:auto;filter:drop-shadow(0 12px 22px rgba(0,0,0,.55));}' +
+      '#jjms .jjms-shock b{position:absolute;left:78%;top:-18%;font-size:clamp(28px,3.4vw,56px);font-weight:900;color:#FFC531;text-shadow:0 3px 0 rgba(0,0,0,.5),0 0 18px rgba(255,197,49,.8);rotate:12deg;}@keyframes jjmsShock{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}' +
+      '@keyframes jjmsCap{0%,30%{opacity:0;' + K[0] + ';}46%,54%{opacity:1;translate:0 0;scale:1;}70%,100%{opacity:0;' + K[1] + ';}}' +
+      '@keyframes jjmsSub{0%,33%{opacity:0;' + K[0] + ';}48%,54%{opacity:.7;translate:0 0;scale:1;}68%,100%{opacity:0;' + K[1] + ';}}';
+    if (TXT === 'wordsfocus') st2.textContent +=
+      /* IN plays once as the caption reaches the middle (.cur, set in render): the words step up in turn. OUT (.leaving): the
+         whole block pulls out of focus — softens, shrinks a touch, fades. One blur on one block for .6s is the only filter here. */
+      '#jjms .step:is(:not(.tall),.feat) .cap:not(.hero),#jjms .step:is(:not(.tall),.feat) .sub{animation:none!important;opacity:0!important;scale:1!important;translate:0 0!important;filter:none;transition:opacity .5s ease,scale .7s cubic-bezier(.22,1,.36,1),filter .6s ease;}' +
+      '#jjms .step:is(:not(.tall),.feat).cur .cap:not(.hero){opacity:1!important;}#jjms .step:is(:not(.tall),.feat).cur .sub{opacity:.7!important;}' +
+      '#jjms .step:is(:not(.tall),.feat).leaving .cap:not(.hero),#jjms .step:is(:not(.tall),.feat).leaving .sub{opacity:0!important;scale:.93!important;filter:blur(7px);}' +
+      '#jjms .step:is(:not(.tall),.feat) .cap:not(.hero) .word,#jjms .step .sub .word{opacity:0;translate:0 .55em;transition:opacity .45s ease,translate .5s cubic-bezier(.22,1,.36,1);transition-delay:calc(var(--wi,0) * 55ms);}' +
+      '#jjms .step.cur .word{opacity:1!important;translate:0 0!important;}' +
+      '#jjms .step.leaving .word{opacity:1!important;translate:0 0!important;transition:none!important;}';
+    st2.textContent += '@keyframes jjmsJig{0%,100%{rotate:0deg;scale:1;}15%{rotate:-5deg;scale:1.06;}30%{rotate:4deg;scale:1.08;}45%{rotate:-3deg;scale:1.06;}60%{rotate:2deg;scale:1.04;}80%{rotate:-1deg;}}' +
+      '#jjms .phw.jig img{animation:jjmsJig .9s ease-in-out 1!important;animation-play-state:running!important;}#jjms .phw.jig{z-index:50;}';
+    st2.textContent += '#jjms .phw .phd{position:relative;}#jjms .phw .fxc{position:absolute;inset:0;z-index:-1;background:center/cover no-repeat;border-radius:calc(var(--pw,10vw) * 0.045);border:2px solid rgba(255,255,255,.45);box-sizing:border-box;box-shadow:0 10px 24px rgba(0,0,0,.5);opacity:0;transition:transform .55s cubic-bezier(.22,1,.36,1),opacity .4s ease;}' +
+      '#jjms .step.live .phw .fxc{opacity:.5;}#jjms .phw:hover .fxc,#jjms .phw.hot .fxc,#jjms .phw.blown .fxc{opacity:1;}' +
+      '#jjms .phw .fxc.fxl{transform:translate(-26%,3%) rotate(-9deg) scale(.94);}#jjms .phw .fxc.fxr{transform:translate(26%,3%) rotate(9deg) scale(.94);}' +
+      '#jjms .phw:hover .fxc.fxl,#jjms .phw.hot .fxc.fxl{transform:translate(-40%,2%) rotate(-11deg) scale(.95);}#jjms .phw:hover .fxc.fxr,#jjms .phw.hot .fxc.fxr{transform:translate(40%,2%) rotate(11deg) scale(.95);}' +
+      '#jjms .phw.blown .fxc.fxl{transform:translate(-58%,3%) rotate(-4deg) scale(.92);}#jjms .phw.blown .fxc.fxr{transform:translate(58%,3%) rotate(4deg) scale(.92);}';
+    /* King Joe's "wink": he wears shades, so it is a head-tilt with a glint off the lens every few seconds (a true eyelid wink needs a second drawing) */
+    st2.textContent += '#jjms .aglogo[aria-label="Joe"] .agin{animation:jjmsWinkTilt 5.2s ease-in-out infinite;}@keyframes jjmsWinkTilt{0%,82%,100%{rotate:0deg;}87%{rotate:-8deg;}93%{rotate:-8deg;}}' +
+      '#jjms .aglogo[aria-label="Joe"] .agin::after{content:"\\2726";position:absolute;left:61%;top:33%;font-size:calc(var(--gw,10vw) * .22);line-height:1;color:#fff;text-shadow:0 0 .6vw #fff,0 0 1.4vw rgba(255,255,255,.8);opacity:0;pointer-events:none;animation:jjmsWinkGlint 5.2s ease-in-out infinite;}' +
+      '@keyframes jjmsWinkGlint{0%,84%,100%{opacity:0;scale:.2;rotate:0deg;}89%{opacity:1;scale:1.25;rotate:45deg;}95%{opacity:0;scale:.6;rotate:90deg;}}';
+    if (SDA) st2.textContent += '#jjms .stag{animation:jjmsPx linear both;animation-timeline:--jjstep;animation-range:cover 0% cover 100%;}' +
+      '#jjms .stag:nth-of-type(3n){--d:.4;}#jjms .stag:nth-of-type(3n+1){--d:.14;}#jjms .stag:nth-of-type(3n+2){--d:.27;}';   /* place tags used to parallax on their own and drifted off their pictures (Joe): they sit with their set now */
+    st2.textContent += '#jjms .gvid.port{width:calc(78vh * 9 / 16);max-width:none;aspect-ratio:9/16;}' +
+      /* year groups: a back set hides toward the front one until the group is hovered (:has reads the geometry-driven .hot as well as :hover) */
+      '#jjms .trav[data-grp]{transition:opacity .4s ease,translate .5s cubic-bezier(.22,1,.36,1),scale .5s cubic-bezier(.22,1,.36,1);}#jjms .trav.tuck{translate:var(--tkx,0) var(--tky,0);scale:.9;z-index:0;}' +
+      '#jjms .tcc.tuck{opacity:0;transition:opacity .35s ease;}' +
+      ['2024', '2025', '2026'].map(function (y) { var g = '[data-grp="' + y + '"]'; return '#jjms .step:has(.trav' + g + ':hover) .trav.tuck' + g + ',#jjms .step:has(.trav' + g + '.hot) .trav.tuck' + g + '{translate:0 0;scale:1;z-index:1;}#jjms .step:has(.trav' + g + ':hover) .tcc.tuck' + g + ',#jjms .step:has(.trav' + g + '.hot) .tcc.tuck' + g + '{opacity:1;}'; }).join('') +
+      '#jjms .tcc.tyr span{font-weight:800;}' +
+      '#jjms .jjms-flyer{position:absolute;z-index:3;pointer-events:none;height:auto;animation:jjmsFlyer 7s ease-in-out infinite;}@keyframes jjmsFlyer{0%,100%{translate:0 0;rotate:-2deg;}50%{translate:1.2vw -2.2vh;rotate:2deg;}}' +
+      /* the sealed letter: two rolls and a wax seal; press it and the seal splits, the parchment unrolls and the words come up */
+      '#jjms .jjscroll{position:absolute;z-index:3;min-width:150px;translate:-50% calc(-50% + var(--ride,0px));padding:0;border:0;background:none;cursor:pointer;color:#4a2f10;font:inherit;text-align:left;animation:jjmsTabBob 5s ease-in-out infinite;}' +
+      '#jjms .jjscroll .sroll{display:block;height:1.2vw;border-radius:.6vw;background:linear-gradient(180deg,#c9a76a 0%,#f1dfb5 40%,#b8925a 100%);box-shadow:0 4px 12px rgba(0,0,0,.45);position:relative;z-index:2;}' +
+      '#jjms .jjscroll .sbody{display:block;margin:0 .7vw;max-height:0;overflow:hidden;background:linear-gradient(180deg,#f3e4bd,#e6cf9b);box-shadow:inset 0 0 22px rgba(120,80,20,.25);transition:max-height .9s cubic-bezier(.22,1,.36,1);}' +
+      '#jjms .jjscroll .slogo{display:block;width:58%;margin:.9vw auto 0;}#jjms .jjscroll.open .sbody{max-height:24vh;}#jjms .jjscroll .sbody{overflow:hidden;}#jjms .jjscroll .stext{font-size:clamp(8px,.62vw,11px);line-height:1.35;}#jjms .jjscroll .stext{display:block;padding:.8vw .9vw 1vw;font-style:italic;opacity:0;transition:opacity .6s ease .5s;}#jjms .jjscroll.open .stext{opacity:1;}#jjms .jjscroll .stext b{font-style:normal;color:#8a2a1c;}' +
+      '#jjms .jjscroll .seal{position:absolute;left:50%;top:50%;width:2.6vw;height:2.6vw;min-width:26px;min-height:26px;translate:-50% -50%;z-index:4;transition:opacity .2s ease .5s;}' +
+      '#jjms .jjscroll .seal i{position:absolute;top:0;bottom:0;width:50%;background:radial-gradient(circle at 40% 35%,#e2564a,#8d1f18 70%);box-shadow:0 3px 10px rgba(0,0,0,.5);transition:transform .7s cubic-bezier(.3,.6,.4,1),opacity .7s ease;}' +
+      '#jjms .jjscroll .seal .sl{left:0;border-radius:100% 0 0 100%/50% 0 0 50%;}#jjms .jjscroll .seal .sr{right:0;border-radius:0 100% 100% 0/0 50% 50% 0;}' +
+      '#jjms .jjscroll .seal .sj{position:absolute;inset:0;width:auto;background:none;box-shadow:none;display:flex;align-items:center;justify-content:center;color:rgba(255,220,200,.85);font-weight:900;font-style:normal;font-size:1.3vw;transition:opacity .2s ease;}' +
+      '#jjms .jjscroll.open .seal .sl{transform:translate(-2.4vw,3vw) rotate(-70deg);opacity:0;}#jjms .jjscroll.open .seal .sr{transform:translate(2.4vw,3.2vw) rotate(64deg);opacity:0;}#jjms .jjscroll.open .seal .sj{opacity:0;}#jjms .jjscroll.open .seal{pointer-events:none;}' +
+      '#jjms .jjscroll .shint{position:absolute;left:50%;top:100%;translate:-50% 8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;color:#eef2f8;opacity:.75;font-style:normal;}#jjms .jjscroll.open .shint{opacity:0!important;animation:none!important;transition:opacity .3s ease;}#jjms .jjscroll.open::after{display:none;}' +
+      '#jjms .jjscroll:not(.open):hover .seal{scale:1.1;}#jjms .jjscroll:not(.open):hover .sroll{filter:brightness(1.08);}' +
+      /* BREAK ITEMS (tablets, the sealed letter, the reveal card): until pressed they wear their hint, a pulsing tap ring, and as their
+         slide leaves they ride down with the scroll (--ride, set in render) so they stay in view a moment longer (Joe, 2026-09-18) */
+      '#jjms .jjms-tab:not(.touched) .thint,#jjms .jjscroll:not(.touched) .shint{opacity:1;animation:jjmsPrompt 1.6s ease-in-out infinite;}#jjms .jjms-reveal:not(.touched) .rvbtn{animation:jjmsPrompt 1.6s ease-in-out infinite;}' +
+      '@keyframes jjmsPrompt{0%,100%{scale:1;filter:brightness(1);}50%{scale:1.08;filter:brightness(1.25);}}' +
+      '#jjms .jjms-tab:not(.touched)::after,#jjms .jjscroll:not(.touched)::after,#jjms .jjms-reveal:not(.touched)::after{content:"";position:absolute;left:50%;top:50%;width:70%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;border:2px solid rgba(255,201,61,.85);pointer-events:none;animation:jjmsTapRing 1.8s ease-out infinite;}' +
+      '#jjms .jjms-reveal:not(.touched)::after{width:100%;}@keyframes jjmsTapRing{0%{scale:.5;opacity:.9;}100%{scale:1.7;opacity:0;}}' +
+      '@media (max-width:900px){#jjms .jjms-tv{width:min(72vw,44vh)!important;}}#jjms .jjms-tv{position:absolute;left:50%;top:2%;translate:-50% 0;z-index:4;width:min(30vw,34vh,440px);aspect-ratio:829/812;pointer-events:none;filter:drop-shadow(0 22px 40px rgba(0,0,0,.5));}#jjms .jjms-tv .tvimg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}' +
+      '#jjms .jjms-imdb{position:absolute;left:19.1%;top:44.5%;width:52.5%;height:32%;z-index:1;display:flex;flex-direction:column;border-radius:10px;background:#0b1220;text-align:left;pointer-events:auto;opacity:.95;transition:opacity .3s ease,height .5s cubic-bezier(.22,1,.36,1);overflow:visible;}#jjms .jjms-tv.open .jjms-imdb{height:auto;min-height:32%;z-index:5;box-shadow:0 20px 50px rgba(0,0,0,.6);}' +
+      '#jjms .jjms-imdb:hover{opacity:1;}#jjms .jjms-imdb .imstand{display:none;}' +
+      '#jjms .jjms-imdb .imh{position:relative;padding:6px 10px 5px;border-bottom:1px solid rgba(255,255,255,.12);background:linear-gradient(90deg,rgba(245,197,24,.16),transparent 70%);}' +
+      '#jjms .jjms-imdb .imk{display:inline-block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;background:#f5c518;color:#111;padding:2px 7px;border-radius:4px;font-weight:800;}#jjms .jjms-imdb h4{margin:3px 0 0;font-size:clamp(12px,1vw,16px);font-weight:800;}#jjms .jjms-imdb .imh small{display:block;font-size:9px;opacity:.55;letter-spacing:.04em;padding-right:7.5em;}' +
+      '#jjms .jjms-imdb .impick{position:absolute;right:12px;bottom:8px;padding:4px 10px;border-radius:999px;border:1px solid rgba(245,197,24,.6);background:rgba(245,197,24,.12);color:#f5c518;font:inherit;font-size:10px;font-weight:800;letter-spacing:.06em;cursor:pointer;transition:background .2s ease;}#jjms .jjms-imdb .impick:hover{background:#f5c518;color:#111;}' +
+      '#jjms .jjms-imdb ol{margin:0;padding:2px 0 0;list-style:none;overflow:hidden;max-height:3.2em;transition:max-height .5s cubic-bezier(.22,1,.36,1);-webkit-mask:linear-gradient(180deg,#000 55%,transparent 100%);mask:linear-gradient(180deg,#000 55%,transparent 100%);scrollbar-width:thin;scrollbar-color:rgba(245,197,24,.7) rgba(255,255,255,.08);}' +
+      '#jjms .jjms-imdb.open ol{max-height:32vh;overflow-y:auto;padding-bottom:26px;-webkit-mask:linear-gradient(180deg,#000 84%,transparent 100%);mask:linear-gradient(180deg,#000 84%,transparent 100%);}#jjms .jjms-imdb ol::-webkit-scrollbar{width:6px;}#jjms .jjms-imdb ol::-webkit-scrollbar-thumb{background:rgba(245,197,24,.7);border-radius:3px;}' +
+      '#jjms .jjms-imdb li{position:relative;display:flex;align-items:center;gap:10px;padding:6px 14px;font-size:clamp(11px,.85vw,13px);cursor:pointer;transition:background .2s ease,opacity .3s ease;}#jjms .jjms-imdb li:hover{background:rgba(245,197,24,.12);}#jjms .jjms-imdb li b{width:1.6em;opacity:.55;font-size:11px;}' +
+      '#jjms .jjms-imdb li.added{background:rgba(0,0,0,.45);opacity:.62;}#jjms .jjms-imdb li .imw{display:none;position:absolute;right:14px;top:50%;width:16px;height:16px;translate:0 -50%;color:transparent;font-size:0;}#jjms .jjms-imdb li .imw::before{content:"";position:absolute;left:1px;top:2px;width:5px;height:9px;border-right:2.5px solid #f5c518;border-bottom:2.5px solid #f5c518;border-radius:0 0 2px 0;rotate:45deg;}#jjms .jjms-imdb li.added .imw{display:block;}#jjms .jjms-imdb li.added .imr{opacity:0;}' +
+      '#jjms .imscrim{position:fixed;inset:0;z-index:3;background:rgba(3,6,14,.2);opacity:0;pointer-events:none;transition:opacity .4s ease;}#jjms .imscrim.on{opacity:1;pointer-events:auto;}' +
+      '#jjms .jjms-imdb .imclose{display:none;position:absolute;right:-14px;top:-14px;width:30px;height:30px;border-radius:50%;border:2px solid #243149;background:#0b1220;color:#eef2f8;font:inherit;font-size:18px;line-height:26px;text-align:center;padding:0;cursor:pointer;}#jjms .jjms-imdb.open .imclose{display:block;}' +
+      '#jjms .jjms-imdb li.pick{background:rgba(245,197,24,.22);box-shadow:inset 3px 0 0 #f5c518;}' +
+      '#jjms .jjms-imdb .imt{flex:1;min-width:0;display:flex;flex-direction:column;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}#jjms .jjms-imdb .imt small{font-weight:600;opacity:.55;font-size:10px;}#jjms .jjms-imdb .imt em{font-style:italic;opacity:.9;}' +
+      '#jjms .jjms-imdb .imr{display:inline-flex;align-items:center;gap:3px;font-weight:800;font-size:11px;min-width:3em;justify-content:flex-end;transition:opacity .2s ease;}#jjms .jjms-imdb .imr .y{color:#f5c518;font-style:normal;}#jjms .jjms-imdb .imr .b{color:#5799ef;font-style:normal;}#jjms .jjms-imdb .imr.me{min-width:2.4em;}' +
+      '#jjms .jjms-imdb .imchev{position:absolute;left:50%;bottom:-14px;translate:-50% 0;width:32px;height:32px;border-radius:50%;border:2px solid #243149;background:#f5c518;cursor:pointer;padding:0;box-shadow:0 6px 16px rgba(0,0,0,.5);transition:transform .4s ease;animation:jjmsChev 1.6s ease-in-out infinite;}#jjms .jjms-imdb .imchev i{position:absolute;left:50%;top:44%;width:9px;height:9px;border-right:2.5px solid #111;border-bottom:2.5px solid #111;translate:-50% -50%;rotate:45deg;}' +
+      '#jjms .jjms-imdb.open .imchev{transform:rotate(180deg);animation:none;}@keyframes jjmsChev{0%,100%{translate:-50% 0;}50%{translate:-50% 4px;}}' +
+      '#jjms .jjms-imdb .imtoast{position:absolute;left:50%;top:100%;translate:-50% 22px;padding:6px 14px;border-radius:999px;background:#f5c518;color:#111;font-size:11px;font-weight:800;white-space:nowrap;opacity:0;transition:opacity .3s ease,translate .3s ease;pointer-events:none;}#jjms .jjms-imdb .imtoast.on{opacity:1;translate:-50% 28px;}' +
+      /* the wizard: bottom-left of the grandad slide, on his loop, no float */
+      '#jjms .jjms-wizwrap{position:absolute;left:calc(50% - min(12vw,17vh) / 2 - min(13vw,22vh) - 1vw);bottom:15vh;width:min(13vw,22vh);z-index:3;text-align:center;opacity:0;transition:opacity .6s ease;}#jjms .step.live .jjms-wizwrap{opacity:1;}#jjms .jjms-wizwrap .jjms-wiz{position:static;display:block;width:100%;animation:none;filter:drop-shadow(0 10px 24px rgba(0,0,0,.5));}' +
+      '#jjms .jjms-wizwrap .wizcap{display:inline-block;margin-bottom:-1.2vh;padding:.4em 1em;border-radius:999px;background:rgba(10,14,26,.72);border:1px solid rgba(255,255,255,.3);font-size:clamp(11px,.9vw,14px);font-weight:700;letter-spacing:.04em;transition:background .4s ease;}#jjms .jjms-wizwrap .wizcap.named{background:rgba(255,0,245,.28);border-color:rgba(255,0,245,.6);}' +
+      /* the reveal card: a blurred portrait with a question mark until it is pressed */
+      '#jjms .jjms-reveal{position:relative;z-index:3;display:block;margin:3.5vh 0 0;translate:0 var(--ride,0px);padding:0;border:0;background:none;cursor:pointer;width:min(12vw,17vh);aspect-ratio:9/16;animation:jjmsRvFloat 4.5s ease-in-out infinite;transition:scale .35s cubic-bezier(.22,1,.36,1);}' +
+      '#jjms .jjms-reveal:hover{scale:1.05;}@keyframes jjmsRvFloat{0%,100%{translate:0 0;rotate:-1.5deg;}50%{translate:0 -1.4vh;rotate:1.5deg;}}' +
+      '#jjms .jjms-reveal .rvshell{position:absolute;inset:0;display:block;border-radius:14px;overflow:hidden;border:2px solid rgba(255,255,255,.45);box-shadow:0 0 44px rgba(255,0,245,.4),0 20px 50px rgba(0,0,0,.6);background:#0b1220;}' +
+      '#jjms .jjms-reveal .rvshell img{display:block;width:100%;height:100%;object-fit:cover;filter:blur(14px) brightness(.55);scale:1.18;transition:filter .9s ease,scale .9s ease;}' +
+      '#jjms .jjms-reveal .rvq{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(44px,6vw,96px);font-weight:900;color:#fff;text-shadow:0 0 30px rgba(255,0,245,.95),0 4px 12px rgba(0,0,0,.6);transition:opacity .5s ease,scale .5s ease;}' +
+      '#jjms .jjms-reveal .rvbtn{position:absolute;left:50%;bottom:-2.6em;translate:-50% 0;white-space:nowrap;padding:.6em 1.25em;border-radius:999px;background:#FF00F5;color:#fff;font-weight:800;font-size:clamp(12px,1vw,16px);box-shadow:0 8px 22px rgba(0,0,0,.45);}' +
+      '#jjms .jjms-reveal.done .rvshell img{filter:none;scale:1;}#jjms .jjms-reveal.done .rvq{opacity:0;scale:1.6;}#jjms .jjms-reveal.done .rvbtn{background:rgba(10,14,26,.7);border:1px solid rgba(255,255,255,.35);}' +
+      '#jjms-toast{position:fixed;left:50%;bottom:max(20px,6vh);z-index:940;translate:-50% 20px;padding:12px 20px;border-radius:999px;background:rgba(10,14,26,.86);border:1px solid rgba(255,255,255,.3);color:#eef2f8;font-family:"Joes Journey Headline",Georgia,serif;font-size:clamp(13px,1vw,16px);font-weight:700;opacity:0;pointer-events:none;transition:opacity .4s ease,translate .4s ease;backdrop-filter:blur(8px);}#jjms-toast.on{opacity:1;translate:-50% 0;}#jjms-toast b{color:#FFC93D;}';
+    st2.textContent += '#jjms .jjms-tab{position:absolute;z-index:6;width:clamp(96px,9vw,150px);translate:-50% calc(-50% + var(--ride,0px));background:none;border:0;padding:0;cursor:pointer;transition:opacity .5s ease,scale .5s ease;animation:jjmsTabBob 4.5s ease-in-out infinite;}' +
+      '#jjms .jjms-tab svg{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 12px 22px rgba(0,0,0,.55));}#jjms .jjms-tab .fig{display:none;filter:drop-shadow(0 0 6px rgba(255,197,49,.8));}#jjms .jjms-tab.figma .fig{display:block;}#jjms .jjms-tab.figma .spiral{display:none;}#jjms .jjms-tab .stone{fill:#2b3a55;stroke:#8fa6cc;stroke-width:2.5;}#jjms .jjms-tab .spiral{stroke:#FFC531;stroke-width:4;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(255,197,49,.8));}' +
+      '#jjms .jjms-tab .crk{fill:none;stroke:#0b1220;stroke-width:3;stroke-linejoin:round;stroke-dasharray:400;stroke-dashoffset:400;transition:stroke-dashoffset .45s ease-out;}#jjms .jjms-tab.crack .c1,#jjms .jjms-tab.crack .c2{stroke-dashoffset:0;}#jjms .jjms-tab.crack{animation:jjmsTabShake .5s ease-in-out 1;}' +
+      '#jjms .jjms-tab .tlbl{position:absolute;left:50%;top:50%;translate:-50% -50%;margin-top:34%;font-size:clamp(11px,1vw,15px);font-weight:800;letter-spacing:.06em;color:#eef2f8;text-shadow:0 2px 6px rgba(0,0,0,.8);pointer-events:none;}#jjms .jjms-tab .thint{position:absolute;left:50%;top:100%;translate:-50% 8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;color:rgba(238,242,248,.7);opacity:0;transition:opacity .3s ease;pointer-events:none;}#jjms .jjms-tab:hover .thint,#jjms .jjms-tab.crack .thint{opacity:1;}' +
+      '#jjms .jjms-tab.burst{opacity:0;scale:1.5;pointer-events:none;animation:none;}' +
+      '@keyframes jjmsTabBob{0%,100%{transform:rotate(-2deg) translateY(0);}50%{transform:rotate(2deg) translateY(-8px);}}@keyframes jjmsTabShake{0%,100%{transform:translate(0,0) rotate(-2deg);}20%{transform:translate(-5px,2px) rotate(-4deg);}40%{transform:translate(5px,-2px) rotate(1deg);}60%{transform:translate(-4px,1px) rotate(-3deg);}80%{transform:translate(4px,0) rotate(0deg);}}' +
+      '#jjms .stag.held{opacity:0!important;pointer-events:none;transition:transform .8s cubic-bezier(.2,.8,.2,1),opacity .5s ease;}#jjms .step.feat .stag.freed{animation:none;translate:0 0;}#jjms .stag.freed{transition:transform .85s cubic-bezier(.2,.8,.2,1),opacity .4s ease;transition-delay:var(--fd,0s);}' +
+      '#jjms .jjms-shard{position:absolute;width:14px;height:18px;background:#2b3a55;border:1.5px solid #8fa6cc;border-radius:2px;pointer-events:none;animation:jjmsShard .9s ease-out forwards;}@keyframes jjmsShard{to{transform:translate(var(--sx),var(--sy)) rotate(var(--sr));opacity:0;}}';
+    /* the tablets: gather their pills at mount, crack on the first press, burst on the second */
+    setTimeout(function () { Array.prototype.forEach.call(document.querySelectorAll('#jjms .jjms-tab'), function (tab) { var st = tab.closest('.step'), g = tab.getAttribute('data-grp'); if (!st) return;
+      var pills = Array.prototype.slice.call(st.querySelectorAll('.stag[data-grp="' + g + '"]')), tr = tab.getBoundingClientRect(), tcx = tr.left + tr.width / 2, tcy = tr.top + tr.height / 2;
+      var sg0 = (st.querySelector('.stage') || st).getBoundingClientRect();
+      pills.forEach(function (pl) { var r = pl.getBoundingClientRect(); pl._bx = pl.offsetLeft; pl._by = pl.offsetTop; pl.style.transform = 'translate(' + (tcx - r.left - r.width / 2).toFixed(0) + 'px,' + (tcy - r.top - r.height / 2).toFixed(0) + 'px) scale(.15)'; });
+      var stage = 0; tab.addEventListener('click', function (e) { e.stopPropagation(); stage++;
+        if (stage === 1) { tab.classList.add('crack'); return; }
+        tab.classList.add('burst'); tab.style.opacity = ''; tab.style.scale = ''; tab.style.zIndex = '';   /* the stage's inline values would hold the broken stone on screen until the next scroll */
+        for (var k = 0; k < 10; k++) { var sh = document.createElement('i'); sh.className = 'jjms-shard'; var ang = k / 10 * Math.PI * 2; sh.style.cssText = 'left:' + tab.style.left + ';top:' + tab.style.top + ';--sx:' + (Math.cos(ang) * (90 + k * 9)).toFixed(0) + 'px;--sy:' + (Math.sin(ang) * (70 + k * 7) + 40).toFixed(0) + 'px;--sr:' + (k * 70) + 'deg'; st.appendChild(sh); setTimeout(function (x) { return function () { x.remove(); }; }(sh), 1000); }
+        var trB = tab.getBoundingClientRect(), sgB = (st.querySelector('.stage') || st).getBoundingClientRect(), cols = 2, maxW = pills.reduce(function (m, q) { return Math.max(m, q.offsetWidth); }, 80), cw = maxW + 12, ch = pills.reduce(function (m, q) { return Math.max(m, q.offsetHeight); }, 26) + 8, cxB = Math.max(cw + maxW / 2 + 12, Math.min(sgB.width - cw - maxW / 2 - 12, trB.left + trB.width / 2 - sgB.left)), cyB = trB.top + trB.height / 2 - sgB.top;
+        pills.forEach(function (pl, i) { pl.classList.remove('held'); pl.classList.add('freed'); pl.style.setProperty('--fd', (i * 45) + 'ms');
+          var col = i % cols, row = Math.floor(i / cols), rowsN = Math.ceil(pills.length / cols), tx = cxB + (col - (cols - 1) / 2) * cw, ty = cyB + (row - (rowsN - 1) / 2) * ch;   /* a tidy stack where the stone stood */
+          pl.style.transform = 'translate(' + (tx - pl.offsetLeft - pl.offsetWidth / 2).toFixed(0) + 'px,' + (ty - pl.offsetTop - pl.offsetHeight / 2).toFixed(0) + 'px)'; });   /* live layout boxes: a cached one went stale the moment the window changed size */
+        if (window.jjScore) window.jjScore.award('skills-burst'); }); }); }, 1500);
+    st2.textContent += '#jjms .jjms-carry{position:fixed;left:0;top:0;z-index:6;opacity:0;pointer-events:none;transition:opacity .25s ease;}#jjms .jjms-carry img{display:block;width:100%;height:auto;filter:drop-shadow(0 10px 22px rgba(0,0,0,.55));}#jjms .jjms-carry.land img{animation:jjmsCarryBob 2.6s ease-in-out infinite;}@keyframes jjmsCarryBob{0%,100%{translate:0 0;}50%{translate:0 -10px;}}';
+    st2.textContent += '#jjms .jjms-think{position:absolute;left:50%;top:62%;width:min(30vw,46vh);margin-left:calc(min(30vw,46vh) / -2);z-index:4;opacity:0;pointer-events:none;transform-origin:50% 60%;}#jjms .jjms-think img{display:block;width:100%;height:auto;filter:drop-shadow(0 18px 30px rgba(0,0,0,.55));}' +
+      '#jjms .jjms-think .tb{position:absolute;left:66%;top:-6%;display:flex;gap:.5vw;padding:.9vw 1.2vw;border-radius:2vw;background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.4);}#jjms .jjms-think .tb::after{content:"";position:absolute;left:12%;bottom:-.7vw;width:1.2vw;height:1.2vw;border-radius:50%;background:#fff;}' +
+      '#jjms .jjms-think .tb b{width:.8vw;height:.8vw;border-radius:50%;background:#1b2440;animation:jjmsThink 1.2s ease-in-out infinite;}#jjms .jjms-think .tb b:nth-child(2){animation-delay:.2s;}#jjms .jjms-think .tb b:nth-child(3){animation-delay:.4s;}@keyframes jjmsThink{0%,100%{opacity:.25;translate:0 0;}40%{opacity:1;translate:0 -.35vw;}}' +
+      '#jjms .step.feat .jjtrophy{z-index:5;}';
+    st2.textContent += '#jjms .step.tall.feat .cap,#jjms .step.tall.feat .sub{position:relative;top:auto;bottom:auto;left:auto;right:auto;width:auto;max-width:min(1100px,74vw);text-shadow:none;}' +
+      '#jjms .step.feat .phw .phs{animation:none!important;opacity:1!important;scale:1!important;}#jjms .step.feat .gdim{z-index:2;background:radial-gradient(ellipse 80% 72% at 50% 50%,rgba(0,0,0,.25),rgba(0,0,0,.8) 80%),#000;}#jjms .step.feat .phw{z-index:3;}#jjms .step.feat .trav{z-index:4;}' +
+      '#jjms .step.tall.feat .cap,#jjms .step.tall.feat .sub{transform:none;}';
+    document.head.appendChild(st2);
+    /* now and then one of the favourites gives a little jiggle — only on the slide that is on screen */
+    setInterval(function () { if (document.hidden || document.body.classList.contains('jj-modal-open')) return;
+      var c = document.querySelectorAll('#jjms .step.cur .phw[data-jig]'); if (!c.length) return;
+      var el = c[Math.floor(Math.random() * c.length)]; if (el.classList.contains('blown')) return;
+      var im = el.querySelector('img'); if (!im || !im.animate) return; el.style.zIndex = '50';   /* WAAPI on rotate / scale / opacity: rides on top of the CSS animations already on the card without restarting any of them */
+      var an = im.animate([{ offset: .15, rotate: '-6deg', scale: '1.08', opacity: 1 }, { offset: .32, rotate: '5deg', scale: '1.1', opacity: 1 }, { offset: .5, rotate: '-4deg', scale: '1.08', opacity: 1 }, { offset: .68, rotate: '2.5deg', scale: '1.05', opacity: 1 }, { offset: .85, rotate: '-1deg', scale: '1.02' }], { duration: 1000, easing: 'ease-in-out' });
+      an.onfinish = function () { el.style.zIndex = ''; }; }, 2200);
+    if (TXT === 'wordsfocus') setTimeout(function () { var ss = document.querySelectorAll('#jjms .step'); for (var a = 0; a < ss.length; a++) { var ws = ss[a].querySelectorAll('.cap .word'), wb = ss[a].querySelectorAll('.sub .word'), b;
+      for (b = 0; b < ws.length; b++) ws[b].style.setProperty('--wi', b); for (b = 0; b < wb.length; b++) wb[b].style.setProperty('--wi', ws.length + 2 + b); } }, 1200);
+    setTimeout(function () { if (!window.IntersectionObserver) return; var fio = new IntersectionObserver(function (es) { es.forEach(function (e) { var v = e.target;   /* the flyer loads only when its slide nears, and plays only while it is on screen */
+      if (e.isIntersecting) { if (!v._src) { v._src = 1; var b = SB + v.getAttribute('data-base'); v.innerHTML = '<source src="' + b + '.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + b + '.webm" type="video/webm">'; v.load(); } var pp = v.play(); if (pp && pp.catch) pp.catch(function () {}); } else { try { v.pause(); } catch (x) {} } }); }, { rootMargin: '60% 0px 60% 0px' });
+      Array.prototype.forEach.call(document.querySelectorAll('#jjms .jjms-flyer'), function (v) { fio.observe(v); });
+      var lio = new IntersectionObserver(function (es) { es.forEach(function (e) { var v = e.target;   /* looping cards: the same deal, one mp4 */
+        if (e.isIntersecting) { if (!v._src) { v._src = 1; v.src = v.getAttribute('data-src'); v.load(); } var pp = v.play(); if (pp && pp.catch) pp.catch(function () {}); } else { try { v.pause(); } catch (x) {} } }); }, { rootMargin: '40% 0px 40% 0px' });
+      Array.prototype.forEach.call(document.querySelectorAll('#jjms .phw .phloop:not(.phonce)'), function (v) { lio.observe(v); }); }, 1800);
+    setTimeout(function governSky(){ var sky = document.getElementById('jjms-sky'); if (!sky || !window.IntersectionObserver) return;
+      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { e.target.classList.toggle('jj-off', !e.isIntersecting); }); }, { rootMargin: '40% 0px 40% 0px' });
+      sky.querySelectorAll('img,.gneb,.gspiral,i,span').forEach(function (n) { if (getComputedStyle(n).animationName !== 'none') io.observe(n); }); }, 2500);
     var mount = document.getElementById('jj-mystory-mount') || document.body;
 
     /* the fixed swirl backdrop (parallaxed in render) */
@@ -1596,23 +1806,27 @@
       var ph = '', pl = PHOTOS[i] || [];
       /* FILMS (step 5): move any poster sitting under the centred caption to the NEAREST free spot that
          clears the text AND doesn't overlap another poster (see layoutFilms). Other steps keep design pos. */
-      var adj = (i === 5) ? layoutFilms(pl) : null;
+      var adj = (i === 3) ? layoutFilms(pl) : null;
       for (var p0 = 0; p0 < pl.length; p0++) {
         var P = pl[p0];
         var px = adj ? adj[p0].x : P.x, py = adj ? adj[p0].y : P.y;
         ph += '<span class="phw' + (P.deco ? ' deco' : '') + (P.logo ? ' logo' : '') +
-          (P.tap ? '" data-tap="1' : '') + (P.vid || P.yt ? ' phvid' : '') + (P.cap ? ' hascap' : '') + (P.secret ? ' secret' : '') + '"' +
+          (P.tap ? '" data-tap="1' : '') + (P.vid || P.yt ? ' phvid' : '') + (P.cap ? ' hascap' : '') + (P.secret ? ' secret' : '') + (P.like ? ' like' : '') + (P.skl ? ' skl' + (P.skl === 'lead' ? ' skl-lead' : '') : '') + '"' + (P.like ? ' data-cursor="none"' : '') +
           (P.cap ? ' data-cap="' + esc(P.cap) + '"' : '') + (P.rating ? ' data-rating="' + esc(P.rating) + '"' : '') +
           (typeof P.vid === 'string' ? ' data-vid="' + esc(P.vid) + '"' : '') +
           (typeof P.yt === 'string' ? ' data-yt="' + esc(P.yt) + '"' : '') +
           (P.note ? ' data-note="' + esc(P.note) + '"' : '') + (P.party ? ' data-party="1"' : '') +
-          (P.alt ? ' data-alt="' + esc(P.alt) + '"' : '') +
+          (P.game ? ' data-game="1" data-stars="' + (P.stars || 4) + '"' : '') + (P.extra ? ' data-extra="' + esc(P.extra) + '"' : '') + (P.found ? ' data-found="' + esc(P.found) + '"' : '') + (P.award ? ' data-award="' + esc(P.award) + '"' : '') + (P.jig ? ' data-jig="1"' : '') +
+          (P.alt ? ' data-alt="' + esc(P.alt) + '"' : '') + (P.once ? ' data-cursor="hover"' : '') +
           ' style="left:' + px + '%;top:' + py + '%;width:' + P.w + 'vw;--pw:' + P.w + 'vw;' +
           'rotate:' + P.rot + 'deg;--d:' + (P.d || (0.12 + p0 % 4 * 0.07).toFixed(2)) + '">' +
           '<span class="phs"><span class="phd" style="--dx:' + (11 + p0 % 3 * 6) + 'px;--dy:' + (14 + p0 % 4 * 5) + 'px;' +
           '--dr:' + (0.9 + p0 % 3 * 0.45).toFixed(2) + 'deg;' +
           'animation-duration:' + (10.5 + p0 * 1.6).toFixed(1) + 's;animation-delay:-' + (p0 * 2.6).toFixed(1) + 's">' +
+          (P.extra ? (function () { var ex = P.extra.split('|'), o = ''; for (var q = 0; q + 1 < ex.length && q < 4; q += 2) o += '<i class="fxc ' + (q ? 'fxr' : 'fxl') + '" style="background-image:url(' + SB + ex[q] + ')"></i>'; return o; })() : '') +   /* the rest of the set tucked BEHIND the lead cover: one peeking out each side, fanning into a row when the card is blown up */
           '<img src="' + SB + P.src + '" alt="" decoding="async">' +
+          (P.loop ? '<video class="phloop" muted loop playsinline preload="none" poster="' + SB + P.src + '" data-src="' + SB + P.vid + '"></video>' : '') +
+          (P.once ? '<video class="phloop phonce" muted playsinline preload="none" poster="' + SB + P.src + '" data-base="' + esc(P.once) + '"></video>' : '') +
           (P.logo ? '<img class="lgtint" src="' + SB + 'skyrock-blue.webp" alt="" decoding="async">' : '') +
           (P.deco ? (P.cap && !P.tap ? '<span class="dcap">' + esc(P.cap) + '</span>' : '') :
             (P.cap && P.hoverCap !== false ? '<span class="phcap">' + esc(P.cap) + '</span>' : '')) +
@@ -1660,8 +1874,9 @@
           '<span class="srbar"><i></i></span>' +
           '<span class="srrail"><span class="sric">' + SR_ICON.heart + '</span>' +
             '<span class="sric">' + SR_ICON.chat + '</span><span class="sric">' + SR_ICON.send + '</span></span>' +
-          '<span class="srsearch">' + SR_ICON.search + '</span>' +
-          '<span class="srnotch"></span></span></span>' +
+          '<span class="srsearch">' + SR_ICON.search + '<i class="srq"></i></span>' +
+          '<span class="srnotch"></span></span>' +
+          '<span class="srpeek l"><img src="' + (window.JJ_SCORE_BASE || SB) + 'co-alien-plain.webp" alt=""></span><span class="srpeek r"><img src="' + (window.JJ_SCORE_BASE || SB) + 'logo-alien.webp" alt=""></span></span>' +
           '<video class="srwanda" muted loop autoplay playsinline poster="' + SB + 'wanda-wand-poster.webp" style="left:' + (s.srp.x - 9.5) + '%;top:' + (s.srp.y + 6) + '%;width:' + (s.srp.w * .75) + 'vw"><source src="' + SB + 'wanda-wand.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + SB + 'wanda-wand.webm" type="video/webm"></video>';   // Wanda waves her wand beside the Super Reel phone
       }
       /* the award itself — drawn, since the design frame has no trophy asset. Same celebration as
@@ -1682,8 +1897,8 @@
       var lgs = LOGOS[i] || [];
       for (var lq = 0; lq < lgs.length; lq++) {
         var G = lgs[lq];
-        ph += '<button type="button" class="aglogo" data-fx="' + esc(G.fx) + '" aria-label="' + esc(G.t) + '"' +
-          ' style="left:' + G.x + '%;top:' + G.y + '%;width:' + G.w + 'vw;rotate:' + G.r + 'deg;' +
+        ph += '<button type="button" class="aglogo' + (/bima/.test(G.src) ? ' bima' : '') + '" data-fx="' + esc(G.fx) + '" aria-label="' + esc(G.t) + '"' +
+          ' style="left:' + G.x + '%;top:' + G.y + '%;width:' + G.w + 'vw;rotate:' + G.r + 'deg;--ad:' + (0.15 + lq * 0.19).toFixed(2) + 's;--fx:' + (((lq * 7) % 5 - 2) * 14) + 'vw;--fy:' + (((lq * 3) % 4 - 1.5) * 18) + 'vh;' +
           '--ld:' + (8 + (lq % 5) * 1.3).toFixed(1) + 's;--ldl:-' + (lq * 1.4).toFixed(1) + 's;' +
           '--lx:' + (7 + (lq % 3) * 4) + 'px;--ly:-' + (11 + (lq % 4) * 4) + 'px">' +
           '<span class="agin"><img src="' + SB + esc(G.src) + '" alt="" decoding="async">' +
@@ -1693,12 +1908,17 @@
       /* scattered label chips (skills etc.) — one per entry, each drifting on its own timing */
       var tg = TAGS[i] || [];
       for (var tq = 0; tq < tg.length; tq++)
-        ph += '<span class="stag' + (tg[tq].sm ? ' sm' : '') + '"' + (tg[tq].fx ? ' data-fx="' + tg[tq].fx + '"' : '') +
+        ph += '<span class="stag' + (tg[tq].sm ? ' sm' : '') + (tg[tq].head ? ' shead' : '') + (tg[tq].grp ? ' held' : '') + (tg[tq].skl ? ' skl' + (tg[tq].skl === 'head' ? ' skl-head' : '') : '') + '"' + (tg[tq].grp ? ' data-grp="' + tg[tq].grp + '"' : '') + (tg[tq].fx ? ' data-fx="' + tg[tq].fx + '"' : '') +
           (tg[tq].txt ? ' data-txt="' + esc(tg[tq].txt) + '"' : '') +
           ' style="left:' + tg[tq].x + '%;top:' + tg[tq].y + '%;rotate:' + (tg[tq].r || 0) + 'deg">' +
           '<span class="sin" style="--td:' + (6.2 + (tq % 4) * 1.4).toFixed(1) + 's;--tdl:-' + (tq * 0.9).toFixed(1) +
           's;--tx:' + (3 + (tq % 3) * 2) + 'px;--ty:-' + (5 + (tq % 4) * 2) + 'px">' +
           tg[tq].i + ' ' + esc(tg[tq].t) + '</span></span>';
+      /* the tablets that hold grouped pills (see TAGS[6]): one press cracks, the second bursts them out to their places */
+      var grpsSeen = {}; for (var tg2 = 0; tg2 < tg.length; tg2++) if (tg[tg2].grp && !grpsSeen[tg[tg2].grp]) { grpsSeen[tg[tg2].grp] = 1; var hd = tg.filter(function (t) { return t.grp === tg[tg2].grp && t.head; })[0];
+        ph += '<button type="button" class="jjms-tab' + (tg[tg2].grp === 'soft' ? ' figma' : '') + '" data-grp="' + tg[tg2].grp + '" data-cursor="hover" aria-label="Break the ' + esc(hd ? hd.t : tg[tg2].grp) + ' tablet" style="left:' + (tg[tg2].grp === 'subj' ? 13 : 87) + '%;top:68%">' +
+          '<svg viewBox="0 0 120 150"><path class="stone" d="M14 8 h92 q8 0 8 8 v126 q0 8 -8 8 h-92 q-8 0 -8 -8 v-126 q0 -8 8 -8z"/><path class="spiral" d="M60 72 m0 -22 a22 22 0 1 1 -22 22 a16 16 0 1 0 16 -16 a10 10 0 1 1 -10 10 a5 5 0 1 0 5 -5" fill="none"/><g class="fig" transform="translate(47 49) scale(1.55)" fill="none" stroke="#FFC531" stroke-width="2.4" stroke-linejoin="round"><path d="M0 0h10a5 5 0 0 1 0 10H0z"/><path d="M10 0h5a5 5 0 0 1 0 10h-5z"/><path d="M0 10h10a5 5 0 0 1 0 10H0z"/><path d="M0 20h10a5 5 0 0 1-5 10H5a5 5 0 0 1-5-5z"/><circle cx="15" cy="15" r="5"/></g><path class="crk c1" d="M30 10 L44 40 L36 62 L52 96 L44 142"/><path class="crk c2" d="M92 6 L78 34 L86 58 L70 84 L80 118 L66 146"/><path class="crk c3" d="M8 70 L40 78 L62 70 L96 82 L112 74"/></svg>' +
+          '<span class="tlbl">' + esc(hd ? hd.t : '') + '</span><span class="thint">press to break</span></button>'; }
       /* clusters on this step: a lead photo with the rest of the set stacked behind it (+ countries) */
       for (var tv = 0; tv < CLUSTERS.length; tv++) {
         if (CLUSTERS[tv].step === i) {
@@ -1707,10 +1927,11 @@
           for (var pk = 0; pk < Math.min(2, nT - 1); pk++)                  /* hint at what's behind */
             peeks += '<span class="tstack" style="transform:rotate(' + (pk ? -4 : 3.5) + 'deg) translate(' +
               (pk ? -7 : 7) + 'px,' + (pk ? -4 : -5) + 'px)"></span>';
-          ph += '<span class="trav" data-trav="' + T.key + '" style="left:' + T.x + '%;top:' + T.y + '%;width:' + T.w + 'vw;' +
+          ph += '<span class="trav' + (T.tuck ? ' tuck' : '') + '" data-trav="' + T.key + '"' + (T.grp ? ' data-grp="' + T.grp + '"' : '') + ' style="left:' + T.x + '%;top:' + T.y + '%;width:' + T.w + 'vw;' + (T.tuck ? '--tkx:' + T.tuck[0] + 'vw;--tky:' + T.tuck[1] + 'vh;' : '') +
             'rotate:' + T.rot + 'deg">' + peeks +
             '<img class="tlead" src="' + SB + T.files[0] + '" alt="" decoding="async">' +
             (nT > 1 ? '<span class="tmore">+' + (nT - 1) + ' more</span>' : '') + '</span>';
+          if (T.yr) ph += '<span class="tcc tyr" style="left:calc(' + T.x + '% - .4vw);top:calc(' + T.y + '% - 3.1vw);width:9vw;justify-content:flex-start"><span style="rotate:-2.6deg;--td:6.1s;--tdl:-1.3s;--tx:4px;--ty:-6px">\ud83d\udcc5 ' + esc(T.grp) + '</span></span>';   /* the year is one of the same floaty pills as the places */
           if (T.cc) {
             var chips = '';
             for (var cq = 0; cq < T.cc.length; cq++)
@@ -1726,14 +1947,14 @@
             var ccLeft = T.ccSide ? (T.x + '% + ' + (T.w + 1.2).toFixed(1) + 'vw') : (T.x + '%');
             var ccGap = (T.ccGap == null) ? 1.6 : T.ccGap;
             var ccTop = T.ccSide ? (T.y + '% + ' + (boxH * 0.22).toFixed(1) + 'vw') : (T.y + '% + ' + (boxH + ccGap).toFixed(1) + 'vw');
-            ph += '<span class="tcc" style="left:calc(' + ccLeft + ');top:calc(' + ccTop +
+            ph += '<span class="tcc' + (T.tuck ? ' tuck' : '') + '" data-for="' + T.key + '"' + (T.grp ? ' data-grp="' + T.grp + '"' : '') + ' style="left:calc(' + ccLeft + ');top:calc(' + ccTop +
               ');width:' + T.ccw + 'vw;justify-content:flex-start">' + chips + '</span>';
           }
         }
       }
       /* step 0 keeps its light-strike caption; every other caption disperses letter by letter */
       /* the cinema step reads as one settled line: no per-letter scatter to fight through */
-      var cap = i === 0 ? heroCap(s.cap) : (s.tall ? esc(s.cap) : disperseCap(s.cap, s.hot));
+      var cap = i === 0 ? heroCap(s.cap) : (s.tall && !s.feat ? esc(s.cap) : disperseCap(s.cap, s.hot));
       var extra = i === 0 ? '<div class="flare"></div><div class="gring"></div>' : '';
       /* content steps (not the opening flare step) let their collage spill past the step edge, so posters
          near the bottom are never clipped — they carry on into the next section */
@@ -1750,19 +1971,26 @@
             '<i class="lfall">' + esc(L.t) + '</i></span></span>';
         }
       if (s.grow && s.grow.logos) glogos += '</div>';
-      if (s.duo) glogos = '<div class="gdim"></div>';         /* the duo step borrows the cinema darkness */
+      if (s.duo || s.feat) glogos = '<div class="gdim"></div>';         /* the duo / feat steps borrow the cinema darkness */
       var grow = s.grow ? '<div class="gdim"></div>' + glogos +
-        '<span class="gvid" data-vid="' + esc(s.grow.src) + '" data-cap="' + esc(s.grow.cap || '') + '">' +
+        '<span class="gvid' + (s.grow.portrait ? ' port' : '') + '" data-vid="' + esc(s.grow.src) + '" data-cap="' + esc(s.grow.cap || '') + '">' +
         '<i class="gglow"></i>' +
-        '<span class="gshell"><video muted loop playsinline preload="metadata" poster="' + SB + esc(s.grow.poster) +
-        '" src="' + SB + esc(s.grow.src) + '"></video>' +
+        '<span class="gshell"><video muted loop playsinline preload="none" poster="' + SB + esc(s.grow.poster) +
+        '" data-src="' + SB + esc(s.grow.src) + '"></video>' +   /* truly lazy: no src until its slide is a screen and a half away (preload=metadata still pulled ~1MB at page load) */
         '<span class="ghint"><span class="gs-off">\ud83d\udd07 Sound off</span>' +
         '<span class="gs-on">\ud83d\udd0a Sound on</span></span></span></span>' : '';
-      html += '<div class="' + stepCls + (s.tall ? ' tall' : '') + (s.duo ? ' duo' : '') + '" id="jjms-step-' + i + '" data-era="' + s.era + '"' +
+      html += '<div class="' + stepCls + (s.tall ? ' tall' : '') + (s.mystery ? ' myst' : '') + (s.duo ? ' duo' : '') + (s.feat ? ' feat" data-feat="' + (s.feat === true ? 'row' : s.feat) + (s.soft ? '" data-soft="1' : '') : '') + '" id="jjms-step-' + i + '" data-era="' + s.era + '"' +
         (s.tall ? ' style="height:' + (s.tall * 100) + 'vh"' : '') + '>' +
-        (s.tall ? '<div class="stage">' : '') + extra + (s.duo ? glogos : '') + ph + grow +
+        (s.tall ? '<div class="stage">' : '') + extra + (s.duo || s.feat ? glogos : '') + ph + grow +
+        (s.flyer ? '<video class="jjms-flyer" muted loop playsinline preload="none" data-base="' + esc(s.flyer.base) + '" style="left:' + s.flyer.x + '%;top:' + s.flyer.y + '%;width:' + s.flyer.w + 'vw"></video>' : '') +
+        (s.scroll ? '<button type="button" class="jjscroll" data-cursor="hover" aria-label="Break the seal on the letter" style="left:' + s.scroll.x + '%;top:' + s.scroll.y + '%;width:' + s.scroll.w + 'vw">' +
+          '<span class="sroll"></span><span class="sbody">' + (s.scroll.logo ? '<img class="slogo" src="' + SB + esc(s.scroll.logo) + '" alt="Pagoda Projects">' : '') + '<span class="stext">' + s.scroll.text + '</span></span><span class="sroll"></span>' +
+          '<span class="seal"><i class="sl"></i><i class="sr"></i><i class="sj">J</i></span><span class="shint">Break the seal</span></button>' : '') +
+        (s.wiz ? '<div class="jjms-wizwrap"><span class="wizcap">Voiced by\u2026</span><video class="jjms-flyer jjms-wiz" muted loop playsinline preload="none" data-base="bb-wizard" poster="' + SB + 'bb-wizard-poster.webp"></video></div>' : '') +
         '<p class="cap' + (i === 0 ? ' hero' : '') + '">' + cap + '</p>' +
-        (s.sub ? '<p class="sub">' + (s.tall ? esc(s.sub) : disperseCap(s.sub, null, s.funk)) + '</p>' : '') +
+        (s.sub ? '<p class="sub">' + (s.tall && !s.feat ? esc(s.sub) : disperseCap(s.sub, null, s.funk)) + '</p>' : '') +
+        (s.reveal ? '<button type="button" class="jjms-reveal" data-vid="' + esc(s.reveal.src) + '" data-cap="' + esc(s.reveal.cap) + '" data-cursor="hover" aria-label="Reveal the voice of Storytime">' +
+          '<span class="rvshell"><img src="' + SB + esc(s.reveal.poster) + '" alt="" decoding="async"><span class="rvq">?</span></span><span class="rvbtn">Press to reveal</span></button>' : '') +
         (s.tall ? '</div>' : '') + '</div>';   /* sub disperses + floats like the caption */
     }
     /* the Big Bang finale: void + singularity, detonation (flash/shake/shockwaves/90 particles),
@@ -1780,10 +2008,13 @@
         'width:' + w + 'px;height:' + h + 'px;background:' + col + '"></span>';
     }
     var dests = '';
+    var MB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';   /* the menu's art lives with the score files */
     for (var l = 0; l < LINKS.length; l++)
-      dests += '<a href="' + LINKS[l].href + '" style="background:radial-gradient(circle at 34% 30%,#ffffff33,transparent 42%),radial-gradient(circle at 60% 65%,' +
-        LINKS[l].hue + ',#0c1226 135%);box-shadow:0 0 34px ' + LINKS[l].hue + '55,inset 0 0 24px ' + LINKS[l].hue + '44">' + LINKS[l].label + '</a>';
+      dests += '<a href="' + LINKS[l].href + '" class="door" data-key="' + LINKS[l].key + '" data-cursor="hover" style="--hue:' + LINKS[l].hue + '" aria-label="' + LINKS[l].label + '">' +
+        '<img alt="" loading="lazy" src="' + MB + LINKS[l].img + '"><span class="dsub">' + LINKS[l].sub + '</span><span class="dcta">' + LINKS[l].cta + '</span>' +
+        (LINKS[l].lockSub ? '<span class="dsub lk">' + LINKS[l].lockSub + '</span><span class="dcta lk">' + LINKS[l].lockCta + '</span><i class="dlock"></i>' : '') + '</a>';
     html += '<div class="finale" id="jjms-finale">' +
+      '<button type="button" class="seed" data-cursor="hover" aria-label="Start the universe"><i class="dust">' + (function () { var d = ''; for (var m = 0; m < 46; m++) { var ang = Math.random() * Math.PI * 2, rad = Math.pow(Math.random(), 1.8) * 46; d += '<b style="left:' + (50 + Math.cos(ang) * rad).toFixed(1) + '%;top:' + (50 + Math.sin(ang) * rad * 0.8).toFixed(1) + '%;--s:' + (2 + Math.random() * 5).toFixed(1) + 'px;--d:' + (5 + Math.random() * 7).toFixed(1) + 's;--dl:-' + (Math.random() * 9).toFixed(1) + 's;--o:' + (0.35 + Math.random() * 0.6).toFixed(2) + '"></b>'; } return d; })() + '</i><span>Press to start the universe</span></button>' +
       '<div class="bang"><div class="void"></div><div class="glowb"></div><div class="flash"></div><div class="core"></div>' +
       '<div class="ring r1 c1"></div><div class="ring r2 c2"></div><div class="ring r3 c3"></div><div class="ring r4 c1"></div><div class="ring r5 c2"></div>' +
       '<div class="parts">' + parts + '</div></div>' +
@@ -1829,6 +2060,16 @@
         window.removeEventListener('scroll', repin);
       }
     }
+    /* the press: the universe starts, the doors arrive, and (first time) the darkness asks its question, then the exam */
+    function bangNow() {
+      if (finale.classList.contains('go')) return;
+      finale.classList.add('go'); holdScroll(true); setTimeout(function () { holdScroll(false); }, 4200);
+      setTimeout(function () { if (window.jjScore) window.jjScore.award('big-bangs', { part: 'story' }); }, 3300);
+      if (!teasePlayed) { teasePlayed = true; if (calmQ) setTimeout(function () { openQuiz(); }, 2400); else setTimeout(runTease, 2300); }
+      setTimeout(function () { bg.classList.add('boom'); }, 1000);    /* the sky surges at detonation */
+      setTimeout(function () { bg.classList.remove('boom'); }, 2400);
+    }
+    var seedBtn = finale.querySelector('.seed'); if (seedBtn) seedBtn.addEventListener('click', function (e) { e.stopPropagation(); bangNow(); });
     function snapToFinale() {
       var top = finale.getBoundingClientRect().top + window.scrollY;    /* finale is exactly 100vh */
       var L = window.lenis || window.__lenis;
@@ -1840,7 +2081,7 @@
         window.scrollTo(0, pinY);
         if (snapToFinale._onPinned) { snapToFinale._onPinned(); snapToFinale._onPinned = null; }
       }, 620);
-      setTimeout(function () { holdScroll(false); }, 620 + 4200);       /* the sequence runs ~4.2s */
+      setTimeout(function () { holdScroll(false); }, 620 + 900);        /* a moment pinned, then the visitor is free again: the show waits for the seed */
     }
 
     /* galaxies turn slowly forever (CSS on the inner img); on top of that each one, on its own random
@@ -1864,10 +2105,8 @@
     var fly = document.createElement('div'); fly.id = 'jjms-fly';
     fly.innerHTML = '<img alt="">'; wrap.appendChild(fly);        /* inside #jjms so it sits behind the text/photos */
     var flyImg = fly.querySelector('img'), flyEra = -1, flyResetT = null;
-    function flyStartWander() {                                  /* (re)start the wander from the beginning */
-      fly.style.transition = 'none'; fly.style.transform = ''; fly.style.opacity = '';
-      fly.style.animation = 'none'; void fly.offsetWidth; fly.style.animation = '';
-      fly.style.transition = 'opacity .6s ease';
+    function flyStartWander() {                                  /* (re)enter: a quick pop back onto the bar */
+      fly.style.opacity = ''; fly.style.transition = ''; fly.classList.add('swap'); setTimeout(function () { fly.classList.remove('swap'); }, 60);
     }
     function flyEnter() {                                        /* swap to the current era\'s sprite + fly in */
       flyImg.src = SB + 'era-fly-' + flyEra + '.png'; flyStartWander(); fly.classList.add('show');
@@ -1882,9 +2121,15 @@
     function flyShow(era) {
       if (era === flyEra) { fly.classList.add('show'); return; }
       var first = flyEra < 0; flyEra = era;
-      if (first) flyEnter(); else flyOff(flyEnter);              /* new era: old flies off, then new flies in */
+      if (first) flyEnter(); else { fly.classList.add('swap'); setTimeout(function () { flyImg.src = SB + 'era-fly-' + flyEra + '.png'; fly.classList.remove('swap'); }, 230); }   /* new era: shrink, swap on the dash, pop back */
       fly.classList.add('show');
     }
+    /* where he stands: on the nav bar, across the current era's word in step with the era's own scroll */
+    function flyPlace(era, idx) { var navEl = document.querySelector('#jjms-nav a[data-era="' + era + '"]'); if (!navEl) return;
+      var a0 = firstStepOfEra[era], z0 = a0; while (z0 + 1 < STEPS.length && STEPS[z0 + 1].era === era) z0++;
+      var top0 = steps[a0].getBoundingClientRect().top, bot0 = steps[z0].getBoundingClientRect().bottom, pe = Math.max(0, Math.min(1, (window.innerHeight / 2 - top0) / Math.max(1, bot0 - top0)));
+      var r = navEl.getBoundingClientRect(), fw = fly.offsetWidth || 62, x = r.left + 10 + (r.width - 20 - fw) * pe, y = r.top - fw + 10;
+      fly.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)'; }
     flyImg.addEventListener('click', function () { flyOff(flyEnter); });   /* fly off, then the same era flies back */
 
     /* left ruler: fine ticks (4/year) + year labels. The ticks run PAST both ends (blank, unlabelled)
@@ -1926,6 +2171,13 @@
 
     /* era header / next / nav */
     var hd = document.createElement('div'); hd.id = 'jjms-hd'; document.body.appendChild(hd);
+    function placeHd(){                                          /* the era title sits ON the nav's line: just right of the J badge (whatever its theme's size), its two lines centred on the Menu's centre */
+      var lg = document.querySelector('.nav-logo-link'), mc = document.querySelector('.menu-container'); if (!lg) return;
+      var lr = lg.getBoundingClientRect(), mr = (mc || lg).getBoundingClientRect(); if (!lr.width) return;
+      var t = hd.querySelector('.hin .t'), a = hd.querySelector('.hin .a'), th = (t ? t.offsetHeight : 28) + (a ? a.offsetHeight + 3 : 18);
+      var hp = document.getElementById('jj-sc-hud'), hpr = hp && hp.getBoundingClientRect(); if (hpr && hpr.width) { var mw = Math.max(120, Math.round(hpr.left - lr.right - 30)); hd.style.minWidth = '0'; if (t) { t.style.maxWidth = mw + 'px'; t.style.whiteSpace = 'nowrap'; t.style.overflow = 'hidden'; t.style.textOverflow = 'ellipsis'; } }   /* never runs under the pills */
+      hd.style.left = Math.round(lr.right + 16) + 'px'; hd.style.top = Math.round(mr.top + mr.height / 2 - th / 2) + 'px'; }
+    placeHd(); setInterval(placeHd, 900); window.addEventListener('resize', placeHd);
     (function regFollow(){ if (window.jjCompanion && window.jjCompanion.follow) window.jjCompanion.follow('mystory', function () { if (document.getElementById('jjst')) return null; return hd.querySelector('.hin .ic img.act'); }); else setTimeout(regFollow, 600); })();   // the companion keeps to the era's active sprite
     var nx = document.createElement('button'); nx.id = 'jjms-next'; nx.innerHTML = '<span>NEXT</span><span class="ar">↓</span>'; nx.setAttribute('data-jj', 'btn'); nx.setAttribute('data-cursor', 'hover'); document.body.appendChild(nx);
     var nav = document.createElement('div'); nav.id = 'jjms-nav';
@@ -1941,6 +2193,204 @@
     var jobEls = Array.prototype.slice.call(tl.querySelectorAll('.job'));
     var navEls = Array.prototype.slice.call(nav.querySelectorAll('a'));
     var steps = Array.prototype.slice.call(wrap.querySelectorAll('.step'));
+
+    /* =====================================================================================================
+       MY STORY V2 — ERA WORLDS (2026-09-17). Off by default; `/storytime?ms=2#my-story` (or window.JJ_MS_V2) turns it on.
+       Same slides, same data: only the WORLD behind them changes. Each era is its own place — sea, savannah, a
+       Mediterranean road, the Storytime village, a studio — and space is kept for the Information Age, so the Big Bang is
+       a payoff. The star field / nebulae / swirl are hidden until then (also the biggest perf saving on the page).
+       Every world is three layers on the era's scroll: .wsky (a tall gradient that travels), .wfar, .wnear (silhouettes).
+       Until Joe's painted plates exist the layers are drawn in CSS / inline SVG; drop `era-<n>-far.webp`, `-mid.webp`,
+       `-near.webp` (n = 0..4) in the repo and they replace the placeholders on their own (tried once, ignored if missing).
+       The era's sprite WALKS the bottom edge, and only while the page is moving (rule 30); the floating mascot is retired
+       here (the visitor's own companion already floats). Era changes are a rising wipe, never a gate. ===================== */
+    var V2 = window.JJ_MS_V2 || /[?&]ms=2\b/.test(location.search);
+    if (V2) (function () {
+      document.documentElement.classList.add('jjms-v2');
+      var W = [   /* [sky gradient (deep → light, bottom → top of the era's journey), far colour, near colour, far path, near path]  paths live in a 1000x300 box, filled to the bottom */
+        ['linear-gradient(0deg,#021018 0%,#04283a 35%,#0b4f6b 70%,#2f8fa8 100%)', '#06324a', '#031c2b', 'M0 210 Q120 150 250 200 T500 190 T760 205 T1000 180 V300 H0Z', 'M0 250 Q90 215 200 245 T420 240 T700 255 T1000 235 V300 H0Z'],
+        ['linear-gradient(0deg,#1a0f0a 0%,#3b2116 40%,#8a4a22 78%,#d9904a 100%)', '#4a2a18', '#21120b', 'M0 200 L90 150 L210 150 L260 195 L420 195 L470 130 L640 130 L700 200 L1000 190 V300 H0Z', 'M0 255 Q60 225 120 250 Q180 215 260 250 Q340 225 430 252 Q540 222 650 250 Q760 228 870 252 Q940 236 1000 248 V300 H0Z'],
+        ['linear-gradient(0deg,#0b2236 0%,#123a5c 45%,#3f6f95 75%,#e0a36a 100%)', '#1d4a66', '#0c2438', 'M0 215 Q200 170 380 205 T760 190 T1000 205 V300 H0Z', 'M40 300 V170 H70 V300 Z M110 300 V150 H140 V300 Z M180 300 V170 H210 V300 Z M30 170 H220 V155 H30 Z M760 300 V185 H788 V300 Z M830 300 V165 H858 V300 Z M900 300 V185 H928 V300 Z M750 185 H940 V172 H750 Z M0 270 H1000 V300 H0 Z'],
+        ['linear-gradient(0deg,#0a1a18 0%,#10233a 40%,#1f4a3a 78%,#5d8a5a 100%)', '#17382e', '#0a1c18', 'M0 220 Q160 160 330 210 T680 195 T1000 215 V300 H0Z M700 215 V150 H712 V138 H724 V150 H736 V138 H748 V150 H760 V138 H772 V150 H784 V215 Z M728 150 V100 L740 84 L752 100 V150 Z', 'M0 262 Q130 232 270 258 T560 250 T820 262 T1000 246 V300 H0Z'],
+        ['linear-gradient(0deg,#160d08 0%,#2a1a12 40%,#6b3f22 80%,#c99a5b 100%)', '#3a2214', '#1a0f09', 'M0 300 V120 Q125 20 250 120 V300 Z M375 300 V120 Q500 20 625 120 V300 Z M750 300 V120 Q875 20 1000 120 V300 Z', 'M0 268 H1000 V300 H0 Z M120 268 V205 H150 V268 Z M100 205 H170 V196 H100 Z M820 268 V190 H850 V268 Z M800 190 H870 V181 H800 Z'],
+        ['none', 'none', 'none', '', '']
+      ];
+      /* NIGHT (Joe, 2026-09-17): one dark-blue sky all the way down — the site's own swirl and stars — so the page matches the rest of
+         the site. Only the sea keeps its own water. From the shore on, each era is a moonlit strip of land along the bottom (the
+         '-n' files are the same paintings graded to night, lit windows and fires left warm) with a faint horizon glow in the era's
+         own colour. Eras no longer wipe: the old land sinks away and the new land rises, each layer at its own speed. */
+      var GLOW = [null, 'rgba(214,120,50,.34)', 'rgba(226,150,110,.30)', 'rgba(90,170,120,.26)', 'rgba(214,170,90,.30)', 'rgba(80,160,220,.22)'], DOWN = { 4: -5 };   /* DOWN: vw to sink (or, negative, lift) an era's strip. The Renaissance city was too low to read */
+      var world = document.createElement('div'); world.id = 'jjms-world';
+      var svgBg = function (d, fill) { return 'url("data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1000 300\' preserveAspectRatio=\'none\'><path d=\'' + d + '\' fill=\'' + fill + '\'/></svg>') + '")'; };
+      for (var w = 0; w < W.length; w++) world.innerHTML += '<div class="wera" data-era="' + w + '"><div class="wsky' + (w ? ' glow' : '') + '" style="background:' + (w ? 'linear-gradient(0deg,' + GLOW[w] + ' 0%,rgba(0,0,0,0) 100%)' : W[w][0]) + '"></div><div class="wlay wfar" style="background-image:' + svgBg(W[w][3], W[w][1]) + '"></div><div class="wlay wmid"></div><div class="wlay wnear" style="background-image:' + svgBg(W[w][4], W[w][2]) + '"></div>' + (w === 0 ? '<div class="wbub"></div>' : '') + '<div class="wshade"></div></div>';
+      /* loose props per era: [file, class, left, top|bottom, width, extra style].  edge: the handover art. */
+      var PROPS = { 0: [['era-0-jelly-strip', 'bob', 'left:9%;top:26%', '6.2vw', '--pd:7s;--ar:1.178;--sd:1.05s'], ['era-0-fish-strip', 'swim', 'left:0;top:19%', '6.5vw', '--pd:44s;--ar:1.73;--sd:.55s'], ['era-0-jelly-strip', 'bob', 'left:88%;top:52%', '3.8vw', '--pd:5s;--ar:1.178;--sd:1.3s;animation-delay:-2s'], ['era-0-fish-strip', 'swim', 'left:0;top:36%', '4vw', '--pd:61s;--ar:1.73;--sd:.6s;animation-delay:-30s;filter:brightness(.8)']],
+                    5: [['era-5-prop-1', 'bob', 'left:12%;top:22%', '7vw', '--pd:11s'], ['era-5-prop-2', 'bob', 'left:80%;top:16%', '8vw', '--pd:14s'], ['era-5-prop-3', 'bob', 'left:70%;top:62%', '4vw', '--pd:8s'],
+                        ['era-5-car-1-strip', 'swim', 'left:0;top:44%', '6vw', '--pd:26s;--ar:3.29;--sd:.5s'], ['era-5-car-2-strip', 'swim', 'left:0;top:39%', '5vw', '--pd:34s;--ar:5.792;--sd:.6s;animation-delay:-14s'], ['era-5-car-3-strip', 'swim', 'left:0;top:52%', '4.5vw', '--pd:41s;--ar:3.025;--sd:.55s;animation-delay:-27s'],
+                        ['era-5-plane-1-strip', 'swim', 'left:0;top:14%', '8vw', '--pd:48s;--ar:3.085;--sd:.7s;animation-delay:-9s'], ['era-5-plane-2-strip', 'swim', 'left:0;top:24%', '6vw', '--pd:60s;--ar:6.14;--sd:.8s;animation-delay:-38s']],
+                    2: [['era-2-prop-1', 'sail', 'left:0;bottom:12.6vw', '3.2vw', '--pd:120s'], ['era-2-prop-1', 'sail', 'left:0;bottom:13.4vw', '2.2vw', '--pd:170s;animation-delay:-60s;filter:brightness(.85)'], ['era-2-prop-1', 'sail', 'left:0;bottom:12.1vw', '3.8vw', '--pd:135s;animation-delay:-105s'], ['era-2-birds-strip', 'swim', 'left:0;top:14%', '6.5vw', '--pd:48s;--ar:1.121;--sd:.5s'], ['era-2-prop-3', '', 'left:63%;bottom:10vh', '3.6vw', '']],
+                    3: [['era-3-banner-strip', '', 'left:5.5%;top:13%', '4.8vw', '--ar:.83;--sd:1.4s'], ['era-3a-birds-strip', 'swim sa', 'left:0;top:20%', '6.5vw', '--pd:60s;--ar:1.093;--sd:.5s'], ['era-3a-signpost', 'sa', 'left:3%;bottom:8.5vw', '4vw', ''], ['era-3b-signpost', 'sb', 'left:3%;bottom:8.5vw', '4vw', '']],
+                    4: [['era-4-fountain-strip', '', 'left:47.6%;bottom:6.6vw', '4.8vw', '--ar:.889;--sd:.7s'], ['era-4-birds-strip', 'swim', 'left:0;top:26%', '5.5vw', '--pd:38s;--ar:1.299;--sd:.45s'], ['era-4-frame-n', 'sway', 'left:92.5%;bottom:12.5vw', '3.2vw', '--pd:7s']],
+                    1: [['era-1-birds-strip', 'swim', 'left:0;top:14%', '8vw', '--pd:52s;--ar:1.193;--sd:.6s'], ['era-1-prop-3', 'cavepaint', 'left:74%;top:17%', '13vw', 'opacity:0;transition:opacity .8s ease']] };
+      Object.keys(PROPS).forEach(function (n) { var E = world.querySelector('.wera[data-era="' + n + '"]'), sh = E.querySelector('.wshade');
+        PROPS[n].forEach(function (P) { var d = document.createElement('div'); d.className = 'wprop ' + P[1]; d.style.cssText = P[2] + ';width:' + P[3] + ';' + P[4]; var isStrip = /-strip$/.test(P[0]), nm = P[0] + (!isStrip && !/-n$/.test(P[0]) && !/^era-3[ab]-/.test(P[0]) && +n >= 1 && +n <= 4 ? '-n' : '');   /* the round-3 files are night already */
+          d.innerHTML = isStrip ? '<i class="strip" style="background-image:url(' + SB + nm + '.webp)"></i>' : '<img alt="" src="' + SB + nm + '.webp">'; E.insertBefore(d, P[1] === 'sail' ? E.querySelector('.wmid') : sh); }); });   /* -strip: three frames side by side, stepped */   /* the galley sits BEHIND the land, on the sea */
+      /* the rocket: parked on the pad, it lifts off as the Information Age scrolls by. Rule 30: the flame is its legs, so it burns only while it climbs. */
+      var rk = document.createElement('div'); rk.className = 'wrocket'; rk.innerHTML = '<img alt="" src="' + SB + 'era-5-rocket.webp"><i class="flame" style="background-image:url(' + SB + 'era-5-flame-strip.webp)"></i>';
+      world.querySelector('.wera[data-era="5"] .wmid').appendChild(rk);
+      /* the campfire lives IN the mid layer now, small and far (Joe: it floated and flickered too fast); the volcano in the far layer breathes smoke */
+      (function () { var E1 = world.querySelector('.wera[data-era="1"]'), fm = E1.querySelector('.wmid'), ff = E1.querySelector('.wfar');
+        var fire = document.createElement('div'); fire.className = 'wfire'; fire.innerHTML = '<i class="strip" style="background-image:url(' + SB + 'era-1-fire-strip.webp)"></i>'; fm.appendChild(fire);
+        var smoke = document.createElement('div'); smoke.className = 'wsmoke2'; smoke.innerHTML = '<i class="strip" style="background-image:url(' + SB + 'era-1-smoke-strip.webp)"></i>'; ff.appendChild(smoke);
+        [['era-1-mammoth-1', '29%', '54.5%', '4.6%'], ['era-1-mammoth-2', '34.2%', '58.6%', '3%'], ['era-1-mammoth-3', '38%', '54.6%', '4.6%']].forEach(function (M) { var d = document.createElement('div'); d.className = 'wmammoth'; d.style.cssText = 'left:' + M[1] + ';top:' + M[2] + ';width:' + M[3]; d.innerHTML = '<img alt="" src="' + SB + M[0] + '.webp">'; fm.appendChild(d); });
+        var cat = document.createElement('div'); cat.className = 'wcat'; cat.innerHTML = '<i class="strip" style="background-image:url(' + SB + 'era-1-cat-strip.webp)"></i><img class="awake" alt="" src="' + SB + 'era-1-cat-awake.webp">'; fm.appendChild(cat); world._cat = cat;
+        var E4 = world.querySelector('.wera[data-era="4"]'), ez = document.createElement('div'); ez.className = 'weasel'; ez.innerHTML = '<img class="e0" alt="" src="' + SB + 'era-4-easel-empty.webp"><img class="e1" alt="" src="' + SB + 'era-4-easel-painted.webp">'; E4.querySelector('.wmid').appendChild(ez); world._easel = ez; })();
+      var surf = document.createElement('img'); surf.className = 'wedge surf'; surf.alt = ''; surf.src = SB + 'era-0-edge.webp'; world.appendChild(surf);          /* the water surface rides the line where the sea gives way to the air */
+      var EDGE = {}; [].forEach(function (n) { var g = document.createElement('img'); g.className = 'wedge rise'; g.alt = ''; g.src = SB + 'era-' + n + '-edge.webp'; g.style.top = '0'; g.style.opacity = '0'; world.appendChild(g); EDGE[n] = g; });   /* each later world rises in under its own door-frame: the lintel, the portcullis, the curtain */
+      var lip = document.createElement('img'); lip.className = 'wedge lip'; lip.alt = ''; lip.src = SB + 'era-1-edge.webp'; world.querySelector('.wera[data-era="1"]').insertBefore(lip, world.querySelector('.wera[data-era="1"] .wshade'));   /* the cave's upper lip comes down for the films slide */
+      /* EASTER EGG: Joe's favourite animal hides in the sea. Painted (era-0-octopus-strip, three frames of arms waving). The world sits
+         under the page, so it cannot take a click itself: a press is matched to his box by geometry, like the photos. */
+      var octo = document.createElement('div'); octo.className = 'wocto'; octo.innerHTML = '<i class="strip" style="background-image:url(' + SB + 'era-0-octopus-strip.webp)"></i><i class="ink"></i>';
+      world.querySelector('.wera[data-era="0"]').insertBefore(octo, world.querySelector('.wera[data-era="0"] .wnear'));   /* behind the foreground kelp, so he peeks */
+      document.addEventListener('click', function (e) { if (octo._gone || document.body.classList.contains('jj-modal-open') || document.documentElement.classList.contains('jjms-lb')) return;
+        var r = octo.getBoundingClientRect(); if (!r.width || e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+        if (!world.querySelector('.wera[data-era="0"]').classList.contains('on')) return;
+        octo._gone = true; octo.classList.add('ink'); if (window.jjScore) window.jjScore.award('octopus', { x: e.clientX, y: e.clientY }); setTimeout(function () { octo.classList.add('jet'); }, 450); }, true);
+      /* two more ways to earn an era: hit a galley three times and it goes down; press the rocket on its pad and it goes up */
+      document.addEventListener('click', function (e) { if (document.body.classList.contains('jj-modal-open') || document.documentElement.classList.contains('jjms-lb')) return;
+        var E2 = world.querySelector('.wera[data-era="2"]'); if (E2.classList.contains('on')) { var sails = E2.querySelectorAll('.wprop.sail.in:not(.sunk)'); for (var q = 0; q < sails.length; q++) { var sr = sails[q].querySelector('img').getBoundingClientRect(); if (e.clientX < sr.left - 6 || e.clientX > sr.right + 6 || e.clientY < sr.top - 6 || e.clientY > sr.bottom + 6) continue;
+          sails[q]._hits = (sails[q]._hits || 0) + 1; sails[q].querySelector('img').style.rotate = (sails[q]._hits * 6) + 'deg'; if (sails[q]._hits >= 3) { sails[q].classList.add('sunk'); if (window.jjScore) window.jjScore.award('ship', { x: e.clientX, y: e.clientY }); } return; } }
+        var hitIn = function (el, pad) { var r = el.getBoundingClientRect(); return e.clientX >= r.left - pad && e.clientX <= r.right + pad && e.clientY >= r.top - pad && e.clientY <= r.bottom + pad; };
+        var E1c = world.querySelector('.wera[data-era="1"]'); if (E1c.classList.contains('on') && world._cat && !world._cat.classList.contains('up') && hitIn(world._cat, 6)) { world._cat.classList.add('up'); if (window.jjScore) window.jjScore.award('cat', { x: e.clientX, y: e.clientY }); return; }
+        var E3c = eras[3]; if (E3c.classList.contains('on') && E3c.classList.contains('taipei') && E3c._tower && !E3c.querySelector('.wmid.b').classList.contains('lit') && hitIn(E3c._tower, 4)) { E3c.querySelector('.wmid.b').classList.add('lit'); if (window.jjScore) window.jjScore.award('tower', { x: e.clientX, y: e.clientY }); return; }
+        var E4c = world.querySelector('.wera[data-era="4"]'); if (E4c.classList.contains('on') && world._easel && !world._easel.classList.contains('done') && hitIn(world._easel, 8)) { world._easel.classList.add('done'); if (window.jjScore) window.jjScore.award('easel', { x: e.clientX, y: e.clientY }); return; }
+        if (rk && !rk._blast && world.querySelector('.wera[data-era="5"]').classList.contains('on')) { var rr = rk.getBoundingClientRect(); if (e.clientX >= rr.left - 8 && e.clientX <= rr.right + 8 && e.clientY >= rr.top - 8 && e.clientY <= rr.bottom + 8) { rk._blast = true; rk.classList.add('go', 'blast'); if (window.jjScore) window.jjScore.award('rocket', { x: e.clientX, y: e.clientY }); } } }, true);
+      /* bubbles off the first line: a burst at creation, a few more whenever it is hovered */
+      function bubblesFrom(el, n) { var st0 = el.closest('.step'); if (!st0) return; var r = el.getBoundingClientRect(), sr = st0.getBoundingClientRect();
+        for (var b = 0; b < n; b++) { var i = document.createElement('i'); i.className = 'hbub'; var sz = 6 + Math.random() * 14;
+          i.style.cssText = 'left:' + (r.left - sr.left + Math.random() * r.width).toFixed(0) + 'px;top:' + (r.top - sr.top + Math.random() * r.height * 0.6).toFixed(0) + 'px;--s:' + sz.toFixed(0) + 'px;--d:' + (2.6 + Math.random() * 2.4).toFixed(1) + 's;--dx:' + ((Math.random() - .5) * 8).toFixed(1) + 'vw;animation-delay:' + (Math.random() * 0.8).toFixed(2) + 's';
+          st0.appendChild(i); (function (el2) { setTimeout(function () { el2.remove(); }, 6000); })(i); } }
+      var litW = document.querySelector('#jjms .cap.hero .lit'); if (litW) { litW.addEventListener('mouseenter', function () { bubblesFrom(litW, 7); });
+        new MutationObserver(function () { if (steps[0].classList.contains('gen') && !litW._bb) { litW._bb = 1; setTimeout(function () { bubblesFrom(litW, 16); }, 700); } }).observe(steps[0], { attributes: true, attributeFilter: ['class'] }); }
+      /* the world is behind the page and takes no pointer, so its pressables get a hit box in front (data-cursor makes the bubble grow) */
+      var HITS = [];
+      function syncHits() { var want = [];
+        if (world.querySelector('.wera[data-era="0"]').classList.contains('on') && !octo._gone) want.push(octo);
+        var E2h = world.querySelector('.wera[data-era="2"]'); if (E2h.classList.contains('on')) Array.prototype.forEach.call(E2h.querySelectorAll('.wprop.sail.in:not(.sunk) img'), function (im) { want.push(im); });
+        if (rk && !rk._blast && world.querySelector('.wera[data-era="5"]').classList.contains('on')) want.push(rk);
+        if (world._cat && !world._cat.classList.contains('up') && world.querySelector('.wera[data-era="1"]').classList.contains('on')) want.push(world._cat);
+        if (eras[3]._tower && eras[3].classList.contains('on') && eras[3].classList.contains('taipei') && !eras[3].querySelector('.wmid.b').classList.contains('lit')) want.push(eras[3]._tower);
+        if (world._easel && !world._easel.classList.contains('done') && world.querySelector('.wera[data-era="4"]').classList.contains('on')) want.push(world._easel);
+        while (HITS.length < want.length) { var h = document.createElement('i'); h.className = 'jjms-hit'; h.setAttribute('data-cursor', 'hover'); document.getElementById('jjms').appendChild(h); HITS.push(h); }
+        for (var hi = 0; hi < HITS.length; hi++) { var tgt = want[hi]; if (!tgt) { HITS[hi].style.display = 'none'; continue; } var hr = tgt.getBoundingClientRect(); HITS[hi].style.cssText = 'display:block;left:' + hr.left.toFixed(0) + 'px;top:' + hr.top.toFixed(0) + 'px;width:' + hr.width.toFixed(0) + 'px;height:' + hr.height.toFixed(0) + 'px'; } }
+      setInterval(syncHits, 250);
+      var skyEl0 = document.getElementById('jjms-sky'); if (skyEl0 && skyEl0.parentNode) skyEl0.parentNode.insertBefore(world, skyEl0.nextSibling); else bg.appendChild(world);   /* right after the starfield in the page: stars BEHIND the scenery, slides in front of both */
+      var eras = Array.prototype.slice.call(world.querySelectorAll('.wera'));
+      eras.forEach(function (E, n) { ['far', 'mid', 'near'].forEach(function (k) { var im = new Image(); im.onload = function () { var L = E.querySelector('.w' + k + ':not(.b)'); L.style.backgroundImage = 'url(' + im.src + ')'; L.classList.add('art'); }; im.src = SB + (n === 3 ? 'era-3a-' + k : 'era-' + n + '-' + k + (n >= 1 && n <= 4 ? '-n' : '')) + '.webp'; }); });
+      /* Medieval, scene b (Taipei): a second far/mid/near behind the same sky, faded in as the Taipei slide takes over from Brighton */
+      (function () { var E3 = eras[3]; ['far', 'mid', 'near'].forEach(function (k) { var L = document.createElement('div'); L.className = 'wlay w' + k + ' b'; L.style.opacity = '0'; E3.insertBefore(L, E3.querySelector('.w' + k).nextSibling);
+          var im = new Image(); im.onload = function () { L.style.backgroundImage = 'url(' + im.src + ')'; L.classList.add('art'); }; im.src = SB + 'era-3b-' + k + '.webp'; });
+        var lit = new Image(); lit.src = SB + 'era-3b-mid-lit.webp';   /* warmed up for the switch */
+        var tw = document.createElement('i'); tw.className = 'wtower'; E3.querySelector('.wmid.b').appendChild(tw); E3._tower = tw; })();
+      var bub = world.querySelector('.wbub'); if (bub) { var bh = ''; for (var b = 0; b < 16; b++) bh += '<i style="left:' + (4 + b * 6.1 + (b % 3) * 1.4).toFixed(1) + '%;--s:' + (5 + (b * 7) % 11) + 'px;--d:' + (7 + (b * 3) % 8) + 's;--dl:-' + ((b * 1.7) % 9).toFixed(1) + 's"></i>'; bub.innerHTML = bh; }
+      /* the walker */
+      var walker = document.createElement('div'); walker.id = 'jjms-walker'; walker.innerHTML = '<img alt="">'; document.body.appendChild(walker);
+      var wImg = walker.querySelector('img'), flat = []; ERAS.forEach(function (E) { E.icons.forEach(function (k) { flat.push(k); }); });
+      var lastY = window.scrollY || 0, walkT = 0, lastSpr = -1;
+      var vst = document.createElement('style'); vst.id = 'jjms-v2-style'; vst.textContent =
+        'html.jjms-v2 #jjms .flare{background:radial-gradient(circle,rgba(255,255,255,.9) 0%,rgba(170,240,255,.5) 11%,rgba(40,180,230,.18) 25%,rgba(20,90,170,.08) 40%,transparent 58%);}html.jjms-v2 #jjms .gring{border-color:rgba(170,240,255,.9);}' +
+        'html.jjms-v2 #jjms .step.gen .cap.hero .lit{animation-name:jjmsSlam,jjmsLitW,jjmsLitPW;}@keyframes jjmsLitW{0%{color:#fff;text-shadow:0 0 0 rgba(255,255,255,0);}20%{color:#fff;text-shadow:0 0 30px #fff,0 0 70px rgba(80,220,255,.95),0 0 130px rgba(40,140,255,.7);}100%{color:#fff;text-shadow:0 0 18px rgba(255,255,255,.5),0 0 44px rgba(80,220,255,.4),0 0 90px rgba(40,140,255,.28);}}' +
+        '@keyframes jjmsLitPW{0%,100%{text-shadow:0 0 18px rgba(255,255,255,.5),0 0 44px rgba(80,220,255,.4),0 0 90px rgba(40,140,255,.28);}50%{text-shadow:0 0 26px rgba(255,255,255,.75),0 0 60px rgba(80,220,255,.6),0 0 110px rgba(40,140,255,.4);}}' +
+        'html.jjms-v2 #jjms .cap .lit:hover .ch{text-shadow:0 0 24px #fff,0 0 56px rgba(80,220,255,.95),0 0 110px rgba(40,140,255,.75);}#jjms .cap.hero,#jjms .cap.hero .lit{pointer-events:auto;}' +
+        '#jjms .hbub{position:absolute;width:var(--s);height:var(--s);border-radius:50%;border:1.5px solid rgba(200,240,255,.75);background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.55),rgba(200,240,255,.06) 70%);pointer-events:none;z-index:3;opacity:0;animation:jjmsHb var(--d) ease-out forwards;}@keyframes jjmsHb{0%{transform:translate(0,0);opacity:0;}12%{opacity:.9;}100%{transform:translate(var(--dx),-46vh);opacity:0;}}' +
+        'html.jjms-v2 #jjms-sky{clip-path:inset(var(--skytop,0px) 0 0 0);}html.jjms-v2 #jjms-bg .bgimg,html.jjms-v2 #jjms-bg .bwash{opacity:var(--space,0);transition:opacity .6s ease;}' +
+        /* V2: pictures rest at 85% (they were 50%, which turned to mud over painted worlds); hover still lifts them to full, bigger and in front */
+        'html.jjms-v2 #jjms .step.live .phw img{opacity:.8;}html.jjms-v2 #jjms .step.live .phw:hover img,html.jjms-v2 #jjms .step.live .phw.hot img,html.jjms-v2 #jjms .phw.blown img{opacity:1;}@keyframes jjmsPhIn{from{opacity:0;scale:.68;}to{opacity:.8;scale:1;}}' +
+        'html.jjms-v2 #jjms .step.live .trav{opacity:.8;}html.jjms-v2 #jjms .step.live .trav:hover,html.jjms-v2 #jjms .step.live .trav.hot{opacity:1;}html.jjms-v2 #jjms .step.live .phw .fxc{opacity:.8;}html.jjms-v2 #jjms .glogo img{opacity:.8;}' +
+        '#jjms-world{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}#jjms-world .wera{position:absolute;inset:0;overflow:hidden;visibility:hidden;}#jjms-world .wera.on{visibility:visible;}' +
+        '#jjms-world .wsky{position:absolute;left:0;right:0;bottom:0;height:300vh;will-change:transform;}#jjms-world .wsky.glow{height:62vh;transform:none!important;}' +
+        '#jjms-world .wlay{position:absolute;left:-2%;width:104%;bottom:0;background:center bottom/100% 100% no-repeat;will-change:transform;}#jjms-world .wfar{height:62vh;opacity:.9;}#jjms-world .wmid{height:70vh;}#jjms-world .wnear{height:46vh;bottom:-10vh;}' +
+        '#jjms-world .wlay.art{left:50%;translate:-50% 0;width:max(100%,150vh);height:auto;aspect-ratio:2400/900;bottom:0;background-size:100% 100%;opacity:1;}' +
+        '#jjms-world .wedge{position:absolute;left:50%;translate:-50% 0;width:max(104%,150vh);height:auto;pointer-events:none;will-change:transform;}#jjms-world .wedge.lip{top:0;}' +
+        '#jjms-world .wprop{position:absolute;height:auto;pointer-events:none;will-change:transform;}#jjms-world .wprop img{display:block;width:100%;height:auto;}' +
+        '#jjms-world .wprop .strip{display:block;width:100%;aspect-ratio:var(--ar,1);background-repeat:no-repeat;background-size:300% 100%;background-position:0 0;animation:jjmsStripPP calc(var(--sd,.8s) * 1.15) step-end infinite;}@keyframes jjmsStrip{to{background-position:100% 0;}}@keyframes jjmsStripPP{0%{background-position:0 0;}25%{background-position:50% 0;}50%{background-position:100% 0;}75%{background-position:50% 0;}100%{background-position:0 0;}}' +
+        '#jjms-world .wrocket{position:absolute;left:77.4%;bottom:27.5%;width:3.4%;will-change:transform;transform-origin:50% 100%;}#jjms-world .wrocket img{display:block;width:100%;height:auto;}' +
+        '#jjms-world .wrocket .flame{position:absolute;left:29%;top:98%;width:42%;aspect-ratio:.406;background:url() 0 0/300% 100% no-repeat;opacity:0;transform-origin:50% 0;animation:jjmsStrip .14s steps(3,jump-none) infinite;transition:opacity .25s ease;filter:drop-shadow(0 0 1vw rgba(120,200,255,.7));}#jjms-world .wrocket.go .flame{opacity:1;}' +
+        '#jjms-world .wfire{position:absolute;left:51.6%;top:59.2%;width:1.5%;}#jjms-world .wfire .strip{display:block;width:100%;aspect-ratio:.607;background:url() 0 0/300% 100% no-repeat;animation:jjmsStripPP .7s step-end infinite;filter:drop-shadow(0 0 .6vw rgba(255,170,70,.75));}' +
+        '#jjms-world .wsmoke2{position:absolute;left:61.8%;bottom:66.5%;width:3.2%;opacity:.8;}#jjms-world .wsmoke2 .strip{display:block;width:100%;aspect-ratio:.536;background:url() 0 0/300% 100% no-repeat;animation:jjmsStripPP 1.6s step-end infinite;}' +
+        '#jjms-world .wmammoth{position:absolute;}#jjms-world .wmammoth img{display:block;width:100%;height:auto;}' +
+        '#jjms-world .wcat{position:absolute;left:73.5%;top:56%;width:5.2%;}#jjms-world .wcat .strip{display:block;width:100%;aspect-ratio:1.351;background:url() 0 0/300% 100% no-repeat;animation:jjmsStripPP 2.4s step-end infinite;}#jjms-world .wcat .awake{display:none;width:100%;height:auto;}#jjms-world .wcat.up .strip{display:none;}#jjms-world .wcat.up .awake{display:block;}' +
+        '#jjms-world .weasel{position:absolute;left:19%;top:49%;width:2.6%;}#jjms-world .weasel img{display:block;width:100%;height:auto;}#jjms-world .weasel .e1{display:none;}#jjms-world .weasel.done .e0{display:none;}#jjms-world .weasel.done .e1{display:block;}' +
+        '#jjms-world .wsmoke{position:absolute;left:63.3%;top:33%;width:2.4%;aspect-ratio:1;}#jjms-world .wsmoke i{position:absolute;left:50%;bottom:0;width:100%;aspect-ratio:1;border-radius:50%;translate:-50% 0;background:radial-gradient(circle,rgba(175,195,220,.55) 0%,rgba(175,195,220,0) 70%);animation:jjmsSmoke 7s linear infinite;opacity:0;}' +
+        '#jjms-world .wsmoke i:nth-child(2){animation-delay:-1.75s;}#jjms-world .wsmoke i:nth-child(3){animation-delay:-3.5s;}#jjms-world .wsmoke i:nth-child(4){animation-delay:-5.25s;}' +
+        '@keyframes jjmsSmoke{0%{transform:translate(0,0) scale(.4);opacity:0;}12%{opacity:.75;}100%{transform:translate(-1.4vw,-14vh) scale(2.8);opacity:0;}}' +
+        '#jjms-world .wera:not([data-era="0"]) .wprop{opacity:0;transition:opacity 1s ease;}#jjms-world .wera.arrived .wprop:not(.sail){opacity:1;}#jjms-world .wera.arrived .wprop.sail.in{opacity:1;}' +
+        '#jjms-world .wprop.sail.sunk img{animation:none;transition:transform 2.6s ease-in,opacity 2.4s ease .4s;transform:rotate(28deg) translateY(2.4vw);opacity:0;}' +
+        '#jjms-world .wrocket.blast{animation:jjmsBlast 3.6s cubic-bezier(.6,0,.8,.4) forwards;}@keyframes jjmsBlast{to{transform:translate3d(6vw,-160vh,0) rotate(8deg);}}' +
+        '#jjms .jjms-hit{position:fixed;z-index:5;pointer-events:auto;cursor:pointer;background:transparent;}' +
+        '#jjms-world .wbanner .pole{display:block;height:.35vw;background:linear-gradient(180deg,#9fb3d6,#5a6f95);border-radius:.2vw;}#jjms-world .wbanner .flag{display:block;margin:0 .35vw;aspect-ratio:.62;background:linear-gradient(180deg,#3b63b8,#233f86);clip-path:polygon(0 0,100% 0,100% 78%,50% 100%,0 78%);transform-origin:50% 0;animation:jjmsSway 5s ease-in-out infinite;display:flex;align-items:flex-start;justify-content:center;padding-top:22%;box-sizing:border-box;box-shadow:inset 0 -1vw 2vw rgba(0,0,0,.25);}' +
+        '#jjms-world .wbanner .flag img{width:56%;height:auto;filter:brightness(0) invert(1) drop-shadow(0 0 .3vw rgba(255,255,255,.5));}' +
+        '#jjms-world .wera[data-era="3"] .wprop.sa,#jjms-world .wera[data-era="3"] .wprop.sb{transition:opacity .9s ease;}#jjms-world .wera[data-era="3"].arrived .wprop.sb,#jjms-world .wera[data-era="3"].arrived.taipei .wprop.sa{opacity:0!important;}#jjms-world .wera[data-era="3"].arrived.taipei .wprop.sb{opacity:1!important;}' +
+        '#jjms-world .wtower{position:absolute;left:87.5%;top:42%;width:6%;height:48%;pointer-events:none;}#jjms-world .wmid.b.lit{background-image:url(' + SB + 'era-3b-mid-lit.webp)!important;}' +
+        '#jjms-world .wprop.bob img{animation:jjmsPropBob var(--pd,6s) ease-in-out infinite;}@keyframes jjmsPropBob{0%,100%{translate:0 0;rotate:-2deg;}50%{translate:.6vw -1.6vh;rotate:2deg;}}' +
+        '#jjms-world .wprop.swim{animation:jjmsSwim var(--pd,38s) linear infinite;}@keyframes jjmsSwim{from{transform:translateX(-30vw);}to{transform:translateX(130vw);}}' +
+        '#jjms-world .wprop.glide{animation:jjmsGlide var(--pd,46s) linear infinite;}@keyframes jjmsGlide{0%{transform:translate(120vw,0) scaleX(1);}100%{transform:translate(-40vw,-8vh) scaleX(1);}}' +
+        '#jjms-world .wprop.sail{animation:jjmsSailL var(--pd,80s) linear infinite;}@keyframes jjmsSailL{from{transform:translateX(112vw);}to{transform:translateX(-20vw);}}#jjms-world .wprop.sail img{animation:jjmsPropBob 5s ease-in-out infinite;}' +
+        '#jjms-world .wprop.sway img{transform-origin:50% 0;animation:jjmsSway var(--pd,6s) ease-in-out infinite;}@keyframes jjmsSway{0%,100%{rotate:-3deg;}50%{rotate:3deg;}}' +
+        '#jjms-world .wprop.lamp img{animation:jjmsLamp 2.6s ease-in-out infinite;}@keyframes jjmsLamp{0%,100%{filter:drop-shadow(0 0 .6vw rgba(255,200,90,.5));}50%{filter:drop-shadow(0 0 1.6vw rgba(255,210,110,.95));}}' +
+        '#jjms-world .wocto .strip{display:block;width:100%;aspect-ratio:1.525;background:url() 0 0/300% 100% no-repeat;animation:jjmsStripPP 1.3s step-end infinite;filter:drop-shadow(0 6px 10px rgba(0,0,0,.4));}' +
+        '#jjms-world .wocto{position:absolute;right:9%;bottom:6vh;width:clamp(84px,8.4vw,150px);transform-origin:50% 100%;animation:jjmsOctoPeek 9s ease-in-out infinite;transition:transform 1.4s cubic-bezier(.5,0,.2,1),opacity 1.2s ease .3s;}@keyframes jjmsOctoPeek{0%,62%,100%{translate:0 34%;}70%,92%{translate:0 0;}}#jjms-world .wprop.firepos .strip{filter:drop-shadow(0 0 1.2vw rgba(255,170,70,.65));}' +
+        '#jjms-world .wocto .ink{position:absolute;left:50%;top:50%;width:10%;height:10%;border-radius:50%;background:radial-gradient(circle,#140a24 0%,rgba(20,10,36,.85) 45%,transparent 72%);translate:-50% -50%;opacity:0;pointer-events:none;}#jjms-world .wocto.ink{animation:none;translate:0 0;}#jjms-world .wocto.ink .ink{animation:jjmsInk 1.6s ease-out forwards;}@keyframes jjmsInk{0%{opacity:0;scale:1;}20%{opacity:1;}100%{opacity:0;scale:34;}}' +
+        '#jjms-world .wocto.jet{transform:translate(-46vw,-64vh) rotate(-38deg) scale(.5);opacity:0;}' +
+        '#jjms-world .wprop.fire img{animation:jjmsFire .5s ease-in-out infinite alternate;transform-origin:50% 100%;}@keyframes jjmsFire{from{scale:1 1;filter:brightness(1);}to{scale:1.03 1.06;filter:brightness(1.15);}}' +
+        '#jjms-world .wshade{display:none;}' +   /* a calm, darker pool behind the words, whatever the world is doing */
+        '#jjms-world .wbub i{position:absolute;bottom:-4vh;width:var(--s);height:var(--s);border-radius:50%;border:1.5px solid rgba(200,240,255,.55);background:rgba(200,240,255,.12);animation:jjmsBub var(--d) linear var(--dl) infinite;}@keyframes jjmsBub{0%{transform:translate(0,0);opacity:0;}10%{opacity:.9;}50%{transform:translate(1.2vw,-55vh);}100%{transform:translate(-.8vw,-112vh);opacity:0;}}' +
+        '#jjms-walker{position:fixed;left:0;bottom:58px;z-index:930;width:64px;pointer-events:none;opacity:0;transition:opacity .4s ease;will-change:transform;}#jjms-walker.on{opacity:1;}#jjms-walker img{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 8px rgba(0,0,0,.5));transform-origin:50% 100%;}' +
+        '#jjms-walker.walk img{animation:jjmsWaddle .42s ease-in-out infinite;}#jjms-walker.back img{scale:-1 1;}@keyframes jjmsWaddle{0%,100%{transform:rotate(-7deg) translateY(0);}50%{transform:rotate(7deg) translateY(-5px);}}';
+      document.head.appendChild(vst);
+      function eraSpan(n) { var a = -1, z = -1; for (var i = 0; i < STEPS.length; i++) if (STEPS[i].era === n) { if (a < 0) a = i; z = i; } return [a, z]; }
+      function tick() { var vh = window.innerHeight, sy = window.scrollY || 0, idx = curStep(), inStory = idx >= 0;
+        var top0 = steps[0].getBoundingClientRect().top + sy, last = steps[steps.length - 1], bot = last.getBoundingClientRect().bottom + sy, total = Math.max(1, bot - top0 - vh);
+        var shore = steps[eraSpan(1)[0]]; document.documentElement.style.setProperty('--skytop', Math.max(0, shore.offsetTop - vh * 0.2) + 'px');   /* no stars under water */
+        var mid = sy + vh / 2, A = [], Z = [], T = [];
+        for (var n = 0; n < eras.length; n++) { var sp = eraSpan(n); A[n] = steps[sp[0]].getBoundingClientRect().top + sy; Z[n] = steps[sp[1]].getBoundingClientRect().bottom + sy; T[n] = Math.max(0, Math.min(1, (sy + vh - A[n]) / vh)); }   /* T: how far era n has arrived */
+        for (n = 0; n < eras.length; n++) { var E = eras[n], p = Math.max(0, Math.min(1, (mid - A[n]) / Math.max(1, Z[n] - A[n]))), t = T[n], u = n + 1 < eras.length ? T[n + 1] : 0;   /* u: how far the NEXT era has arrived = how far this one has left */
+          var on = mid > A[n] - vh && mid < Z[n] + vh; E.classList.toggle('on', on); if (!on) continue; E.style.zIndex = n;
+          var sW = surf.offsetWidth || vw, sH = surf.offsetHeight || 1, sT = T[1] * vh - sH * 0.35, sL = (window.innerWidth - sW) / 2;   /* where the wave art sits this frame */
+          var seaMask = 'url(' + SB + 'era-0-mask.webp) ' + sL.toFixed(1) + 'px ' + sT.toFixed(1) + 'px / ' + sW + 'px ' + sH + 'px no-repeat, linear-gradient(#000,#000) 0 ' + (sT + sH).toFixed(1) + 'px / 100% ' + Math.max(0, vh - sT - sH + 2).toFixed(1) + 'px no-repeat';
+          var landMask = 'url(' + SB + 'era-1-mask.webp) ' + sL.toFixed(1) + 'px ' + sT.toFixed(1) + 'px / ' + sW + 'px ' + sH + 'px no-repeat, linear-gradient(#000,#000) 0 0 / 100% ' + Math.max(0, sT + 1).toFixed(1) + 'px no-repeat';
+          if (n === 0) { E.style.clipPath = ''; var sm = T[1] > 0 && T[1] < 1 ? seaMask : ''; E.style.setProperty('mask', sm); E.style.setProperty('-webkit-mask', sm); if (T[1] >= 1) { E.classList.remove('on'); continue; } E.querySelector('.wsky').style.transform = 'translate3d(0,' + (p * 200).toFixed(2) + 'vh,0)'; }
+          if (n === 1) { E.style.clipPath = ''; var lm = t < 1 ? landMask : ''; E.style.setProperty('mask', lm); E.style.setProperty('-webkit-mask', lm);   /* we break the SURFACE: the night comes down from the top, the water drops away below it */
+            surf.style.opacity = t > 0 && t < 1 ? '1' : '0'; surf.style.zIndex = 9; surf.style.top = '0'; surf.style.transform = 'translate3d(0,calc(' + (t * 100).toFixed(2) + 'vh - 35%),0)';
+            var cv = Math.max(0, Math.min(1, (p - 0.5) / 0.2)) * (1 - Math.min(1, u * 2.5)); lip.style.transform = 'translate3d(0,' + ((cv - 1) * 100).toFixed(1) + '%,0)'; var cpn = E.querySelector('.wprop.cavepaint'); if (cpn) cpn.style.opacity = (cv * 0.85).toFixed(2); }
+          var rise = n >= 2 ? (1 - t) : 0, sink = n >= 1 ? u : 0, es = function (k) { return (rise * k + sink * k * 0.9); }, dn = (DOWN[n] || 0);   /* land rises in from below and sinks away the same way, far layers least */
+          if (n >= 1) { E.style.opacity = (1 - Math.max(0, (sink - 0.55) / 0.45)).toFixed(3); var arr = t > 0.6 && sink < 0.6; if (E._arr !== arr) { E._arr = arr; E.classList.toggle('arrived', arr); } }
+          var lf = E.querySelector('.wfar:not(.b)'), lm = E.querySelector('.wmid:not(.b)'), ln = E.querySelector('.wnear:not(.b)');
+          lf.style.transform = 'translate3d(0,calc(' + ((1 - p) * 4 + es(34)).toFixed(2) + 'vh + ' + dn + 'vw),0)';
+          lm.style.transform = 'translate3d(0,calc(' + ((1 - p) * 9 + es(52)).toFixed(2) + 'vh + ' + dn + 'vw),0)';
+          ln.style.transform = 'translate3d(' + ((0.5 - p) * 3).toFixed(2) + 'vw,calc(' + ((1 - p) * 15 + es(78)).toFixed(2) + 'vh + ' + dn + 'vw),0)';
+          if (n === 3) { var pb = Math.max(0, Math.min(1, (p - 0.42) / 0.16)), bl = E.querySelectorAll('.wlay.b');   /* Brighton gives way to Taipei between the two slides */
+            for (var bq = 0; bq < bl.length; bq++) { var src = E.querySelector('.w' + (bl[bq].classList.contains('wfar') ? 'far' : bl[bq].classList.contains('wmid') ? 'mid' : 'near') + ':not(.b)'); bl[bq].style.transform = src.style.transform; bl[bq].style.opacity = pb.toFixed(3); }
+            lf.style.opacity = (0.9 * (1 - pb)).toFixed(3); lm.style.opacity = (1 - pb).toFixed(3); ln.style.opacity = (1 - pb).toFixed(3);
+            if (E._pb !== (pb > 0.5)) { E._pb = pb > 0.5; E.classList.toggle('taipei', pb > 0.5); } }
+          var gl = E.querySelector('.wsky.glow'); if (gl) gl.style.opacity = Math.max(0, Math.min(1, t * 1.4) * (1 - sink)).toFixed(3);
+          if (n === 2) { var shipsIn = t >= 0.97 && sink < 0.4; if (E._ships !== shipsIn) { E._ships = shipsIn; Array.prototype.forEach.call(E.querySelectorAll('.wprop.sail'), function (sp) { sp.classList.toggle('in', shipsIn); }); } }
+          if (n === 5) { var lift = Math.max(0, Math.min(1, (p - 0.3) / 0.55)), l2 = lift * lift;   /* ignition a third of the way in, out of the top before the last slide */
+            if (!rk._blast) { rk.style.transform = 'translate3d(' + (l2 * 4).toFixed(2) + 'vw,' + (-l2 * 140).toFixed(2) + 'vh,0) rotate(' + (lift * 7).toFixed(1) + 'deg)'; rk.classList.toggle('go', lift > 0 && lift < 1); } } }
+        surf.style.opacity = T[1] > 0 && T[1] < 1 ? '1' : '0';                                        /* always settled here: era 1's own branch is skipped once it is off screen, which left the water line hanging over later eras */
+        document.documentElement.style.setProperty('--space', T[1].toFixed(3));                       /* the site's own sky arrives as we surface */
+        /* walker: across the bottom with the whole story's progress; legs only while the page moves */
+        var prog = Math.max(0, Math.min(1, (sy - top0) / total)), moved = Math.abs(sy - lastY) > 1;
+        walker.classList.remove('on');   /* the walker is retired: the era blob mascot follows the visitor instead (Joe's call) */
+        var navA = tick._nav || (tick._nav = Array.prototype.slice.call(document.querySelectorAll('#jjms-nav a[data-era]'))), ce = inStory ? STEPS[idx].era : 0;
+        if (navA.length > ce) { var r0 = navA[ce].getBoundingClientRect(), r1 = navA[ce + 1] ? navA[ce + 1].getBoundingClientRect() : { left: r0.right + 40, width: 0 }, pe = Math.max(0, Math.min(1, (mid - A[ce]) / Math.max(1, Z[ce] - A[ce])));
+          var x0 = r0.left + r0.width / 2, x1 = r1.left + r1.width / 2; walker.style.transform = 'translate3d(' + (x0 + (x1 - x0) * pe - 32).toFixed(1) + 'px,0,0)'; walker.style.bottom = Math.round(window.innerHeight - r0.top + 2) + 'px'; }   /* he stands ON the era bar, over the era he is in, and reaches the next label exactly as that era begins */
+        else walker.style.transform = 'translate3d(' + (6 + prog * 84).toFixed(2) + 'vw,0,0)';
+        if (moved) { walker.classList.add('walk'); walker.classList.toggle('back', sy < lastY); clearTimeout(walkT); walkT = setTimeout(function () { walker.classList.remove('walk'); }, 220); }
+        var spr = flat[Math.max(0, Math.min(flat.length - 1, idx))]; if (spr !== lastSpr && spr) { lastSpr = spr; wImg.src = SPRITES[spr - 1]; }
+        lastY = sy; }
+      window.addEventListener('scroll', function () { requestAnimationFrame(tick); }, { passive: true }); window.addEventListener('resize', tick); setTimeout(tick, 60); setInterval(tick, 1200);
+    })();
     var firstStepOfEra = [];
     for (e = 0; e < ERAS.length; e++) for (i = 0; i < STEPS.length; i++) if (STEPS[i].era === e) { firstStepOfEra[e] = i; break; }
 
@@ -1953,6 +2403,8 @@
       for (var j = 0; j < idxs.length; j++)
         stepYear[idxs[j]] = idxs.length > 1 ? ERAS[e].years[0] + (ERAS[e].years[1] - ERAS[e].years[0]) * j / (idxs.length - 1) : ERAS[e].years[0];
     }
+    var STEP_YEARS = [1995, 2003, 2009, 2012, 2015, 2016, 2017, 2019, 2020, 2023, 2025, 2026, 2026];   /* Joe's own years per slide (2026-09-18): the even spread ran ahead of the story */
+    for (i = 0; i < STEP_YEARS.length && i < stepYear.length; i++) stepYear[i] = STEP_YEARS[i];
     stepYear[0] = Y0;                                            /* 1995 exactly, at the landing */
     stepYear[STEPS.length - 1] = Y1;                             /* 2026, and it holds there */
 
@@ -2012,8 +2464,9 @@
     /* the lightbox chrome: a dimming scrim, a title+rating panel, and a close button */
     var scrim = document.createElement('div'); scrim.id = 'jjms-scrim'; wrap.appendChild(scrim);
     var detail = document.createElement('div'); detail.id = 'jjms-detail';
-    detail.innerHTML = '<p class="jjd-found">★ you found my favourite ★</p><p class="jjd-title"></p><p class="jjd-note"></p><span class="jjd-rate"><span class="jjd-star">★</span>' +
-      '<b class="jjd-score"></b><span class="jjd-out">/10</span><span class="jjd-src">IMDb</span></span>';
+    detail.innerHTML = '<p class="jjd-found">★ you found my favourite ★</p><p class="jjd-title"></p><p class="jjd-note"></p><div class="jjd-extra"></div><span class="jjd-rate"><span class="jjd-star">★</span>' +
+      '<b class="jjd-score"></b><span class="jjd-out">/10</span><span class="jjd-src">IMDb</span></span>' +
+      '<span class="jjd-ign"><span class="jjd-ignb">IGN</span><span class="jjd-igns"><i></i></span><b class="jjd-ignn"></b><span class="jjd-out">/5</span></span>';
     wrap.appendChild(detail);
     var dTitle = detail.querySelector('.jjd-title'), dScore = detail.querySelector('.jjd-score'),
         dNote = detail.querySelector('.jjd-note'), dRate = detail.querySelector('.jjd-rate');
@@ -2122,7 +2575,8 @@
     shot.addEventListener('click', function (e) { e.stopPropagation(); closeShot(); });
     /* the video player — same scrim + close button as the film lightbox */
     var player = document.createElement('div'); player.id = 'jjms-player';
-    player.innerHTML = '<video playsinline controls preload="none"></video><div class="jjp-yt"></div><p class="jjp-title"></p>';
+    player.innerHTML = '<video playsinline controls preload="none"></video><div class="jjp-yt"></div><p class="jjp-title"></p><button type="button" class="jjp-later" data-cursor="hover">Watch later</button>';
+    player.querySelector('.jjp-later').addEventListener('click', function (e) { e.stopPropagation(); closeVideo(); });
     wrap.appendChild(player);
     var vidEl = player.querySelector('video'), ytBox = player.querySelector('.jjp-yt'),
         pTitle = player.querySelector('.jjp-title');
@@ -2131,7 +2585,8 @@
       var src = phw.getAttribute('data-vid'), yt = phw.getAttribute('data-yt');
       if (!src && !yt) return;
       player.classList.toggle('yt', !!yt);
-      player.classList.toggle('phone', phw.classList.contains('jjphone'));   /* the app demo stays a handset */
+      player.classList.toggle('phone', phw.classList.contains('jjphone') || phw.classList.contains('jjms-reveal'));   /* the app demo and grandad's clip stay upright */
+      player.classList.toggle('rv', phw.classList.contains('jjms-reveal'));   /* grandad's clip offers Watch later (it lives in the Store) */
       lightboxOpen = true;
       var loop = phw.querySelector('video');                         /* the silent preview stands down */
       if (loop) { try { loop.pause(); } catch (e0) {} }
@@ -2163,6 +2618,7 @@
       });
       player.classList.remove('on'); player.classList.remove('phone');
       scrim.classList.remove('on'); closeBtn.classList.remove('on'); lightbox(false);
+      if (closeVideo.after) { var af = closeVideo.after; closeVideo.after = null; setTimeout(af, 300); }
       unduckMusic();
     }
 
@@ -2263,8 +2719,9 @@
     function blowUp(phw) {
       var r = phw.getBoundingClientRect();
       var dx = window.innerWidth / 2 - (r.left + r.width / 2);
-      var dy = window.innerHeight * 0.42 - (r.top + r.height / 2);   /* room for the title + rating below */
-      var k = Math.min(6, (window.innerHeight * 0.56) / r.height);   /* grow until ~56vh tall */
+      var hasEx = false;                 /* a card with extra covers (Fable I-III) needs more room below, so the poster sits higher and smaller */
+      var dy = window.innerHeight * (hasEx ? 0.27 : 0.42) - (r.top + r.height / 2);   /* room for the title + rating below */
+      var k = Math.min(6, (window.innerHeight * (hasEx ? 0.36 : 0.56)) / r.height);   /* grow until ~56vh tall */
       phw._rotPrev = phw.style.rotate;                               /* the design tilt, restored on reset */
       phw.style.transformOrigin = 'center center'; phw.style.rotate = '0deg';
       phw.style.setProperty('--blowk', k.toFixed(3));
@@ -2273,6 +2730,13 @@
       var ttl = phw.getAttribute('data-cap') || '';                  /* the label becomes the headline */
       dTitle.textContent = ttl; dTitle.style.display = ttl ? '' : 'none';
       /* only the films carry a rating — a game box or a snapshot shouldn't sprout an IMDb score */
+      var isGame = !!phw.getAttribute('data-game'), dIgn = detail.querySelector('.jjd-ign'), dExtra = detail.querySelector('.jjd-extra'), dFound = detail.querySelector('.jjd-found');
+      dIgn.style.display = isGame ? '' : 'none';
+      if (isGame) { var stv = parseFloat(phw.getAttribute('data-stars')) || 4; dIgn.querySelector('.jjd-igns i').style.width = (stv / 5 * 100) + '%'; dIgn.querySelector('.jjd-ignn').textContent = stv.toFixed(1); }
+      var ex = (phw.getAttribute('data-extra') || '').split('|'), exh = ''; for (var ei = 0; ei + 1 < ex.length; ei += 2) exh += '<span><img src="' + SB + ex[ei] + '" alt=""><em>' + esc(ex[ei + 1]) + '</em></span>';
+      dExtra.innerHTML = ''; dExtra.style.display = 'none';   /* the extra covers now fan out from behind the blown cover itself (.fxc) */
+      dFound.textContent = phw.getAttribute('data-found') || '\u2605 you found my favourite \u2605';
+      if (phw.getAttribute('data-award') && window.jjScore) window.jjScore.award(phw.getAttribute('data-award'));
       var isFilm = /film-/.test((phw.querySelector('img') || {}).getAttribute ? phw.querySelector('img').getAttribute('src') : '');
       dRate.style.display = isFilm ? '' : 'none';
       dScore.textContent = phw.getAttribute('data-rating') || '8.80';/* PLACEHOLDER rating until the real per-film ones land */
@@ -2281,7 +2745,7 @@
       var isParty = phw.getAttribute('data-party');
       detail.classList.toggle('party', !!isParty);
       scrim.classList.add('on'); detail.classList.add('on'); closeBtn.classList.add('on'); lightbox(true);
-      if (isParty) party(phw);
+      if (isParty) party(phw, isGame ? { sound: false, glyphs: ['\u2694\ufe0f', '\ud83d\udee1\ufe0f', '\u2728', '\ud83d\udc09'] } : undefined);   /* the WoW find: confetti now, Joe's soundbite later */
     }
     function resetBlow() {
       if (!blownEl) return;
@@ -2405,8 +2869,26 @@
     /* a tap anywhere on the Super Reel screen pops a heart where you tapped */
     Array.prototype.forEach.call(wrap.querySelectorAll('.srphone'), function (sp) {
       var clip = sp.querySelector('.srclip');
+      /* THE FEED IS YOURS (Joe, 2026-09-18: the Super Reel slide was too empty). The reel is driven by code now: it advances on its own
+         every 4.25s, but a wheel or a drag on the handset flicks it up or down, and it waits six seconds after you touch it. */
+      var track = sp.querySelector('.srtrack'), bar = sp.querySelector('.srbar i'), idx = 0, held = 0, N = 4; track.classList.add('js');
+      function show(i) { idx = (i + N) % N; track.style.transform = 'translateY(' + (-idx * 20) + '%)'; if (bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; } }
+      setInterval(function () { var st = sp.closest('.step'); if (!st || !st.classList.contains('live') || Date.now() - held < 6000) return; show(idx + 1); }, 4250);
+      sp.addEventListener('wheel', function (e) { e.preventDefault(); e.stopPropagation(); if (Date.now() - (sp._wl || 0) < 450) return; sp._wl = Date.now(); held = Date.now(); show(idx + (e.deltaY > 0 ? 1 : -1)); }, { passive: false });
+      var py = null; sp.addEventListener('pointerdown', function (e) { py = e.clientY; }); sp.addEventListener('pointerup', function (e) { if (py == null) return; var dy = e.clientY - py; py = null; if (Math.abs(dy) > 28) { held = Date.now(); sp._swiped = 1; show(idx + (dy < 0 ? 1 : -1)); } });
+      /* the search box: ask it for the secret and it says no */
+      var srch = sp.querySelector('.srsearch'), srq = sp.querySelector('.srq');
+      if (srch) srch.addEventListener('click', function (e) { e.stopPropagation(); if (srch._busy) return; srch._busy = 1; held = Date.now(); var q = 'the secret', i = 0; srq.textContent = '';
+        var iv = setInterval(function () { srq.textContent = q.slice(0, ++i); if (i >= q.length) { clearInterval(iv); setTimeout(function () { srq.textContent = '0 results. Nice try.'; srq.classList.add('no'); }, 500); setTimeout(function () { srq.textContent = ''; srq.classList.remove('no'); srch._busy = 0; }, 3200); } }, 90); });
+      /* two aliens live behind the handset. Now and then one peeks out; bring the cursor near and it ducks */
+      var peeks = Array.prototype.slice.call(sp.querySelectorAll('.srpeek')), pk = 0;
+      (function peek() { var st = sp.closest('.step'); var wait = 4000 + Math.random() * 5000;
+        if (st && st.classList.contains('live')) { var a = peeks[pk++ % peeks.length]; a.classList.add('on'); setTimeout(function () { a.classList.remove('on'); }, 2600); }
+        setTimeout(peek, wait); })();
+      document.addEventListener('mousemove', function (e) { for (var i = 0; i < peeks.length; i++) { var a = peeks[i]; if (!a.classList.contains('on')) continue; var r = a.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        if (Math.hypot(e.clientX - cx, e.clientY - cy) < Math.max(70, r.width)) { a.classList.remove('on'); a.classList.add('duck'); setTimeout(function () { a.classList.remove('duck'); }, 600); } } }, { passive: true });
       sp.addEventListener('click', function (e) {
-        e.stopPropagation();
+        e.stopPropagation(); if (sp._swiped) { sp._swiped = 0; return; }
         var r = clip.getBoundingClientRect();
         var h = document.createElement('span');
         h.className = 'srheart';
@@ -2585,8 +3067,12 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAny(); });
     document.addEventListener('click', function (e) {
       if (document.body.classList.contains('jj-modal-open')) return;
+      if (quizOpen || !wrap.contains(e.target)) return;   /* the score's own cards live outside the story: their Continue used to bubble here and shut the exam (Joe, 2026-09-18) */
       if (e.target.closest('#jjms-nav,#jjms-next,.cap,#jj-sound-btn,#jj-sound-mist')) return;   /* chrome, headline and the sound moon stay out of it */
       var ph = photoUnder(e.clientX, e.clientY);
+      if (ph && ph.classList.contains('like')) { var lk = ph.querySelector('.phd'), lr = lk.getBoundingClientRect(), hh = document.createElement('span'); hh.className = 'srheart'; hh.style.left = ((e.clientX - lr.left) / lr.width * 100).toFixed(1) + '%'; hh.style.top = ((e.clientY - lr.top) / lr.height * 100).toFixed(1) + '%';
+        hh.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-9.2-8.6C1 8 2.6 4.6 6 4.6c2.2 0 3.4 1.2 6 3.8 2.6-2.6 3.8-3.8 6-3.8 3.4 0 5 3.4 3.2 6.8C19 15.4 12 20 12 20z"/></svg>'; lk.appendChild(hh); setTimeout(function () { hh.remove(); }, 950); return; }   /* the LinkedIn post: a press is a like */
+      var onceEl = wrap.querySelector('.step.live .phw .phonce'); if (onceEl) { var orr = onceEl.getBoundingClientRect(); if (e.clientX >= orr.left && e.clientX <= orr.right && e.clientY >= orr.top && e.clientY <= orr.bottom) { if (onceEl._src) { try { onceEl.currentTime = 0; var rp = onceEl.play(); if (rp && rp.catch) rp.catch(function () {}); } catch (x) {} } return; } }   /* prod the wizard: he does it again */
       var wasBlown = blownEl, wasPlaying = playing, wasColl = collOpen;
       closeAny();                                                    /* any click first puts the current one back */
       if (!ph || ph === wasBlown) return;
@@ -2691,8 +3177,8 @@
       for (var i = Math.max(0, fIdx - 1); i <= Math.min(steps.length - 1, fIdx + 1); i++) {
         if (steps[i].classList.contains('tall')) continue;          /* the cinema step keeps its line still */
         var cap = steps[i].querySelector('.cap');
-        if (cap && !cap.classList.contains('hero')) floatEl(cap, cen, ramp, dead, t);
-        floatEl(steps[i].querySelector('.sub'), cen, ramp, dead, t);   /* subtitle floats + disperses like the caption */
+        if (window.JJ_MS_LETTERS) { if (cap && !cap.classList.contains('hero')) floatEl(cap, cen, ramp, dead, t);
+        floatEl(steps[i].querySelector('.sub'), cen, ramp, dead, t); }   /* the per-letter float is retired (perf + Joe's call); JJ_MS_LETTERS brings it back */
       }
       blobUpdate();                                                 /* fluid pink blob on whichever headline is hovered */
     }
@@ -2707,8 +3193,35 @@
       c.addEventListener('pointerleave', function () { blobLeave(c); });
     })(blobCaps[bc]);
 
+    /* the Super Reel secret: read it, then it turns to alien script, lifts off and is gone; a startled alien appears */
+    var MYST_GLYPHS = '\u16a0\u16a2\u16a6\u16a8\u16b1\u16b7\u16b9\u16c1\u16c7\u16c9\u16cf\u16d2\u16d6\u16d7\u16da\u16de\u16df\u27c1\u2316\u235c\u2394\u260c\u27df'.split('');
+    function mystArm(st) { mystReset(st); var sub = st.querySelector('.sub'); if (!sub) return; var T = st._mt = [];
+      var chs = Array.prototype.slice.call(sub.querySelectorAll('.ch')); chs.forEach(function (c) { if (c._orig == null) c._orig = c.textContent; });
+      var readMs = 1400 + chs.length * 55;                       /* the words step in (~1.4s), then time to read it */
+      T.push(setTimeout(function () { var order = chs.slice().sort(function () { return Math.random() - .5; });
+        order.forEach(function (c, i) { T.push(setTimeout(function () { if (!/\S/.test(c._orig)) return; c.classList.add('mch'); var n = 0, iv = setInterval(function () { c.textContent = MYST_GLYPHS[(Math.random() * MYST_GLYPHS.length) | 0]; if (++n > 8) clearInterval(iv); }, 110); T.push(iv);
+          T.push(setTimeout(function () { c.style.transform = 'translate(' + ((Math.random() - .5) * 90).toFixed(0) + 'px,' + (-60 - Math.random() * 120).toFixed(0) + 'px) rotate(' + ((Math.random() - .5) * 80).toFixed(0) + 'deg) scale(' + (0.6 + Math.random() * .9).toFixed(2) + ')'; c.classList.add('go'); }, 1500)); }, 1100 + i * 75));   /* she arrives first (1.1s), then the letters go one by one over ~4s */ });
+        var wnd = st.querySelector('.srwanda'); if (wnd) { var wr = wnd.getBoundingClientRect(), sbr = sub.getBoundingClientRect(); wnd.classList.add('cast'); wnd.style.transform = 'translate(' + (sbr.left - wr.width * 0.55 - wr.left).toFixed(0) + 'px,' + (sbr.bottom - wr.height * 0.45 - wr.top).toFixed(0) + 'px) scale(1.3)';   /* Wanda flies to the bottom-left of the line and waves it away, slowly, letter by letter */
+          T.push(setTimeout(function () { wnd.classList.remove('cast'); wnd.style.transform = ''; }, 1100 + chs.length * 75 + 4200)); }
+      }, readMs)); }
+    function mystReset(st) { (st._mt || []).forEach(function (t) { clearTimeout(t); clearInterval(t); }); st._mt = [];
+      Array.prototype.forEach.call(st.querySelectorAll('.sub .ch'), function (c) { if (c._orig != null) c.textContent = c._orig; c.classList.remove('mch', 'go'); c.style.transform = ''; });
+      var wnd0 = st.querySelector('.srwanda'); if (wnd0) { wnd0.classList.remove('cast'); wnd0.style.transform = ''; } }
+    /* ACCESSIBILITY: nothing in the sky may sit behind words. The sky parallaxes, so it cannot be solved at build time: a few
+       times a second, anything in the sky whose box touches a caption on screen is faded out, and faded back once clear.
+       All the reads happen first, then the writes, so it never forces a second layout. */
+    var skyItems = null, dodgeT = 0;
+    function dodgeStars() { var now = performance.now(); if (now - dodgeT < 140) return; dodgeT = now;
+      if (!skyItems) { var sk = document.getElementById('jjms-sky'); if (!sk) return; skyItems = Array.prototype.slice.call(sk.querySelectorAll('img,.gneb,.gspiral,i,span')).filter(function (n) { return !n.querySelector('img,i,span'); }); }
+      var vh = window.innerHeight, boxes = [];
+      Array.prototype.forEach.call(document.querySelectorAll('#jjms .step.near .cap,#jjms .step.near .sub,#jjms-hd .hin'), function (t) { var r = t.getBoundingClientRect(); if (r.bottom > 0 && r.top < vh && r.width) boxes.push([r.left - 16, r.top - 10, r.right + 16, r.bottom + 10]); });
+      var hits = skyItems.map(function (n) { var r = n.getBoundingClientRect(); if (r.bottom < 0 || r.top > vh || !r.width) return false;
+        for (var b = 0; b < boxes.length; b++) if (r.right > boxes[b][0] && r.left < boxes[b][2] && r.bottom > boxes[b][1] && r.top < boxes[b][3]) return true; return false; });
+      for (var q = 0; q < skyItems.length; q++) if (hits[q] !== !!skyItems[q]._dg) { skyItems[q]._dg = hits[q]; skyItems[q].classList.toggle('jj-dodge', hits[q]); } }
+    setInterval(dodgeStars, 700);                                /* the sky drifts on its own too */
+    window.addEventListener('resize', function () { for (var rs = 0; rs < steps.length; rs++) steps[rs].__f = null; });   /* the feat stages cache their geometry; a new width means new geometry */
     function render() {
-      raf = null;
+      raf = null; dodgeStars(); var _sy = window.scrollY || 0; if (Math.abs(_sy - (render._py == null ? _sy : render._py)) > 2) { render._ly = render._py; } render._py = _sy;   /* _ly = where we were: gives the scroll direction */
       /* the swirl SVG parallaxes UP at ~0.4× the scroll — so it drifts behind the story at its own,
          slower pace (never locked to the timeline). Soft/blurry, so a per-frame translate can't jitter. */
       bgImg.style.translate = '0 ' + (-window.scrollY * 0.4).toFixed(1) + 'px';
@@ -2720,33 +3233,30 @@
       }
       /* the inline player shrinks to a fixed mini bar once its slot scrolls up past the top; the slot's
          own box stays in the flow, so reading its rect can never fight the class we set on it */
+      var brk = render._brk || (render._brk = Array.prototype.slice.call(wrap.querySelectorAll('.jjms-tab,.jjscroll,.jjms-reveal')));
+      for (var bk = 0; bk < brk.length; bk++) { var bi = brk[bk], bst = bi.closest('.step'); if (!bst) continue; var br = bst.getBoundingClientRect(), ride = 0;
+        if (!bi.classList.contains('touched') && !bst.classList.contains('feat') && br.top < 0 && br.bottom > 0) { var mid = bi.classList.contains('jjms-reveal') ? bi.offsetTop + bi.offsetHeight : bi.offsetTop + bi.offsetHeight / 2;
+          ride = Math.min(-br.top * 0.9, Math.max(0, bst.offsetHeight - mid - 28)); }
+        if (bi._ride !== ride) { bi._ride = ride; bi.style.setProperty('--ride', ride.toFixed(0) + 'px'); } }
       var fr = finale.getBoundingClientRect();                   /* the Big Bang fires as the finale arrives */
       if (!banged && fr.top < window.innerHeight * 0.55) {
         banged = true;
         /* glide to edge-to-edge FIRST — the show only starts once the screen is filled, so the
            bang can never play cut off mid-glide (which is what was happening on the live site) */
-        snapToFinale._onPinned = function () {
-          finale.classList.add('go');
-          setTimeout(function () { if (window.jjScore) window.jjScore.award('big-bangs', { part: 'story' }); }, 3300);
-          if (!teasePlayed) {                        /* first bang only: darkness asks, then the exam */
-            teasePlayed = true;
-            if (calmQ) setTimeout(function () { openQuiz(); }, 2400);
-            else setTimeout(runTease, 2300);
-          }
-          setTimeout(function () { bg.classList.add('boom'); }, 1000);    /* the sky surges at detonation */
-          setTimeout(function () { bg.classList.remove('boom'); }, 2400);
-        };
-        snapToFinale();                                                  /* fill the screen + hold it there for the show */
+        snapToFinale._onPinned = function () { finale.classList.add('armed'); };   /* the seed appears and floats; the bang itself waits for the press (Joe: no auto Big Bang) */
+        snapToFinale();                                                  /* fill the screen for the show */
       }
-      else if (banged && fr.top > window.innerHeight * 1.2) { banged = false; finale.classList.remove('go'); bg.classList.remove('boom'); }   /* re-arm on the way back up */
+      else if (banged && fr.top > window.innerHeight * 1.2) { banged = false; finale.classList.remove('go'); finale.classList.remove('armed'); bg.classList.remove('boom'); }   /* re-arm on the way back up */
       var idx = curStep(), inStory = idx >= 0 && steps[0].getBoundingClientRect().top < window.innerHeight * 0.85;
       var last = steps[steps.length - 1].getBoundingClientRect();
       inStory = inStory && last.bottom > window.innerHeight * 0.35;
       tl.classList.toggle('on', inStory); hd.classList.toggle('on', inStory);
       nav.classList.toggle('on', inStory);
-      nx.classList.toggle('on', inStory && idx < steps.length - 1 && !steps[idx].classList.contains('tall'));
+      nx.classList.toggle('on', inStory && idx < steps.length - 1 && (!steps[idx].classList.contains('tall') || steps[idx].classList.contains('feat')));
       if (inStory) document.documentElement.classList.add('jjms-live');   /* the site nav comes back with the story */
-      if (inStory && idx >= 0) flyShow(STEPS[idx].era); else fly.classList.remove('show');   /* the era mascot */
+      if (inStory && idx >= 0) { flyShow(STEPS[idx].era); flyPlace(STEPS[idx].era, idx); } else fly.classList.remove('show');   /* the era mascot, on the bar */
+      if (inStory && idx >= 0 && window.jjScore && !document.getElementById('jjst')) { var eraNow = STEPS[idx].era;   /* the Videos unlock along the way: past the Precambrian = the first animation; past university = the school films */
+        if (eraNow >= 1 && !render._va) { render._va = 1; window.jjScore.award('vid-anim'); } if (eraNow >= 4 && !render._vs) { render._vs = 1; window.jjScore.award('vid-school'); } }
       fIdx = idx; if (inStory) startFloat(); else stopFloat();      /* keep the letter-float running while the story is live */
       /* the growing-film step: --gp runs 0 -> 1 across its scroll. EVERY frame, not just on a step
          change — that's what the whole sequence is driven from. */
@@ -2791,8 +3301,61 @@
           D.el.style.transform = 'translate3d(' + (D.dx * gg).toFixed(2) + 'vw,' + (D.dy * gg).toFixed(2) +
             'vh,0) scale3d(' + dsc.toFixed(4) + ',' + dsc.toFixed(4) + ',1)';
         }
+        if (ts.classList.contains('feat')) {                     /* FEATURE steps (see STEPS.feat): a sticky stage where, past ~1/4 of the scroll, the text pulls focus and
+                                                                     'row'  = the photo sets ride down, grow and loosely line up while everything else slips up and away
+                                                                     'hero' = one thing (the trophy) stays, comes to the middle, grows, throws confetti, then goes
+                                                                     'think'= the wizard grows into the middle, thinking, then goes — a stand-in for Joe's own art */
+          var stg = ts.querySelector('.stage'), F = ts.__f, fm = ts.getAttribute('data-feat') || 'row';
+          if (!F && gp < 0.02 && stg) { var sR = stg.getBoundingClientRect(); F = ts.__f = { tr: [], out: [], hero: null };
+            var rideSel = fm === 'row' ? '.trav' : fm === 'hero' ? '.jjtrophy,.jjscroll' : fm === 'tabs' ? '.jjms-tab' : fm === 'pair' ? '.aglogo.bima' : '.phw.deco';   /* think: the thinking sprite that already stands on the slide takes centre stage; tabs: both tablets */
+            Array.prototype.forEach.call(stg.children, function (el) { if (/(^| )(cap|sub|gdim)( |$)/.test(el.className)) return;
+              if (el.matches(rideSel)) F.tr.push({ el: el, bw: el.offsetWidth, bh: el.offsetHeight, bx: el.offsetLeft + (el.classList.contains('jjms-tab') || el.classList.contains('jjscroll') ? 0 : el.offsetWidth / 2), by: el.offsetTop + (el.classList.contains('jjms-tab') || el.classList.contains('jjscroll') ? 0 : el.offsetHeight / 2),   /* the tablets and the letter are centred by their own translate */ rot: parseFloat(el.style.rotate) || 0, chips: Array.prototype.slice.call(stg.querySelectorAll('.tcc[data-for="' + el.getAttribute('data-trav') + '"]')) }); else if (fm === 'tabs' && el.classList.contains('stag')) return; else if (!(fm === 'row' && el.classList.contains('tcc') && el.getAttribute('data-for') && stg.querySelector('.trav[data-trav="' + el.getAttribute('data-for') + '"]'))) F.out.push(el); });   /* only the row keeps a set's pills riding with it; elsewhere pills leave with their pictures. The tablets' skills stay on stage so they can burst out here */   /* a set's place pills travel WITH it (they read as one thing) */   /* LAYOUT boxes, not painted ones: entrance scales / parallax were skewing the measure (the giant thinker) */
+            F.tr.sort(function (a, b) { return a.bx - b.bx; }); }
+          if (F) { var fw = window.innerWidth, fh = window.innerHeight, e0 = Math.max(0, Math.min(1, (gp - 0.22) / 0.5)), e = e0 * e0 * (3 - 2 * e0), fo = 0;   /* no fade at the end of the pin: the stage simply scrolls away carrying its content, so there is never a blank screen between it and the next slide (the fade was the Medieval and Ancient gaps) */   /* holds to the very end: the stage then scrolls away carrying its pictures, so the next slide is never met by a blank screen (Joe: the Ancient gap) */
+            var soft = ts.getAttribute('data-soft') === '1';
+            var capF = gc.cap, subF = gc.sub, upF = (-gp * (tr.height - fh)).toFixed(1); if (capF) capF.style.transform = 'translate3d(0,' + upF + 'px,0)'; if (subF) subF.style.transform = 'translate3d(0,' + upF + 'px,0)';   /* the stage is pinned, so the caption is moved by exactly what has been scrolled: it rides up and off like any other caption (and pulls focus as it leaves the band), while the pictures move at their own rate */
+            if (fm === 'row') {
+              var SCF = soft ? 1.12 : 1.24, mv = soft ? 0.7 : 1, kN = F.tr.length, slotW = fw * 0.9 / Math.max(1, kN);   /* even slots across the middle 90%: the row fills the screen and reads as one line */
+              for (var fq = 0; fq < kN; fq++) { var Tq = F.tr[fq], scF = Math.min(SCF, slotW * 0.86 / Tq.bw), tx = fw * 0.05 + slotW * (fq + 0.5), ty = fh * (fq % 2 ? 0.46 : 0.52);
+                var chps = Tq.chips || [];
+                if (e <= 0) { Tq.el.style.transform = ''; Tq.el.style.opacity = ''; Tq.el.style.rotate = Tq.rot + 'deg'; chps.forEach(function (c) { c.style.transform = ''; c.style.opacity = ''; }); continue; }
+                var dxq = ((tx - Tq.bx) * mv * e), dyq = ((ty - Tq.by) * 0.85 * mv * e);
+                Tq.el.style.transform = 'translate3d(' + dxq.toFixed(1) + 'px,' + dyq.toFixed(1) + 'px,0) scale(' + (1 + (scF - 1) * e).toFixed(3) + ')';
+                Tq.el.style.rotate = (Tq.rot * (1 - 0.6 * e)).toFixed(2) + 'deg';
+                var rb = V2 ? 0.8 : 0.5, opq = ((rb + (1 - rb) * e) * (1 - fo)).toFixed(3); Tq.el.style.opacity = opq;
+                chps.forEach(function (c) { c.style.transform = 'translate3d(' + dxq.toFixed(1) + 'px,' + (dyq + Tq.bh * (scF - 1) * 0.5 * e).toFixed(1) + 'px,0)'; c.style.opacity = (1 - fo).toFixed(3); }); }
+            } else if (fm === 'pair') {                          /* the two BIMAs: forward and central, a touch bigger, then on */
+              for (var pk = 0; pk < F.tr.length; pk++) { var Pk = F.tr[pk], bigP = Math.min(1.35, fw * 0.2 / Pk.bw), txP = fw * (F.tr.length > 1 ? 0.38 + 0.24 * pk / (F.tr.length - 1) : 0.5);
+                if (e <= 0) { Pk.el.style.translate = ''; Pk.el.style.scale = ''; Pk.el.style.zIndex = ''; Pk.el.style.opacity = ''; continue; }
+                Pk.el.style.translate = ((txP - Pk.bx) * e).toFixed(1) + 'px ' + ((fh * 0.52 - Pk.by) * e).toFixed(1) + 'px'; Pk.el.style.scale = (1 + (bigP - 1) * e).toFixed(3); Pk.el.style.zIndex = '6'; Pk.el.style.opacity = (1 - fo).toFixed(3); }
+              F.dimK = 0.4;
+            } else if (fm === 'tabs') {                          /* the two tablets: side by side in the middle, growing; the room stays dark until both are broken */
+              var nT = F.tr.length, allT = F.tr.every(function (q) { return q.el.classList.contains('touched'); });
+              for (var tk = 0; tk < nT; tk++) { var Tk = F.tr[tk], bigT = Math.min(fh * 0.34 / Tk.bh, 2.6), txT = fw * (nT > 1 ? 0.3 + 0.4 * tk / (nT - 1) : 0.5);
+                if (e <= 0 || Tk.el.classList.contains('burst')) { Tk.el.style.translate = e <= 0 ? '' : Tk.el.style.translate; Tk.el.style.scale = ''; Tk.el.style.zIndex = ''; Tk.el.style.opacity = ''; continue; }   /* a burst stone keeps its place but the CSS (opacity 0) must win */
+                Tk.el.style.translate = 'calc(-50% + ' + ((txT - Tk.bx) * e).toFixed(1) + 'px) calc(-50% + ' + ((fh * 0.5 - Tk.by) * e).toFixed(1) + 'px + var(--ride,0px))'; Tk.el.style.scale = (1 + (bigT - 1) * e).toFixed(3);
+                Tk.el.style.zIndex = '6'; Tk.el.style.opacity = (1 - fo).toFixed(3); }
+              F.dimK = allT ? 0.22 : 0.62;
+            } else {                                             /* hero / think: one element to the middle, growing */
+              for (var fh2 = 0; fh2 < F.tr.length; fh2++) { var Hq = F.tr[fh2], useTf = Hq.el.classList.contains('phw'), isSc = Hq.el.classList.contains('jjscroll'), big = isSc ? Math.min(2.1, fw * 0.3 / Hq.bw) : Math.min(fh * (fm === 'think' ? 0.3 : 0.42) / Hq.bh, fw * 0.34 / Hq.bw, fm === 'think' ? 1.7 : 5);   /* the letter is measured shut, so it takes a modest scale and unrolls inside it */
+                if (isSc) { if (e > 0.97 && fo === 0 && !Hq.el.classList.contains('open')) { Hq.el.classList.add('open', 'auto'); } else if (e < 0.5 && Hq.el.classList.contains('auto')) Hq.el.classList.remove('open', 'auto'); }   /* the letter opens at its biggest if nobody has broken the seal, and closes again on the way back */
+                var onceV = Hq.el.querySelector('.phonce'); if (onceV && e > 0.25) { if (!onceV._src) { onceV._src = 1; var ob = SB + onceV.getAttribute('data-base'); onceV.innerHTML = '<source src="' + ob + '.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + ob + '.webm" type="video/webm">'; onceV.load(); (function (v) { var went = function () { if (v.currentTime > 0.04) { v.classList.add('on'); v._went = true; } }; v.addEventListener('playing', went); v.addEventListener('timeupdate', went); })(onceV); }   /* its own binding: `onceV` is reused by the next stage in the same frame */
+                  if (onceV.currentTime > 0.04) { onceV.classList.add('on'); onceV._went = true; }   /* the poster steps aside once the clip has actually moved */
+                  if (!onceV._went && onceV.paused) { var op = onceV.play(); if (op && op.catch) op.catch(function () {}); } }   /* keeps asking until it has actually run once */   /* the wizard's wand moment plays once as he grows and holds its last frame */   /* .phw keeps `translate` for its parallax, so it is moved with `transform`; the trophy's own animation owns `transform`, so it is moved with `translate` / `scale` */
+                if (e <= 0) { if (useTf) Hq.el.style.transform = ''; else { Hq.el.style.translate = ''; Hq.el.style.scale = ''; } Hq.el.style.opacity = ''; Hq.el.style.zIndex = ''; Hq.el._pt = false; continue; }
+                var hx = ((fw / 2 - Hq.bx) * e).toFixed(1), hy = ((fh * 0.5 - Hq.by) * e).toFixed(1), hs = (1 + (big - 1) * e).toFixed(3);
+                if (useTf) Hq.el.style.transform = 'translate3d(' + hx + 'px,' + hy + 'px,0) scale(' + hs + ')'; else if (isSc) { Hq.el.style.translate = 'calc(-50% + ' + hx + 'px) calc(-50% + ' + hy + 'px + var(--ride,0px))'; Hq.el.style.scale = hs; } else { Hq.el.style.translate = hx + 'px ' + hy + 'px'; Hq.el.style.scale = hs; }
+                Hq.el.style.zIndex = '6'; Hq.el.style.opacity = (1 - fo).toFixed(3);
+                if (fm === 'hero' && e > 0.97 && !Hq.el._pt && fo === 0) { Hq.el._pt = true; try { party(Hq.el, { sound: false, glyphs: ['\ud83c\udfc6', '\u2728', '\ud83c\udf89', '\u2b50'] }); } catch (eP) {} }   /* confetti at its biggest (the "woo" comes later) */
+                if (e < 0.5) Hq.el._pt = false; }
+            }
+            for (var fz = 0; fz < F.out.length; fz++) { var Oz = F.out[fz];
+              Oz.style.transform = e > 0 ? 'translate3d(0,' + (-e * (soft ? 40 : 62)).toFixed(2) + 'vh,0)' : ''; Oz.style.opacity = e > 0 ? Math.max(0, 1 - e * 1.5).toFixed(3) : ''; }
+            if (gc.dim) gc.dim.style.opacity = (e * (F.dimK || (soft ? 0.36 : 0.55)) * (1 - fo)).toFixed(3); }
+        }
         var gv = ts.querySelector('.gvid video');
-        if (gv) {                                                /* it starts playing once it's big */
+        if (gv && !gv.getAttribute('src') && tr.top < window.innerHeight * 2.5) gv.setAttribute('src', gv.getAttribute('data-src'));
+        if (gv && gv.getAttribute('src')) {                                                /* it starts playing once it's big */
           /* scale is .2 + gg*.8, so half size is gg .375 — it's away the moment it hits that.
              The source is lazy, so the first play() can reject before any data has arrived; retry
              once the browser says it can play rather than hammering it every frame. */
@@ -2808,8 +3371,8 @@
       }
       /* George + Greybeard go sticky on the covid screen: once the reader scrolls past halfway they
          ride along, growing, then dissolve just before the next scene arrives */
-      var vikStep = steps[11];
-      if (vikStep && Math.abs(11 - idx) <= 1) {
+      var vikStep = null;
+      if (vikStep && Math.abs(8 - idx) <= 1) {
         var vk = vikStep.__vik || (vikStep.__vik = Array.prototype.slice.call(
           vikStep.querySelectorAll('.phw.deco[data-tap]')));
         var vrR = vikStep.getBoundingClientRect();
@@ -2830,10 +3393,30 @@
           }
         }
       }
+      /* ---- the brands follow you into the awards (steps 9 -> 10): BBC + Art Basel travel down and hover over UIC x Fantasy,
+         then UCL over Foolproof, each landing with confetti. The steps clip their own children, so the travellers are
+         position:fixed CARRIERS interpolated between the real logo's live box and a spot above its target; the real logo
+         hides while its carrier is out. Rect reads happen only while one of the two slides is on screen. */
+      if (idx === 8 || idx === 9) { var CR = render._cr;
+        if (!CR) { CR = render._cr = []; [['UCL', 'Foolproof', 0, 1], ['BBC', 'UIC Digital \u00d7 Fantasy', -0.30, 1.7], ['Art Basel', 'UIC Digital \u00d7 Fantasy', 0.34, 1.7]].forEach(function (c) {
+            var src = steps[8].querySelector('.aglogo[aria-label="' + c[0] + '"]'), tgt = steps[9].querySelector('.aglogo[aria-label="' + c[1] + '"]'); if (!src || !tgt) return;
+            var el = document.createElement('div'); el.className = 'jjms-carry'; el.innerHTML = '<img src="' + src.querySelector('img').getAttribute('src') + '" alt="">'; wrap.appendChild(el);
+            CR.push({ src: src, tgt: tgt, el: el, ox: c[2], late: c[3], done: false }); }); }
+        var vhC = window.innerHeight, tC = Math.max(0, Math.min(1, 1 - steps[9].getBoundingClientRect().top / vhC));
+        for (var cq2 = 0; cq2 < CR.length; cq2++) { var Cq = CR[cq2], p0 = Math.pow(Math.max(0, Math.min(1, (tC - 0.05) / 0.78)), Cq.late), pC = p0 * p0 * (3 - 2 * p0);   /* late is now an exponent: BBC and Art Basel start with UCL but arrive after it */
+          if (tC <= 0.02) { Cq.el.style.opacity = '0'; Cq.src.style.opacity = ''; Cq.done = false; continue; }
+          Cq.src.style.opacity = '0';
+          var a = Cq.src.getBoundingClientRect(), b = Cq.tgt.getBoundingClientRect(), wC = a.width * (1 - 0.12 * pC), hC = wC * (a.height / a.width);
+          var ax = a.left + a.width / 2, ay = Math.max(a.top + a.height / 2, hC / 2 + 28), bx = b.left + b.width / 2 + Cq.ox * b.width, by = b.top - hC * 0.55;   /* a brand whose home has already scrolled off the top starts from just inside the screen, not from above it */
+          Cq.el.style.width = wC.toFixed(1) + 'px'; Cq.el.style.opacity = '1';
+          Cq.el.style.transform = 'translate3d(' + (ax + (bx - ax) * pC - wC / 2).toFixed(1) + 'px,' + (ay + (by - ay) * pC - hC / 2).toFixed(1) + 'px,0)';
+          Cq.el.classList.toggle('land', pC >= 1);
+          if (pC >= 1 && !Cq.done) { Cq.done = true; try { party(Cq.el, { sound: false, glyphs: ['\ud83c\udfc6', '\u2728', '\ud83c\udf89', '\u2b50'] }); } catch (eC) {} } else if (pC < 0.6) Cq.done = false; }
+      } else if (render._cr) { for (var cz = 0; cz < render._cr.length; cz++) { render._cr[cz].el.style.opacity = '0'; render._cr[cz].src.style.opacity = ''; } }
       /* only the step on screen + its neighbours carry live per-letter animations (see the .near CSS) */
       if (idx !== lastNear) {
         lastNear = idx;
-        for (var nr = 0; nr < steps.length; nr++) steps[nr].classList.toggle('near', Math.abs(nr - idx) <= 1);
+        for (var nr = 0; nr < steps.length; nr++) { steps[nr].classList.toggle('near', Math.abs(nr - idx) <= 1); if (Math.abs(nr - idx) > 1) steps[nr].classList.remove('cur', 'leaving'); }
       }
       if (idx < 0) return;
       /* Photos ride the scroll: they lag behind the text (parallax), and shrink away to nothing as
@@ -2847,6 +3430,14 @@
             if (!genQueued && !document.getElementById('jjst')) { genQueued = true; setTimeout(genesis, 700); }
           } else sEl.classList.add('live');
         }
+        if ((window.JJ_MS_TEXT || 'wordsfocus') === 'wordsfocus') (function (el) {   /* the caption's own place decides: in the middle band = .cur (words step in), out of it = .leaving (focus pull) */
+          var cpe = el._cap || (el._cap = el.querySelector('.cap')); if (!cpe) return;
+          var cr = cpe.getBoundingClientRect(), d = (cr.top + cr.height / 2 - vh / 2) / vh, isCur = el.classList.contains('cur');   /* d: + below centre, in screens */
+          var down = (window.scrollY || 0) >= (render._ly || 0), lead = down ? d : -d;                          /* lead: + = still on its way in, - = on its way out */
+          var inBand = lead < 0.40 && lead > -0.31;                 /* IN sooner (40% out from centre), OUT ~5% earlier than before (31%) */
+          if (!isCur && inBand) { clearTimeout(el._lt); el.classList.remove('leaving'); el.classList.add('cur'); if (el.classList.contains('myst')) mystArm(el); }
+          else if (isCur && !inBand) { if (el.classList.contains('myst')) mystReset(el); el.classList.remove('cur'); el.classList.add('leaving'); clearTimeout(el._lt); el._lt = setTimeout(function () { el.classList.remove('leaving'); }, 750); }
+        })(sEl);
         if (SDA) continue;                                         /* the compositor drives everything below */
         /* ---- fallback for browsers without CSS scroll timelines (e.g. Firefox default, old Safari) ----
            Runs for EVERY step, so the words shrink + float even on steps that carry no photos. */
@@ -3098,38 +3689,49 @@
        page's own sprite line, and your final form takes the bow on the results card. The user plans
        extra questions about site-wide easter eggs (Matrix nods on home, the binary in the horizontal
        scroll, their top film) — those need their answers before they can go in. */
-    var QUIZ_POOL = [
-      { q: 'What did I go to Brighton to study?',
-        o: ['BSc Digital Media', 'BSc Computer Science', 'BA Illustration', 'BSc Marine Biology'] },
-      { q: 'I was awarded a scholarship to work for a year in…',
-        o: ['Taipei, Taiwan', 'Tokyo, Japan', 'Seoul, South Korea', 'Bangkok, Thailand'] },
-      { q: 'My final year project was on…',
-        o: ['The Gamification and Future of e-Learning', 'The Future of Digital Storytelling',
-            'Vikings vs Anglo-Saxons: A History App', 'Colour Theory in Modern Apps'] },
-      { q: 'I made it to Mexico for which celebration?',
-        o: ['Días de los Muertos', 'Cinco de Mayo', 'La Tomatina', 'Carnaval'] },
-      { q: 'Who guides you through the GeoQuest app?',
-        o: ['George', 'Greybeard the Grey', 'A wise philosopher', 'A knight called Joe'] },
-      { q: 'What did the Final Year Project score?',
-        o: ['95/100', '82/100', '70/100', '68/100'] },
-      { q: 'How many titles have I rated on iMDB?',
-        o: ['Over 1700', 'About 300', 'Around 900', 'Over 5000'] },
-      { q: 'My two BIMA silver awards were for…',
-        o: ['Best Digital Transformation', 'Best App Design', 'Best Digital Campaign', 'Best New Agency'] },
-      { q: 'Apparently, at age 7 I was already…',
-        o: ['Leading raids', 'Building websites', 'Making short films', 'Winning awards'] },
-      { q: 'Which studio was NOT floating around my first animation?',
-        o: ['Aardman', 'Disney', 'Pixar', 'Studio Ghibli'] },
-      { q: 'Greybeard the Grey’s name brings fear into the hearts of…',
-        o: ['The Anglo-Saxons', 'The Romans', 'The Normans', 'The Danes'] },
-      { q: 'Which film did I watch very young that “still holds up”?',
-        o: ['Seven Samurai', 'The Prestige', 'Interstellar', 'Spirited Away'] }
+    /* (2026-09-17) FOUR SECTIONS, five questions each, asked in this order: Home, Credits, Storytime, My Story. Each section
+       draws its five from its own pool (shuffled), so a sitting still differs. o[0] is always the truth.
+       `check:true` = written from what I know of the site but NOT confirmed by Joe — confirm or replace before launch. */
+    var QUIZ_SECTIONS = [
+      { name: 'Home', pool: [
+        { q: 'What does the wizard say once he has finished explaining the choice?', o: ['Take your pick!', 'Choose wisely!', 'Off you go!', 'Good luck, traveller!'] },
+        { q: 'At the end of the homepage you choose between…', o: ['Story Time and Work', 'Games and Films', 'Past and Future', 'Light and Dark'] },
+        { q: 'The grumpy red alien always peeks in from the…', o: ['Right', 'Left', 'Top', 'Bottom'] },
+        { q: 'What does the homepage loader ask you to do?', o: ['Keep the sound on', 'Rotate your phone', 'Accept cookies', 'Scroll faster'] },
+        { q: 'How many site themes can be unlocked?', o: ['Five', 'Three', 'Four', 'Seven'], check: true },
+        { q: 'Which film gets a nod in the “pixels and code” scene?', o: ['The Matrix', 'Tron', 'Blade Runner', 'WarGames'], check: true }
+      ] },
+      { name: 'Credits', pool: [
+        { q: 'Who stars in the game at the end of the credits?', o: ['Trogdor', 'Greybeard the Grey', 'The wizard', 'George'] },
+        { q: 'How do you steer him?', o: ['Up and down', 'Left and right', 'With the mouse wheel', 'You can’t, he flies himself'] },
+        { q: 'What is the highest level in the credits game?', o: ['9', '5', '10', '99'] },
+        { q: 'In the credits game you should…', o: ['Catch the good items and dodge the hazards', 'Burn every cottage', 'Collect only coins', 'Avoid everything'] },
+        { q: 'Where do you find the credits?', o: ['From the menu, on the Contact page', 'Hidden in the footer', 'Only after the quiz', 'On the 404 page'], check: true }
+      ] },
+      { name: 'Storytime', pool: [
+        { q: 'What is the dragon’s full title?', o: ['Trogdor The Burninator', 'Trogdor The Terrible', 'Smaug The Golden', 'Greybeard the Grey'] },
+        { q: 'What did the villagers call our hero?', o: ['Joe the Righteous', 'Joe the Brave', 'Sir Joe of Brighton', 'Joe the Designer'] },
+        { q: 'Trogdor had a fascination for gold, jewels, treasures and…', o: ['The local villagers', 'Sheep', 'Wizards', 'Castles'] },
+        { q: 'What appeared in the stone arch?', o: ['A glowing purple swirl', 'A golden door', 'A sleeping dragon', 'A mirror'] },
+        { q: 'Who were quietly watching Joe in the forest?', o: ['Little forest spirits', 'Wolves', 'The villagers', 'Trogdor'] },
+        { q: 'Who are you left with at the end of Part One?', o: ['Designer Joe', 'Trogdor', 'The wizard', 'Nobody'] }
+      ] },
+      { name: 'My Story', pool: [
+        { q: 'What did I go to Brighton to study?', o: ['BSc Digital Media', 'BSc Computer Science', 'BA Illustration', 'BSc Marine Biology'] },
+        { q: 'I was awarded a scholarship to work for a year in…', o: ['Taipei, Taiwan', 'Tokyo, Japan', 'Seoul, South Korea', 'Bangkok, Thailand'] },
+        { q: 'I made it to Mexico for which celebration?', o: ['Días de los Muertos', 'Cinco de Mayo', 'La Tomatina', 'Carnaval'] },
+        { q: 'How many titles have I rated on iMDB?', o: ['Over 1700', 'About 300', 'Around 900', 'Over 5000'] },
+        { q: 'My two BIMA silver awards were for…', o: ['Best Digital Transformation', 'Best App Design', 'Best Digital Campaign', 'Best New Agency'] },
+        { q: 'Which film did I watch very young that “still holds up”?', o: ['Seven Samurai', 'The Prestige', 'Interstellar', 'Spirited Away'] },
+        { q: 'Which game did I play the most?', o: ['World of Warcraft', 'The Sims 2', 'Mario Kart', 'FIFA 10'] }
+      ] }
     ];
-    var QUIZ_N = 6;
+    var QUIZ_PER = 5;
+    var QUIZ_N = QUIZ_SECTIONS.length * QUIZ_PER;
     var QUIZ_RANKS = [                                   /* [min score, rank, line] */
-      [6, 'Court Historian', 'Flawless. You clearly gazed at every star.'],
-      [4, 'Loyal Squire', 'Sharp eyes — just a couple of scrolls short of legend.'],
-      [2, 'Time Tourist', 'You caught the highlights… the details, less so.'],
+      [20, 'Court Historian', 'Flawless. You clearly gazed at every star.'],
+      [14, 'Loyal Squire', 'Sharp eyes — just a couple of scrolls short of legend.'],
+      [8, 'Time Tourist', 'You caught the highlights… the details, less so.'],
       [0, 'Were you even scrolling?', 'The history books are right there. Fancy another run?']
     ];
     var quiz = document.createElement('div'); quiz.id = 'jjms-quiz';
@@ -3217,7 +3819,7 @@
     function quizIntro() {
       qSwap('<p class="qkick">The History Exam</p>' +
         '<h3>How closely were you paying attention?</h3>' +
-        '<p class="qsub">' + QUIZ_N + ' questions, drawn from the whole story — a different paper every sitting.<br>' +
+        '<p class="qsub">Four rounds of five: Home, Credits, Storytime and My Story — a different paper every sitting.<br>' +
         'Answer well and you evolve. Answer badly and, well…</p>' +
         '<img class="qsprbig" src="' + SPRITES[0] + '" alt="">' +
         '<button type="button" class="qgo">Begin</button>', function () {
@@ -3225,7 +3827,8 @@
       });
     }
     function quizStart() {
-      qSet = shuffled(QUIZ_POOL).slice(0, QUIZ_N); qIdx = 0; qScore = 0; qConfettiDone = false;
+      qSet = []; QUIZ_SECTIONS.forEach(function (S) { shuffled(S.pool).slice(0, QUIZ_PER).forEach(function (Q) { qSet.push({ q: Q.q, o: Q.o, sec: S.name }); }); });
+      qIdx = 0; qScore = 0; qConfettiDone = false;
       quizQuestion();
     }
     function quizQuestion() {
@@ -3233,7 +3836,7 @@
       /* o[0] is always the truth — shuffle a copy and remember where it landed */
       var opts = shuffled(Q.o);
       quiz.classList.remove('locked');
-      qSwap('<p class="qkick">Question ' + (qIdx + 1) + ' of ' + QUIZ_N + '</p>' +
+      qSwap('<p class="qkick">' + esc(Q.sec) + ' \u00b7 ' + (qIdx % QUIZ_PER + 1) + ' of ' + QUIZ_PER + ' <span style="opacity:.55">(' + (qIdx + 1) + '/' + QUIZ_N + ')</span></p>' +
         '<h3>' + esc(Q.q) + '</h3><div class="qopts">' +
         opts.map(function (o, oi) {
           return '<button type="button" class="qo" style="--qd:' + (0.12 + oi * 0.07).toFixed(2) + 's">' + esc(o) + '</button>';
@@ -3307,7 +3910,7 @@
     }
     function quizResults() {
       if (window.jjScore) {
-        window.jjScore.award('quiz');
+        window.jjScore.award('quiz'); window.jjScore.award('vid-babadook');
         if (qScore / QUIZ_N >= .8) window.jjScore.award('quiz80');
         if (qScore === QUIZ_N) window.jjScore.award('quizFull');
       }
@@ -3446,12 +4049,53 @@
     quiz.addEventListener('click', function (e) { e.stopPropagation(); });   /* clicks stay in the exam hall */
     var fquiz = document.getElementById('jjms-fquiz');
     if (fquiz) fquiz.addEventListener('click', function (e) { e.stopPropagation(); openQuiz(); });
+    Array.prototype.forEach.call(wrap.querySelectorAll('.jjscroll'), function (sc) { sc.addEventListener('click', function (e) { e.stopPropagation(); if (sc.classList.contains('open')) return; sc.classList.add('open'); if (window.jjScore) window.jjScore.award('seal', { x: e.clientX, y: e.clientY }); }); });
+    wrap.addEventListener('click', function (e) { var b = e.target && e.target.closest && e.target.closest('.jjms-tab,.jjscroll,.jjms-reveal'); if (b) b.classList.add('touched'); }, true);
+    /* LEARNING NEW SKILLS: the four cards sit stacked behind the lead like a travel set; hover the stack or its pill and they fan out to their places, pills included */
+    (function () { var st11 = document.getElementById('jjms-step-11'); if (!st11) return; var lead = st11.querySelector('.phw.skl-lead'), rest = Array.prototype.slice.call(st11.querySelectorAll('.phw.skl:not(.skl-lead)')), head = st11.querySelector('.stag.skl-head'); if (!lead) return;
+      var more = document.createElement('i'); more.className = 'sklmore'; more.textContent = '+' + rest.length + ' more'; lead.appendChild(more);
+      function stack() { var lx = lead.offsetLeft + lead.offsetWidth / 2, ly = lead.offsetTop + lead.offsetHeight / 2; rest.forEach(function (c, i) { c.style.setProperty('--sx', (lx - c.offsetLeft - c.offsetWidth / 2).toFixed(0) + 'px'); c.style.setProperty('--sy', (ly - c.offsetTop - c.offsetHeight / 2).toFixed(0) + 'px'); c.style.setProperty('--sr', ((i - 1) * 4) + 'deg'); }); }   /* layout boxes: the drift and entrance transforms never skew the measure */
+      setTimeout(stack, 900); window.addEventListener('resize', function () { setTimeout(stack, 300); });
+      var t0; function open(o) { clearTimeout(t0); if (o) st11.classList.add('skl-open'); else t0 = setTimeout(function () { st11.classList.remove('skl-open'); }, 900); }
+      [lead, head].concat(rest).forEach(function (el) { if (!el) return; el.addEventListener('mouseenter', function () { open(true); }); el.addEventListener('mouseleave', function () { open(false); }); });
+      st11.querySelectorAll('.stag.skl:not(.skl-head)').forEach(function (p) { p.addEventListener('mouseenter', function () { open(true); }); p.addEventListener('mouseleave', function () { open(false); }); }); })();
+    Array.prototype.forEach.call(wrap.querySelectorAll('.phw.like'), function (lk) { var hc = document.createElement('i'); hc.className = 'hcur'; hc.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.6-9.2-8.6C1 8 2.6 4.6 6 4.6c2.2 0 3.4 1.2 6 3.8 2.6-2.6 3.8-3.8 6-3.8 3.4 0 5 3.4 3.2 6.8C19 15.4 12 20 12 20z"/></svg>'; lk.appendChild(hc);
+      lk.addEventListener('mousemove', function (e) { var r = lk.getBoundingClientRect(); hc.style.left = (e.clientX - r.left) + 'px'; hc.style.top = (e.clientY - r.top) + 'px'; }); });   /* the like card's cursor is a heart, whatever the theme */   /* pressed once: the prompt and the ride stand down */
+    /* SUNDAY VIBES: Joe's own IMDb list on a little telly in the space city. Closed, it shows the header and the first film peeking out;
+       the chevron opens the whole list. Press a film: "Added to watchlist" and the row darkens. "Tonight's pick" draws one at random.
+       Each entry has room for Joe's one-line "why it is here" (shown on hover once he writes them). */
+    var SUNDAY = [['Stardust',2007,'2h 7m',7.6,10],['Enchanted',2007,'1h 47m',7.1,8],['Coco',2017,'1h 45m',8.4,10],['The Book of Life',2014,'1h 35m',7.2,10],['Encanto',2021,'1h 42m',7.2,10],['Monsters, Inc.',2001,'1h 32m',8.1,8],['Monsters University',2013,'1h 44m',7.2,8],['Almost Famous',2000,'2h 2m',7.9,9],['The Lion King',1994,'1h 28m',8.5,9],['Aladdin',1992,'1h 30m',8.0,8],['Mulan',1998,'1h 27m',7.7,9],['Paddington',2014,'1h 35m',7.3,10],['Paddington 2',2017,'1h 43m',7.8,9],['Beauty and the Beast',2017,'2h 9m',7.1,9],['The Princess Bride',1987,'1h 38m',8.0,8],['10 Things I Hate About You',1999,'1h 37m',7.4,8],['John Tucker Must Die',2006,'1h 29m',5.8,9],['Mean Girls',2004,'1h 37m',7.1,7],['A Cinderella Story',2004,'1h 35m',6.0,9],['Inside Out 2',2024,'1h 36m',7.5,9],['About Time',2013,'2h 3m',7.8,9],['How to Train Your Dragon',2010,'1h 38m',8.1,10],['How to Train Your Dragon 2',2014,'1h 42m',7.8,10],['Frozen',2013,'1h 42m',7.4,8],['Superbad',2007,'1h 53m',7.6,10],['21 Jump Street',2012,'1h 49m',7.2,7],['22 Jump Street',2014,'1h 52m',7.0,8],['The Secret Life of Walter Mitty',2013,'1h 54m',7.3,9],['Night at the Museum',2006,'1h 48m',6.5,7],['Puss in Boots: The Last Wish',2022,'1h 42m',7.9,10],['Puss in Boots',2011,'1h 30m',6.6,9],['Angus, Thongs and Perfect Snogging',2008,'1h 40m',6.3,7],['17 Again',2009,'1h 42m',6.4,8]];
+    (function () { var st11 = document.getElementById('jjms-step-11'); if (!st11) return; var rows = '';
+      SUNDAY.forEach(function (f, i) { rows += '<li data-i="' + i + '" data-cursor="hover"><b>' + (i + 1) + '</b><span class="imt">' + esc(f[0]) + '<small>' + f[1] + ' · ' + f[2] + (f[5] ? ' · <em>' + esc(f[5]) + '</em>' : '') + '</small></span><span class="imr"><i class="y">★</i>' + f[3].toFixed(1) + '</span><span class="imr me"><i class="b">★</i>' + f[4] + '</span><span class="imw">✓</span></li>'; });
+      var box = document.createElement('div'); box.className = 'jjms-imdb'; var scrim = document.createElement('i'); scrim.className = 'imscrim'; st11.appendChild(scrim);
+      box.innerHTML = '<div class="imh"><span class="imk">My IMDb list</span><button type="button" class="impick" data-cursor="hover">Tonight’s pick</button><h4>Sunday Vibes</h4><small>' + SUNDAY.length + ' films · gold star is IMDb, blue is mine</small></div>' +
+        '<ol>' + rows + '</ol><button type="button" class="imchev" data-cursor="hover" aria-label="Open the list"><i></i></button><button type="button" class="imclose" data-cursor="hover" aria-label="Close the list">\u00d7</button><span class="imtoast"></span><i class="imstand"></i>';
+      var tv = document.createElement('div'); tv.className = 'jjms-tv'; tv.innerHTML = '<img class="tvimg" alt="" src="' + SB + 'era-5-tv.webp">'; tv.appendChild(box); st11.appendChild(tv); var ol = box.querySelector('ol'), toastEl = box.querySelector('.imtoast');
+      function say(t) { toastEl.textContent = t; toastEl.classList.add('on'); clearTimeout(say._t); say._t = setTimeout(function () { toastEl.classList.remove('on'); }, 2200); }
+      box.addEventListener('click', function (e) { e.stopPropagation(); var li = e.target.closest('li'); if (li) { if (!li.classList.contains('added')) { li.classList.add('added'); say('✓ Added to watchlist'); } else { li.classList.remove('added'); say('Removed from watchlist'); } return; }
+        if (e.target.closest('.imchev') || e.target.closest('.imclose')) { setOpen(!box.classList.contains('open') && !e.target.closest('.imclose')); return; }
+        if (e.target.closest('.impick')) { var pick = SUNDAY[Math.floor(Math.random() * SUNDAY.length)], li2 = ol.querySelector('li[data-i="' + SUNDAY.indexOf(pick) + '"]'); setOpen(true); Array.prototype.forEach.call(ol.querySelectorAll('li.pick'), function (x) { x.classList.remove('pick'); }); li2.classList.add('pick'); ol.scrollTo({ top: li2.offsetTop - 40, behavior: 'smooth' }); say('Tonight: ' + pick[0]); } });
+      function setOpen(o) { box.classList.toggle('open', o); tv.classList.toggle('open', o); scrim.classList.toggle('on', o); if (o) { box.setAttribute('data-lenis-prevent', ''); ol.setAttribute('data-lenis-prevent', ''); } else { box.removeAttribute('data-lenis-prevent'); ol.removeAttribute('data-lenis-prevent'); ol.scrollTop = 0; } }   /* closed, the page scrolls straight through it */
+      scrim.addEventListener('click', function (e) { e.stopPropagation(); setOpen(false); });
+      box.addEventListener('wheel', function (e) { if (box.classList.contains('open')) e.stopPropagation(); }, { passive: true }); })();
+    var rv = wrap.querySelector('.jjms-reveal');
+    if (rv) rv.addEventListener('click', function (e) { e.stopPropagation(); var first = !rv.classList.contains('done'); rv.classList.add('done'); rv.querySelector('.rvbtn').textContent = 'Watch again'; var wc = wrap.querySelector('.wizcap'); if (wc) { wc.textContent = 'Jim Jackson - Wizard & Narrator'; wc.classList.add('named'); }
+      openVideo(rv); if (window.jjScore) window.jjScore.award('vid-grandad');
+      if (first) closeVideo.after = function () { toast('Want him again? He lives in <b>Store &gt; Videos</b> now'); }; });
+    function toast(html) { var t = document.getElementById('jjms-toast'); if (!t) { t = document.createElement('div'); t.id = 'jjms-toast'; document.body.appendChild(t); }
+      t.innerHTML = html; clearTimeout(toast._t); requestAnimationFrame(function () { t.classList.add('on'); }); toast._t = setTimeout(function () { t.classList.remove('on'); }, 4200); }
+    /* the doors: Part Two follows the same lock as the menu (the 'tale2' achievement); locked, it sends you to the exam instead */
+    var p2door = wrap.querySelector('.dests a[data-key="part2"]'), stdoor = wrap.querySelector('.dests a[data-key="storytime"]'); if (stdoor) stdoor.classList.add('long');
+    Array.prototype.forEach.call(wrap.querySelectorAll('.dests a'), function (a) { a.addEventListener('animationend', function (e) { if (e.animationName === 'jjmsDoor') a.classList.add('in'); }); });   /* the entrance animation would otherwise pin opacity and scale and beat the hover */
+    function syncDoor() { if (!p2door) return; var ok = !!(window.jjScore && window.jjScore.has && window.jjScore.has('tale2')); p2door.classList.toggle('locked', !ok); p2door.setAttribute('aria-disabled', ok ? 'false' : 'true'); }
+    syncDoor(); window.addEventListener('jj:score', syncDoor); setTimeout(syncDoor, 1500);
+    if (p2door) p2door.addEventListener('click', function (e) { syncDoor(); if (!p2door.classList.contains('locked')) return; e.preventDefault(); e.stopPropagation(); openQuiz(); });
 
     /* cursor.js (site-wide) expands its bubble over <a>/<button>/[data-cursor] — most of the
        timeline's clickables are divs, so they each get the attribute */
     Array.prototype.forEach.call(wrap.querySelectorAll(
       '.phw:not(.deco),.trav,.jjphone,.srphone,.phw.deco[data-tap],.phw.deco[data-alt],.sub .funk,.cap .hotword,.jjtrophy,' +
-      '.stag,.glogo,.phw.logo'
+      '.stag,.glogo,.phw.logo,.jjms-imdb li,.jjms-imdb button'
     ), function (el) { if (!el.hasAttribute('data-cursor')) el.setAttribute('data-cursor', 'hover'); });
     var flyEl = document.getElementById('jjms-fly');
     if (flyEl) flyEl.setAttribute('data-cursor', 'hover');

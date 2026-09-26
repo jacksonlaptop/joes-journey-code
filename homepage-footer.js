@@ -1,3 +1,5 @@
+/* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
+if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
 (function () {
   var ASSET_STAR   = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0d67bb5517ed8efe956552_Star%2016.svg';
   var ASSET_MOON   = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0d67bbb86603f359ae1311_289a8c92ed8a9b7dd3efdae788f3d0ae_Moon.svg';
@@ -18,7 +20,7 @@
   function clipVideo(name, loop) {
     var v = document.createElement('video'); v.muted = true; v.loop = !!loop; v.playsInline = true; v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
     v.poster = ABASE + name + '-poster.webp';
-    v.innerHTML = '<source src="' + ABASE + name + '.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + ABASE + name + '.webm" type="video/webm">';
+    v.innerHTML = '' + jjClipSrc(ABASE + name) + '';
     v.addEventListener('playing', function () { v.removeAttribute('poster'); }, { once: true });   // no poster flash when a loop wraps
     return v;
   }
@@ -122,6 +124,59 @@
      start (the real click is re-dispatched once it is black). The landing's leftovers — the red alien, the peekers,
      the landing flyover — are cleared under the black, and the black lifts as the story begins. The audio context
      is resumed inside the real click so the speech is still allowed to play after the fade. */
+  /* "Click to begin" is a spell. The bubble cursor stays the bubble (same shape everywhere): over the button it becomes the
+     orb of the wand, with three gold sparks circling it; the press pulses it and a gold spiral leaves it, draws itself
+     across the dark where the flash will be born, keeps turning and breathing on the black through "Long, long ago", and
+     winds into the point of light just before it bursts on "flash". Registered BEFORE the gate so it sees the press (the gate stops propagation). */
+  (function jjWandFlick() {
+    var css = document.createElement('style'); css.id = 'jj-wand-style';
+    css.textContent = '.custom-cursor .jj-sparks{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;opacity:0;transition:opacity .25s ease;pointer-events:none;}' +
+      '.custom-cursor.is-wand .jj-sparks{opacity:1;animation:jjSparkOrbit 1.6s linear infinite;}' +
+      '.custom-cursor .jj-sparks::before,.custom-cursor .jj-sparks::after,.custom-cursor .jj-sparks{background:#f6dc7a;}' +
+      '.custom-cursor .jj-sparks{box-shadow:0 -34px 0 0 #f6dc7a,29px 17px 0 -1px #f6dc7a,-29px 17px 0 -1px #f6dc7a;background:transparent;}' +   /* three sparks on a ring, one element */
+      '@keyframes jjSparkOrbit{to{transform:rotate(360deg);}}' +
+      '.custom-cursor.is-wand.is-hovering{border-color:rgba(246,220,122,.8)!important;box-shadow:0 0 0 1px rgba(246,220,122,.25),0 0 22px rgba(246,220,122,.25)!important;}' +
+      '.custom-cursor.is-cast{transition:transform .32s cubic-bezier(.34,1.56,.64,1)!important;transform:translate(-50%,-50%) scale(1.35)!important;}' +
+      '#jj-spiral{position:fixed;inset:0;z-index:9990;pointer-events:none;opacity:0;transform-origin:50% 50%;}' +
+      '#jj-spiral.on{opacity:1;transition:opacity .3s ease;}#jj-spiral.gone{opacity:0;transform:scale(.02);transition:opacity .55s ease,transform .6s cubic-bezier(.6,0,1,.5);}' +
+      '#jj-spiral svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}#jj-spiral .soft{stroke:#f2d36b;stroke-width:13;opacity:.32;filter:blur(3px);}#jj-spiral .line{stroke:#f6dc7a;stroke-width:5.5;}' +
+      '#jj-spiral path{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:var(--len);stroke-dashoffset:var(--len);}#jj-spiral.on .lead path{animation:jjSpiralDraw .38s ease-out .05s forwards,jjLeadOut .5s ease 1.9s forwards;}#jj-spiral.on .spin path{animation:jjSpiralDraw 1.5s cubic-bezier(.3,.6,.2,1) .4s forwards;}@keyframes jjSpiralDraw{to{stroke-dashoffset:0;}}@keyframes jjLeadOut{to{opacity:0;}}' +
+      '#jj-spiral .spin{transform-box:view-box;transform-origin:var(--cx) var(--cy);}#jj-spiral.on .spin{animation:jjSpiralSpin 16s linear infinite,jjSpiralBreathe 3.4s ease-in-out infinite alternate;}@keyframes jjSpiralSpin{to{rotate:360deg;}}@keyframes jjSpiralBreathe{from{scale:.97;}to{scale:1.05;}}' +
+      '#jj-spiral .bead{fill:#fff;opacity:0;}#jj-spiral.on .bead{animation:jjBeadIn .4s ease 1.9s forwards;}@keyframes jjBeadIn{to{opacity:.95;}}' +
+            '#jj-spiral .glint{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;opacity:0;}#jj-spiral.on .glint{animation:jjGlint 1.6s ease-in-out 1.6s infinite alternate;}@keyframes jjGlint{from{opacity:.35;transform:scale(.7);}to{opacity:.9;transform:scale(1.3);}}';
+    document.head.appendChild(css);
+    var mx = -100, my = -100, fired = false, cur = null;
+    function bubble() { if (!cur || !cur.isConnected) { cur = document.querySelector('.custom-cursor'); if (cur && !cur.querySelector('.jj-sparks')) { var sp = document.createElement('i'); sp.className = 'jj-sparks'; cur.appendChild(sp); } } return cur; }
+    window.addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; }, { passive: true });
+    function isCta(t) { var c = t && t.closest ? t.closest('.enter-link_wrapper') : null; return c && (c.textContent || '').trim().toLowerCase() === 'click to begin' ? c : null; }
+    document.addEventListener('mouseover', function (e) { if (fired) return; if (isCta(e.target)) { var b = bubble(); if (b) b.classList.add('is-wand'); } }, true);
+    document.addEventListener('mouseout', function (e) { if (fired) return; if (isCta(e.target) && !isCta(e.relatedTarget)) { var b = bubble(); if (b) b.classList.remove('is-wand'); } }, true);
+    function spiral(x0, y0) {
+      var box = document.createElement('div'); box.id = 'jj-spiral';
+      var vw = window.innerWidth, vh = window.innerHeight, cx = vw / 2, cy = vh * 0.5, R = Math.min(vw, vh) * 0.23, pts = [], turns = 2.6, N = 240;
+      for (var i = 0; i <= N; i++) { var t = i / N, ang = -Math.PI * 0.5 + turns * Math.PI * 2 * (1 - t), r = 4 + (R - 4) * (1 - t); pts.push([cx + Math.cos(ang) * r, cy + Math.sin(ang) * r * 0.92]); }   // outside in: the eye of it is where the light is born
+      /* the lead-in: from the orb, a curve into the spiral's outer end */
+      var p0 = pts[0], qx = (x0 + p0[0]) / 2 + (p0[1] - y0) * 0.35, qy = (y0 + p0[1]) / 2 - (p0[0] - x0) * 0.35;
+      var dLead = 'M' + x0.toFixed(1) + ' ' + y0.toFixed(1) + 'Q' + qx.toFixed(1) + ' ' + qy.toFixed(1) + ' ' + p0[0].toFixed(1) + ' ' + p0[1].toFixed(1);
+      var dSp = 'M' + pts.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join('L');
+      var lenL = Math.hypot(p0[0] - x0, p0[1] - y0) * 1.15, len = 0; for (var j = 1; j < pts.length; j++) len += Math.hypot(pts[j][0] - pts[j - 1][0], pts[j][1] - pts[j - 1][1]);
+      /* the lead-in draws first and fades once the spiral is on; the spiral turns slowly and breathes, two beads run the line (SMIL, so they turn with it) */
+      var bead = function (begin) { return '<circle class="bead" r="5"><animateMotion dur="5.5s" begin="' + begin + '" repeatCount="indefinite" path="' + dSp + '"/></circle>'; };
+      box.innerHTML = '<svg viewBox="0 0 ' + vw + ' ' + vh + '" preserveAspectRatio="none"><g class="lead"><path class="soft" d="' + dLead + '" style="--len:' + lenL.toFixed(0) + '"/><path class="line" d="' + dLead + '" style="--len:' + lenL.toFixed(0) + '"/></g>' +
+        '<g class="spin" style="--cx:' + cx.toFixed(0) + 'px;--cy:' + cy.toFixed(0) + 'px"><path class="soft" d="' + dSp + '" style="--len:' + len.toFixed(0) + '"/><path class="line" d="' + dSp + '" style="--len:' + len.toFixed(0) + '"/>' + bead('1.9s') + bead('4.65s') + '</g></svg><b class="glint"></b>';
+      document.body.appendChild(box); void box.offsetWidth; box.classList.add('on');
+      return box; }
+    window.addEventListener('click', function (e) {
+      if (fired) return; var c = isCta(e.target); if (!c) return; fired = true;
+      var b = bubble(); if (b) { b.classList.add('is-wand', 'is-cast'); setTimeout(function () { b.classList.remove('is-cast'); }, 340); setTimeout(function () { b.classList.remove('is-wand'); }, 1500); }   // the orb pulses, the spell leaves it
+      var x0 = e.clientX || mx, y0 = e.clientY || my, sp = null;
+      setTimeout(function () { sp = spiral(x0, y0); }, 120);
+      /* it never sits still while it is up (turning, breathing, beads running it); the real click fires at 1400ms, the point of light appears at +6500 and bursts at +2200: it winds into it just before */
+      setTimeout(function () { if (sp) sp.classList.add('gone'); }, 1400 + 6500 + 2200 - 650);
+      setTimeout(function () { if (sp && sp.parentNode) sp.parentNode.removeChild(sp); }, 1400 + 6500 + 2200 + 400);
+    }, true);
+  })();
+
   (function jjBeginGate() {
     var passing = false, done = false;
     window.addEventListener('click', function (e) {
@@ -166,12 +221,24 @@
       '#jj-flyer.dive{pointer-events:none;}' +
       '#jj-flyer video{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 12px rgba(0,0,0,.35));animation:jjFlyBob 2.4s ease-in-out infinite;}' +
       '@keyframes jjFlyBob{0%,100%{translate:0 0;rotate:-2deg}50%{translate:0 -6px;rotate:2deg}}' +
-      '.jj-flyover{display:block;width:75px;height:auto;filter:drop-shadow(0 6px 12px rgba(0,0,0,.35));}';
+      '.jj-flyover{display:block;width:75px;height:auto;filter:drop-shadow(0 6px 12px rgba(0,0,0,.35));}' +
+      '#jj-flyer.on.over-text{opacity:.22;}';   /* he steps back while words pass under him, so a line is never hidden behind his head */
     (document.head || document.documentElement).appendChild(st);
+    (function () {                                             /* the watcher: any panel line crossing flying Joe fades him down */
+      var boxes = [], lastScan = 0;
+      setInterval(function () { var f = document.getElementById('jj-flyer'); if (!f || !f.classList.contains('on')) return;
+        var now = Date.now(); if (now - lastScan > 1500) { lastScan = now; var set = []; document.querySelectorAll('.jj-panel-char').forEach(function (c) { var p = c.parentElement; if (p && set.indexOf(p) < 0) set.push(p); }); boxes = set; }
+        var r = f.getBoundingClientRect(), ix = r.width * .18, iy = r.height * .18, hit = false;
+        for (var i = 0; i < boxes.length && !hit; i++) { var b = boxes[i]; if (!b.isConnected) continue; var rs = b.getClientRects();
+          var bb = b.getBoundingClientRect(); if (!(bb.right > r.left && bb.left < r.right && bb.bottom > r.top && bb.top < r.bottom) || parseFloat(getComputedStyle(b).opacity) < .2) continue;
+          var cs = b.querySelectorAll('.jj-panel-char');                                          /* the box crosses him: now the actual letters */
+          for (var j = 0; j < cs.length; j++) { var q = cs[j].getBoundingClientRect(); if (q.width > 1 && q.right > r.left + ix && q.left < r.right - ix && q.bottom > r.top + iy && q.top < r.bottom - iy && parseFloat(getComputedStyle(cs[j]).opacity) > .3) { hit = true; break; } } }
+        f.classList.toggle('over-text', hit); }, 140);
+    })();
     function flyVid(cls) {
       var v = document.createElement('video'); v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.preload = 'auto';
       v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); if (cls) v.className = cls; v.poster = ABASE + 'joe-fly-loop-poster.webp';
-      v.innerHTML = '<source src="' + ABASE + 'joe-fly-loop.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + ABASE + 'joe-fly-loop.webm" type="video/webm">';
+      v.innerHTML = '' + jjClipSrc(ABASE + 'joe-fly-loop') + '';
       var p = v.play(); if (p && p.catch) p.catch(function () {});
       return v;
     }
@@ -310,7 +377,7 @@
       });
       sessionStorage.setItem('jjAudioStates', JSON.stringify(states));
       sessionStorage.setItem('jjIntroPlayed', '1');
-      sessionStorage.setItem('jjUserMuted', jjUserMuted ? '1' : '0');
+      sessionStorage.setItem('jjUserMuted', (window.jjAudio && window.jjAudio.muted != null ? window.jjAudio.muted : jjUserMuted) ? '1' : '0');   // the site mixer owns mute now: never write back a stale copy
     } catch (e) {}
   }
   window.addEventListener('beforeunload', saveAudioState);
@@ -1461,6 +1528,7 @@
               if (el._jjAlienRevealed) return;
               el._jjAlienRevealed = true;
               alienReveal(chars);
+              if (window.jjSay && /my way/i.test(el.textContent)) window.jjSay('my-way', { delay: 450 });   // "I did it my way!" as it decodes
             }
           });
         }
@@ -1618,7 +1686,7 @@
     var wiz = document.createElement('video');
     wiz.muted = true; wiz.playsInline = true; wiz.preload = 'auto'; wiz.setAttribute('muted', ''); wiz.setAttribute('playsinline', '');
     wiz.poster = ABASE + 'bb-wizard-poster.webp';
-    wiz.innerHTML = '<source src="' + ABASE + 'bb-wizard.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + ABASE + 'bb-wizard.webm" type="video/webm">';
+    wiz.innerHTML = '' + jjClipSrc(ABASE + 'bb-wizard') + '';
     /* 40vh box (was 46.4) — a touch smaller, feet kept on the same line (body bottom = 87% of the box) */
     wiz.style.cssText = 'position:absolute;left:calc(2vw - 11.2vh);top:48.2vh;height:40vh;width:auto;aspect-ratio:4/3;opacity:0;transition:opacity .35s ease;transform-origin:40% 87%;filter:drop-shadow(0 0 26px rgba(150,180,255,0.28));pointer-events:none;';
     layer.appendChild(wiz);
@@ -1662,7 +1730,7 @@
     // No filter on the core: a drop-shadow re-rasterizes the layer at every scale step of the
     // burst, which janks weaker GPUs. The radial gradient provides its own glow.
     var core = document.createElement('div');
-    core.style.cssText = 'position:absolute;left:50%;top:45%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%) scale(0.2);opacity:0;background:radial-gradient(circle,#fff 0%,rgba(255,255,255,0.85) 30%,rgba(190,215,255,0.35) 60%,rgba(190,215,255,0) 75%);will-change:transform,opacity;transition:opacity 0.6s ease,transform 2.2s cubic-bezier(0.4,0,0.7,0.4);';
+    core.style.cssText = 'position:absolute;left:50%;top:50%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%) scale(0.2);opacity:0;background:radial-gradient(circle,#fff 0%,rgba(255,255,255,0.85) 30%,rgba(190,215,255,0.35) 60%,rgba(190,215,255,0) 75%);will-change:transform,opacity;transition:opacity 0.6s ease,transform 2.2s cubic-bezier(0.4,0,0.7,0.4);';
     var wash = document.createElement('div');
     wash.style.cssText = 'position:absolute;inset:0;background:#fff;opacity:0;transition:opacity 0.25s ease;';
     layer.appendChild(core); layer.appendChild(wash);
@@ -1986,6 +2054,7 @@
             if (typedFirst) return; typedFirst = true;
             fadeOutSubtitle();
             if (window.jjFlyerIn) window.jjFlyerIn(firstTexts);            // Joe flies in from the left as "Hey, I'm Joe" types
+            if (window.jjSay) window.jjSay('this-is-joe', { delay: 300, wait: true });   // after the big speech: 'this is Joe'
             firstTexts.forEach(function (el) {
               el.classList.remove('jj-first-text-hidden');
               el.style.opacity = '1';
@@ -2211,7 +2280,7 @@
   document.head.appendChild(st);
   var v = document.createElement('video'); v.id = 'jj-hs-alien'; v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
   v.poster = PGB + 'hs-alien-poster.webp'; v.setAttribute('data-cursor', 'hover');
-  v.innerHTML = '<source src="' + PGB + 'hs-alien.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + PGB + 'hs-alien.webm" type="video/webm">';
+  v.innerHTML = '' + jjClipSrc(PGB + 'hs-alien') + '';
   document.body.appendChild(v);
   var cur = -1;
   if (LOOP_END) v.addEventListener('timeupdate', function () { if (!v._flying && v.currentTime >= LOOP_END) v.currentTime = 0; });   // the clip itself is forward + reverse, so the wrap is invisible
@@ -2422,7 +2491,7 @@
   function vid(name, cls, poster) {
     var v = document.createElement('video'); v.className = cls || ''; v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.preload = 'auto';
     v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); if (poster !== false) v.poster = GB + name + '-poster.webp';
-    v.innerHTML = '<source src="' + GB + name + '.mov" type=\'video/mp4; codecs="hvc1"\'><source src="' + GB + name + '.webm" type="video/webm">';
+    v.innerHTML = '' + jjClipSrc(GB + name) + '';
     return v;
   }
   function play(v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
@@ -2474,6 +2543,7 @@
     function line() {
       if (!isOpen || picked) return;
       var last = li >= LINES.length, txt = last ? LAST : LINES[li++];
+      if (window.jjSay) { if (li === 1) window.jjSay('user-journey'); else if (li === 2) window.jjSay('recommend-storytime', { wait: true }); }   // the intro, then 'I recommend Story Time' on the (recommended) line
       if (last) cap.classList.add('big');
       var h = txt.split(' ').map(function (w) { var o = '<span class="w">'; for (var i = 0; i < w.length; i++) o += '<i>' + w[i] + '</i>'; return o + '</span>'; }).join(' ');
       cap.innerHTML = h; var ch = cap.querySelectorAll('i'), k = 0, caret = document.createElement('b'); if (ch.length) ch[0].before(caret);
@@ -2487,8 +2557,9 @@
   function exitTo(href) {
     var ov = document.getElementById('jj-choose-exit'); if (!ov) { ov = document.createElement('div'); ov.id = 'jj-choose-exit'; document.body.appendChild(ov); }
     var amb = window.jjAudio && window.jjAudio.ambient; if (amb) { try { amb.fade(amb.volume(), 0, 450); } catch (e) {} }
+    var say = !!window.jjSay && !muted(); if (say) window.jjSay('great-choice', { again: true });   // 'Great choice!' over the fade, then the case study
     requestAnimationFrame(function () { ov.style.opacity = '1'; });
-    setTimeout(function () { window.location.href = href; }, 600);
+    setTimeout(function () { window.location.href = href; }, say ? 2300 : 600);
   }
 
   function pick(side, instant) {                                             // a side is chosen: the other sinks and blurs, the wizard casts, the picked one spreads

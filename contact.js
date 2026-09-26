@@ -120,7 +120,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
   function startSong(){
     if (window._jjSong) return;
     if (window.Howl) {
-      var song = new window.Howl({ src:[SONG_URL], format:['mp3'], loop:true, html5:true, volume:0 });
+      var song = new window.Howl({ src:[SONG_URL], format:['mp3'], loop:true, html5:true, volume:0 }); song._jjCat = 'music';
       window._jjSong = song;
       try { if (window.jjAudio && window.jjAudio.sounds) window.jjAudio.sounds.push(song); } catch (e) {}
       song.once('play', function () {
@@ -646,8 +646,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
   function setGameMute(m){ gameMusicMuted = m; applyGameVol(); }                                // Space (pause) also mutes; resume restores
   function playTrack(url, onEnd){
     var v = gameMusicMuted ? 0 : GAME_VOL;
-    if (window.Howl) { var h = new window.Howl({ src:[url], format:['mp3'], html5:true, loop:false, volume:v }); try { if (window.jjAudio && window.jjAudio.sounds) window.jjAudio.sounds.push(h); } catch (e) {} if (onEnd) h.once('end', onEnd); h.play(); try { h.volume(v); h.once('play', function(){ try { h.volume(v); } catch(e){} }); } catch (e) {} return h; }   // re-assert volume (html5 Howls sometimes ignore the constructor volume until playing)
-    var a = new Audio(url); a.volume = v; if (onEnd) a.addEventListener('ended', onEnd); a.play().catch(function () {}); return a;
+    if (window.Howl) { var h = new window.Howl({ src:[url], format:['mp3'], html5:true, loop:false, volume:v }); h._jjCat = 'music'; try { if (window.jjAudio && window.jjAudio.sounds) window.jjAudio.sounds.push(h); } catch (e) {} if (onEnd) h.once('end', onEnd); h.play(); try { h.volume(v); h.once('play', function(){ try { h.volume(v); } catch(e){} }); } catch (e) {} return h; }   // re-assert volume (html5 Howls sometimes ignore the constructor volume until playing)
+    var a = new Audio(url); a._jjTag = 'music'; a.volume = v; if (onEnd) a.addEventListener('ended', onEnd); a.play().catch(function () {}); return a;
   }
   function nextGameTrack(){                                                                      // GM1 → GM2 → GM1 … endless loop of the pair
     if (gameMusic) { try { if (gameMusic.stop) gameMusic.stop(); else if (gameMusic.pause) gameMusic.pause(); } catch (e) {} }
@@ -1051,6 +1051,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
         if(!it.hit && it.x<=18 && it.x>=10 && Math.abs(it.y-G.dy)<it.band){ hit(it); continue; }
         if(it.x<-8){ it.el.remove(); G.items.splice(i,1); } }
       if(!rollDone){ G.rollX-=sp*.31*k; paintScroll();
+        if(!G.saidVoice && window.jjSay){ var vcd=roll.children[6]; if(vcd){ var vr=vcd.getBoundingClientRect(); if(vr.width && vr.left+vr.width/2 < window.innerWidth*0.62){ G.saidVoice=true; window.jjSay('best-voice-work', { wait: true }); } } }   // the voice credit comes on screen
         if(!G.harder && G.rollW){ var prog=(60-G.rollX)/(60+(G.rollW)/REEL_K); if(prog>=0.5){ G.harder=true; flash("Be careful! It's starting to get a bit harder now!",2400); } }   // halfway → red ones grow + warn
         if(-G.rollX*REEL_K>G.rollW){ rollDone=true; endGame(); } }
       G.raf=requestAnimationFrame(loop);
@@ -1060,6 +1061,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       gsap.to('#jj-hud',{opacity:1,duration:.5}); gsap.to('#jj-keys',{opacity:1,duration:.5}); gsap.to('#jj-cr-progress',{opacity:1,duration:.5}); G.raf=requestAnimationFrame(loop); }
     function endGame(){ if(ended)return; ended=true; G.run=false; if(G.raf)cancelAnimationFrame(G.raf); paused=false; viewMode=false;
       if(window.jjScore){ window.jjScore.award('credits'); window.jjScore.award('credits-star'); } // Retro theme + finishing star
+      if(window.jjSay) window.jjSay('high-score', { delay: 600, wait: true });                      // end of the credits
       gsap.to(['#jj-hud','#jj-keys','#jj-cr-progress'],{opacity:0,duration:.4}); if(backEl) gsap.to(backEl,{opacity:0,duration:.4});   // clear gameplay UI for the end screen
       var end=document.createElement('div'); end.id='jj-end'; end.className='jj-overlay';
       var col=document.createElement('div'); col.className='jj-e-col';
@@ -1087,6 +1089,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
   function spaceCTA(){
     var cap = document.getElementById('jj-caption'), sb = document.getElementById('jj-spacebar'); if (!cap || !window.gsap) return;
     if (document.documentElement.classList.contains('jj-credits-on')) return;                 // they already pressed it
+    if (window.jjSay) window.jjSay('quick-game', { wait: true });                                // the wizard invites them to the game
     gsap.to(cap, { opacity: 0, duration: .4 });                                                // the caption goes; a plain centred line takes over
     var cta = document.getElementById('jj-space-cta');
     if (!cta) { cta = document.createElement('div'); cta.id = 'jj-space-cta'; cta.textContent = 'Press space to begin'; (cap.parentNode || document.body).appendChild(cta); }
@@ -1224,6 +1227,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     });
 
     // dragon clears the last letter → ALL letters disperse; 7 of them are tagged to return.
+    tl.call(function () { if (window.jjSay) window.jjSay('get-in-touch'); }, null, Math.max(T.flyAt, lastT - 0.9));   // 'How would you like to get in touch?' as the heading finishes decoding
     tl.call(function () { pickContact(headEl); floatOut(headEl); }, null, lastT);
     // once they've drifted out a moment, those 7 reverse-float back to centre as "Contact"
     // (normal spacing), keep bobbing, then float-fade out 2.5s after they land.

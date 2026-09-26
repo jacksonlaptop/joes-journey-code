@@ -1,3 +1,5 @@
+/* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
+if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
 /* ============================================================================
    Joe's Journey — accurate page loader  (hosted via GitHub + raw.githack.com)
 
@@ -22,7 +24,7 @@
    ============================================================================ */
 (function () {
   var JJ = (window.JJLoader = window.JJLoader || {});
-  JJ.version = 'L17 · pill loaders: deep feather, hint as a subtitle; L16 · precam moon behind the grass; L15 pill variant (Storytime fight, My Story evolution)';   // bump every edit — verify in console
+  JJ.version = 'L19 · pill: deep blur fade (F 125, runs into the bleed) and the title kept by its own letters, not a box — no straight line above the scene; L18 · pill art bleeds past its edge: no hard line round any pill; L17 · pill loaders: deep feather, hint as a subtitle; L16 · precam moon behind the grass; L15 pill variant (Storytime fight, My Story evolution)';   // bump every edit — verify in console
   window.JJ_LOADER_BUILD = JJ.version;
   try { console.log('%c[JJ] jj-loader.js build: ' + JJ.version, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
@@ -353,7 +355,7 @@
     var el = mount(
       '<svg viewBox="0 0 1000 320">' + DEFS +
         '<filter id="jjsoft" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="1.2"/></filter>' +
-        '<filter id="jjfeather" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="50"/></filter>' +
+        '<filter id="jjfeather" filterUnits="userSpaceOnUse" x="-3500" y="-1440" width="8000" height="3200"><feGaussianBlur stdDeviation="85"/></filter>' +
         '<g filter="url(#jjsoft)">' +
           '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#0E1F33"/>' +
           '<g transform="translate(0,-152.5) scale(0.3472)">' + NIGHT_SWIRLS + '</g>' +
@@ -504,7 +506,7 @@
     var el = mount(
       '<svg viewBox="0 0 1000 320">' + DEFS +
         '<filter id="jjsoft" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="1.2"/></filter>' +
-        '<filter id="jjfeather" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="50"/></filter>' +
+        '<filter id="jjfeather" filterUnits="userSpaceOnUse" x="-3500" y="-1440" width="8000" height="3200"><feGaussianBlur stdDeviation="85"/></filter>' +
         /* ---- blurred, static scene (no moon — he lives above the darkness) ---- */
         '<g filter="url(#jjsoft)">' +
           '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#0E1F33"/>' +
@@ -597,7 +599,7 @@
           '<image href="' + NIGHT_MOON + '" x="740" y="78" width="84" height="84"/></g>' +
         '<ellipse cx="500" cy="' + (GROUND + 6) + '" rx="' + Math.round(FW * 0.42) + '" ry="11" fill="rgba(0,0,0,.32)"/>' +
         '<g class="jjfight" style="transform-box:fill-box;transform-origin:50% 100%">' +
-          (clip ? '<foreignObject x="' + FX + '" y="' + FY + '" width="' + FW + '" height="' + FH + '"><video xmlns="http://www.w3.org/1999/xhtml" class="jjfv" muted autoplay loop playsinline style="width:100%;height:100%;object-fit:contain;display:block;background:transparent" poster="' + (opts.img || '') + '">' + (clip.mov ? '<source src="' + clip.mov + '" type=\'video/mp4; codecs="hvc1"\'/>' : '') + (clip.webm ? '<source src="' + clip.webm + '" type="video/webm"/>' : '') + '</video></foreignObject>' : '') +
+          (clip ? '<foreignObject x="' + FX + '" y="' + FY + '" width="' + FW + '" height="' + FH + '"><video xmlns="http://www.w3.org/1999/xhtml" class="jjfv" muted autoplay loop playsinline style="width:100%;height:100%;object-fit:contain;display:block;background:transparent" poster="' + (opts.img || '') + '">' + ((clip.mov && (!clip.webm || jjClipSrc('').indexOf('.mov') > 0)) ? '<source src="' + clip.mov + '" type=\'video/mp4; codecs="hvc1"\'/>' : clip.webm ? '<source src="' + clip.webm + '" type="video/webm"/>' : '') + '</video></foreignObject>' : '') +
           '<image class="jjfimg" href="' + (opts.img || '') + '" x="' + FX + '" y="' + FY + '" width="' + FW + '" height="' + FH + '" preserveAspectRatio="xMidYMax meet" style="' + (clip ? 'opacity:0;' : '') + 'transition:opacity .4s ease"/>' +
         '</g>' +
         '<text x="500" y="58" text-anchor="middle" fill="white" style="font-size:19px">' + MSG1 + '</text>' +
@@ -648,7 +650,7 @@
     var el = mount(
       '<svg viewBox="0 0 1000 320">' + DEFS +
         '<filter id="jjsoft" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="1.2"/></filter>' +
-        '<filter id="jjfeather" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="50"/></filter>' +
+        '<filter id="jjfeather" filterUnits="userSpaceOnUse" x="-3500" y="-1440" width="8000" height="3200"><feGaussianBlur stdDeviation="85"/></filter>' +
         /* ---- blurred, static scene (no moon — he lives above the darkness) ---- */
         '<g filter="url(#jjsoft)">' +
           '<rect x="-3500" y="-1440" width="8000" height="3200" fill="#0E1F33"/>' +
@@ -858,7 +860,7 @@
        layout 'mystory'   — the seven evolution figures, each painted in from grey as the load passes it; the newest walks */
   function Pill(opts) {
     var ST = opts.layout === 'storytime';
-    var BG = opts.bg, BOX = ST ? [560, 430, 1740, 910] : [594, 695, 1693, 507];
+    var BG = opts.bg, BOX0 = ST ? [560, 430, 1740, 910] : [594, 695, 1693, 507], PAD = 260, BOX = [BOX0[0] - PAD, BOX0[1] - PAD, BOX0[2] + 2 * PAD, BOX0[3] + 2 * PAD];   // the art carries a 260px bleed of its own edge colours, so the feather melts into black with no hard edge anywhere (L18)
     var esc = function (t) { return String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
     if (!document.getElementById('jjld-pill-style')) { var ps = document.createElement('style'); ps.id = 'jjld-pill-style';
       ps.textContent = '@keyframes jjwalkP{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-9px) rotate(-1.2deg);}50%{transform:translateY(0) rotate(0deg);}75%{transform:translateY(-9px) rotate(1.2deg);}}' +
@@ -871,11 +873,13 @@
     /* the window is FEATHERED into the black, like the loaders before it — never a hard-edged box. The pill is a
        blurred rounded rect used as a mask; for Storytime the arched title above it stays crisp (its own mask patch). */
     var PILL = ST ? [658, 713, 1565, 620, 310] : [594, 695, 1693, 507, 253];
-    var F = 150;                                                        // a deep feather: the scene melts into the black over ~10% of the frame, as in Joe's mocks
+    var F = 125;                                                        // L19: a much deeper blur fade, like the fight loader before it (Joe's reference) — it runs out into the art's 260px bleed, so no edge shows
     var html = '<svg class="jjpill" viewBox="0 0 2880 1800" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' + esc(opts.title || 'Loading') + '">' +
-      '<filter id="jjpfeather" x="-30%" y="-40%" width="160%" height="180%"><feGaussianBlur stdDeviation="' + F + '"/></filter>' +
-      '<mask id="jjpmask"><rect x="' + (PILL[0] + F * .55) + '" y="' + (PILL[1] + F * .55) + '" width="' + (PILL[2] - F * 1.1) + '" height="' + (PILL[3] - F * 1.1) + '" rx="' + PILL[4] + '" fill="#fff" filter="url(#jjpfeather)"/>' +
-        (ST ? '<rect x="' + BOX[0] + '" y="' + BOX[1] + '" width="' + BOX[2] + '" height="' + (PILL[1] - BOX[1] - 8) + '" fill="#fff"/>' : '') +
+      '<filter id="jjpfeather" filterUnits="userSpaceOnUse" x="-600" y="-600" width="4080" height="3000"><feGaussianBlur stdDeviation="' + F + '"/></filter>' +
+      '<filter id="jjplum" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncR type="linear" slope="2.6" intercept="-.55"/><feFuncG type="linear" slope="2.6" intercept="-.55"/><feFuncB type="linear" slope="2.6" intercept="-.55"/></feComponentTransfer></filter>' +
+      (ST ? '<clipPath id="jjptclip" clipPathUnits="userSpaceOnUse"><rect x="' + BOX[0] + '" y="' + BOX0[1] + '" width="' + BOX[2] + '" height="' + (PILL[1] + 17 - BOX0[1]) + '"/></clipPath>' : '') +
+      '<mask id="jjpmask" maskUnits="userSpaceOnUse" x="-600" y="-600" width="4080" height="3000"><rect x="' + (PILL[0] + F * .15) + '" y="' + (PILL[1] + F * .15) + '" width="' + (PILL[2] - F * .3) + '" height="' + (PILL[3] - F * .3) + '" rx="' + PILL[4] + '" fill="#fff" filter="url(#jjpfeather)"/>' +
+        (ST ? '<g clip-path="url(#jjptclip)"><image href="' + BG + '" x="' + BOX[0] + '" y="' + BOX[1] + '" width="' + BOX[2] + '" height="' + BOX[3] + '" filter="url(#jjplum)"/></g>' : '') +   /* the arched title stays crisp by its own light letters only — no box, so no straight edge above the scene (L19) */
       '</mask>' +
       '<g mask="url(#jjpmask)"><image href="' + BG + '" x="' + BOX[0] + '" y="' + BOX[1] + '" width="' + BOX[2] + '" height="' + BOX[3] + '"/></g>';
     var POS = [[557, 973], [812, 963], [1066, 939], [1321, 931], [1576, 925], [1830, 909], [2085, 909]], S = 239;
@@ -886,7 +890,7 @@
         '<text x="1440" y="712" text-anchor="middle" fill="rgba(255,255,255,.88)" style="font-size:40px">' + esc(opts.msg1 || 'Hint: This is an interactive story') + '</text>' +   // a subtitle under the title
         '<ellipse cx="1490" cy="1150" rx="250" ry="16" fill="rgba(0,0,0,.28)"/>' +
         '<g class="jjfight">' +
-          (clip ? '<foreignObject x="' + FX + '" y="' + FY + '" width="' + FW + '" height="' + FH + '"><video xmlns="http://www.w3.org/1999/xhtml" class="jjfv" muted autoplay loop playsinline style="width:100%;height:100%;object-fit:contain;object-position:50% 100%;display:block;background:transparent" poster="' + (opts.img || '') + '">' + (clip.mov ? '<source src="' + clip.mov + '" type=\'video/mp4; codecs="hvc1"\'/>' : '') + (clip.webm ? '<source src="' + clip.webm + '" type="video/webm"/>' : '') + '</video></foreignObject>' : '') +
+          (clip ? '<foreignObject x="' + FX + '" y="' + FY + '" width="' + FW + '" height="' + FH + '"><video xmlns="http://www.w3.org/1999/xhtml" class="jjfv" muted autoplay loop playsinline style="width:100%;height:100%;object-fit:contain;object-position:50% 100%;display:block;background:transparent" poster="' + (opts.img || '') + '">' + ((clip.mov && (!clip.webm || jjClipSrc('').indexOf('.mov') > 0)) ? '<source src="' + clip.mov + '" type=\'video/mp4; codecs="hvc1"\'/>' : clip.webm ? '<source src="' + clip.webm + '" type="video/webm"/>' : '') + '</video></foreignObject>' : '') +
           '<image class="jjfimg" href="' + (opts.img || '') + '" x="' + FX + '" y="' + FY + '" width="' + FW + '" height="' + FH + '" preserveAspectRatio="xMidYMax meet" style="' + (clip ? 'opacity:0;' : '') + 'transition:opacity .4s ease"/>' +
         '</g>' +
         '<text class="pct" x="1440" y="1262" text-anchor="middle" style="font-size:66px;fill:#fff">0%</text>';

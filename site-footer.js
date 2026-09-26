@@ -1,3 +1,5 @@
+/* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
+if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof THREE !== "undefined") {
     let scene, camera, renderer, shapes = [], svgPositionX = 0, clock, bgW = 0, bgH = 0;
@@ -200,7 +202,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var st = document.createElement('style'); st.id = 'jj-menu-polish'; st.textContent =
       'body.jj-menu-open *{pointer-events:none!important}body.jj-menu-open .menu-wrap,body.jj-menu-open .menu-wrap *,body.jj-menu-open .menu-container,body.jj-menu-open .menu-container *,body.jj-menu-open .nav-logo-link,body.jj-menu-open .nav-logo-link *,body.jj-menu-open #jj-sound-btn,body.jj-menu-open #jj-sound-btn *,body.jj-menu-open .audio-container-controller,body.jj-menu-open .audio-container-controller *,body.jj-menu-open #jj-sc-hud,body.jj-menu-open #jj-sc-hud *,body.jj-menu-open #jj-co-nav,body.jj-menu-open #jj-co-nav *{pointer-events:auto!important}' +
-      'body.jj-menu-open{overflow:hidden!important}body.jj-menu-open .menu-wrap{isolation:isolate;cursor:default}' +
+      'body.jj-menu-open .jjst-ov.on,body.jj-menu-open .jjst-ov.on *,body.jj-menu-open #jj-first,body.jj-menu-open #jj-first *,body.jj-menu-open #jj-t2offer,body.jj-menu-open #jj-t2offer *{pointer-events:auto!important}body.jj-menu-open{overflow:hidden!important}body.jj-menu-open .menu-wrap{isolation:isolate;cursor:default}' +
       '.menu-wrap::before{content:"";position:fixed;inset:0;z-index:-3;background:rgba(4,7,16,.92);-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);pointer-events:none;opacity:0;transition:opacity .9s ease}' +   // the dim + blur eases in behind the wipe, never snaps
       'body.jj-menu-open .menu-wrap::before{opacity:1}' +
       /* Close pressed: everything the menu put on screen — the art, the links, the rail, the moon, the companion card — is gone
@@ -287,7 +289,10 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener('wheel', function (e) { if (document.body.classList.contains('jj-menu-open') && !(e.target.closest && e.target.closest('.menu-wrap'))) e.preventDefault(); }, { passive:false, capture:true });
     document.addEventListener('touchmove', function (e) { if (document.body.classList.contains('jj-menu-open') && !(e.target.closest && e.target.closest('.menu-wrap'))) e.preventDefault(); }, { passive:false, capture:true });
     new MutationObserver(sync).observe(wrap, { attributes:true, attributeFilter:['class','style'] });
-    window.addEventListener('jj:score', update); setInterval(function () { if (document.body.classList.contains('jj-menu-open')) { sync(); update(); } }, 500);   // re-check visibility too: a Themes/Store click closes the menu without a class change we can see
+    window.addEventListener('jj:score', update); setInterval(function () { if (document.body.classList.contains('jj-menu-open')) { sync(); update(); } }, 500);
+    /* a modal that pops up while the menu is open (the sound prompt, an unlock card) would sit dead under the menu's
+       pointer-events lock with no way out: the menu steps aside the moment any modal opens */
+    new MutationObserver(function () { var b = document.body.classList; if (b.contains('jj-modal-open') && b.contains('jj-menu-open') && !b.contains('jj-menu-closing')) btn.click(); }).observe(document.body, { attributes: true, attributeFilter: ['class'] });   // re-check visibility too: a Themes/Store click closes the menu without a class change we can see
     sync();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready); else ready();
@@ -771,17 +776,195 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
       if (typeof gsap !== 'undefined') { gsap.killTweensOf(fill); gsap.to(fill, { scale: 0, opacity: 0, duration: 0.3, ease: 'power2.in' }); }
       else { fill.style.transform = 'scale(0)'; fill.style.opacity = '0'; }
     });
-    btn.addEventListener('click', function () {
-      jjUserMuted = !jjUserMuted;
-      if (window.jjAudio) window.jjAudio.muted = jjUserMuted;
-      try { sessionStorage.setItem('jjUserMuted', jjUserMuted ? '1' : '0'); } catch (e) {}
-      btn.classList.toggle('is-muted', jjUserMuted);
-      jjApplyMute();
+    btn.setAttribute('aria-label', 'Sound settings'); btn.setAttribute('aria-expanded', 'false');
+    btn.addEventListener('click', function (e) {
+      if (btn._jjSync) { btn._jjSync = false; return; }   /* a re-dispatched click only tells the other scripts to re-read the mute */
+      if (jjMixP && jjMixP.classList.contains('open')) { btn._jjHold = true; jjMixClose(); } else jjMixOpen();   /* open, the moon IS the close button; a tap opens it on touch */
     });
+    btn.addEventListener('mouseenter', function () { if (!btn._jjHold) jjMixOpen(); });
+    btn.addEventListener('mouseleave', function (e) { btn._jjHold = false; if (jjMixP && !(e.relatedTarget && jjMixP.contains(e.relatedTarget))) jjMixClose(); });   /* out to the page closes it; up into the pane keeps it */
+    var xm = document.createElement('span'); xm.className = 'jj-mx-xm'; btn.appendChild(xm);
     jjStartAudioBars(btn);
   }
+  /* Mute everything (the mixer's "Mute all"): the same state the old one-press button kept, and a synthetic click on the moon
+     so the page scripts that listen to it (My Story, the homepage) re-read sessionStorage */
+  function jjSetMuted(m) {
+    jjUserMuted = !!m;
+    if (window.jjAudio) window.jjAudio.muted = jjUserMuted;
+    try { sessionStorage.setItem('jjUserMuted', jjUserMuted ? '1' : '0'); } catch (e) {}
+    var b = document.getElementById('jj-sound-btn'); if (b) { b.classList.toggle('is-muted', jjUserMuted); b._jjSync = true; b.click(); b._jjSync = false; }
+    jjApplyMute(); jjMixPaint();
+  }
+
+  /* ---- THE MIXER: three levels (voice, effects, music) kept in localStorage.
+     Every Howl is sorted when it plays: its Web Audio node is re-wired through a gain for its group (voice/sfx/music -> master),
+     and an HTML5 <audio> gets a volume property that quietly multiplies by its group's level. Sorting: an explicit h._jjCat,
+     else the file name (nar-/narr/speech/voice = voice; the ambient and the songs = music), else effects. */
+  var JJ_MIX = { voice: 1, sfx: 1, music: 1 };
+  try { var jm = JSON.parse(localStorage.getItem('jjMix') || 'null'); if (jm) ['voice', 'sfx', 'music'].forEach(function (k) { if (typeof jm[k] === 'number') JJ_MIX[k] = Math.max(0, Math.min(1, jm[k])); }); } catch (e) {}
+  window.jjMix = JJ_MIX;
+  function jjCatOf(src, tag) {
+    if (tag) return tag;
+    src = String(src || '');
+    if (/nar-|narr|speech|voice/i.test(src)) return 'voice';
+    if (/lotro|ambient|music|song|theme|glbml|soundtrack/i.test(src)) return 'music';
+    return 'sfx';
+  }
+  var jjMixG = null;
+  function jjMixGains() {
+    if (jjMixG) return jjMixG;
+    if (!window.Howler || !Howler.ctx || !Howler.masterGain || !Howler.usingWebAudio) return null;
+    jjMixG = {};
+    ['voice', 'sfx', 'music'].forEach(function (k) { var g = Howler.ctx.createGain(); g.gain.value = JJ_MIX[k]; g.connect(Howler.masterGain); jjMixG[k] = g; });
+    return jjMixG;
+  }
+  var mediaVol = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'volume');
+  function jjMixEl(el, cat) {                               /* an <audio>: its volume reads as set, but lands scaled by its group */
+    el._jjCat = cat;
+    if (el._jjMixed || !mediaVol) { if (el._jjMixed) mediaVol.set.call(el, Math.max(0, Math.min(1, el._jjBase * JJ_MIX[el._jjCat]))); return; }
+    el._jjMixed = true; el._jjBase = mediaVol.get.call(el);
+    Object.defineProperty(el, 'volume', { configurable: true,
+      get: function () { return el._jjBase; },
+      set: function (v) { el._jjBase = v; mediaVol.set.call(el, Math.max(0, Math.min(1, v * JJ_MIX[el._jjCat]))); } });
+    el.volume = el._jjBase;
+    (jjMixEl.all || (jjMixEl.all = [])).push(el);
+  }
+  function jjMixRoute(h) {
+    try {
+      var cat = jjCatOf(h._src && (h._src.join ? h._src[0] : h._src), h._jjCat);
+      (h._sounds || []).forEach(function (sd) { var n = sd._node; if (!n) return;
+        if (h._webAudio) { var G = jjMixGains(); if (!G || n._jjCat === cat) return; try { n.disconnect(); } catch (e) {} n.connect(G[cat]); n._jjCat = cat; }
+        else jjMixEl(n, cat); });
+    } catch (e) {}
+  }
+  if (window.Howl && !Howl.prototype._jjMixPlay) {
+    var hp = Howl.prototype.play; Howl.prototype._jjMixPlay = true;
+    Howl.prototype.play = function () { var r = hp.apply(this, arguments); jjMixRoute(this); return r; };
+  }
+  var ap = HTMLMediaElement.prototype.play;                 /* plain new Audio(...) elsewhere on the site (videos keep their own controls) */
+  HTMLMediaElement.prototype.play = function () { if (this.tagName === 'AUDIO') jjMixEl(this, jjCatOf(this.currentSrc || this.src, this._jjTag)); return ap.apply(this, arguments); };
+  function jjMixSet(k, v) {
+    JJ_MIX[k] = v; try { localStorage.setItem('jjMix', JSON.stringify(JJ_MIX)); } catch (e) {}
+    var G = jjMixGains(); if (G) { try { G[k].gain.setTargetAtTime(v, Howler.ctx.currentTime, 0.04); } catch (e) { G[k].gain.value = v; } }
+    (jjMixEl.all || []).forEach(function (el) { if (el._jjCat === k) el.volume = el._jjBase; });
+    try { window.dispatchEvent(new CustomEvent('jj:mix', { detail: { group: k, level: v } })); } catch (e) {}
+  }
+
+  /* the panel: the moon bubbles out into a rounded glass square in the corner (it keeps its own place as the corner handle) */
+  var jjMixP = null;
+  function jjMixBuild() {
+    if (jjMixP) return jjMixP;
+    var st = document.createElement('style'); st.id = 'jj-mix-style';
+    st.textContent =
+      '#jj-mixer{position:fixed;right:32px;bottom:64px;width:64px;height:32px;border-radius:32px;z-index:9998;box-sizing:border-box;background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.5);box-shadow:0 18px 50px rgba(0,0,0,.4),0 0 40px rgba(160,190,255,.18);opacity:0;pointer-events:none;overflow:hidden;font-family:"Joes Journey Headline","Quicksand",sans-serif;color:#fff;transform-origin:100% 100%;' +
+        'transition:width .62s cubic-bezier(.3,1.5,.5,1),height .62s cubic-bezier(.3,1.5,.5,1) .04s,border-radius .5s ease,opacity .12s ease,background .45s ease;}' +
+      '#jj-mixer.open{width:min(300px,calc(100vw - 48px));height:318px;border-radius:28px 28px 32px 28px;opacity:1;pointer-events:auto;}' +
+      /* open, the moon stays put and becomes the close: its bars fold away and an X turns in */
+      '#jj-sound-btn .jj-bar{transition:height 60ms linear,background .2s ease,opacity .2s ease;}html.jj-mx-on #jj-sound-btn .jj-bar{opacity:0;}' +
+      '#jj-sound-btn .jj-mx-xm{position:absolute;left:50%;top:50%;width:22px;height:22px;translate:-50% -50%;z-index:3;pointer-events:none;opacity:0;rotate:-90deg;scale:.4;color:#111;transition:opacity .2s ease,rotate .45s cubic-bezier(.3,1.5,.5,1),scale .45s cubic-bezier(.3,1.5,.5,1);}' +
+      '#jj-sound-btn .jj-mx-xm::before,#jj-sound-btn .jj-mx-xm::after{content:"";position:absolute;left:0;right:0;top:50%;height:3px;margin-top:-1.5px;border-radius:3px;background:currentColor;rotate:45deg;}#jj-sound-btn .jj-mx-xm::after{rotate:-45deg;}' +
+      '#jj-sound-btn.is-quiet .jj-mx-xm,#jj-sound-btn.is-muted .jj-mx-xm{color:#fff;}html.jj-mx-on #jj-sound-btn .jj-mx-xm{opacity:1;rotate:0deg;scale:1;}html.jj-mx-on #jj-sound-mist{opacity:0!important;}' +
+      '#jj-mixer.closing{transition:width .38s cubic-bezier(.6,0,.4,1),height .34s cubic-bezier(.6,0,.4,1),border-radius .38s ease,opacity .22s ease .16s;}' +
+      '#jj-mixer .mx-in{position:absolute;left:0;top:0;width:min(300px,calc(100vw - 48px));height:318px;box-sizing:border-box;padding:22px 24px 0;}' +
+      '#jj-mixer h4{margin:0 0 14px;font-size:20px;font-weight:700;letter-spacing:.02em;line-height:1;}' +
+      '#jj-mixer .mx-row{margin-bottom:14px;opacity:0;transform:translateY(10px);transition:opacity .3s ease,transform .45s cubic-bezier(.3,1.4,.5,1);}' +
+      '#jj-mixer.open .mx-row,#jj-mixer.open h4{opacity:1;transform:none;}' +
+      '#jj-mixer h4{opacity:0;transform:translateY(10px);transition:opacity .3s ease,transform .45s cubic-bezier(.3,1.4,.5,1);}' +
+      '#jj-mixer.open h4{transition-delay:.16s;}#jj-mixer.open .mx-row:nth-of-type(1){transition-delay:.22s;}#jj-mixer.open .mx-row:nth-of-type(2){transition-delay:.28s;}#jj-mixer.open .mx-row:nth-of-type(3){transition-delay:.34s;}' +
+      '#jj-mixer .mx-lab{display:flex;justify-content:space-between;align-items:baseline;font-size:15px;margin-bottom:8px;}#jj-mixer .mx-lab b{font-weight:700;}#jj-mixer .mx-lab span{font-size:12px;opacity:.7;letter-spacing:.06em;font-variant-numeric:tabular-nums;}' +
+      '#jj-mixer .mx-line{display:flex;align-items:center;gap:10px;}' +
+      '#jj-mixer .mx-mu{flex:none;width:28px;height:28px;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.4);color:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s ease,border-color .2s ease,scale .25s cubic-bezier(.3,1.6,.5,1);}' +
+      '#jj-mixer .mx-mu svg{width:15px;height:15px;}#jj-mixer .mx-mu .sl{display:none;}#jj-mixer .mx-mu.off .sl{display:inline;}#jj-mixer .mx-mu.off .w{display:none;}' +
+      '#jj-mixer .mx-mu:hover{background:rgba(255,255,255,.14);scale:1.08;}#jj-mixer .mx-mu:active{border-color:#ff5fc8;box-shadow:0 0 0 3px rgba(255,95,200,.35);scale:.94;}#jj-mixer .mx-mu.off{background:#ff5fc8;border-color:#ff9de2;color:#fff;}' +
+      '#jj-mixer input[type=range]{-webkit-appearance:none;appearance:none;display:block;flex:1;min-width:0;height:22px;margin:0;background:transparent;cursor:pointer;--v:100%;}' +
+      '#jj-mixer input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:linear-gradient(90deg,#c7e7ff,#ff9de2) 0 0/var(--v) 100% no-repeat,rgba(255,255,255,.18);box-shadow:0 0 12px rgba(199,231,255,.25);}' +
+      '#jj-mixer input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:linear-gradient(90deg,#c7e7ff,#ff9de2) 0 0/var(--v) 100% no-repeat,rgba(255,255,255,.18);}' +
+      '#jj-mixer input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;margin-top:-7px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#fff,#e7f1fb 55%,#cfe0f2);box-shadow:0 0 14px rgba(199,231,255,.8);transition:transform .2s cubic-bezier(.3,1.6,.5,1),box-shadow .2s ease;}' +
+      '#jj-mixer input[type=range]::-moz-range-thumb{width:20px;height:20px;border:none;border-radius:50%;background:radial-gradient(circle at 34% 30%,#fff,#e7f1fb 55%,#cfe0f2);box-shadow:0 0 14px rgba(199,231,255,.8);}' +
+      '#jj-mixer input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.15);}#jj-mixer input[type=range]:active::-webkit-slider-thumb{transform:scale(1.25);box-shadow:0 0 0 5px rgba(255,95,200,.35),0 0 18px #ff5fc8;}' +
+      '#jj-mixer input[type=range]:focus-visible{outline:none;}#jj-mixer input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(255,255,255,.45);}' +
+      /* the bubbles that pop off the moon as it opens */
+      '.jj-mx-bub{position:fixed;z-index:9999;width:var(--s);height:var(--s);border-radius:50%;pointer-events:none;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.95),rgba(199,231,255,.55) 45%,rgba(199,231,255,0) 72%);animation:jjMxBub var(--d) cubic-bezier(.2,.8,.3,1) forwards;}' +
+      '@keyframes jjMxBub{0%{transform:translate(0,0) scale(.3);opacity:0;}18%{opacity:1;}100%{transform:translate(var(--x),var(--y)) scale(1);opacity:0;}}' +
+            /* closed, the moon says whether anything is audible: white while sound plays, black when all is quiet */
+      '#jj-sound-btn.is-quiet{background:#111;}#jj-sound-btn.is-quiet .jj-bar{background:#fff;height:3px!important;}#jj-sound-btn.is-quiet .jj-crater{background:rgba(255,255,255,.16);}' +
+      '';
+    document.head.appendChild(st);
+    var p = document.createElement('div'); p.id = 'jj-mixer'; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', 'Sound');
+    p.innerHTML = '<div class="mx-in"><h4>Sound</h4>' +
+      [['voice', 'Voice'], ['sfx', 'Sound effects'], ['music', 'Music']].map(function (r) {
+        return '<label class="mx-row"><span class="mx-lab"><b>' + r[1] + '</b><span data-v="' + r[0] + '"></span></span><span class="mx-line"><button type="button" class="mx-mu" data-m="' + r[0] + '" data-cursor="hover" aria-label="Mute ' + r[1].toLowerCase() + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="sl" d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><input type="range" min="0" max="100" step="1" data-k="' + r[0] + '" aria-label="' + r[1] + ' volume"></span></label>'; }).join('') +
+      '</div>';
+    document.body.appendChild(p);
+    var mixPrev = jjMixPrev;                               /* each group's own mute: remembers the level to come back to */
+    p.querySelectorAll('.mx-mu').forEach(function (mb) { mb.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); var k = mb.getAttribute('data-m');
+      if (JJ_MIX[k] > 0) { mixPrev[k] = JJ_MIX[k]; jjMixSet(k, 0); } else { if (jjUserMuted) jjSetMuted(false); jjMixSet(k, mixPrev[k] || 1); } jjMixPaint(); }); });
+    p.querySelectorAll('input[type=range]').forEach(function (inp) {
+      inp.addEventListener('input', function () { var k = inp.getAttribute('data-k'), v = inp.value / 100; if (jjUserMuted && v > 0) jjSetMuted(false); jjMixSet(k, v); jjMixPaint(); });
+    });
+    var leaveT = 0;                                       /* hover away and it folds back into the moon */
+    p.addEventListener('mouseleave', function (e) { clearTimeout(leaveT); if (!(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('#jj-sound-btn'))) jjMixClose(); });   /* hover out closes straight away (down onto the moon keeps it) */
+    p.addEventListener('mouseenter', function () { clearTimeout(leaveT); });
+    document.addEventListener('pointerdown', function (e) { if (p.classList.contains('open') && !p.contains(e.target) && !(e.target.closest && e.target.closest('#jj-sound-btn'))) jjMixClose(); }, true);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && p.classList.contains('open')) jjMixClose(); });
+    jjMixP = p; jjMixPaint(); return p;
+  }
+  /* the old all-or-nothing mute (the "continue without sound" choice) is shown the only way the mixer knows: all three groups at 0,
+     each remembering its level, so the sliders and the moon never disagree with what you hear */
+  var jjMixPrev = {};
+  function jjMixAbsorbMute() {
+    var m = jjUserMuted || (window.jjAudio && window.jjAudio.muted); try { if (sessionStorage.getItem('jjUserMuted') === '1') m = true; } catch (e) {}
+    if (!m) return;
+    ['voice', 'sfx', 'music'].forEach(function (k) { if (JJ_MIX[k] > 0) { jjMixPrev[k] = JJ_MIX[k]; jjMixSet(k, 0); } });
+    jjSetMuted(false);
+  }
+  function jjMixPaint() {
+    if (!jjMixP) return;
+    jjMixP.querySelectorAll('input[type=range]').forEach(function (inp) { var k = inp.getAttribute('data-k'), v = Math.round(JJ_MIX[k] * 100);
+      if (document.activeElement !== inp) inp.value = v; inp.style.setProperty('--v', v + '%'); jjMixP.querySelector('[data-v="' + k + '"]').textContent = v + '%'; var mb = jjMixP.querySelector('.mx-mu[data-m="' + k + '"]'); if (mb) { mb.classList.toggle('off', v === 0); mb.setAttribute('aria-pressed', v === 0 ? 'true' : 'false'); } });
+  }
+  function jjMixBubbles() {
+    var b = document.getElementById('jj-sound-btn'); if (!b) return; var r = b.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    for (var i = 0; i < 9; i++) { var d = document.createElement('i'); d.className = 'jj-mx-bub'; var a = Math.PI * (1 + 0.5 * (i / 8)) + (Math.random() - .5) * .3, dist = 90 + Math.random() * 170, sz = 6 + Math.random() * 16;
+      d.style.cssText = 'left:' + (cx - sz / 2) + 'px;top:' + (cy - sz / 2) + 'px;--s:' + sz.toFixed(0) + 'px;--x:' + (Math.cos(a) * dist).toFixed(0) + 'px;--y:' + (Math.sin(a) * dist).toFixed(0) + 'px;--d:' + (600 + Math.random() * 500).toFixed(0) + 'ms;animation-delay:' + (i * 25) + 'ms';
+      document.body.appendChild(d); (function (el) { setTimeout(function () { el.remove(); }, 1400); })(d); }
+  }
+  function jjMixOpen() { var p = jjMixBuild(), b = document.getElementById('jj-sound-btn'); jjMixPaint(); p.classList.remove('closing');
+    if (p.classList.contains('open')) return;
+    if (b) { b.setAttribute('aria-expanded', 'true'); document.documentElement.classList.add('jj-mx-on'); } clearTimeout(p._shT); p.classList.add('shown');
+    jjMixBubbles(); requestAnimationFrame(function () { p.classList.add('open'); }); }
+  function jjMixClose() { if (!jjMixP) return; var b = document.getElementById('jj-sound-btn'); if (!jjMixP.classList.contains('open')) return; jjMixP.classList.add('closing'); jjMixP.classList.remove('open'); if (b) b.setAttribute('aria-expanded', 'false'); setTimeout(function () { if (!jjMixP.classList.contains('open')) document.documentElement.classList.remove('jj-mx-on'); }, 300); clearTimeout(jjMixP._shT); jjMixP._shT = setTimeout(function () { if (!jjMixP.classList.contains('open')) jjMixP.classList.remove('shown', 'closing'); }, 460); }   /* it keeps its theme until it has faded, so it never goes pale on the way back */
+  function jjMixToggle() { if (jjMixP && jjMixP.classList.contains('open')) jjMixClose(); else jjMixOpen(); }
+  window.jjMixOpen = jjMixOpen;
+
   jjSetupSoundButton();
   jjApplyMute();
+  jjMixBuild();                                             /* the panel (and its styles) wait, folded, in the corner */
+  jjMixAbsorbMute();
+  function jjAudible() {                                    /* is anything actually reaching the speakers? */
+    if (jjUserMuted) return false;
+    var hs = (window.Howler && Howler._howls) || [];
+    for (var i = 0; i < hs.length; i++) { var h = hs[i]; try { if (h.playing() && h.volume() > 0.01 && JJ_MIX[jjCatOf(h._src && (h._src.join ? h._src[0] : h._src), h._jjCat)] > 0) return true; } catch (e) {} }
+    var els = jjMixEl.all || [];
+    for (var j = 0; j < els.length; j++) { var el = els[j]; if (!el.paused && !el.muted && el._jjBase > 0.01 && JJ_MIX[el._jjCat] > 0) return true; }
+    return false;
+  }
+  setInterval(function () { jjMixAbsorbMute(); var b = document.getElementById('jj-sound-btn'); if (b) { b.classList.toggle('is-quiet', !jjAudible()); b.classList.remove('is-muted'); } }, 400);
+  /* NARRATION: window.jjSay('my-way') plays nar-my-way.mp3 once per page. Silent when muted, never on top of another line,
+     and the ambient ducks under the voice. opt.delay waits first; opt.wait queues it behind a line already playing; opt.again lets a line repeat. */
+  (function () {
+    var said = {}, cur = null, NB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
+    window.jjSay = function (name, opt) { opt = opt || {};
+      if (opt.delay) { var d = opt.delay; opt.delay = 0; setTimeout(function () { window.jjSay(name, opt); }, d); return; }
+      var A = window.jjAudio || {}; if (A.muted || jjUserMuted || JJ_MIX.voice <= 0 || (said[name] && !opt.again) || typeof Howl === 'undefined') return;
+      if (cur) { if (opt.wait) { opt.tries = (opt.tries || 0) + 1; if (opt.tries < 40) setTimeout(function () { window.jjSay(name, opt); }, 300); } return; }   /* opt.wait: queue behind the line that is playing */
+      said[name] = 1;
+      var amb = A.ambient, back = A.ambientTarget || 0.6, h = new Howl({ src: [NB + 'nar-' + name + '.mp3'], volume: A.volume == null ? 1 : A.volume });
+      function done() { clearTimeout(h._safe); if (cur === h) cur = null; try { if (amb && amb.playing() && !A.muted) amb.fade(amb.volume(), back, 900); } catch (e) {} var i = (A.sounds || []).indexOf(h); if (i > -1) A.sounds.splice(i, 1); setTimeout(function () { try { h.unload(); } catch (e) {} }, 200); }
+      h.once('play', function () { try { if (amb && amb.playing()) amb.fade(amb.volume(), back * 0.35, 400); } catch (e) {} });
+      h.once('end', done); h.once('loaderror', done); h.once('playerror', done);
+      cur = h; h._safe = setTimeout(done, 20000); if (A.sounds) A.sounds.push(h); h.play(); };   /* cur is busy from the request, not from the first sound, so two lines asked for together never overlap */
+  })();
   function setupCTA(el) {
     if (el.querySelector('.jj-cta-fill')) return;
     var fill = document.createElement('div'); fill.className = 'jj-cta-fill';
@@ -952,13 +1135,45 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
         '.menu-wrap .jj-tale2.locked>div{position:relative;display:inline-block!important;}.menu-wrap .jj-tale2.locked>div::after{content:"";position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:.4em;width:.55em;height:.55em;background:url("data:image/svg+xml;utf8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%272.4%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Crect x=%274%27 y=%2710.5%27 width=%2716%27 height=%2711%27 rx=%272.5%27/%3E%3Cpath d=%27M7.5 10.5V7.5a4.5 4.5 0 0 1 9 0v3%27/%3E%3C/svg%3E") center/contain no-repeat;}';
       document.head.appendChild(lockSt);
     }
+    /* PART TWO, TWO WAYS IN (Joe, 2026-09-24): take the History Exam, or unlock it with a star. One card, used by the menu and the doors. */
+    window.jjTale2Offer = function () {
+      var old = document.getElementById('jj-t2offer'); if (old) old.remove();
+      if (!document.getElementById('jj-t2offer-st')) { var cs = document.createElement('style'); cs.id = 'jj-t2offer-st';
+        cs.textContent = '#jj-t2offer{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;background:rgba(2,4,12,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .35s ease;font-family:"Joes Journey Headline","Quicksand",sans-serif;color:#fff;}#jj-t2offer.on{opacity:1;}' +
+          '#jj-t2offer .c{width:min(92vw,480px);padding:30px 30px 26px;border-radius:26px;border:1.5px solid rgba(255,255,255,.5);background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(26px);backdrop-filter:blur(26px);box-shadow:0 0 60px rgba(0,0,0,.5);text-align:center;transform:translateY(12px) scale(.97);transition:transform .45s cubic-bezier(.3,1.4,.5,1);}#jj-t2offer.on .c{transform:none;}' +
+          '#jj-t2offer .k{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#ffc531;font-weight:800;}#jj-t2offer h3{margin:10px 0 8px;font-size:clamp(22px,2vw,30px);line-height:1.15;}#jj-t2offer p{margin:0 0 20px;opacity:.8;font-size:15px;line-height:1.4;}' +
+          '#jj-t2offer .r{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}#jj-t2offer button{padding:.8em 1.5em;border-radius:999px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;border:1.5px solid rgba(255,255,255,.85);background:#000;color:#fff;transition:scale .2s ease;}#jj-t2offer button:hover{scale:1.05;}#jj-t2offer button.p{border-color:transparent;background:linear-gradient(90deg,#ff00f5,#8a3cff);box-shadow:0 8px 30px rgba(255,0,245,.4);}' +
+          '#jj-t2offer .x{position:absolute;top:18px;right:18px;width:34px;height:34px;padding:0;border-radius:50%;font-size:18px;line-height:1;}';
+        document.head.appendChild(cs); }
+      var S = window.jjScore, stars = S && S.stars ? S.stars() : 0;
+      var o = document.createElement('div'); o.id = 'jj-t2offer'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-label', 'Unlock Part Two');
+      function card(html) { o.innerHTML = '<div class="c">' + html + '</div>'; }
+      function close() { o.classList.remove('on'); setTimeout(function () { o.remove(); }, 380); }
+      var talesDone = !!(S && S.has && S.has('storytime'));
+      function choose() {
+        if (!talesDone) { card('<div class="k">Locked</div><h3>Part Two of the tale</h3><p>Part Two carries on where the first tale ends, so watch The Tale of Trogdor &amp; Joe the Righteous first. Then it is the History Exam or a star.</p><div class="r"><button type="button" class="p" data-a="tale">Watch Storytime</button><button type="button" data-a="close">Maybe later</button></div>'); return; }
+        card('<div class="k">Locked</div><h3>Part Two of the tale</h3><p>Prove you paid attention in the History Exam, or skip straight in with a star.</p><div class="r"><button type="button" class="p" data-a="exam">Take the History Exam</button><button type="button" data-a="star">Unlock with a \u2b50</button></div><div class="r" style="margin-top:12px"><button type="button" data-a="close" style="border-color:rgba(255,255,255,.3);font-weight:400">Maybe later</button></div>'); }
+      function confirmStar() {
+        if (stars < 1) { card('<div class="k">Not quite</div><h3>You need a star</h3><p>You have no stars to spend yet. Stars come from the bigger discoveries around the site.</p><div class="r"><button type="button" class="p" data-a="ach">See Achievements</button><button type="button" data-a="back">Back</button></div>'); return; }
+        card('<div class="k">Are you sure?</div><h3>Spend 1 \u2b50 on Part Two?</h3><p>You have ' + stars + ' star' + (stars === 1 ? '' : 's') + '. It unlocks for good.</p><div class="r"><button type="button" class="p" data-a="buy">Unlock for 1 \u2b50</button><button type="button" data-a="back">Back</button></div>'); }
+      function unlocked() { card('<div class="k">Unlocked</div><h3>Part Two is yours</h3><p>The tale continues whenever you are ready.</p><div class="r"><button type="button" class="p" data-a="play">Play Part Two</button><button type="button" data-a="close">Later</button></div>'); }
+      o.addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) { if (e.target === o) close(); return; } var a = b.getAttribute('data-a');
+        if (a === 'close') close(); else if (a === 'back') choose(); else if (a === 'star') confirmStar();
+        else if (a === 'ach') { close(); if (S && S.open) S.open(); }
+        else if (a === 'exam') { close(); if (document.getElementById('jjms-quiz')) window.dispatchEvent(new Event('jj:exam')); else location.href = '/storytime?exam=1#my-story'; }
+        else if (a === 'buy') { if (S && S.spend && S.spend('star', 1)) { S.award('tale2'); if (window.jjSyncTale2) window.jjSyncTale2(); try { window.dispatchEvent(new CustomEvent('jj:score', { detail: { id: 'tale2' } })); } catch (x) {} unlocked(); } else { stars = 0; confirmStar(); } }
+        else if (a === 'play') { location.href = '/storytime?part=2'; }
+        else if (a === 'tale') { close(); location.href = '/storytime'; } });
+      document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });
+      choose(); document.body.appendChild(o); requestAnimationFrame(function () { o.classList.add('on'); });   /* (it sits over the menu too: z 100000 and exempt from the menu's click lock) */
+    };
     window.jjSyncTale2 = function () { var ok = !!(window.jjScore && window.jjScore.has && window.jjScore.has('tale2'));
       var seen = false; try { seen = localStorage.getItem('jjTale2Seen') === '1'; } catch (e) {}
       document.querySelectorAll('.jj-tale2').forEach(function (a) { a.classList.toggle('fresh', ok && !seen); a.classList.toggle('locked', !ok); a.setAttribute('aria-disabled', ok ? 'false' : 'true'); if (ok) a.removeAttribute('data-cursor'); else a.setAttribute('data-cursor', 'none'); }); };
     window.jjSyncTale2(); window.addEventListener('jj:score', window.jjSyncTale2); setTimeout(window.jjSyncTale2, 1500); setTimeout(window.jjSyncTale2, 4000);
     document.addEventListener('click', function (e) { var a = e.target && e.target.closest && e.target.closest('.jj-tale2'); if (!a) return; window.jjSyncTale2();
       if (!a.classList.contains('locked')) { try { localStorage.setItem('jjTale2Seen', '1'); } catch (x) {} window.jjSyncTale2(); return; }
-      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); if (window.jjScore) window.jjScore.goto('tale2'); }, true);   // goto() closes the menu itself (once) and waits for it — pressing the button here too re-opened it under the panel
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); window.jjTale2Offer(); }, true);   // locked: the choice of the exam or a star   // goto() closes the menu itself (once) and waits for it — pressing the button here too re-opened it under the panel
     Array.prototype.forEach.call(list.querySelectorAll('.menu-open-link'), function (a) {
       var t = (a.textContent || '').trim().toLowerCase();
       if (t === 'contact') a.setAttribute('href', '/contact');
@@ -1153,7 +1368,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
 
 /* Speech subtitles sit in the middle of the screen (where the "Hey I'm Joe" headline lives), not at the foot. */
 (function () { var st = document.createElement('style'); st.id = 'jj-sub-centre';
-  st.textContent = '#jj-subtitle{top:50%!important;bottom:auto!important;transform:translate(-50%,-50%)!important;width:86%!important;max-width:980px!important;font-size:clamp(26px,3.6vw,58px)!important;line-height:1.15!important;font-weight:700;}';
+  st.textContent = '#jj-subtitle{top:50%!important;bottom:auto!important;transform:translate(-50%,-50%)!important;width:86%!important;max-width:980px!important;font-size:clamp(26px,3.6vw,58px)!important;line-height:1.15!important;font-weight:700;text-shadow:0 0 18px rgba(4,6,18,.9),0 0 6px rgba(4,6,18,.8),0 2px 3px rgba(0,0,0,.6);}';   /* a soft dark halo: the words stay readable when the big-bang moon passes behind them */
   (document.head || document.documentElement).appendChild(st); })();
 
 /* ===== Modal guard (2026-09-17). While ANY overlay is up — the achievements / store panel, a first-unlock card, a Storytime

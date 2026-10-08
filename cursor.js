@@ -15,6 +15,8 @@
    STATE TRIGGERS (add the attribute to any element):
      data-cursor="hover"     → plain expanding bubble (also automatic on <a>/<button>)
      data-cursor="external"  → bubble + ↗  (opens something off-site)
+     data-cursor="page"      → the pack's page arrow →  (also automatic on links to another page; the storybook's right-hand page: next)
+     data-cursor="prev"      → the same arrow, pointing left ←  (the storybook's left-hand page: back)
      data-cursor="drag"      → bubble + ••• (draggable / playful object)
      data-cursor="project"   → big bubble + "VIEW PROJECT" (case-study cards)
    ============================================================================ */
@@ -43,8 +45,8 @@
   body{cursor:none;}
   a,button,[data-cursor]{cursor:none;}
   input,textarea,select,[contenteditable="true"]{cursor:auto;}
-  .custom-cursor{position:fixed;top:0;left:0;width:14px;height:14px;border-radius:999px;pointer-events:none;z-index:2147483450;transform:translate(-50%,-50%);background:#fff;border:2px solid #080d18;box-shadow:0 0 0 5px rgba(141,125,255,.28),0 0 22px rgba(141,125,255,.65);transition:width .22s ease,height .22s ease,background .22s ease,border .22s ease,box-shadow .22s ease;}
-  .cursor-trail{position:fixed;top:0;left:0;width:44px;height:8px;border-radius:999px;pointer-events:none;z-index:2147483440;transform:translate(-50%,-50%);opacity:0;background:linear-gradient(90deg,rgba(141,125,255,0),rgba(141,125,255,.32),rgba(255,255,255,.5));filter:blur(6px);transition:opacity .18s ease;}
+  .custom-cursor{position:fixed;top:0;left:0;width:14px;height:14px;border-radius:999px;pointer-events:none;z-index:2147483647;transform:translate(-50%,-50%);background:#fff;border:2px solid #080d18;box-shadow:0 0 0 5px rgba(141,125,255,.28),0 0 22px rgba(141,125,255,.65);transition:width .22s ease,height .22s ease,background .22s ease,border .22s ease,box-shadow .22s ease;}
+  .cursor-trail{position:fixed;top:0;left:0;width:44px;height:8px;border-radius:999px;pointer-events:none;z-index:2147483646;transform:translate(-50%,-50%);opacity:0;background:linear-gradient(90deg,rgba(141,125,255,0),rgba(141,125,255,.32),rgba(255,255,255,.5));filter:blur(6px);transition:opacity .18s ease;}
   .cursor-label{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;color:#fff;font-size:8px;font-weight:700;line-height:1;text-align:center;text-transform:uppercase;opacity:0;transition:opacity .14s ease;}
   .custom-cursor.is-hovering{width:58px;height:58px;background:rgba(0,0,0,.20);border:2px solid rgba(255,255,255,.5);box-shadow:0 0 28px rgba(141,125,255,.35);-webkit-backdrop-filter:none;backdrop-filter:none;}   /* the click-to-begin glass, but you can always read the page through it */
   .custom-cursor .cursor-fill{position:absolute;inset:0;border-radius:inherit;background:rgba(0,0,0,.24);transform:scaleY(0);transform-origin:bottom center;transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none;}
@@ -59,7 +61,8 @@
   .custom-cursor.is-external .cursor-label{opacity:1;font-size:28px;}
   .custom-cursor.is-external .cursor-label::before{content:"\\2197";}
   .custom-cursor.is-page .cursor-label{opacity:1;font-size:26px;}
-  .custom-cursor.is-page .cursor-label::before{content:"\\2192";}   /* → : this link goes to another page of the site */
+  .custom-cursor.is-page .cursor-label::before{content:"\\2192";}
+  .custom-cursor.is-prev .cursor-label::before{content:"\\2190";}.custom-cursor.is-prev .cursor-art{scale:-1 1;}   /* ← : data-cursor="prev" (back a page, in the storybook): every pack's own page arrow, mirrored */   /* → : this link goes to another page of the site */
   .custom-cursor.is-drag .cursor-label{opacity:1;font-size:18px;letter-spacing:3px;}
   .custom-cursor.is-drag .cursor-label::before{content:"\\2022\\2022\\2022";}
   .custom-cursor.is-project{width:96px;height:96px;}
@@ -198,13 +201,14 @@
       cursor.classList.toggle('is-external', s === 'external');
       cursor.classList.toggle('is-drag', s === 'drag');
       cursor.classList.toggle('is-project', s === 'project');
-      cursor.classList.toggle('is-page', s === 'page');
+      cursor.classList.toggle('is-page', s === 'page' || s === 'prev');   // 'prev' (the storybook's left-hand page: back a page) is the page arrow, pointing left
+      cursor.classList.toggle('is-prev', s === 'prev');
       cursor.classList.toggle('is-home', s === 'home');
       cursor.classList.toggle('is-story', s === 'story');                 // the chooser's two halves: Story Time / Work orbs (Joe's art; other packs show their page arrow)
       cursor.classList.toggle('is-work', s === 'work');
       cursor.classList.toggle('is-change', s === 'change');               // over the companion: CHANGE ↗, one per pack
       cursor.classList.toggle('is-edit', s === 'edit');                   // over a decoration: EDIT ↗ (same look)
-      cursor.classList.toggle('is-art', s === 'home' || s === 'external' || s === 'page' || s === 'project' || s === 'story' || s === 'work');
+      cursor.classList.toggle('is-art', s === 'home' || s === 'external' || s === 'page' || s === 'prev' || s === 'project' || s === 'story' || s === 'work');
     }
     document.addEventListener('mouseover', function (e) { apply(stateFor(e.target)); });
     (function flush() { setTimeout(function () { if (document.documentElement.getAttribute('data-jj-cursor') === 'mixed') { cursor.classList.remove('flash'); void cursor.offsetWidth; cursor.classList.add('flash'); setTimeout(function () { cursor.classList.remove('flash'); }, 950); } flush(); }, 3500 + Math.random() * 5500); })();   // Special: every 3.5–9s the orb flushes portal-purple

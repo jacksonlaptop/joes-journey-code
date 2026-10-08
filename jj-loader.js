@@ -1,5 +1,53 @@
 /* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
 if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
+/* THE SOUND MOON, FROM THE FIRST PAINT (Joe, 2026-09-30: "the sound button should always be there, and it should still work and expand...
+   no matter what, between pages etc"). The same function lives in jj-loader.js (the first of the site's scripts on every page, so the
+   moon is drawn in the same frame as the loader) and in site-footer.js (in case a page has no loader). It draws the moon in its resting
+   state (quiet: nothing plays before the page has loaded) and pins it, its mist and its panel above every loader, overlay and curtain,
+   pressable whatever else is blocking the page. site-footer.js adopts this button and wires it; a hover or press that arrives before
+   that is remembered and answered as soon as it is wired. */
+(function () {
+  if (window.jjSoundEarly && window.jjSoundEarly.v >= 2) { window.jjSoundEarly(); return; }   /* v2 = muted and quiet are two looks; an older copy (a cached loader / footer) is replaced, style and all */
+  window.jjSoundEarly = function () {
+    var old = document.getElementById('jj-snd-early');
+    if (!old || old.getAttribute('data-v') !== '2') {
+      if (old && old.parentNode) old.parentNode.removeChild(old);
+      var st = document.createElement('style'); st.id = 'jj-snd-early'; st.setAttribute('data-v', '2');
+      st.textContent =
+        '#jj-sound-btn{position:fixed;bottom:32px;right:32px;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#fff 0%,#e7f1fb 55%,#cfe0f2 100%);border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px;overflow:hidden;transform-origin:center center;box-shadow:0 0 18px rgba(199,231,255,.5),0 0 40px rgba(160,190,255,.28);transition:background .25s ease;}' +
+        '#jj-sound-btn .jj-crater{position:absolute;border-radius:50%;background:#93a9c6;pointer-events:none;z-index:0;}#jj-sound-btn .jj-bar{width:3px;background:#111;border-radius:2px;height:6px;position:relative;z-index:2;}' +
+        '#jj-sound-btn .jj-sound-fill{position:absolute;border-radius:50%;background:#FF00F5;pointer-events:none;transform:scale(0);opacity:0;z-index:1;}' +
+        /* MUTED (the visitor muted, or every channel at 0) = the dark disc with dots. QUIET (sound is on, nothing is playing this moment) = the
+           light moon with its bars at rest: short still bars of slightly different heights, an equaliser waiting (Joe, 2026-10-02: the dark
+           disc read as muted while the mixer said 100%) */
+        '#jj-sound-btn.is-muted{background:#111;}#jj-sound-btn.is-muted .jj-bar{background:#fff;height:3px!important;}#jj-sound-btn.is-muted .jj-crater{background:rgba(255,255,255,.16);}' +
+        '#jj-sound-btn.is-quiet:not(.is-muted) .jj-bar{transition:height .35s ease;}' +
+        '#jj-sound-btn.is-quiet:not(.is-muted) .jj-crater + .jj-bar{height:6px!important;}#jj-sound-btn.is-quiet:not(.is-muted) .jj-bar + .jj-bar{height:9px!important;}#jj-sound-btn.is-quiet:not(.is-muted) .jj-bar + .jj-bar + .jj-bar{height:12px!important;}#jj-sound-btn.is-quiet:not(.is-muted) .jj-bar + .jj-bar + .jj-bar + .jj-bar{height:8px!important;}#jj-sound-btn.is-quiet:not(.is-muted) .jj-bar + .jj-bar + .jj-bar + .jj-bar + .jj-bar{height:5px!important;}' +
+        '#jj-sound-mist{position:fixed;bottom:-38px;right:-38px;width:200px;height:200px;pointer-events:none;display:flex;align-items:center;justify-content:center;gap:9px;filter:blur(24px);opacity:.55;border-radius:50%;}#jj-sound-mist .jj-mist-bar{width:10px;background:#fff;border-radius:6px;height:18px;}' +
+        /* above everything (loaders 2147483000, the page-leave curtains 2147483646), pressable while anything blocks the page (two ids outrank
+           every page's own rule, even the !important ones); only the finale's suck-in (a second) may still take it */
+        '#jj-sound-btn#jj-sound-btn{z-index:2147483647!important;pointer-events:auto!important;visibility:visible!important;}html:not(.jjms-suck) #jj-sound-btn#jj-sound-btn{opacity:1!important;}' +
+        '#jj-sound-mist#jj-sound-mist{z-index:2147483645!important;visibility:visible!important;}' +
+        '#jj-mixer#jj-mixer{z-index:2147483646!important;}#jj-mixer#jj-mixer.open,#jj-mixer#jj-mixer.open *{pointer-events:auto!important;}.jj-mx-bub.jj-mx-bub{z-index:2147483647!important;}' +
+        '@media print{#jj-sound-btn,#jj-sound-mist{display:none!important;}}';
+      (document.head || document.documentElement).appendChild(st);
+    }
+    if (!document.body || document.getElementById('jj-sound-btn')) return;
+    var b = document.createElement('button'); b.id = 'jj-sound-btn'; b.type = 'button'; var mu = false; try { mu = sessionStorage.getItem('jjUserMuted') === '1'; var mx = JSON.parse(localStorage.getItem('jjMix') || 'null'); if (mx && !(mx.voice > 0 || mx.sfx > 0 || mx.music > 0)) mu = true; } catch (e) {}   /* the stored state: muted by the visitor, or every channel at 0 */
+    b.className = 'jj-early ' + (mu ? 'is-muted' : 'is-quiet'); b.setAttribute('aria-label', 'Sound settings'); b.setAttribute('aria-expanded', 'false');
+    var h = '<div class="jj-sound-fill"></div>';
+    [[11, 11, 13, 15, .2], [7, 7, 41, 32, .14], [8, 8, 24, 43, .12]].forEach(function (c) { h += '<div class="jj-crater" style="width:' + c[0] + 'px;height:' + c[1] + 'px;left:' + c[2] + 'px;top:' + c[3] + 'px;opacity:' + c[4] + ';"></div>'; });
+    for (var i = 0; i < 5; i++) h += '<div class="jj-bar"></div>';
+    b.innerHTML = h;
+    var m = document.createElement('div'); m.id = 'jj-sound-mist'; m.className = 'jj-early'; for (var k = 0; k < 5; k++) m.innerHTML += '<div class="jj-mist-bar"></div>';
+    b.addEventListener('mouseenter', function () { if (!b._jjWired) b._jjWant = 'hover'; });
+    b.addEventListener('mouseleave', function () { if (!b._jjWired && b._jjWant === 'hover') b._jjWant = null; });
+    b.addEventListener('click', function () { if (!b._jjWired) b._jjWant = 'open'; });
+    document.body.appendChild(m); document.body.appendChild(b);
+  };
+  window.jjSoundEarly.v = 2;
+  if (document.body) window.jjSoundEarly(); else document.addEventListener('DOMContentLoaded', window.jjSoundEarly);
+})();
 /* ============================================================================
    Joe's Journey — accurate page loader  (hosted via GitHub + raw.githack.com)
 
@@ -24,7 +72,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
    ============================================================================ */
 (function () {
   var JJ = (window.JJLoader = window.JJLoader || {});
-  JJ.version = 'L19 · pill: deep blur fade (F 125, runs into the bleed) and the title kept by its own letters, not a box — no straight line above the scene; L18 · pill art bleeds past its edge: no hard line round any pill; L17 · pill loaders: deep feather, hint as a subtitle; L16 · precam moon behind the grass; L15 pill variant (Storytime fight, My Story evolution)';   // bump every edit — verify in console
+  JJ.version = 'L21 · the early sound moon starts quiet (light moon, resting bars) unless the stored state is muted; muted and quiet no longer share a look; L20 · the sound moon is drawn here, at first paint, and pinned above every loader / overlay / curtain (site-footer adopts it); L19 · pill: deep blur fade (F 125, runs into the bleed) and the title kept by its own letters, not a box — no straight line above the scene; L18 · pill art bleeds past its edge: no hard line round any pill; L17 · pill loaders: deep feather, hint as a subtitle; L16 · precam moon behind the grass; L15 pill variant (Storytime fight, My Story evolution)';   // bump every edit — verify in console
   window.JJ_LOADER_BUILD = JJ.version;
   try { console.log('%c[JJ] jj-loader.js build: ' + JJ.version, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 

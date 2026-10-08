@@ -1,6 +1,62 @@
+/* BUILD f-1008a (2026-10-08) · performance round 2: one lenis.raf per frame (it was stepped twice, the wrong way and back); the modal guard's nav rule no longer re-styles the whole page. f-1007a · loading: the site's music is streamed and only created when it is first played (it was an 8.6 MB download and a full decode on every page load); the menu's card art loads when the menu is first reached for; the starfield can fetch three.js itself. */
+window.JJ_FOOTER_BUILD = 'f-1008b';
+/* THE SOUND MOON, FROM THE FIRST PAINT (Joe, 2026-09-30: "the sound button should always be there, and it should still work and expand...
+   no matter what, between pages etc"). The same function lives in jj-loader.js (the first of the site's scripts on every page, so the
+   moon is drawn in the same frame as the loader) and in site-footer.js (in case a page has no loader). It draws the moon in its resting
+   state (quiet: nothing plays before the page has loaded) and pins it, its mist and its panel above every loader, overlay and curtain,
+   pressable whatever else is blocking the page. site-footer.js adopts this button and wires it; a hover or press that arrives before
+   that is remembered and answered as soon as it is wired. */
+(function () {
+  if (window.jjSoundEarly && window.jjSoundEarly.v >= 2) { window.jjSoundEarly(); return; }   /* v2 = muted and quiet are two looks; an older copy (a cached loader / footer) is replaced, style and all */
+  window.jjSoundEarly = function () {
+    var old = document.getElementById('jj-snd-early');
+    if (!old || old.getAttribute('data-v') !== '2') {
+      if (old && old.parentNode) old.parentNode.removeChild(old);
+      var st = document.createElement('style'); st.id = 'jj-snd-early'; st.setAttribute('data-v', '2');
+      st.textContent =
+        '#jj-sound-btn{position:fixed;bottom:32px;right:32px;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#fff 0%,#e7f1fb 55%,#cfe0f2 100%);border:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px;overflow:hidden;transform-origin:center center;box-shadow:0 0 18px rgba(199,231,255,.5),0 0 40px rgba(160,190,255,.28);transition:background .25s ease;}' +
+        '#jj-sound-btn .jj-crater{position:absolute;border-radius:50%;background:#93a9c6;pointer-events:none;z-index:0;}#jj-sound-btn .jj-bar{width:3px;background:#111;border-radius:2px;height:6px;position:relative;z-index:2;}' +
+        '#jj-sound-btn .jj-sound-fill{position:absolute;border-radius:50%;background:#FF00F5;pointer-events:none;transform:scale(0);opacity:0;z-index:1;}' +
+        /* MUTED (the visitor muted, or every channel at 0) = the dark disc with dots. QUIET (sound is on, nothing is playing this moment) = the
+           light moon with its bars at rest: short still bars of slightly different heights, an equaliser waiting (Joe, 2026-10-02: the dark
+           disc read as muted while the mixer said 100%) */
+        '#jj-sound-btn.is-muted{background:#111;}#jj-sound-btn.is-muted .jj-bar{background:#fff;height:3px!important;}#jj-sound-btn.is-muted .jj-crater{background:rgba(255,255,255,.16);}' +
+        '#jj-sound-btn.is-quiet:not(.is-muted) .jj-bar{transition:height .35s ease;}' +
+        '#jj-sound-btn.is-quiet:not(.is-muted) .jj-crater + .jj-bar{height:6px!important;}#jj-sound-btn.is-quiet:not(.is-muted) .jj-bar + .jj-bar{height:9px!important;}#jj-sound-btn.is-quiet:not(.is-muted) .jj-bar + .jj-bar + .jj-bar{height:12px!important;}#jj-sound-btn.is-quiet:not(.is-muted) .jj-bar + .jj-bar + .jj-bar + .jj-bar{height:8px!important;}#jj-sound-btn.is-quiet:not(.is-muted) .jj-bar + .jj-bar + .jj-bar + .jj-bar + .jj-bar{height:5px!important;}' +
+        '#jj-sound-mist{position:fixed;bottom:-38px;right:-38px;width:200px;height:200px;pointer-events:none;display:flex;align-items:center;justify-content:center;gap:9px;filter:blur(24px);opacity:.55;border-radius:50%;}#jj-sound-mist .jj-mist-bar{width:10px;background:#fff;border-radius:6px;height:18px;}' +
+        /* above everything (loaders 2147483000, the page-leave curtains 2147483646), pressable while anything blocks the page (two ids outrank
+           every page's own rule, even the !important ones); only the finale's suck-in (a second) may still take it */
+        '#jj-sound-btn#jj-sound-btn{z-index:2147483647!important;pointer-events:auto!important;visibility:visible!important;}html:not(.jjms-suck) #jj-sound-btn#jj-sound-btn{opacity:1!important;}' +
+        '#jj-sound-mist#jj-sound-mist{z-index:2147483645!important;visibility:visible!important;}' +
+        '#jj-mixer#jj-mixer{z-index:2147483646!important;}#jj-mixer#jj-mixer.open,#jj-mixer#jj-mixer.open *{pointer-events:auto!important;}.jj-mx-bub.jj-mx-bub{z-index:2147483647!important;}' +
+        '@media print{#jj-sound-btn,#jj-sound-mist{display:none!important;}}';
+      (document.head || document.documentElement).appendChild(st);
+    }
+    if (!document.body || document.getElementById('jj-sound-btn')) return;
+    var b = document.createElement('button'); b.id = 'jj-sound-btn'; b.type = 'button'; var mu = false; try { mu = sessionStorage.getItem('jjUserMuted') === '1'; var mx = JSON.parse(localStorage.getItem('jjMix') || 'null'); if (mx && !(mx.voice > 0 || mx.sfx > 0 || mx.music > 0)) mu = true; } catch (e) {}   /* the stored state: muted by the visitor, or every channel at 0 */
+    b.className = 'jj-early ' + (mu ? 'is-muted' : 'is-quiet'); b.setAttribute('aria-label', 'Sound settings'); b.setAttribute('aria-expanded', 'false');
+    var h = '<div class="jj-sound-fill"></div>';
+    [[11, 11, 13, 15, .2], [7, 7, 41, 32, .14], [8, 8, 24, 43, .12]].forEach(function (c) { h += '<div class="jj-crater" style="width:' + c[0] + 'px;height:' + c[1] + 'px;left:' + c[2] + 'px;top:' + c[3] + 'px;opacity:' + c[4] + ';"></div>'; });
+    for (var i = 0; i < 5; i++) h += '<div class="jj-bar"></div>';
+    b.innerHTML = h;
+    var m = document.createElement('div'); m.id = 'jj-sound-mist'; m.className = 'jj-early'; for (var k = 0; k < 5; k++) m.innerHTML += '<div class="jj-mist-bar"></div>';
+    b.addEventListener('mouseenter', function () { if (!b._jjWired) b._jjWant = 'hover'; });
+    b.addEventListener('mouseleave', function () { if (!b._jjWired && b._jjWant === 'hover') b._jjWant = null; });
+    b.addEventListener('click', function () { if (!b._jjWired) b._jjWant = 'open'; });
+    document.body.appendChild(m); document.body.appendChild(b);
+  };
+  window.jjSoundEarly.v = 2;
+  if (document.body) window.jjSoundEarly(); else document.addEventListener('DOMContentLoaded', window.jjSoundEarly);
+})();
 /* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
 if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
 document.addEventListener("DOMContentLoaded", function () {
+  /* f-1007a: the starfield only exists on the homepage, but three.min.js (153 KB) was a parser-blocking tag on every page. With the tag
+     still there this runs exactly as before; once the tag is removed from the site settings, the homepage fetches three.js here, off the
+     parser's path, and no other page pays for it. */
+  if (typeof THREE === "undefined") { if (document.getElementById("threejs-container")) { var th = document.createElement('script'); th.src = 'https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js'; th.async = true; th.onload = jjStars; document.head.appendChild(th); } return; }
+  jjStars();
+  function jjStars() {
   if (typeof THREE !== "undefined") {
     let scene, camera, renderer, shapes = [], svgPositionX = 0, clock, bgW = 0, bgH = 0;
     const container = document.getElementById("threejs-container");
@@ -102,6 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
       camera.updateProjectionMatrix();
     }
   }
+  }
 });
 
 (function () {
@@ -109,11 +166,49 @@ document.addEventListener("DOMContentLoaded", function () {
   var AUTO_START_DELAY = 3000;   // begin a few seconds after the visitor enters
   var FADE_MS          = 5000;   // long, slow fade-in
 
-  var ambient = new Howl({
-    src: ['https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a19b8f4191d4fbca53259a5_Lotro-ambient.mp3'],
-    loop: true,
-    volume: 0
-  });
+  /* THE SITE'S MUSIC IS STREAMED, AND MADE ONLY WHEN IT IS FIRST PLAYED (f-1007a).
+     It used to be a Web Audio Howl built as this file was evaluated: 8.6 MB fetched whole on every page load (36% of the homepage's
+     bytes before "Click to begin", and all through Storytime, where it is not heard until the tale ends) and decoded to ~190 MB of PCM.
+     Now jjAudio.ambient is a stand-in with the Howl's own methods; nothing is fetched until something really plays it (the landing,
+     the lift into My Story, a visit to My Story or Contact), and then it is an HTML5 stream: it starts within a moment and holds a few
+     seconds of audio, not the whole track. jj:mystory-wake (the tale's cover is up) makes it early, so it is ready for the lift.
+     - Before it is made: playing() is false, volume() / fade() only remember the level, pause / stop do nothing, on / once / off are
+       kept for it; anything else (play, load, seek...) makes it and passes straight through.
+     - The mixer and Mute all reach it as they reach any <audio> (its volume is scaled by the Music level); the sound button's bars still
+       dance to it because the element is also fed through Howler's master gain, where the bars listen (the file is served with
+       access-control-allow-origin: *, so the element is made with crossOrigin = 'anonymous'). If that wiring fails it simply plays. */
+  function jjStream(src) {
+    var real = null, vol = 0, pend = [], P;
+    function make() {
+      if (real) return real;
+      var node = null, o = window.Howler && Howler._obtainHtml5Audio;
+      if (o) Howler._obtainHtml5Audio = function () { var a = o.apply(Howler, arguments); try { a.crossOrigin = 'anonymous'; } catch (e) {} node = a; return a; };
+      try { real = new Howl({ src: [src], loop: true, volume: vol, html5: true }); } finally { if (o) Howler._obtainHtml5Audio = o; }
+      real._src = src; real._jjCat = 'music';
+      try { if (node && Howler.usingWebAudio && Howler.ctx && Howler.masterGain && !node._jjTap) { node._jjTap = Howler.ctx.createMediaElementSource(node); node._jjTap.connect(Howler.masterGain); } } catch (e) {}
+      pend.forEach(function (a) { try { real[a[0]].apply(real, a[1]); } catch (e) {} }); pend = [];
+      return real;
+    }
+    P = new Proxy({ _jjStream: true }, {
+      get: function (o, k) {
+        if (k === '_jjStream') return true; if (k === '_jjMake') return make; if (k === 'then') return undefined;
+        if (real) { var v = real[k]; return typeof v === 'function' ? function () { var r = v.apply(real, arguments); return r === real ? P : r; } : v; }
+        if (k === '_src') return src;
+        if (k === 'playing') return function () { return false; };
+        if (k === 'state') return function () { return 'unloaded'; };
+        if (k === 'volume') return function (v) { if (arguments.length) { vol = +v || 0; return P; } return vol; };
+        if (k === 'fade') return function (a, b) { vol = +b || 0; return P; };
+        if (k === 'pause' || k === 'stop' || k === 'unload' || k === 'mute') return function () { return P; };
+        if (k === 'on' || k === 'once' || k === 'off') return function () { pend.push([k, arguments]); return P; };
+        if (typeof k !== 'string' || k.charAt(0) === '_') return o[k];
+        return function () { var r = make(), f = r[k]; if (typeof f !== 'function') return f; var x = f.apply(r, arguments); return x === r ? P : x; };
+      },
+      set: function (o, k, v) { if (real) real[k] = v; else if (k === '_src') src = v; else o[k] = v; return true; }
+    });
+    return P;
+  }
+  var ambient = jjStream('https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a19b8f4191d4fbca53259a5_Lotro-ambient.mp3');
+  window.addEventListener('jj:mystory-wake', function () { try { if (window.jjAudio && window.jjAudio.ambient && window.jjAudio.ambient._jjMake) window.jjAudio.ambient._jjMake(); } catch (e) {} });   /* the tale's cover is up: begin buffering, so the music can start with the lift */
 
   window.jjAudio = window.jjAudio || { sounds: [], muted: false, volume: 1.0 };
   if (window.jjAudio.sounds.indexOf(ambient) === -1) window.jjAudio.sounds.push(ambient);
@@ -124,7 +219,7 @@ document.addEventListener("DOMContentLoaded", function () {
   window.jjAudio.swapAmbient = function (src) {
     if (!src || ambient._src === src) return;
     var old = ambient, wasOn = false, vol = 0; try { wasOn = old.playing(); vol = old.volume(); } catch (e) {}
-    var n = new Howl({ src: [src], loop: true, volume: 0, html5: false }); n._src = src;
+    var n = jjStream(src);   /* streamed, like the first track */
     ambient = n; window.jjAudio.ambient = n; window.jjAudio.sounds.push(n);
     if (wasOn) { n.play(); n.fade(0, window.jjAudio.muted ? 0 : TARGET_VOLUME, 1500); faded = true; }
     try { old.fade(vol, 0, 900); setTimeout(function () { try { old.stop(); old.unload(); } catch (e) {} }, 1000); } catch (e) {}
@@ -672,7 +767,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     var EASE = 0.28;
     function paint(driver, nowS) {
       for (var i = 0; i < bars.length; i++) {
-        var target = driver * barGain[i] + 0.08 * Math.sin(nowS * 3.4 + i * 0.55);
+        var target = driver * barGain[i] + (btn._jjQuiet ? 0 : 0.08 * Math.sin(nowS * 3.4 + i * 0.55));
         if (target < 0) target = 0; else if (target > 1) target = 1;
         if (jjUserMuted) target = 0;
         barCurrent[i] += (target - barCurrent[i]) * EASE;
@@ -696,13 +791,14 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
         var data = new Uint8Array(analyser.frequencyBinCount);
         var t0 = performance.now();
         function loop() {
+          if (window.Howler && Howler.ctx && Howler.masterGain && Howler.masterGain !== src) { try { src = Howler.masterGain; analyser = Howler.ctx.createAnalyser(); analyser.fftSize = 256; analyser.smoothingTimeConstant = 0.65; src.connect(analyser); } catch (e) {} }   /* f-1008b: Howler built a new engine (see jjMixGains): the moon listens to the live one */
           analyser.getByteFrequencyData(data);
           var nowS = (performance.now() - t0) / 1000;
           var sum = 0, count = 0;
           for (var bi = 4; bi < 64; bi++) { sum += data[bi]; count++; }
           var avg = Math.min(1, (count ? (sum / count) / 255 : 0) * 2.6);
           var driver = Math.max(0.22 + 0.14 * Math.sin(nowS * 2.0), avg);
-          if (jjUserMuted) driver = 0;
+          if (jjUserMuted) driver = 0; else if (btn._jjQuiet) driver = 0.2;   /* sound on, nothing playing: the glow and the mist rest too (the bars' resting heights are in the early style) */
           paint(driver, nowS);
           requestAnimationFrame(loop);
         }
@@ -711,7 +807,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
         var t0 = performance.now();
         function fb() {
           var nowS = (performance.now() - t0) / 1000;
-          var driver = jjUserMuted ? 0 : (0.42 + 0.34 * Math.sin(nowS * 2.0));
+          var driver = jjUserMuted ? 0 : (btn._jjQuiet ? 0.2 : 0.42 + 0.34 * Math.sin(nowS * 2.0));
           paint(driver, nowS);
           requestAnimationFrame(fb);
         }
@@ -721,11 +817,14 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     tryStart();
   }
   function jjSetupSoundButton() {
-    if (document.getElementById('jj-sound-btn')) return;
-    var btn = document.createElement('button');
+    var btn = document.getElementById('jj-sound-btn'), fill, adopt = false;
+    if (btn && (btn._jjWired || !btn.classList.contains('jj-early'))) return;   /* someone else's, already wired */
+    if (btn) { adopt = true; fill = btn.querySelector('.jj-sound-fill'); }   /* the moon jj-loader drew at first paint: wire it where it is, no second one, no fade */
+    else {
+    btn = document.createElement('button');
     btn.id = 'jj-sound-btn';
     btn.setAttribute('aria-label', 'Toggle sound');
-    var fill = document.createElement('div');
+    fill = document.createElement('div');
     fill.className = 'jj-sound-fill';
     btn.appendChild(fill);
     var craters = [
@@ -753,13 +852,8 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     }
     document.body.appendChild(mist);
     document.body.appendChild(btn);
-    btn.style.opacity = '0'; mist.style.opacity = '0';
-    setTimeout(function () {
-      btn.style.transition = 'opacity 2.5s ease, background 0.25s ease';
-      mist.style.transition = 'opacity 2.5s ease';
-      btn.style.opacity = '1'; mist.style.opacity = '0.55';
-    }, 2000);
-    if (jjUserMuted) btn.classList.add('is-muted');
+    }
+    btn._jjWired = true; jjMoonState();   /* on from the first frame now: no fade-in (the moon never leaves between pages) */
     btn.addEventListener('mouseenter', function (e) {
       var rect = btn.getBoundingClientRect();
       var x = (e.clientX - rect.left), y = (e.clientY - rect.top);
@@ -783,8 +877,9 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     });
     btn.addEventListener('mouseenter', function () { if (!btn._jjHold) jjMixOpen(); });
     btn.addEventListener('mouseleave', function (e) { btn._jjHold = false; if (jjMixP && !(e.relatedTarget && jjMixP.contains(e.relatedTarget))) jjMixClose(); });   /* out to the page closes it; up into the pane keeps it */
-    var xm = document.createElement('span'); xm.className = 'jj-mx-xm'; btn.appendChild(xm);
+    if (!btn.querySelector('.jj-mx-xm')) { var xm = document.createElement('span'); xm.className = 'jj-mx-xm'; btn.appendChild(xm); }
     jjStartAudioBars(btn);
+    if (adopt && btn._jjWant) { var want = btn._jjWant; btn._jjWant = null; if (want === 'open' || btn.matches(':hover')) jjMixOpen(); }   /* a hover / press that came before the wiring */
   }
   /* Mute everything (the mixer's "Mute all"): the same state the old one-press button kept, and a synthetic click on the moon
      so the page scripts that listen to it (My Story, the homepage) re-read sessionStorage */
@@ -792,7 +887,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     jjUserMuted = !!m;
     if (window.jjAudio) window.jjAudio.muted = jjUserMuted;
     try { sessionStorage.setItem('jjUserMuted', jjUserMuted ? '1' : '0'); } catch (e) {}
-    var b = document.getElementById('jj-sound-btn'); if (b) { b.classList.toggle('is-muted', jjUserMuted); b._jjSync = true; b.click(); b._jjSync = false; }
+    var b = document.getElementById('jj-sound-btn'); if (b) { jjMoonState(); b._jjSync = true; b.click(); b._jjSync = false; }
     jjApplyMute(); jjMixPaint();
   }
 
@@ -810,11 +905,14 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     if (/lotro|ambient|music|song|theme|glbml|soundtrack/i.test(src)) return 'music';
     return 'sfx';
   }
-  var jjMixG = null;
+  var jjMixG = null, jjMixCtx = null, jjMixMaster = null;
   function jjMixGains() {
-    if (jjMixG) return jjMixG;
     if (!window.Howler || !Howler.ctx || !Howler.masterGain || !Howler.usingWebAudio) return null;
-    jjMixG = {};
+    /* f-1008b: Howler throws its audio engine away and builds a new one at its first unlock when the output device does not run at 44.1 kHz (Howler.unload()).
+       Group gains made before that belonged to the dead engine: every sound was unplugged from the old output and could not be plugged into them (it threw, silently)
+       so the whole site was silent on a 48 kHz device. The gains now follow the engine: made again whenever the context or the master node is not the one they were made on. */
+    if (jjMixG && jjMixCtx === Howler.ctx && jjMixMaster === Howler.masterGain) return jjMixG;
+    jjMixG = {}; jjMixCtx = Howler.ctx; jjMixMaster = Howler.masterGain;
     ['voice', 'sfx', 'music'].forEach(function (k) { var g = Howler.ctx.createGain(); g.gain.value = JJ_MIX[k]; g.connect(Howler.masterGain); jjMixG[k] = g; });
     return jjMixG;
   }
@@ -833,7 +931,8 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     try {
       var cat = jjCatOf(h._src && (h._src.join ? h._src[0] : h._src), h._jjCat);
       (h._sounds || []).forEach(function (sd) { var n = sd._node; if (!n) return;
-        if (h._webAudio) { var G = jjMixGains(); if (!G || n._jjCat === cat) return; try { n.disconnect(); } catch (e) {} n.connect(G[cat]); n._jjCat = cat; }
+        if (h._webAudio) { var G = jjMixGains(); if (!G || (n._jjCat === cat && n._jjG === G[cat])) return; try { n.disconnect(); } catch (e) {}
+          try { n.connect(G[cat]); n._jjCat = cat; n._jjG = G[cat]; } catch (e) { n._jjCat = null; n._jjG = null; try { n.connect(Howler.masterGain); } catch (e2) {} } }   /* f-1008b: a sound that cannot join its group still reaches the output (never unplugged and left); and a sound routed to a dead engine's group is routed again */
         else jjMixEl(n, cat); });
     } catch (e) {}
   }
@@ -848,6 +947,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     var G = jjMixGains(); if (G) { try { G[k].gain.setTargetAtTime(v, Howler.ctx.currentTime, 0.04); } catch (e) { G[k].gain.value = v; } }
     (jjMixEl.all || []).forEach(function (el) { if (el._jjCat === k) el.volume = el._jjBase; });
     try { window.dispatchEvent(new CustomEvent('jj:mix', { detail: { group: k, level: v } })); } catch (e) {}
+    jjMoonState();
   }
 
   /* the panel: the moon bubbles out into a rounded glass square in the corner (it keeps its own place as the corner handle) */
@@ -858,14 +958,14 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     st.textContent =
       '#jj-mixer{position:fixed;right:32px;bottom:64px;width:64px;height:32px;border-radius:32px;z-index:9998;box-sizing:border-box;background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.5);box-shadow:0 18px 50px rgba(0,0,0,.4),0 0 40px rgba(160,190,255,.18);opacity:0;pointer-events:none;overflow:hidden;font-family:"Joes Journey Headline","Quicksand",sans-serif;color:#fff;transform-origin:100% 100%;' +
         'transition:width .62s cubic-bezier(.3,1.5,.5,1),height .62s cubic-bezier(.3,1.5,.5,1) .04s,border-radius .5s ease,opacity .12s ease,background .45s ease;}' +
-      '#jj-mixer.open{width:min(300px,calc(100vw - 48px));height:318px;border-radius:28px 28px 32px 28px;opacity:1;pointer-events:auto;}' +
+      '#jj-mixer.open{width:min(300px,calc(100vw - 48px));height:370px;border-radius:28px 28px 32px 28px;opacity:1;pointer-events:auto;}' +
       /* open, the moon stays put and becomes the close: its bars fold away and an X turns in */
       '#jj-sound-btn .jj-bar{transition:height 60ms linear,background .2s ease,opacity .2s ease;}html.jj-mx-on #jj-sound-btn .jj-bar{opacity:0;}' +
       '#jj-sound-btn .jj-mx-xm{position:absolute;left:50%;top:50%;width:22px;height:22px;translate:-50% -50%;z-index:3;pointer-events:none;opacity:0;rotate:-90deg;scale:.4;color:#111;transition:opacity .2s ease,rotate .45s cubic-bezier(.3,1.5,.5,1),scale .45s cubic-bezier(.3,1.5,.5,1);}' +
       '#jj-sound-btn .jj-mx-xm::before,#jj-sound-btn .jj-mx-xm::after{content:"";position:absolute;left:0;right:0;top:50%;height:3px;margin-top:-1.5px;border-radius:3px;background:currentColor;rotate:45deg;}#jj-sound-btn .jj-mx-xm::after{rotate:-45deg;}' +
-      '#jj-sound-btn.is-quiet .jj-mx-xm,#jj-sound-btn.is-muted .jj-mx-xm{color:#fff;}html.jj-mx-on #jj-sound-btn .jj-mx-xm{opacity:1;rotate:0deg;scale:1;}html.jj-mx-on #jj-sound-mist{opacity:0!important;}' +
+      '#jj-sound-btn.is-muted .jj-mx-xm{color:#fff;}html.jj-mx-on #jj-sound-btn .jj-mx-xm{opacity:1;rotate:0deg;scale:1;}html.jj-mx-on #jj-sound-mist{opacity:0!important;}' +
       '#jj-mixer.closing{transition:width .38s cubic-bezier(.6,0,.4,1),height .34s cubic-bezier(.6,0,.4,1),border-radius .38s ease,opacity .22s ease .16s;}' +
-      '#jj-mixer .mx-in{position:absolute;left:0;top:0;width:min(300px,calc(100vw - 48px));height:318px;box-sizing:border-box;padding:22px 24px 0;}' +
+      '#jj-mixer .mx-in{position:absolute;left:0;top:0;width:min(300px,calc(100vw - 48px));height:370px;box-sizing:border-box;padding:22px 24px 0;}' +
       '#jj-mixer h4{margin:0 0 14px;font-size:20px;font-weight:700;letter-spacing:.02em;line-height:1;}' +
       '#jj-mixer .mx-row{margin-bottom:14px;opacity:0;transform:translateY(10px);transition:opacity .3s ease,transform .45s cubic-bezier(.3,1.4,.5,1);}' +
       '#jj-mixer.open .mx-row,#jj-mixer.open h4{opacity:1;transform:none;}' +
@@ -883,20 +983,36 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
       '#jj-mixer input[type=range]::-moz-range-thumb{width:20px;height:20px;border:none;border-radius:50%;background:radial-gradient(circle at 34% 30%,#fff,#e7f1fb 55%,#cfe0f2);box-shadow:0 0 14px rgba(199,231,255,.8);}' +
       '#jj-mixer input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.15);}#jj-mixer input[type=range]:active::-webkit-slider-thumb{transform:scale(1.25);box-shadow:0 0 0 5px rgba(255,95,200,.35),0 0 18px #ff5fc8;}' +
       '#jj-mixer input[type=range]:focus-visible{outline:none;}#jj-mixer input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(255,255,255,.45);}' +
+      /* MUTE ALL (Joe, 2026-09-30): one press silences the three groups, the next brings back the levels they had. The panel's own glass
+         pill, pink while it is holding everything quiet (like the per-group mutes), dressed per theme like them. */
+      '#jj-mixer .mx-all{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:40px;margin:4px 0 0;padding:0 16px;box-sizing:border-box;border-radius:999px;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.4);color:inherit;font-family:inherit;font-size:15px;font-weight:700;line-height:1;letter-spacing:.02em;cursor:pointer;opacity:0;transform:translateY(10px);transition:opacity .3s ease,transform .45s cubic-bezier(.3,1.4,.5,1),background .2s ease,border-color .2s ease,scale .25s cubic-bezier(.3,1.6,.5,1);}' +
+      '#jj-mixer.open .mx-all{opacity:1;transform:none;transition-delay:.4s,.4s,0s,0s,0s;}#jj-mixer .mx-all svg{width:17px;height:17px;flex:none;}#jj-mixer .mx-all .sl{display:none;}#jj-mixer .mx-all.off .sl{display:inline;}#jj-mixer .mx-all.off .w{display:none;}' +
+      '#jj-mixer .mx-all:hover{background:rgba(255,255,255,.14);scale:1.03;}#jj-mixer .mx-all:active{border-color:#ff5fc8;box-shadow:0 0 0 3px rgba(255,95,200,.35);scale:.97;}#jj-mixer .mx-all.off{background:#ff5fc8;border-color:#ff9de2;color:#fff;}#jj-mixer .mx-all:focus-visible{outline:2px solid rgba(255,255,255,.6);outline-offset:2px;}' +
+      'html[data-jj-theme="medieval"] #jj-mixer .mx-all:not(.off){border-color:#3a2a12;background:rgba(58,42,18,.08);color:#3a2a12;}html[data-jj-theme="alien"] #jj-mixer .mx-all{border-color:#4fe3ff;box-shadow:0 0 8px rgba(79,227,255,.35);}' +
+      'html[data-jj-theme="retro"] #jj-mixer .mx-all{border-radius:0;border:2px solid #FFD400;box-shadow:3px 3px 0 rgba(0,0,0,.35);}html[data-jj-theme="retro"] #jj-mixer .mx-all:not(.off){background:#0b1e5a;}html[data-jj-theme="retro"] body #jj-mixer.shown .mx-in{height:346px;}' +
+      'html[data-jj-theme="mixed"] #jj-mixer .mx-all{box-shadow:0 0 0 3px #6d6d6d;outline:2px dashed #a8a8a8;outline-offset:2px;}' +
       /* the bubbles that pop off the moon as it opens */
       '.jj-mx-bub{position:fixed;z-index:9999;width:var(--s);height:var(--s);border-radius:50%;pointer-events:none;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.95),rgba(199,231,255,.55) 45%,rgba(199,231,255,0) 72%);animation:jjMxBub var(--d) cubic-bezier(.2,.8,.3,1) forwards;}' +
       '@keyframes jjMxBub{0%{transform:translate(0,0) scale(.3);opacity:0;}18%{opacity:1;}100%{transform:translate(var(--x),var(--y)) scale(1);opacity:0;}}' +
             /* closed, the moon says whether anything is audible: white while sound plays, black when all is quiet */
-      '#jj-sound-btn.is-quiet{background:#111;}#jj-sound-btn.is-quiet .jj-bar{background:#fff;height:3px!important;}#jj-sound-btn.is-quiet .jj-crater{background:rgba(255,255,255,.16);}' +
+      /* (closed, the moon says what the mixer says: dark with dots only when muted; sound on but nothing playing = the light moon, bars at rest: see the early style) */
       '';
     document.head.appendChild(st);
     var p = document.createElement('div'); p.id = 'jj-mixer'; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', 'Sound');
     p.innerHTML = '<div class="mx-in"><h4>Sound</h4>' +
       [['voice', 'Voice'], ['sfx', 'Sound effects'], ['music', 'Music']].map(function (r) {
         return '<label class="mx-row"><span class="mx-lab"><b>' + r[1] + '</b><span data-v="' + r[0] + '"></span></span><span class="mx-line"><button type="button" class="mx-mu" data-m="' + r[0] + '" data-cursor="hover" aria-label="Mute ' + r[1].toLowerCase() + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="sl" d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><input type="range" min="0" max="100" step="1" data-k="' + r[0] + '" aria-label="' + r[1] + ' volume"></span></label>'; }).join('') +
+      '<button type="button" class="mx-all" data-cursor="hover" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="sl" d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Mute all</span></button>' +
       '</div>';
     document.body.appendChild(p);
-    var mixPrev = jjMixPrev;                               /* each group's own mute: remembers the level to come back to */
+    var mixPrev = jjMixPrev;
+    p.querySelector('.mx-all').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); var K = ['voice', 'sfx', 'music'], prev = null;
+      try { prev = JSON.parse(localStorage.getItem('jjMixAllPrev') || 'null'); } catch (x) {}
+      if (K.some(function (k) { return JJ_MIX[k] > 0; })) { var keep = {}; K.forEach(function (k) { keep[k] = JJ_MIX[k]; if (JJ_MIX[k] > 0) mixPrev[k] = JJ_MIX[k]; jjMixSet(k, 0); });   /* Mute all: remember exactly what each was */
+        try { localStorage.setItem('jjMixAllPrev', JSON.stringify(keep)); } catch (x) {} }
+      else { if (jjUserMuted) jjSetMuted(false); K.forEach(function (k) { jjMixSet(k, prev && prev[k] != null && K.some(function (q) { return prev[q] > 0; }) ? prev[k] : (mixPrev[k] || 1)); });   /* Unmute all: those levels back (a group that was already off stays off) */
+        try { localStorage.removeItem('jjMixAllPrev'); } catch (x) {} }
+      jjMixPaint(); });                               /* each group's own mute: remembers the level to come back to */
     p.querySelectorAll('.mx-mu').forEach(function (mb) { mb.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); var k = mb.getAttribute('data-m');
       if (JJ_MIX[k] > 0) { mixPrev[k] = JJ_MIX[k]; jjMixSet(k, 0); } else { if (jjUserMuted) jjSetMuted(false); jjMixSet(k, mixPrev[k] || 1); } jjMixPaint(); }); });
     p.querySelectorAll('input[type=range]').forEach(function (inp) {
@@ -922,6 +1038,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     if (!jjMixP) return;
     jjMixP.querySelectorAll('input[type=range]').forEach(function (inp) { var k = inp.getAttribute('data-k'), v = Math.round(JJ_MIX[k] * 100);
       if (document.activeElement !== inp) inp.value = v; inp.style.setProperty('--v', v + '%'); jjMixP.querySelector('[data-v="' + k + '"]').textContent = v + '%'; var mb = jjMixP.querySelector('.mx-mu[data-m="' + k + '"]'); if (mb) { mb.classList.toggle('off', v === 0); mb.setAttribute('aria-pressed', v === 0 ? 'true' : 'false'); } });
+    var all = jjMixP.querySelector('.mx-all'); if (all) { var silent = ['voice', 'sfx', 'music'].every(function (k) { return !(JJ_MIX[k] > 0); }); all.classList.toggle('off', silent); all.setAttribute('aria-pressed', silent ? 'true' : 'false'); all.querySelector('span').textContent = silent ? 'Unmute all' : 'Mute all'; }
   }
   function jjMixBubbles() {
     var b = document.getElementById('jj-sound-btn'); if (!b) return; var r = b.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
@@ -936,6 +1053,12 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
   function jjMixClose() { if (!jjMixP) return; var b = document.getElementById('jj-sound-btn'); if (!jjMixP.classList.contains('open')) return; jjMixP.classList.add('closing'); jjMixP.classList.remove('open'); if (b) b.setAttribute('aria-expanded', 'false'); setTimeout(function () { if (!jjMixP.classList.contains('open')) document.documentElement.classList.remove('jj-mx-on'); }, 300); clearTimeout(jjMixP._shT); jjMixP._shT = setTimeout(function () { if (!jjMixP.classList.contains('open')) jjMixP.classList.remove('shown', 'closing'); }, 460); }   /* it keeps its theme until it has faded, so it never goes pale on the way back */
   function jjMixToggle() { if (jjMixP && jjMixP.classList.contains('open')) jjMixClose(); else jjMixOpen(); }
   window.jjMixOpen = jjMixOpen;
+  /* f-1008b: "sound on", for a page script that asks the visitor (Storytime's prompt). It pressed the moon, which toggled mute before the mixer existed; the moon now
+     opens the mixer, so "Yes" opened a panel and left every group at 0. This is the mixer's own "Unmute all": the levels the visitor last had, or full. */
+  window.jjSoundOn = function () { var K = ['voice', 'sfx', 'music'], prev = null; if (jjUserMuted) jjSetMuted(false);
+    if (!K.some(function (k) { return JJ_MIX[k] > 0; })) { try { prev = JSON.parse(localStorage.getItem('jjMixAllPrev') || 'null'); } catch (x) {}
+      K.forEach(function (k) { jjMixSet(k, prev && prev[k] != null && K.some(function (q) { return prev[q] > 0; }) ? prev[k] : (jjMixPrev[k] || 1)); }); }
+    try { jjMixPaint(); jjMoonState(); } catch (e) {} };
 
   jjSetupSoundButton();
   jjApplyMute();
@@ -949,17 +1072,22 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     for (var j = 0; j < els.length; j++) { var el = els[j]; if (!el.paused && !el.muted && el._jjBase > 0.01 && JJ_MIX[el._jjCat] > 0) return true; }
     return false;
   }
-  setInterval(function () { jjMixAbsorbMute(); var b = document.getElementById('jj-sound-btn'); if (b) { b.classList.toggle('is-quiet', !jjAudible()); b.classList.remove('is-muted'); } }, 400);
+  /* THE MOON'S STATE, one place (Joe, 2026-10-02): MUTED = the visitor muted (jjUserMuted) or every mixer channel is at 0, the same test the
+     mixer's "Unmute all" label uses, so the two can never disagree; QUIET = not muted and nothing audible this moment; otherwise it plays. */
+  function jjMuted() { return !!jjUserMuted || (!!JJ_MIX && !(JJ_MIX.voice > 0 || JJ_MIX.sfx > 0 || JJ_MIX.music > 0)); }
+  function jjMoonState() { var b = document.getElementById('jj-sound-btn'); if (!b) return; var m = jjMuted(); var q = !m && !jjAudible(); b.classList.toggle('is-muted', m); b.classList.toggle('is-quiet', q); b._jjQuiet = q; }
+  setInterval(function () { jjMixAbsorbMute(); jjMoonState(); }, 400);
   /* NARRATION: window.jjSay('my-way') plays nar-my-way.mp3 once per page. Silent when muted, never on top of another line,
      and the ambient ducks under the voice. opt.delay waits first; opt.wait queues it behind a line already playing; opt.again lets a line repeat. */
   (function () {
     var said = {}, cur = null, NB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
+    var NAR_GAIN = 0.45;   /* Jim’s narration sits at 45% of its old level (Joe, 2026-09-30: 60%, then "still loud"); the Voice slider still scales it */
     window.jjSay = function (name, opt) { opt = opt || {};
       if (opt.delay) { var d = opt.delay; opt.delay = 0; setTimeout(function () { window.jjSay(name, opt); }, d); return; }
       var A = window.jjAudio || {}; if (A.muted || jjUserMuted || JJ_MIX.voice <= 0 || (said[name] && !opt.again) || typeof Howl === 'undefined') return;
       if (cur) { if (opt.wait) { opt.tries = (opt.tries || 0) + 1; if (opt.tries < 40) setTimeout(function () { window.jjSay(name, opt); }, 300); } return; }   /* opt.wait: queue behind the line that is playing */
       said[name] = 1;
-      var amb = A.ambient, back = A.ambientTarget || 0.6, h = new Howl({ src: [NB + 'nar-' + name + '.mp3'], volume: A.volume == null ? 1 : A.volume });
+      var amb = A.ambient, back = A.ambientTarget || 0.6, h = new Howl({ src: [NB + 'nar-' + name + '.mp3'], volume: (A.volume == null ? 1 : A.volume) * NAR_GAIN });
       function done() { clearTimeout(h._safe); if (cur === h) cur = null; try { if (amb && amb.playing() && !A.muted) amb.fade(amb.volume(), back, 900); } catch (e) {} var i = (A.sounds || []).indexOf(h); if (i > -1) A.sounds.splice(i, 1); setTimeout(function () { try { h.unload(); } catch (e) {} }, 200); }
       h.once('play', function () { try { if (amb && amb.playing()) amb.fade(amb.volume(), back * 0.35, 400); } catch (e) {} });
       h.once('end', done); h.once('loaderror', done); h.once('playerror', done);
@@ -1160,7 +1288,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
       o.addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) { if (e.target === o) close(); return; } var a = b.getAttribute('data-a');
         if (a === 'close') close(); else if (a === 'back') choose(); else if (a === 'star') confirmStar();
         else if (a === 'ach') { close(); if (S && S.open) S.open(); }
-        else if (a === 'exam') { close(); if (document.getElementById('jjms-quiz')) window.dispatchEvent(new Event('jj:exam')); else location.href = '/storytime?exam=1#my-story'; }
+        else if (a === 'exam') { close(); if (document.getElementById('jjms-quiz') && !(window.jjMyStory && window.jjMyStory.dormant)) window.dispatchEvent(new Event('jj:exam')); else location.href = '/storytime?exam=1#my-story'; }   /* a My Story that is not built yet, or asleep under a replayed tale, cannot open it: go to its own address */
         else if (a === 'buy') { if (S && S.spend && S.spend('star', 1)) { S.award('tale2'); if (window.jjSyncTale2) window.jjSyncTale2(); try { window.dispatchEvent(new CustomEvent('jj:score', { detail: { id: 'tale2' } })); } catch (x) {} unlocked(); } else { stars = 0; confirmStar(); } }
         else if (a === 'play') { location.href = '/storytime?part=2'; }
         else if (a === 'tale') { close(); location.href = '/storytime'; } });
@@ -1201,10 +1329,16 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
         im.className = 'menu-hover-image';
         im.alt = '';
         var key = (a.querySelector('.jjmm-new') ? a.textContent.replace(a.querySelector('.jjmm-new').textContent, '') : a.textContent || '').trim().toLowerCase();
-        im.src = IMGS[key] || defaultSrc;
+        im.decoding = 'async'; im.setAttribute('data-src', IMGS[key] || defaultSrc);   /* f-1007a: six cards, 0.8 MB, were fetched on every page load for a menu most visits never open */
         row.appendChild(im);
         imgs.push(im);
       });
+      var artIn = false, artLoad = function () { if (artIn) return; artIn = true; imgs.forEach(function (im) { var u = im.getAttribute('data-src'); if (u) { im.src = u; im.removeAttribute('data-src'); } }); };
+      /* loaded the moment the menu is reached for: the pointer over the nav, a press or a focus on the button, or the menu opening by any other route */
+      var navEl = document.querySelector('.nav'), mBtn = document.querySelector('.menu-container');
+      [navEl, mBtn].forEach(function (el) { if (!el) return; ['pointerenter', 'pointerdown', 'touchstart', 'focusin'].forEach(function (ev) { el.addEventListener(ev, artLoad, { passive: true }); }); });
+      window.addEventListener('jj:menu:open', artLoad);
+      if (document.body.classList.contains('jj-menu-open')) artLoad();
     }
 
     // The luxury cascade, rebuilt for N links
@@ -1371,6 +1505,27 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
   st.textContent = '#jj-subtitle{top:50%!important;bottom:auto!important;transform:translate(-50%,-50%)!important;width:86%!important;max-width:980px!important;font-size:clamp(26px,3.6vw,58px)!important;line-height:1.15!important;font-weight:700;text-shadow:0 0 18px rgba(4,6,18,.9),0 0 6px rgba(4,6,18,.8),0 2px 3px rgba(0,0,0,.6);}';   /* a soft dark halo: the words stay readable when the big-bang moon passes behind them */
   (document.head || document.documentElement).appendChild(st); })();
 
+/* ===== ONE lenis.raf PER FRAME (f-1008a, performance round 2). intro.js steps the page's smooth scroll twice in every frame, from two
+   clocks: its own requestAnimationFrame loop (page time, ms) and gsap.ticker (GSAP's time, which starts about a second later). Lenis works
+   out its step from the previous call, so each frame it was handed one step of about MINUS a second and then one of about PLUS a second.
+   Measured on My Story for one wheel notch: 188 calls in 94 frames, steps -946 / +979 ms, and in 75 of those calls the page was really
+   scrolled the wrong way (from 3000 px to the very top) and back again inside the same frame, with ScrollTrigger.update run on both.
+   The two steps cancel to one frame's worth, which is why it looked right; the detour was pure waste (and it grows with the gap between
+   the two clocks, i.e. with a slow load). Here: the first call in a frame steps Lenis with the frame's own time, the second is ignored.
+   The scroll curve is the same to the pixel (checked frame by frame). intro.js itself is not touched. ===== */
+(function () {
+  function one() { var L = window.lenis; if (!L || L.__jjOneRaf || typeof L.raf !== 'function') return; L.__jjOneRaf = true;
+    var raf0 = L.raf, lastF = -1, lastT = -1e9;
+    try { L.time = 0; } catch (e) {}   /* forget the old clock: the first step on the new one is 0 */
+    L.raf = function () { var tl = document.timeline, f = tl ? tl.currentTime : null, pn = performance.now();
+      if (typeof f !== 'number') f = pn;                       /* f: the frame's own timestamp, the same for every callback in a frame */
+      if (f === lastF) { if (pn - lastT < 50) return; f = pn; }   /* the second call of the frame: ignored. (Same stamp but 50 ms on = a clock that is not ticking: step by real time, never freeze) */
+      else lastF = f;
+      lastT = pn; return raf0.call(L, f); }; }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', one); else one();   /* after intro.js has made it (its listener was added first) */
+  window.addEventListener('load', one);
+})();
+
 /* ===== Modal guard (2026-09-17). While ANY overlay is up — the achievements / store panel, a first-unlock card, a Storytime
    dialog, a My Story lightbox (html.jjms-lb), the companion's full-screen view — nothing in the nav underneath can be pressed,
    and for a beat AFTER it closes too: the press that closes a modal must never land on the Menu / pills sitting under its X.
@@ -1378,11 +1533,14 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
 (function () {
   if (window.__jjModalGuard) return; window.__jjModalGuard = true;
   var st = document.createElement('style');
-  st.textContent = 'body.jj-modal-open .nav,html.jjms-lb .nav,body.jj-guard .nav{pointer-events:none!important;}body.jj-modal-open .nav *,html.jjms-lb .nav *,body.jj-guard .nav *{pointer-events:none!important;}';
+  /* f-1008a: the "everything inside the nav" half now hangs off .nav.jj-gd (a mirror of body.jj-guard, set below in the same breath) and not off
+     a class on <body>/<html>: "body.jj-guard .nav *" made the browser re-style every element of the page whenever a modal, a lightbox or a
+     cut-scene opened or closed (5,934 elements on My Story: ~35 ms here, ~130 ms on a slow laptop, twice per close). Same rule, same strength. */
+  st.textContent = 'body.jj-modal-open .nav,html.jjms-lb .nav,body.jj-guard .nav{pointer-events:none!important;}body .nav.jj-gd *{pointer-events:none!important;}';
   document.head.appendChild(st);
   var until = 0, was = false;
   function up() { return document.body.classList.contains('jj-modal-open') || document.documentElement.classList.contains('jjms-lb') || !!document.getElementById('jjco-full') || !!document.getElementById('jjco-vid'); }
-  function setG(on) { var b = document.body.classList; if (on !== b.contains('jj-guard')) b.toggle('jj-guard', on); }   // NEVER re-add a class that is already there: even a no-op classList.add queues a mutation record, and this observer would then feed itself for ever (it froze the page)
+  function setG(on) { var b = document.body.classList; if (on !== b.contains('jj-guard')) b.toggle('jj-guard', on); var ns = document.querySelectorAll('.nav'); for (var i = 0; i < ns.length; i++) if (ns[i].classList.contains('jj-gd') !== on) ns[i].classList.toggle('jj-gd', on); }   // NEVER re-add a class that is already there: even a no-op classList.add queues a mutation record, and this observer would then feed itself for ever (it froze the page)
   function sync() { var now = up(); if (was && !now) { until = performance.now() + 500; setG(true); setTimeout(function () { if (!up()) setG(false); }, 520); } else if (now) setG(true); was = now; }
   var mo = new MutationObserver(sync); mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
   mo.observe(document.body, { attributes: true, attributeFilter: ['class'], childList: true });   // html + body classes, and overlays appended to body — no subtree

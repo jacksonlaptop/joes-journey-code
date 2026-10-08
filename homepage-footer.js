@@ -1,3 +1,5 @@
+/* BUILD h-1007c (2026-10-07) · the Rive sleeper: each Webflow Rive canvas is paused while it cannot be seen and woken one panel ahead of arriving; c: the waves sleep while they are parked below the screen (landing, Big Bang). See the last block of this file. `/?rivesleep=0` turns it off. */
+window.JJ_HOME_BUILD = 'h-1007c';
 /* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
 if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
 (function () {
@@ -2680,3 +2682,97 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
   '@keyframes jj-swirl{0%{transform:rotate(0deg);}38%{transform:rotate(40deg);}52%{transform:rotate(700deg);}64%{transform:rotate(760deg);}100%{transform:rotate(800deg);}}' +
   '@keyframes jj-swirl-reverse{0%{transform:rotate(0deg);}38%{transform:rotate(-40deg);}52%{transform:rotate(-700deg);}64%{transform:rotate(-760deg);}100%{transform:rotate(-800deg);}}';
   document.head.appendChild(st); })();
+
+/* ===== THE RIVE SLEEPER (2026-10-07, performance audit fix #1) =====
+   The homepage carries eight Webflow Rive canvases (five of them full screen) and every one drew every frame, including the ones whose
+   wrapper sat at opacity 0: on an M1 Pro that alone held the horizontal scroll at 30 fps. Now each one draws only while it can be seen.
+   - MECHANISM: Rive's own pause() / play(), reached through Webflow's plugin (Webflow.require('rive').getInstance(wrapper).rive, the same
+     way the fly-rive is released further up). pause() stops that instance's frame loop altogether (no wasm advance, no draw, no canvas
+     upload), the canvas keeps its last frame (never blank), and play() resumes from where it stopped with a zero time step (no jump).
+     Nothing is hidden or resized, so the page looks exactly as before. An instance somebody else stopped, or has not started yet (the two
+     autoplay-off ones: the Big Bang and the landing logo), is left alone; one that the page starts while it sleeps is simply handed back.
+   - SEEN = the canvas and every ancestor are displayed, not visibility:hidden, and at opacity above 0 (computed style: no layout is read).
+   - ONE PANEL AHEAD: the backgrounds are faded by Webflow interactions when a .scroll-trigger scrolls into view. The mapping is read from
+     Webflow's own interaction data (trigger element -> the wrapper its action list fades in). Two IntersectionObservers watch those
+     triggers: one with a margin of a viewport (= one panel of scroll) above and below, one on the viewport itself. A trigger coming
+     within a panel, from either side, wakes its background (the lead); so does the trigger entering the viewport, which is the moment
+     Webflow starts the fade (its first 500 ms sit at opacity 0). A lead lasts 3 s unless the background has shown by then, so a visitor
+     who stops to read is not paying for the panel next door. If the interaction data cannot be read, the opacity check alone still wakes
+     a background within 150 ms of its fade starting.
+   - PARKED (h-1007c): the waves start at opacity 1 but parked half a screen down by their wrapper's transform, where no pixel of them
+     shows (checked at 375 / 768 / 1440 / 1920 with everything else hidden), until their trigger first enters the viewport and Webflow
+     slides them up. So a mapped background whose trigger has never yet entered the viewport does not count as seen by its opacity alone:
+     it is awake only while the page can be scrolled (not html.lenis-stopped / .jj-scroll-locked: the landing and the Big Bang are both
+     locked) and its trigger is within a panel. That puts it to sleep on the landing and under the Big Bang, and has it running again
+     within 150 ms of the scroll unlocking, half a panel before anything of it can show.
+   - It sleeps 0.4 s after it has stopped being seen (4 s for the two one-shots), whether or not its trigger is still close: "fully left".
+   - Cheap: no scroll listener, no MutationObserver, no per-frame work: one 150 ms timer reading computed opacity / visibility / display on
+     the few wrappers and their three ancestors, plus the observers' own callbacks (which read nothing).
+   `window.jjRiveSleep.state()` lists what is asleep; `/?rivesleep=0` (or jjRiveSleep.off(true)) runs everything as before. */
+(function () {
+  if (window.jjRiveSleep) return;
+  var EVERY = 150, HOLD = 400, HOLD_ONESHOT = 4000, LEAD = 3000;
+  var items = [], plugin = null, io = null, ioIn = null, timer = 0, mapped = -1, mapTries = 0, disabled = /[?&]rivesleep=0\b/.test(location.search);
+  function inst(it) {
+    if (it.dead) return null;
+    if (!it.rive) { try { if (!plugin) plugin = window.Webflow && Webflow.require && Webflow.require('rive'); var i = plugin && plugin.getInstance(it.el); it.rive = (i && i.rive) || null; } catch (e) {} }
+    var r = it.rive; if (!r) return null;
+    if (r.destroyed) { it.dead = true; return null; }                 /* released on purpose (the fly-rive) */
+    return r.loaded ? r : null;
+  }
+  function seen(e, stop) {                                             /* e and its ancestors up to (not including) stop: displayed, visible, opacity > 0 */
+    for (; e && e !== stop && e.nodeType === 1; e = e.parentElement) { var cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden' || !(parseFloat(cs.opacity) > 0.001)) return false; }
+    return true;
+  }
+  function sleep(it, r) {
+    try { if (!r.isPlaying) return; var n = (r.playingStateMachineNames || []).concat(r.playingAnimationNames || []); if (!n.length) return; r.pause(n); it.names = n; it.asleep = true; } catch (e) {}
+  }
+  function wake(it, r) {
+    var n = it.names; it.asleep = false; it.names = null; it.since = 0;
+    try { if (n && r.isPaused) r.play(n); } catch (e) {}                /* isPaused: still instanced and not playing; a stop() in the meantime is respected */
+  }
+  /* which .scroll-trigger fades which wrapper in: read from Webflow's interaction data */
+  function mapTriggers() {
+    var d = null, n = 0; try { var ix = window.Webflow && Webflow.require && Webflow.require('ix2'); d = ix && ix.store && ix.store.getState().ixData; } catch (e) {}
+    if (!d || !d.events || !d.actionLists) return -1;
+    Object.keys(d.events).forEach(function (k) { var ev = d.events[k]; if (!ev || ev.eventTypeId !== 'SCROLL_INTO_VIEW' || !ev.action || !ev.action.config) return;
+      var al = d.actionLists[ev.action.config.actionListId]; if (!al) return; var sels = [];
+      (al.actionItemGroups || []).forEach(function (g) { (g.actionItems || []).forEach(function (a) { var c = a.config || {}; if (a.actionTypeId === 'STYLE_OPACITY' && c.value > 0 && c.target && c.target.selector) sels.push(c.target.selector); }); });
+      if (!sels.length) return; var trig = [];
+      [ev.target].concat(ev.targets || []).forEach(function (t) { if (!t) return; var id = t.id && String(t.id).split('|').pop(), el = id && document.querySelector('[data-w-id="' + id + '"]'); if (el && trig.indexOf(el) < 0) trig.push(el); });
+      if (!trig.length) return;
+      items.forEach(function (it) { var hit = false; for (var s = 0; s < sels.length && !hit; s++) { try { hit = it.el.matches(sels[s]); } catch (e) {} } if (!hit) return;
+        trig.forEach(function (t) { if (it.trigs.indexOf(t) < 0) { it.trigs.push(t); n++; (t._jjFor || (t._jjFor = [])).push(it); if (io) { io.observe(t); ioIn.observe(t); } } }); }); });
+    return n;
+  }
+  function zoneOf(it) { for (var i = 0; i < it.trigs.length; i++) if (it.trigs[i]._jjZone) return true; return false; }
+  function tick() {
+    if (disabled || document.hidden) return;
+    if (mapped < 1 && mapTries < 60) { mapTries++; mapped = mapTriggers(); }
+    var now = Date.now(), stage = null, stageOk = false, hc = document.documentElement.classList, locked = hc.contains('lenis-stopped') || hc.contains('jj-scroll-locked');
+    for (var i = 0; i < items.length; i++) { var it = items[i], r = inst(it); if (!r) continue;
+      if (it.el.parentElement !== stage) { stage = it.el.parentElement; stageOk = seen(stage, document.documentElement); }     /* the wrappers share one parent: its chain is read once a tick */
+      var cvOk = !it.cv || getComputedStyle(it.cv).display !== 'none';
+      var parked = it.trigs.length > 0 && !it.entered;                  /* its entrance has never run: still where the Designer parked it */
+      var want = stageOk && cvOk && (now < it.lead || (seen(it.el, stage) && (!parked || (!locked && zoneOf(it)))));
+      if (it.asleep) { var playing = false; try { playing = r.isPlaying; } catch (e) { continue; }
+        if (playing) { it.asleep = false; it.names = null; it.since = want ? 0 : now; }      /* the page started it itself: handed back */
+        else if (want) wake(it, r); }
+      else if (want) it.since = 0;
+      else { if (!it.since) it.since = now; if (now - it.since >= it.hold) sleep(it, r); }
+    }
+  }
+  function start() {
+    var ws = document.querySelectorAll('[data-animation-type="rive"]'); if (!ws.length) return;
+    for (var i = 0; i < ws.length; i++) items.push({ el: ws[i], cv: ws[i].querySelector('canvas'), rive: null, dead: false, asleep: false, names: null, since: 0, lead: 0, entered: false, trigs: [], hold: ws[i].getAttribute('data-rive-autoplay') === 'false' ? HOLD_ONESHOT : HOLD });
+    if ('IntersectionObserver' in window) { var arm = function (es, inView) { var any = false, until = Date.now() + LEAD; for (var k = 0; k < es.length; k++) { if (!inView) es[k].target._jjZone = es[k].isIntersecting; if (!es[k].isIntersecting) continue; var f = es[k].target._jjFor || []; for (var j = 0; j < f.length; j++) { f[j].lead = until; if (inView) f[j].entered = true; any = true; } } if (any) tick(); };
+      io = new IntersectionObserver(function (es) { arm(es, false); }, { rootMargin: '100% 0px 100% 0px', threshold: 0 }); ioIn = new IntersectionObserver(function (es) { arm(es, true); }, { threshold: 0 }); }
+    timer = setInterval(tick, EVERY);
+  }
+  window.jjRiveSleep = {
+    off: function (v) { disabled = v !== false; if (disabled) items.forEach(function (it) { var r = inst(it); if (r && it.asleep) wake(it, r); }); else tick(); },
+    state: function () { return items.map(function (it) { var r = inst(it), p = null; try { p = r ? r.isPlaying : null; } catch (e) {} return { el: it.el.className.split(' ')[0], asleep: it.asleep, playing: p, dead: it.dead, near: Date.now() < it.lead, parked: it.trigs.length > 0 && !it.entered, triggers: it.trigs.length }; }); },
+    mapped: function () { return mapped; }
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();

@@ -1,5 +1,5 @@
 /* BUILD f-1008a (2026-10-08) · performance round 2: one lenis.raf per frame (it was stepped twice, the wrong way and back); the modal guard's nav rule no longer re-styles the whole page. f-1007a · loading: the site's music is streamed and only created when it is first played (it was an 8.6 MB download and a full decode on every page load); the menu's card art loads when the menu is first reached for; the starfield can fetch three.js itself. */
-window.JJ_FOOTER_BUILD = 'f-1008b';
+window.JJ_FOOTER_BUILD = 'f-1008c';
 /* THE SOUND MOON, FROM THE FIRST PAINT (Joe, 2026-09-30: "the sound button should always be there, and it should still work and expand...
    no matter what, between pages etc"). The same function lives in jj-loader.js (the first of the site's scripts on every page, so the
    moon is drawn in the same frame as the loader) and in site-footer.js (in case a page has no loader). It draws the moon in its resting
@@ -185,6 +185,10 @@ document.addEventListener("DOMContentLoaded", function () {
       if (o) Howler._obtainHtml5Audio = function () { var a = o.apply(Howler, arguments); try { a.crossOrigin = 'anonymous'; } catch (e) {} node = a; return a; };
       try { real = new Howl({ src: [src], loop: true, volume: vol, html5: true }); } finally { if (o) Howler._obtainHtml5Audio = o; }
       real._src = src; real._jjCat = 'music';
+      /* f-1008c: Howler puts its audio engine to sleep after 30 s in which no WEB AUDIO sound has played. The streamed music is an <audio> element fed THROUGH that
+         engine (the tap below), and Howler does not count it: on a quiet stretch (My Story, with nothing else sounding) the engine slept and the music went silent
+         and froze, until some other sound woke it (measured: suspended at 30 s, signal 0). The engine now stays awake while the site streams its music. */
+      try { Howler.autoSuspend = false; if (Howler._suspendTimer) { clearTimeout(Howler._suspendTimer); Howler._suspendTimer = null; } if (Howler.state === 'suspended' || Howler.state === 'suspending') Howler._autoResume(); } catch (e) {}
       try { if (node && Howler.usingWebAudio && Howler.ctx && Howler.masterGain && !node._jjTap) { node._jjTap = Howler.ctx.createMediaElementSource(node); node._jjTap.connect(Howler.masterGain); } } catch (e) {}
       pend.forEach(function (a) { try { real[a[0]].apply(real, a[1]); } catch (e) {} }); pend = [];
       return real;

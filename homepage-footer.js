@@ -1,5 +1,5 @@
 /* BUILD h-1007c (2026-10-07) · the Rive sleeper: each Webflow Rive canvas is paused while it cannot be seen and woken one panel ahead of arriving; c: the waves sleep while they are parked below the screen (landing, Big Bang). See the last block of this file. `/?rivesleep=0` turns it off. */
-window.JJ_HOME_BUILD = 'h-1007c';
+window.JJ_HOME_BUILD = 'h-1008a';
 /* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
 if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
 (function () {
@@ -2386,7 +2386,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       '#jj-choose.on{opacity:1;pointer-events:auto;}' +
       '#jj-choose.black::after{content:"";position:absolute;inset:0;background:#000;opacity:0;animation:jjchBlack 1.1s ease forwards;z-index:50;}@keyframes jjchBlack{to{opacity:1;}}' +
       /* the halves: hit areas 50/50, the picked one spreads to 90 */
-      '.jjch-half{position:absolute;top:0;bottom:0;width:50%;cursor:pointer;transition:width .9s cubic-bezier(.65,0,.35,1),filter .8s ease,opacity .8s ease,translate 1.8s cubic-bezier(.22,1,.36,1);translate:0 3vh;}#jj-choose.on .jjch-half{translate:0 0;}' +
+      '.jjch-half{position:absolute;top:0;bottom:0;width:50%;cursor:pointer;transition:width .9s cubic-bezier(.65,0,.35,1),opacity .8s ease,translate 1.8s cubic-bezier(.22,1,.36,1);translate:0 3vh;}#jj-choose.on .jjch-half{translate:0 0;}' +
       '.jjch-half.story{left:0;}.jjch-half.work{right:0;}' +
       '.jjch-clip{position:absolute;inset:0;overflow:hidden;}' +
       '.story .jjch-clip{-webkit-mask-image:linear-gradient(to right,#000 72%,transparent 100%);mask-image:linear-gradient(to right,#000 72%,transparent 100%);}' +
@@ -2396,8 +2396,8 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       '.jjch-dim{position:absolute;inset:0;background:#04060e;opacity:0;pointer-events:none;transition:opacity .8s ease;}' +
       '#jj-choose.hot .jjch-half:not(.lit) .jjch-dim{opacity:.6;}' +
             '#jj-choose.pick-story .jjch-half.story,#jj-choose.pick-work .jjch-half.work{width:90%;cursor:default;}' +
-      '#jj-choose.pick-story .jjch-half.work,#jj-choose.pick-work .jjch-half.story{width:10%;opacity:.1;filter:blur(6px) brightness(.6);}' +
-      '#jj-choose.pick-story .jjch-half.work:hover,#jj-choose.pick-work .jjch-half.story:hover{opacity:.3;filter:blur(3px);}' +
+      '#jj-choose.pick-story .jjch-half.work,#jj-choose.pick-work .jjch-half.story{width:10%;opacity:.07;}' +   /* h-1008a: no blur (at this opacity it could not be seen, and it cost a full-height filtered layer through the whole spread) */
+      '#jj-choose.pick-story .jjch-half.work:hover,#jj-choose.pick-work .jjch-half.story:hover{opacity:.3;}' +
       /* the ghosted art, feathered past the seam */
       '.jjch-bg{position:absolute;inset:10%;background-position:50% 50%;background-size:contain;background-repeat:no-repeat;opacity:.2;transition:opacity .9s ease,transform 8s ease;-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 38%,transparent 74%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 38%,transparent 74%);}' +   // 10% margin all round, the art at its own aspect (the STORYTIME lettering reads), edges feathered away
       '.jjch-half.lit .jjch-bg{opacity:.34;}' +
@@ -2422,7 +2422,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       '@keyframes jjchDream{0%{transform:translate(-4%,-3%) scale(1.1) rotate(0deg);opacity:.7;}50%{opacity:1;}100%{transform:translate(4%,3%) scale(1.25) rotate(8deg);opacity:.8;}}' +
       /* the forest sparkles, a fresh scatter every time a side lights */
       '.jjch-sparks{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .7s ease;}' +
-      '.jjch-half.lit .jjch-sparks{opacity:1;}' +
+      '.jjch-half.lit .jjch-sparks{opacity:1;}.jjch-half:not(.lit) .jjch-sparks i{animation-play-state:paused;}' +
       '.jjch-sparks i{position:absolute;border-radius:50%;background:radial-gradient(circle,#fff 0%,var(--c) 35%,transparent 70%);animation:jjchTw var(--d) ease-in-out infinite var(--dl);}' +
       '.jjch-sparks i.st{border-radius:0;background:transparent;box-shadow:none;}' +
       '.jjch-sparks i.st::before{content:"";position:absolute;inset:0;background:var(--c);clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);filter:drop-shadow(0 0 6px var(--c));}' +
@@ -2497,8 +2497,8 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
     return v;
   }
   function play(v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
-  function sparks(box) {                                                     // a fresh scatter every time a side lights
-    var h = '';
+  function sparks(box) {                                                     // h-1008a: one scatter a side, made the first time it lights (a fresh 36 animated nodes on every hover was part of the hover's lag)
+    if (!box || box.firstChild) return; var h = '';
     for (var i = 0; i < 36; i++) {
       var big = i % 4 === 0, sz = big ? (9 + Math.random() * 10) : (2 + Math.random() * 4), c = SPARK[i % SPARK.length];
       h += '<i' + (big ? ' class="st"' : '') + ' style="left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 100).toFixed(1) + '%;width:' + sz.toFixed(1) + 'px;height:' + sz.toFixed(1) + 'px;--c:' + c +
@@ -2545,7 +2545,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
     function line() {
       if (!isOpen || picked) return;
       var last = li >= LINES.length, txt = last ? LAST : LINES[li++];
-      if (window.jjSay) { if (li === 1) window.jjSay('user-journey'); else if (li === 2) window.jjSay('recommend-storytime', { wait: true }); }   // the intro, then 'I recommend Story Time' on the (recommended) line
+      if (window.jjSay) { if (li === 1) window.jjSay('user-journey'); }   // h-1008a (Joe, 8 Oct): the chooser speaks ONE line, 'splitting the user journey' ('I recommend Story Time' is not spoken any more)
       if (last) cap.classList.add('big');
       var h = txt.split(' ').map(function (w) { var o = '<span class="w">'; for (var i = 0; i < w.length; i++) o += '<i>' + w[i] + '</i>'; return o + '</span>'; }).join(' ');
       cap.innerHTML = h; var ch = cap.querySelectorAll('i'), k = 0, caret = document.createElement('b'); if (ch.length) ch[0].before(caret);
@@ -2587,7 +2587,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       var h = document.createElement('div'); h.className = 'jjch-half ' + kind; h.setAttribute('data-cursor', 'page');
       h.innerHTML = '<div class="jjch-clip"><div class="jjch-bg" style="background-image:url(' + GB + bg + ')"></div><div class="jjch-dim"></div><div class="jjch-glow"></div><div class="jjch-dream"></div><div class="jjch-sparks"></div></div><div class="jjch-title">' + title + '</div>';
       h.addEventListener('mouseenter', function () { if (picked || paused) return; root.classList.add('hot'); h.classList.add('lit'); sparks(h.querySelector('.jjch-sparks'));
-        if (kind === 'work') sfx('boo', .8); else { sfx('cheer', .8); sfx('narr-1', 1, 900); sfx('narr-2', 1, 2600); } });
+        /* h-1008a (Joe, 8 Oct): nothing is spoken or played on hover. The Story Time side spoke a narration line (choose-narr-1.mp3) that ran over the chooser's own line, and each hover asked for three sound files that are not there (boo, cheer, narr-2) */ });
       h.addEventListener('mouseleave', function () { root.classList.remove('hot'); h.classList.remove('lit'); });
       h.addEventListener('click', function (e) {
         if (e.target.closest('.jjch-cs, .jjch-back')) return; e.preventDefault();

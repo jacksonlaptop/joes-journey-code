@@ -162,20 +162,29 @@
       if (!seen) { seen = true; cursorX = trailX = lastX = mouseX; cursorY = trailY = lastY = mouseY; }   // jump in, don't fly from the corner
     });
 
+    /* v14 (2026-10-10, Joe's Intel Mac: 'laggy the second the mouse entered'): the cursor and its trail are moved with `translate`, not left / top. left / top
+       made every frame of a mouse move a full pass of the page (layout, paint, the layer tree, a commit: measured 250 ms a second on a mid laptop); `translate`
+       on a layer of its own is the compositor's alone. And the loop stops when the pointer has come to rest (it ran for ever), started again by the next move. */
+    var XL = false; try { XL = !!(window.CSS && CSS.supports && CSS.supports('translate', '1px 1px')); } catch (e) {}
+    if (XL) { cursor.style.willChange = 'translate, transform'; trail.style.willChange = 'translate, transform, opacity'; }
+    var place = XL ? function (el, x, y) { el.style.translate = x.toFixed(2) + 'px ' + y.toFixed(2) + 'px'; } : function (el, x, y) { el.style.left = x + 'px'; el.style.top = y + 'px'; };
+    var running = false, wake = function () { if (!running) { running = true; requestAnimationFrame(tick); } };
+    window.addEventListener('mousemove', wake, { passive: true });
     function tick(){
       cursorX += (mouseX - cursorX) * 0.28; cursorY += (mouseY - cursorY) * 0.28;
       trailX  += (mouseX - trailX)  * 0.16; trailY  += (mouseY - trailY)  * 0.16;
-      cursor.style.left = cursorX + 'px'; cursor.style.top = cursorY + 'px';
-      trail.style.left = trailX + 'px';  trail.style.top  = trailY + 'px';
+      place(cursor, cursorX, cursorY); place(trail, trailX, trailY);
 
       var dx = mouseX - lastX, dy = mouseY - lastY;
       trail.style.opacity = Math.sqrt(dx * dx + dy * dy) > 1 ? '0.45' : '0';   // subtle trail, not too noticeable
       var angle = Math.atan2(dy, dx) * 180 / Math.PI;
       trail.style.transform = 'translate(-50%, -50%) rotate(' + (angle + 180) + 'deg)';
       lastX += (mouseX - lastX) * 0.2; lastY += (mouseY - lastY) * 0.2;
+      if (Math.abs(mouseX - cursorX) < .05 && Math.abs(mouseY - cursorY) < .05 && Math.abs(mouseX - trailX) < .05 && Math.abs(mouseY - trailY) < .05 && Math.abs(mouseX - lastX) < .05 && Math.abs(mouseY - lastY) < .05) {
+        cursorX = trailX = lastX = mouseX; cursorY = trailY = lastY = mouseY; place(cursor, cursorX, cursorY); place(trail, trailX, trailY); trail.style.opacity = '0'; running = false; return; }   // at rest: nothing to do until the pointer moves again
       requestAnimationFrame(tick);
     }
-    requestAnimationFrame(tick);
+    wake();
 
     // delegated hover detection — works for elements added after load
     function stateFor(t){

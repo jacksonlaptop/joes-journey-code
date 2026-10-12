@@ -1,5 +1,5 @@
 /* BUILD h-1007c (2026-10-07) · the Rive sleeper: each Webflow Rive canvas is paused while it cannot be seen and woken one panel ahead of arriving; c: the waves sleep while they are parked below the screen (landing, Big Bang). See the last block of this file. `/?rivesleep=0` turns it off. */
-window.JJ_HOME_BUILD = 'h-1008a';
+window.JJ_HOME_BUILD = 'h-1010a';
 /* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
 if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
 (function () {
@@ -2237,12 +2237,15 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
     var hsw = document.querySelector('.horizontal-scroll-wrapper');
     function tx(el) { var t = (el && el.style && el.style.transform) || '', m = t.match(/translate(?:3d|X)?\(\s*(-?[\d.]+)/); if (m) return parseFloat(m[1]);
       m = t.match(/matrix(?:3d)?\(([^)]+)\)/); if (m) { var n = m[1].split(',').map(parseFloat); return n.length === 16 ? n[12] : n[4]; } return 0; }
-    var P0 = null, shown = -1, last = null, t0 = performance.now();
+    var P0 = null, shown = -1, last = null, t0 = performance.now(), visAt = -1e9, visIs = false, allOut = false;
+    /* h-1010a: this loop ran getComputedStyle on every frame of the whole homepage (a forced style pass each time: 149 ms a second on a mid laptop), and wrote
+       left / top on the three planets 25 times a second even while all three were out of sight. Now the host's opacity is read four times a second and only
+       until the planets' start is known; and nothing is written while every planet is hidden and already marked so. */
     function update(now) {
       var target;
       if (hsw) {
-        var P = Math.abs(tx(hsw)), vis = parseFloat(getComputedStyle(host).opacity) > 0.05;
-        if (P0 == null) { if (vis) P0 = P; }
+        var P = Math.abs(tx(hsw));
+        if (P0 == null) { if (now - visAt > 120) { visAt = now; visIs = parseFloat(getComputedStyle(host).opacity) > 0.05; } if (visIs) P0 = P; }
         target = P0 == null ? 0 : (P - P0) / (Math.max(320, window.innerWidth) * 2.1);   // ~two screens of scroll to cross the sky: they linger, they don't dash
       } else { var r = host.getBoundingClientRect(), vw = Math.max(320, window.innerWidth); target = r.width ? (vw - r.left) / (vw + r.width) : 0; }
       if (!(target === target)) target = 0;                                            // never let a NaN in
@@ -2250,7 +2253,9 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       if (shown < 0) shown = target; else shown += (target - shown) * 0.12;            // eased → one fluid movement
       var bob = Math.sin((now - t0) / 1400) * 1.6;                                      // and a slow drift up and down while they hang there
       if (last === null || Math.abs(target - shown) > 0.0005 || now - last > 40) {
-        last = now;
+        var out = true; for (var k0 in els) { var a0 = ART[k0], u0 = (shown - a0.from) / (a0.to - a0.from); if (u0 > 0 && u0 < 1) { out = false; break; } }
+        if (out && allOut && last !== null) { last = now; return; }   // every planet is out of sight and was left hidden: nothing to write
+        allOut = out; last = now;
         for (var k in els) { var a = ART[k], u = (shown - a.from) / (a.to - a.from), pos = at(PATH[k], u), el = els[k];
           el.style.left = pos[0] + '%'; el.style.top = (pos[1] + bob * (k === 'mars' ? -1 : 1)) + '%'; el.style.opacity = (u <= 0 || u >= 1) ? '0' : '1';
           el.querySelector('.box').style.rotate = (u * 140) + 'deg'; }

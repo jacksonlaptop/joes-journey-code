@@ -1,5 +1,5 @@
 /* BUILD f-1008a (2026-10-08) · performance round 2: one lenis.raf per frame (it was stepped twice, the wrong way and back); the modal guard's nav rule no longer re-styles the whole page. f-1007a · loading: the site's music is streamed and only created when it is first played (it was an 8.6 MB download and a full decode on every page load); the menu's card art loads when the menu is first reached for; the starfield can fetch three.js itself. */
-window.JJ_FOOTER_BUILD = 'f-1008c';
+window.JJ_FOOTER_BUILD = 'f-1012a';
 /* THE SOUND MOON, FROM THE FIRST PAINT (Joe, 2026-09-30: "the sound button should always be there, and it should still work and expand...
    no matter what, between pages etc"). The same function lives in jj-loader.js (the first of the site's scripts on every page, so the
    moon is drawn in the same frame as the loader) and in site-footer.js (in case a page has no loader). It draws the moon in its resting
@@ -132,19 +132,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     function animate() {
       requestAnimationFrame(animate);
+      animate.n = (animate.n || 0) + 1; if (animate.n & 1) return;   /* f-1010b: the starfield is drawn on every other frame (30 a second: slow drift and twinkle), its steps doubled so it moves at the same speed. A full-screen WebGL canvas redrawn 60 times a second made everything laid over it be composited again each time */
       const elapsed = clock.getElapsedTime();
       // Cached size — reading getBoundingClientRect here forced a layout every frame.
       const width = bgW, height = bgH;
       shapes.forEach(shape => {
-        shape.position.x += config.movementDirection.x * config.movementSpeed * shape.userData.speedFactor;
-        shape.position.y += config.movementDirection.y * config.movementSpeed * shape.userData.speedFactor;
+        shape.position.x += 2 * config.movementDirection.x * config.movementSpeed * shape.userData.speedFactor;
+        shape.position.y += 2 * config.movementDirection.y * config.movementSpeed * shape.userData.speedFactor;
         if (shape.position.x > width/2) shape.position.x = -width/2;
         if (shape.position.x < -width/2) shape.position.x = width/2;
         if (shape.position.y > height/2) shape.position.y = -height/2;
         if (shape.position.y < -height/2) shape.position.y = height/2;
         if (shape.userData.isCircle) shape.material.opacity = 1 - config.twinkleAmplitude * (0.5 + 0.5 * Math.sin(elapsed * shape.userData.twinkleSpeed + shape.userData.twinkleOffset));
       });
-      svgPositionX -= config.svgMovementSpeed;
+      svgPositionX -= 2 * config.svgMovementSpeed;
       svgWrapper1.style.transform = `translateX(${svgPositionX}%)`;
       svgWrapper2.style.transform = `translateX(${svgPositionX + 100}%)`;
       if (Math.abs(svgPositionX) >= 50) svgPositionX = 0;
@@ -738,6 +739,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
   }
   setState('def');
   function tick() {
+    if (window.__jjCursor) { el.style.display = 'none'; return; }   /* f-1010b: cursor.js owns the pointer: this older cursor's loop ends (it wrote left / top on a hidden element every frame, for ever) */
     cx += (mx - cx) * 0.12;
     cy += (my - cy) * 0.12;
     el.style.left = cx + 'px';
@@ -745,7 +747,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     requestAnimationFrame(tick);
   }
   tick();
-  document.addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; el.style.opacity = '1'; });
+  document.addEventListener('mousemove', function (e) { if (window.__jjCursor) return; mx = e.clientX; my = e.clientY; el.style.opacity = '1'; });
   document.addEventListener('mouseleave', function () { el.style.opacity = '0'; });
   document.addEventListener('mouseover', function (e) {
     var t = e.target;
@@ -762,63 +764,30 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
     if (typeof window.Howler === 'undefined') return;
     try { Howler.volume(jjUserMuted ? 0 : jjMasterVolume()); } catch (e) {}
   }
+  /* f-1012a (Joe, 12 Oct: 'it doesn't have to go directly with the music if it's causing lag: a set loop to show sound is playing, nothing when muted').
+     The bars no longer follow the sound. There was a loop here that read the audio every frame and wrote ten heights, a glow and a scale: every write of a height
+     a layout, the mist's bars under a 24 px blur redrawn each time, on every page, for ever. Now the look is three states and no script per frame at all:
+       muted   the style sheet's flat dots (as before)
+       quiet   the resting bars (as before)
+       playing a set loop: each bar is one full-height bar scaled up and down by a CSS animation (transform only: the graphics chip's alone), each on its own
+               beat; the mist behind breathes as one piece.
+     jjMoonState keeps .is-muted / .is-quiet on the button (it always did); playing = neither. */
   function jjStartAudioBars(btn) {
-    var bars = btn.querySelectorAll('.jj-bar');
-    var mistBars = document.querySelectorAll('#jj-sound-mist .jj-mist-bar');
-    var minH = 5, maxH = 34, mistMin = 10, mistMax = 70;
-    var barGain = [0.45, 0.75, 1.0, 0.75, 0.45];
-    var barCurrent = [0, 0, 0, 0, 0];
-    var EASE = 0.28;
-    function paint(driver, nowS) {
-      for (var i = 0; i < bars.length; i++) {
-        var target = driver * barGain[i] + (btn._jjQuiet ? 0 : 0.08 * Math.sin(nowS * 3.4 + i * 0.55));
-        if (target < 0) target = 0; else if (target > 1) target = 1;
-        if (jjUserMuted) target = 0;
-        barCurrent[i] += (target - barCurrent[i]) * EASE;
-        var v = barCurrent[i];
-        bars[i].style.height = (minH + v * (maxH - minH)).toFixed(1) + 'px';
-        if (mistBars[i]) mistBars[i].style.height = (mistMin + v * (mistMax - mistMin)).toFixed(1) + 'px';
-      }
-      var l = driver < 0 ? 0 : (driver > 1 ? 1 : driver);
-      var gb = 12 + l * 44, ga = 0.32 + l * 0.5;
-      btn.style.boxShadow = '0 0 ' + gb.toFixed(1) + 'px rgba(199,231,255,' + ga.toFixed(2) + '), 0 0 ' + (gb * 2).toFixed(1) + 'px rgba(160,190,255,' + (ga * 0.55).toFixed(2) + ')';
-      btn.style.transform = 'scale(' + (1 + l * 0.07).toFixed(3) + ')';
-    }
-    function tryStart() {
-      if (typeof window.Howler === 'undefined' || !Howler.ctx) { setTimeout(tryStart, 200); return; }
-      try {
-        var ctx = Howler.ctx, src = Howler.masterGain;
-        if (!src) { setTimeout(tryStart, 200); return; }
-        var analyser = ctx.createAnalyser();
-        analyser.fftSize = 256; analyser.smoothingTimeConstant = 0.65;
-        src.connect(analyser);
-        var data = new Uint8Array(analyser.frequencyBinCount);
-        var t0 = performance.now();
-        function loop() {
-          if (window.Howler && Howler.ctx && Howler.masterGain && Howler.masterGain !== src) { try { src = Howler.masterGain; analyser = Howler.ctx.createAnalyser(); analyser.fftSize = 256; analyser.smoothingTimeConstant = 0.65; src.connect(analyser); } catch (e) {} }   /* f-1008b: Howler built a new engine (see jjMixGains): the moon listens to the live one */
-          analyser.getByteFrequencyData(data);
-          var nowS = (performance.now() - t0) / 1000;
-          var sum = 0, count = 0;
-          for (var bi = 4; bi < 64; bi++) { sum += data[bi]; count++; }
-          var avg = Math.min(1, (count ? (sum / count) / 255 : 0) * 2.6);
-          var driver = Math.max(0.22 + 0.14 * Math.sin(nowS * 2.0), avg);
-          if (jjUserMuted) driver = 0; else if (btn._jjQuiet) driver = 0.2;   /* sound on, nothing playing: the glow and the mist rest too (the bars' resting heights are in the early style) */
-          paint(driver, nowS);
-          requestAnimationFrame(loop);
-        }
-        loop();
-      } catch (e) {
-        var t0 = performance.now();
-        function fb() {
-          var nowS = (performance.now() - t0) / 1000;
-          var driver = jjUserMuted ? 0 : (btn._jjQuiet ? 0.2 : 0.42 + 0.34 * Math.sin(nowS * 2.0));
-          paint(driver, nowS);
-          requestAnimationFrame(fb);
-        }
-        fb();
-      }
-    }
-    tryStart();
+    if (!document.getElementById('jj-bar-loop')) { var st = document.createElement('style'); st.id = 'jj-bar-loop';
+      st.textContent = '#jj-sound-btn.jj-loop:not(.is-muted):not(.is-quiet) .jj-bar{height:30px!important;transform:scaleY(.3);will-change:transform;animation:jjBarLoop var(--bd,1.1s) ease-in-out var(--bl,0s) infinite alternate;}' +
+        '@keyframes jjBarLoop{0%{transform:scaleY(calc(var(--bm,1) * .22));}40%{transform:scaleY(calc(var(--bm,1) * .95));}68%{transform:scaleY(calc(var(--bm,1) * .48));}100%{transform:scaleY(calc(var(--bm,1) * .8));}}' +
+        '#jj-sound-mist.jj-loop-on{will-change:transform,opacity;animation:jjMistLoop 2.3s ease-in-out infinite alternate;}@keyframes jjMistLoop{from{transform:scale(.9);opacity:.42;}to{transform:scale(1.08);opacity:.62;}}' +
+        '#jj-sound-mist .jj-mist-bar{transition:height .5s ease;}' +
+        '@media (prefers-reduced-motion:reduce){#jj-sound-btn.jj-loop .jj-bar,#jj-sound-mist.jj-loop-on{animation:none!important;}#jj-sound-btn.jj-loop:not(.is-muted):not(.is-quiet) .jj-bar{transform:scaleY(calc(var(--bm,1) * .6));}}';
+      (document.head || document.documentElement).appendChild(st); }
+    var bars = btn.querySelectorAll('.jj-bar'), mist = document.getElementById('jj-sound-mist'), mistBars = document.querySelectorAll('#jj-sound-mist .jj-mist-bar');
+    var gain = [0.5, 0.78, 1, 0.78, 0.5], dur = [0.92, 1.24, 1.06, 1.38, 0.84], lag = [-0.2, -0.75, -0.4, -1.1, -0.6];
+    for (var i = 0; i < bars.length; i++) { bars[i].style.height = ''; bars[i].style.setProperty('--bm', gain[i % 5]); bars[i].style.setProperty('--bd', dur[i % 5] + 's'); bars[i].style.setProperty('--bl', lag[i % 5] + 's'); }
+    btn.style.boxShadow = ''; btn.style.transform = ''; btn.classList.add('jj-loop');
+    var was = null, sync = function () { var st2 = btn.classList.contains('is-muted') ? 'muted' : btn.classList.contains('is-quiet') ? 'quiet' : 'playing'; if (st2 === was) return; was = st2;   /* the mist follows the state (three writes a change of state, none between) */
+      if (mist) mist.classList.toggle('jj-loop-on', st2 === 'playing');
+      for (var k = 0; k < mistBars.length; k++) mistBars[k].style.height = (st2 === 'playing' ? 22 + 34 * gain[k % 5] : st2 === 'quiet' ? 12 + 10 * gain[k % 5] : 10).toFixed(0) + 'px'; };
+    sync(); try { new MutationObserver(sync).observe(btn, { attributes: true, attributeFilter: ['class'] }); } catch (e) { setInterval(sync, 500); }
   }
   function jjSetupSoundButton() {
     var btn = document.getElementById('jj-sound-btn'), fill, adopt = false;
@@ -1551,4 +1520,45 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
   ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click', 'touchstart', 'touchend'].forEach(function (t) {
     window.addEventListener(t, function (e) { if (!(up() || performance.now() < until)) return;
       var tg = e.target; if (tg && tg.closest && tg.closest('.nav') && !tg.closest('#jj-ach,#jj-first,.jj-tmenu.stp,.jj-tmenu.thp')) { e.stopImmediatePropagation(); e.preventDefault(); } }, true); });
+})();
+
+/* ---- f-1010a · THE PERFORMANCE PROBE. Only with ?jjperf=1 on the address; without it nothing here runs.
+   For a machine we cannot measure ourselves (Joe's Intel Mac ran the homepage at about 21 updates a second, on every screen alike). A small panel shows the live
+   frame rate; "Run the test" then switches one kind of drawing work off at a time for a few seconds each (glass blur, filters, masks, animations, canvases,
+   videos, the cursor) and shows what each one buys back, with the machine's details, as text that can be copied and sent. Nothing is changed for good. ---- */
+(function () {
+  if (!/[?&]jjperf=1\b/.test(location.search)) return;
+  var G = '*,*::before,*::after', NOT = ':not(#jj-perf):not(#jj-perf *)';
+  var T = [['As it is', ''],
+    ['Glass blur off', G + '{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;}'],
+    ['Blur and glow filters off', '*' + NOT + ',*::before,*::after{filter:none!important;}'],
+    ['Soft-edge masks off', G + '{-webkit-mask-image:none!important;mask-image:none!important;}'],
+    ['Animations paused', '*' + NOT + ',*::before,*::after{animation-play-state:paused!important;}'],
+    ['Canvases hidden', 'canvas{visibility:hidden!important;}'],
+    ['Videos hidden', 'video{visibility:hidden!important;}'],
+    ['Custom cursor hidden', '.custom-cursor,.cursor-trail{display:none!important;}']];
+  T.push(['All of those together', T.slice(1).map(function (t) { return t[1]; }).join('')]);
+  var box = document.createElement('div'); box.id = 'jj-perf';
+  box.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:2147483000;width:340px;max-width:calc(100vw - 28px);padding:14px 16px;border-radius:12px;background:#0b0f1a;border:1px solid rgba(255,255,255,.35);color:#fff;font:13px/1.45 system-ui,-apple-system,sans-serif;pointer-events:auto;box-shadow:0 8px 30px rgba(0,0,0,.5);';
+  box.innerHTML = '<div style="font-weight:700;font-size:14px">Performance probe</div><div class="now" style="margin:4px 0 10px;opacity:.85">Measuring…</div><div class="rows"></div>' +
+    '<div class="info" style="margin:8px 0;opacity:.6;font-size:11px"></div><button type="button" class="go" data-cursor="hover" style="all:unset;cursor:pointer;padding:7px 12px;border-radius:8px;background:#ff00f5;color:#fff;font-weight:700">Run the test (about 40 seconds)</button> ' +
+    '<button type="button" class="cp" data-cursor="hover" style="all:unset;cursor:pointer;padding:7px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.5);display:none">Copy results</button>';
+  var add = function () { if (!document.body) { setTimeout(add, 200); return; } document.body.appendChild(box); }; add();
+  var ft = [], lastT = 0; (function raf(t) { if (lastT) ft.push([t, t - lastT]); lastT = t; if (ft.length > 4000) ft.splice(0, 2000); requestAnimationFrame(raf); })(0);
+  var lt = []; try { new PerformanceObserver(function (l) { l.getEntries().forEach(function (e) { lt.push([e.startTime, e.duration]); }); if (lt.length > 600) lt.splice(0, 300); }).observe({ entryTypes: ['longtask'] }); } catch (e) {}   // scripts holding the page for 50 ms or more at a go
+  var rate = function (ms) { var now = performance.now(), n = 0, worst = 0, busy = 0; for (var i = ft.length - 1; i >= 0 && ft[i][0] >= now - ms; i--) { n++; if (ft[i][1] > worst) worst = ft[i][1]; } lt.forEach(function (q) { if (q[0] >= now - ms) busy += q[1]; }); return { fps: n / (ms / 1000), worst: worst, busy: 100 * busy / ms }; };
+  var nowEl = box.querySelector('.now'), rows = box.querySelector('.rows'), running = false, text = '';
+  setInterval(function () { if (running) return; var r = rate(1000); nowEl.textContent = 'Now: ' + r.fps.toFixed(0) + ' frames a second (60 is smooth)'; }, 500);
+  var gpu = ''; try { var c = document.createElement('canvas'), gl = c.getContext('webgl'), x = gl && gl.getExtension('WEBGL_debug_renderer_info'); gpu = x ? String(gl.getParameter(x.UNMASKED_RENDERER_WEBGL)) : ''; } catch (e) {}
+  var mkInfo = function () { return 'Graphics: ' + (gpu || 'unknown') + ' · screen ' + innerWidth + ' x ' + innerHeight + ' at ' + (window.devicePixelRatio || 1) + 'x · ' + (navigator.hardwareConcurrency || '?') + ' cores · ' + ((/Chrome\/(\d+)/.exec(navigator.userAgent) || /Version\/(\d+).*Safari/.exec(navigator.userAgent) || /Firefox\/(\d+)/.exec(navigator.userAgent) || ['', '?']).join(' ').replace(/\/\d+ /, ' ')) +
+    ' · page ' + location.pathname + ' · builds ' + [window.JJ_FOOTER_BUILD, window.JJ_HOME_BUILD, String(window.JJ_STORY_BUILD || '').slice(0, 4), String(window.JJ_MYSTORY_BUILD || '').slice(0, 7)].filter(Boolean).join(' '); }, info = mkInfo();
+  box.querySelector('.info').textContent = info; setTimeout(function () { info = mkInfo(); box.querySelector('.info').textContent = info; }, 4000);
+  box.querySelector('.go').addEventListener('click', function (e) { e.stopPropagation(); if (running) return; running = true; rows.innerHTML = ''; info = mkInfo(); box.querySelector('.info').textContent = info; text = 'Joe\'s Journey performance probe\n' + info + '\n'; var st = document.createElement('style'); document.head.appendChild(st); var i = 0, base = 0;
+    box.querySelector('.cp').style.display = 'none'; nowEl.textContent = 'Testing: leave the mouse still…';
+    (function next() { if (i >= T.length) { st.remove(); running = false; box.querySelector('.cp').style.display = 'inline-block'; return; }
+      var t = T[i++]; st.textContent = t[1]; nowEl.textContent = 'Testing ' + i + ' of ' + T.length + ': ' + t[0].toLowerCase() + '…';
+      setTimeout(function () { setTimeout(function () { var r = rate(3000); if (i === 1) base = r.fps; var gain = i === 1 ? '' : (r.fps - base >= 1.5 ? '  +' + (r.fps - base).toFixed(0) : r.fps - base <= -1.5 ? '  ' + (r.fps - base).toFixed(0) : '  same');
+          var line = t[0] + ': ' + r.fps.toFixed(0) + ' frames a second' + gain + ' (longest frame ' + r.worst.toFixed(0) + ' ms, scripts busy ' + r.busy.toFixed(0) + '%)'; text += line + '\n';
+          var d = document.createElement('div'); d.textContent = line; d.style.cssText = 'padding:2px 0;' + (i > 1 && r.fps - base >= 5 ? 'color:#7dffb0;font-weight:700' : ''); rows.appendChild(d); next(); }, 3000); }, 900); })(); });
+  box.querySelector('.cp').addEventListener('click', function (e) { e.stopPropagation(); var b = this; try { navigator.clipboard.writeText(text).then(function () { b.textContent = 'Copied'; }, function () { b.textContent = 'Could not copy: take a screenshot'; }); } catch (x) { b.textContent = 'Could not copy: take a screenshot'; } });
 })();

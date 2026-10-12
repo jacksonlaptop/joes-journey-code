@@ -1,5 +1,5 @@
 /* BUILD f-1008a (2026-10-08) · performance round 2: one lenis.raf per frame (it was stepped twice, the wrong way and back); the modal guard's nav rule no longer re-styles the whole page. f-1007a · loading: the site's music is streamed and only created when it is first played (it was an 8.6 MB download and a full decode on every page load); the menu's card art loads when the menu is first reached for; the starfield can fetch three.js itself. */
-window.JJ_FOOTER_BUILD = 'f-1012a';
+window.JJ_FOOTER_BUILD = 'f-1012c';
 /* THE SOUND MOON, FROM THE FIRST PAINT (Joe, 2026-09-30: "the sound button should always be there, and it should still work and expand...
    no matter what, between pages etc"). The same function lives in jj-loader.js (the first of the site's scripts on every page, so the
    moon is drawn in the same frame as the loader) and in site-footer.js (in case a page has no loader). It draws the moon in its resting
@@ -132,7 +132,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     function animate() {
       requestAnimationFrame(animate);
-      animate.n = (animate.n || 0) + 1; if (animate.n & 1) return;   /* f-1010b: the starfield is drawn on every other frame (30 a second: slow drift and twinkle), its steps doubled so it moves at the same speed. A full-screen WebGL canvas redrawn 60 times a second made everything laid over it be composited again each time */
+      animate.n = (animate.n || 0) + 1; if (animate.n & 1) return;
+      if (animate.n % 30 === 0) animate.hid = getComputedStyle(container).visibility === 'hidden';   /* f-1012c: looked at twice a second: while the sky is hidden (the chooser has covered the page) nothing is drawn */
+      if (animate.hid) return;   /* f-1010b: the starfield is drawn on every other frame (30 a second: slow drift and twinkle), its steps doubled so it moves at the same speed. A full-screen WebGL canvas redrawn 60 times a second made everything laid over it be composited again each time */
       const elapsed = clock.getElapsedTime();
       // Cached size — reading getBoundingClientRect here forced a layout every frame.
       const width = bgW, height = bgH;
@@ -1522,6 +1524,40 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
       var tg = e.target; if (tg && tg.closest && tg.closest('.nav') && !tg.closest('#jj-ach,#jj-first,.jj-tmenu.stp,.jj-tmenu.thp')) { e.stopImmediatePropagation(); e.preventDefault(); } }, true); });
 })();
 
+/* ---- f-1012c · THE LITE LEVEL (the first quality tier). Joe's Intel Mac (UHD 630 driving 1680 x 842 at 2x) ran the homepage at 20 to 26 frames a second with its
+   scripts idle: the graphics chip could not fill the screen fast enough, and no single effect was to blame. So a machine that is measured to be slow gets a lighter
+   picture, and a fast one keeps everything.
+   ON when: the address says ?jjlite=1; or an earlier page of this visit turned it on; or the page is MEASURED slow: once the loader has gone and the visitor has
+   moved the pointer, 3 s of frames under 38 a second (with no pointer at all, after 10 s: under 24). ?jjlite=0 keeps it off.
+   What it does here: html.jj-lite (every script can hang its own lighter rules off that; 'jj:lite' is sent on window); no glass blur; no blurred mist behind the
+   sound button; no blurred cursor trail; and every big Rive canvas is drawn at 1x, a quarter of the pixels (the small logo stays sharp). ---- */
+(function () {
+  var de = document.documentElement, q = location.search, forced = /[?&]jjlite=1\b/.test(q) ? 1 : /[?&]jjlite=0\b/.test(q) ? 0 : null, stored = null;
+  try { stored = sessionStorage.getItem('jjLite'); } catch (e) {}
+  var st = document.createElement('style'); st.id = 'jj-lite-css';
+  st.textContent = 'html.jj-lite *,html.jj-lite *::before,html.jj-lite *::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;}html.jj-lite #jj-sound-mist,html.jj-lite .cursor-trail{display:none!important;}';
+  (document.head || de).appendChild(st);
+  function riveLow() { if (!window.jjLite.on) return; try { var W = window.Webflow && Webflow.require && Webflow.require('rive'); if (!W || !W.getInstance) return; var big = innerWidth * innerHeight * 0.3;
+      document.querySelectorAll('canvas').forEach(function (c) { var i = W.getInstance(c.parentElement), r = i && i.rive; if (!r || typeof r.resizeDrawingSurfaceToCanvas !== 'function') return; var w = c.clientWidth, h = c.clientHeight;
+        if (w * h < big) return; if (Math.abs(c.width - w) < 3) return; r.resizeDrawingSurfaceToCanvas(1); if (!r.isPlaying && r.drawFrame) { try { r.drawFrame(); } catch (e) {} } }); } catch (e) {} }
+  function set(v, why) { v = !!v; if (window.jjLite.on === v) return; window.jjLite.on = v; window.jjLite.why = why || ''; de.classList.toggle('jj-lite', v); try { sessionStorage.setItem('jjLite', v ? '1' : '0'); } catch (e) {}
+    try { window.dispatchEvent(new CustomEvent('jj:lite', { detail: { on: v, why: why || '' } })); } catch (e) {} if (v) { riveLow(); setTimeout(riveLow, 2000); setTimeout(riveLow, 6000); } }
+  window.jjLite = { on: false, why: '', set: set, fps: null, low: riveLow };
+  var rzT = 0; window.addEventListener('resize', function () { clearTimeout(rzT); rzT = setTimeout(riveLow, 500); });   /* Webflow sizes its canvases back to the screen's own density on a resize */
+  window.addEventListener('load', function () { setTimeout(riveLow, 1500); });
+  if (forced != null) { set(forced, 'the address'); return; }
+  if (stored === '1') { set(true, 'an earlier page this visit'); return; }
+  if (stored === '0') return;                                          /* measured fine already this visit */
+  var moved = 0, t0 = performance.now(), frames = [], done = false;
+  var onMove = function () { if (!moved) moved = performance.now(); }; window.addEventListener('pointermove', onMove, { passive: true }); window.addEventListener('touchstart', onMove, { passive: true });
+  (function raf(t) { if (done) return; requestAnimationFrame(raf); if (document.hidden || document.getElementById('jjld')) { frames = []; moved = 0; t0 = performance.now(); return; }   /* never while a loader is up or the tab is away */
+    frames.push(t); var now = performance.now(), from = moved ? moved : t0, need = moved ? 3000 : 10000; if (now - from < need) return;
+    var n = 0; for (var i = frames.length - 1; i >= 0 && frames[i] >= now - 3000; i--) n++; var fps = n / 3; window.jjLite.fps = Math.round(fps);
+    if (fps < (moved ? 38 : 24)) { done = true; set(true, 'measured ' + fps.toFixed(0) + ' frames a second'); window.removeEventListener('pointermove', onMove); return; }
+    if (moved && now - moved > 9000) { done = true; try { sessionStorage.setItem('jjLite', '0'); } catch (e) {} window.removeEventListener('pointermove', onMove); return; }   /* two looks with the pointer moving, both fine: this machine keeps everything */
+    if (frames.length > 2000) frames.splice(0, 1000); })(performance.now());
+})();
+
 /* ---- f-1010a · THE PERFORMANCE PROBE. Only with ?jjperf=1 on the address; without it nothing here runs.
    For a machine we cannot measure ourselves (Joe's Intel Mac ran the homepage at about 21 updates a second, on every screen alike). A small panel shows the live
    frame rate; "Run the test" then switches one kind of drawing work off at a time for a few seconds each (glass blur, filters, masks, animations, canvases,
@@ -1529,19 +1565,27 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
 (function () {
   if (!/[?&]jjperf=1\b/.test(location.search)) return;
   var G = '*,*::before,*::after', NOT = ':not(#jj-perf):not(#jj-perf *)';
+  /* f-1012b: the first run on Joe's Intel Mac (UHD 630, 1680 x 842 at 2x) said: scripts idle, 26 frames a second, NO single switch helps, all of them together 58.
+     So it is the graphics chip's total load, and a frame that costs 38 ms shows as "about 26" until it drops under 16: one switch at a time cannot show its share.
+     The test is now a LADDER (each step keeps the ones before it), then a few single suspects. [name, css, on(), off()] */
+  var FX = G + '{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;-webkit-mask-image:none!important;mask-image:none!important;}*' + NOT + ',*::before,*::after{filter:none!important;}';
+  var CV = 'canvas{visibility:hidden!important;}', AN = '*' + NOT + ',*::before,*::after{animation-play-state:paused!important;}', VD = 'video{visibility:hidden!important;}';
+  var rivHeld = [], rivOff = function () { rivHeld = []; try { var W = window.Webflow && Webflow.require && Webflow.require('rive'); document.querySelectorAll('canvas').forEach(function (c) { var i = W && W.getInstance && W.getInstance(c.parentElement), r = i && i.rive; if (r && r.isPlaying) { r.pause(); rivHeld.push(r); } }); } catch (e) {} },
+      rivOn = function () { rivHeld.forEach(function (r) { try { r.play(); } catch (e) {} }); rivHeld = []; };
   var T = [['As it is', ''],
-    ['Glass blur off', G + '{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;}'],
-    ['Blur and glow filters off', '*' + NOT + ',*::before,*::after{filter:none!important;}'],
-    ['Soft-edge masks off', G + '{-webkit-mask-image:none!important;mask-image:none!important;}'],
-    ['Animations paused', '*' + NOT + ',*::before,*::after{animation-play-state:paused!important;}'],
-    ['Canvases hidden', 'canvas{visibility:hidden!important;}'],
-    ['Videos hidden', 'video{visibility:hidden!important;}'],
-    ['Custom cursor hidden', '.custom-cursor,.cursor-trail{display:none!important;}']];
-  T.push(['All of those together', T.slice(1).map(function (t) { return t[1]; }).join('')]);
+    ['Step 1: blurs, glows and soft edges off', FX],
+    ['Step 2: and canvases off (Rive, stars)', FX + CV, rivOff, rivOn],
+    ['Step 3: and animations paused', FX + CV + AN, rivOff, rivOn],
+    ['Step 4: and videos hidden', FX + CV + AN + VD, rivOff, rivOn],
+    ['Only canvases off', CV, rivOff, rivOn],
+    ['Only animations paused', AN],
+    ['Only sky layers hidden', '.svg-wrapper,.gradient-overlay,#threejs-container{visibility:hidden!important;}'],
+    ['Only nav and sound button hidden', '.nav,.menu-container,.nav-logo-link,#jj-sc-hud,#jj-sound-btn,#jj-sound-mist{display:none!important;}'],
+    ['Only custom cursor hidden', '.custom-cursor,.cursor-trail{display:none!important;}']];
   var box = document.createElement('div'); box.id = 'jj-perf';
   box.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:2147483000;width:340px;max-width:calc(100vw - 28px);padding:14px 16px;border-radius:12px;background:#0b0f1a;border:1px solid rgba(255,255,255,.35);color:#fff;font:13px/1.45 system-ui,-apple-system,sans-serif;pointer-events:auto;box-shadow:0 8px 30px rgba(0,0,0,.5);';
   box.innerHTML = '<div style="font-weight:700;font-size:14px">Performance probe</div><div class="now" style="margin:4px 0 10px;opacity:.85">Measuring…</div><div class="rows"></div>' +
-    '<div class="info" style="margin:8px 0;opacity:.6;font-size:11px"></div><button type="button" class="go" data-cursor="hover" style="all:unset;cursor:pointer;padding:7px 12px;border-radius:8px;background:#ff00f5;color:#fff;font-weight:700">Run the test (about 40 seconds)</button> ' +
+    '<div class="info" style="margin:8px 0;opacity:.6;font-size:11px"></div><button type="button" class="go" data-cursor="hover" style="all:unset;cursor:pointer;padding:7px 12px;border-radius:8px;background:#ff00f5;color:#fff;font-weight:700">Run the test (about 45 seconds)</button> ' +
     '<button type="button" class="cp" data-cursor="hover" style="all:unset;cursor:pointer;padding:7px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.5);display:none">Copy results</button>';
   var add = function () { if (!document.body) { setTimeout(add, 200); return; } document.body.appendChild(box); }; add();
   var ft = [], lastT = 0; (function raf(t) { if (lastT) ft.push([t, t - lastT]); lastT = t; if (ft.length > 4000) ft.splice(0, 2000); requestAnimationFrame(raf); })(0);
@@ -1551,14 +1595,14 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
   setInterval(function () { if (running) return; var r = rate(1000); nowEl.textContent = 'Now: ' + r.fps.toFixed(0) + ' frames a second (60 is smooth)'; }, 500);
   var gpu = ''; try { var c = document.createElement('canvas'), gl = c.getContext('webgl'), x = gl && gl.getExtension('WEBGL_debug_renderer_info'); gpu = x ? String(gl.getParameter(x.UNMASKED_RENDERER_WEBGL)) : ''; } catch (e) {}
   var mkInfo = function () { return 'Graphics: ' + (gpu || 'unknown') + ' · screen ' + innerWidth + ' x ' + innerHeight + ' at ' + (window.devicePixelRatio || 1) + 'x · ' + (navigator.hardwareConcurrency || '?') + ' cores · ' + ((/Chrome\/(\d+)/.exec(navigator.userAgent) || /Version\/(\d+).*Safari/.exec(navigator.userAgent) || /Firefox\/(\d+)/.exec(navigator.userAgent) || ['', '?']).join(' ').replace(/\/\d+ /, ' ')) +
-    ' · page ' + location.pathname + ' · builds ' + [window.JJ_FOOTER_BUILD, window.JJ_HOME_BUILD, String(window.JJ_STORY_BUILD || '').slice(0, 4), String(window.JJ_MYSTORY_BUILD || '').slice(0, 7)].filter(Boolean).join(' '); }, info = mkInfo();
+    ' · lite ' + (window.jjLite && window.jjLite.on ? 'ON (' + window.jjLite.why + ')' : 'off') + ' · page ' + location.pathname + ' · builds ' + [window.JJ_FOOTER_BUILD, window.JJ_HOME_BUILD, String(window.JJ_STORY_BUILD || '').slice(0, 4), String(window.JJ_MYSTORY_BUILD || '').slice(0, 7)].filter(Boolean).join(' '); }, info = mkInfo();
   box.querySelector('.info').textContent = info; setTimeout(function () { info = mkInfo(); box.querySelector('.info').textContent = info; }, 4000);
   box.querySelector('.go').addEventListener('click', function (e) { e.stopPropagation(); if (running) return; running = true; rows.innerHTML = ''; info = mkInfo(); box.querySelector('.info').textContent = info; text = 'Joe\'s Journey performance probe\n' + info + '\n'; var st = document.createElement('style'); document.head.appendChild(st); var i = 0, base = 0;
     box.querySelector('.cp').style.display = 'none'; nowEl.textContent = 'Testing: leave the mouse still…';
     (function next() { if (i >= T.length) { st.remove(); running = false; box.querySelector('.cp').style.display = 'inline-block'; return; }
-      var t = T[i++]; st.textContent = t[1]; nowEl.textContent = 'Testing ' + i + ' of ' + T.length + ': ' + t[0].toLowerCase() + '…';
+      var t = T[i++]; st.textContent = t[1]; if (t[2]) { try { t[2](); } catch (e) {} } nowEl.textContent = 'Testing ' + i + ' of ' + T.length + ': ' + t[0].toLowerCase() + '…';
       setTimeout(function () { setTimeout(function () { var r = rate(3000); if (i === 1) base = r.fps; var gain = i === 1 ? '' : (r.fps - base >= 1.5 ? '  +' + (r.fps - base).toFixed(0) : r.fps - base <= -1.5 ? '  ' + (r.fps - base).toFixed(0) : '  same');
           var line = t[0] + ': ' + r.fps.toFixed(0) + ' frames a second' + gain + ' (longest frame ' + r.worst.toFixed(0) + ' ms, scripts busy ' + r.busy.toFixed(0) + '%)'; text += line + '\n';
-          var d = document.createElement('div'); d.textContent = line; d.style.cssText = 'padding:2px 0;' + (i > 1 && r.fps - base >= 5 ? 'color:#7dffb0;font-weight:700' : ''); rows.appendChild(d); next(); }, 3000); }, 900); })(); });
+          var d = document.createElement('div'); d.textContent = line; d.style.cssText = 'padding:2px 0;' + (i > 1 && r.fps - base >= 5 ? 'color:#7dffb0;font-weight:700' : ''); rows.appendChild(d); if (t[3]) { try { t[3](); } catch (e) {} } next(); }, 3000); }, 900); })(); });
   box.querySelector('.cp').addEventListener('click', function (e) { e.stopPropagation(); var b = this; try { navigator.clipboard.writeText(text).then(function () { b.textContent = 'Copied'; }, function () { b.textContent = 'Could not copy: take a screenshot'; }); } catch (x) { b.textContent = 'Could not copy: take a screenshot'; } });
 })();

@@ -72,7 +72,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
    ============================================================================ */
 (function () {
   var JJ = (window.JJLoader = window.JJLoader || {});
-  JJ.version = 'L21 · the early sound moon starts quiet (light moon, resting bars) unless the stored state is muted; muted and quiet no longer share a look; L20 · the sound moon is drawn here, at first paint, and pinned above every loader / overlay / curtain (site-footer adopts it); L19 · pill: deep blur fade (F 125, runs into the bleed) and the title kept by its own letters, not a box — no straight line above the scene; L18 · pill art bleeds past its edge: no hard line round any pill; L17 · pill loaders: deep feather, hint as a subtitle; L16 · precam moon behind the grass; L15 pill variant (Storytime fight, My Story evolution)';   // bump every edit — verify in console
+  JJ.version = 'L22 · the story never stands still at the start: it eases up to 12% by itself while the first bytes are awaited · L21 · the early sound moon starts quiet (light moon, resting bars) unless the stored state is muted; muted and quiet no longer share a look; L20 · the sound moon is drawn here, at first paint, and pinned above every loader / overlay / curtain (site-footer adopts it); L19 · pill: deep blur fade (F 125, runs into the bleed) and the title kept by its own letters, not a box — no straight line above the scene; L18 · pill art bleeds past its edge: no hard line round any pill; L17 · pill loaders: deep feather, hint as a subtitle; L16 · precam moon behind the grass; L15 pill variant (Storytime fight, My Story evolution)';   // bump every edit — verify in console
   window.JJ_LOADER_BUILD = JJ.version;
   try { console.log('%c[JJ] jj-loader.js build: ' + JJ.version, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
@@ -1056,7 +1056,11 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       /* pace the show: displayed progress may never outrun the minTime ramp, so even an instant
          load plays the full story — but it still can't outrun the REAL progress either */
       var ramp = Math.min(1, (now - startT) / minTime);
-      var capped = Math.min(target, ramp);
+      /* L22 (Joe, 12 Oct: 'the homepage loader doesn't play the blob for like 5 seconds, it's just still at first'): the story followed the bytes alone, and on a slow
+         start (the first files not answering yet) there are no bytes, so the figure stood still. The story now eases itself up to 12% in its first seconds whatever
+         the bytes say; from there the real progress leads as before. It still cannot finish before everything is really in. */
+      var creep = 0.12 * (1 - Math.exp(-(now - startT) / 2500));
+      var capped = Math.min(Math.max(target, creep), ramp);
       shown += (capped - shown) * 0.12; if (capped - shown < 0.001) shown = capped;
       scene.render(shown);
       if (frames.length && now - lastF > 1000 / fps) {

@@ -1,5 +1,5 @@
 /* BUILD h-1007c (2026-10-07) · the Rive sleeper: each Webflow Rive canvas is paused while it cannot be seen and woken one panel ahead of arriving; c: the waves sleep while they are parked below the screen (landing, Big Bang). See the last block of this file. `/?rivesleep=0` turns it off. */
-window.JJ_HOME_BUILD = 'h-1010a';
+window.JJ_HOME_BUILD = 'h-1012a';
 /* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
 if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
 (function () {
@@ -2412,6 +2412,17 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       '.jjch-space .sw{position:absolute;inset:-6%;background:var(--sw) center/cover no-repeat;opacity:.34;}' +
       '.jjch-space img{position:absolute;pointer-events:none;height:auto;transform-origin:center center;}' +
       '.jjch-space img.moon{filter:drop-shadow(0 0 14px rgba(255,255,255,.75)) drop-shadow(0 0 30px rgba(255,255,255,.4));animation:jjchMoon var(--md) ease-in-out infinite var(--dl)!important;}@keyframes jjchMoon{0%,100%{opacity:.7;}50%{opacity:1;}}' +
+      /* h-1012a: ...and once the chooser has faded in over it (body.jj-choose-cover, 1.9 s after it opens) NOTHING behind it is drawn. On Joe's Intel Mac the chooser
+         ran at 9 frames a second; a full-screen Rive canvas, the WebGL starfield, the logo's Rive (still playing) and the landing's furniture were all still
+         being composited under a fully opaque chooser. */
+      'body.jj-choose-cover .all_container_wrapper,body.jj-choose-cover .jj-intro-deco,body.jj-choose-cover #jj-sitting-alien,body.jj-choose-cover #jj-hs-alien,body.jj-choose-cover .next-section-button,body.jj-choose-cover #jj-subtitle{visibility:hidden!important;}' +
+      /* the lite level (html.jj-lite, site-footer.js): the chooser without its costliest dressing. The two halves' soft inner edges were masks (each half drawn off
+         screen and masked every frame, with clips playing inside): a plain gradient laid over the seam does the same job; glows and drop shadows go. */
+      'html.jj-lite #jj-choose .jjch-clip{-webkit-mask-image:none!important;mask-image:none!important;}' +
+      'html.jj-lite #jj-choose .jjch-clip::after{content:"";position:absolute;top:0;bottom:0;width:30%;pointer-events:none;z-index:6;}' +
+      'html.jj-lite #jj-choose .story .jjch-clip::after{right:0;background:linear-gradient(to right,rgba(8,12,30,0),#080c1e);}html.jj-lite #jj-choose .work .jjch-clip::after{left:0;background:linear-gradient(to left,rgba(8,12,30,0),#080c1e);}' +
+      'html.jj-lite #jj-choose.pick-story .story .jjch-clip::after,html.jj-lite #jj-choose.pick-work .work .jjch-clip::after{display:none;}' +
+      'html.jj-lite #jj-choose *,html.jj-lite #jj-choose *::before,html.jj-lite #jj-choose *::after{filter:none!important;mix-blend-mode:normal!important;}' +
       /* while the chooser is up the page behind it is not painted at all */
       'body.jj-choose-open .sticky-scroll-wrapper,body.jj-choose-open #jj-anim-stars-wrap,body.jj-choose-open #jj-bg-back-wrap,body.jj-choose-open #jj-bg-front-wrap,body.jj-choose-open .moon-background,body.jj-choose-open #jj-flyer,body.jj-choose-open #jj-co,body.jj-choose-open .fly-rive{visibility:hidden!important;}' +
       '.jjch-stars{position:absolute;inset:0;pointer-events:none;overflow:hidden;}' +
@@ -2637,6 +2648,10 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
   }
   function clearAll() { timers.forEach(clearTimeout); timers = []; ivals.forEach(clearInterval); ivals = []; }
   var heldVids = [], heldAnims = [];
+  var heldRive = [], coverT = 0;
+  function coverOn() { if (!isOpen) return; document.body.classList.add('jj-choose-cover'); heldRive = [];   /* h-1012a: the chooser is fully up: hide what is under it, and stop the Rive files that were still playing there */
+    try { var W = window.Webflow && Webflow.require && Webflow.require('rive'); document.querySelectorAll('canvas').forEach(function (c) { if (c.closest('#jj-choose')) return; var i = W && W.getInstance && W.getInstance(c.parentElement), r = i && i.rive; if (r && r.isPlaying) { r.pause(); heldRive.push(r); } }); } catch (e) {} }
+  function coverOff() { clearTimeout(coverT); document.body.classList.remove('jj-choose-cover'); heldRive.forEach(function (r) { try { r.play(); } catch (e) {} }); heldRive = []; }
   function holdBehind() {                                                    // the page underneath keeps its GSAP ticker, its char-float loop and its clips running; none of it is visible, so hold it
     try { if (window.gsap) gsap.globalTimeline.pause(); } catch (e) {}
     try { heldAnims = document.getAnimations().filter(function (a) { var t = a.effect && a.effect.target; return a.playState === 'running' && t && !t.closest('#jj-choose, #jj-ach, #jj-first, #jj-sc-hud, .nav, .menu-wrap'); }); heldAnims.forEach(function (a) { a.pause(); }); } catch (e) { heldAnims = []; }
@@ -2650,7 +2665,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
     if (window.jjBB && window.jjBB.resume) window.jjBB.resume();
   }
   function open(opts) {
-    opts = opts || {}; if (isOpen) { if (opts.pick && !picked) pick(opts.pick, true); return; } build(); isOpen = true; picked = null; busy = false; document.body.classList.add('jj-choose-open'); holdBehind();
+    opts = opts || {}; if (isOpen) { if (opts.pick && !picked) pick(opts.pick, true); return; } build(); isOpen = true; picked = null; busy = false; document.body.classList.add('jj-choose-open'); holdBehind(); clearTimeout(coverT); coverT = setTimeout(coverOn, 1900);
     root.classList.remove('pick-work', 'pick-story', 'black', 'spark', 'hot');
     var cap = root.querySelector('.jjch-cap'); cap.innerHTML = ''; cap.classList.remove('big');
     root.querySelectorAll('video').forEach(play);
@@ -2662,7 +2677,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
     if (opts.pick) { showLast(cap); pick(opts.pick, true); } else typeLines(cap);
   }
   function close() {
-    if (!isOpen) return; isOpen = false; clearAll(); document.body.classList.remove('jj-choose-open'); releaseBehind();
+    if (!isOpen) return; isOpen = false; clearAll(); coverOff(); document.body.classList.remove('jj-choose-open'); releaseBehind();
     root.classList.remove('on', 'hot', 'pick-work', 'pick-story', 'spark', 'black'); picked = null; busy = false; root.querySelectorAll('.lit').forEach(function (h) { h.classList.remove('lit'); });
     root.querySelectorAll('video').forEach(function (v) { try { v.pause(); } catch (e) {} });
   }

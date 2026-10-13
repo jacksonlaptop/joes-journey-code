@@ -1,5 +1,5 @@
 /* BUILD h-1007c (2026-10-07) · the Rive sleeper: each Webflow Rive canvas is paused while it cannot be seen and woken one panel ahead of arriving; c: the waves sleep while they are parked below the screen (landing, Big Bang). See the last block of this file. `/?rivesleep=0` turns it off. */
-window.JJ_HOME_BUILD = 'h-1012a';
+window.JJ_HOME_BUILD = 'h-1012c';
 /* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
 if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
 (function () {
@@ -2291,8 +2291,8 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
   document.body.appendChild(v);
   var cur = -1;
   if (LOOP_END) v.addEventListener('timeupdate', function () { if (!v._flying && v.currentTime >= LOOP_END) v.currentTime = 0; });   // the clip itself is forward + reverse, so the wrap is invisible
-  function show(k) { var vis = VISITS[k]; v.className = vis[2] + ' in'; v.style.bottom = vis[3]; v.style.top = 'auto'; v.playbackRate = LOOP_RATE; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
-  function hide() { v.classList.remove('in'); }
+  function show(k) { clearTimeout(v._pz); var vis = VISITS[k]; v.className = vis[2] + ' in'; v.style.bottom = vis[3]; v.style.top = 'auto'; v.playbackRate = LOOP_RATE; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+  function hide() { v.classList.remove('in'); clearTimeout(v._pz); v._pz = setTimeout(function () { if (!v.classList.contains('in') && !v._flying) { try { v.pause(); } catch (e) {} } }, 1500); }   /* h-1012b: once he has slid away his clip is paused (it went on decoding out of sight through most of the scroll) */
   function tick() {
     if (v._flying || v._caught) return;
     var hsw = document.querySelector('.horizontal-scroll-wrapper'); if (!hsw) return;
@@ -2418,6 +2418,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       'body.jj-choose-cover .all_container_wrapper,body.jj-choose-cover .jj-intro-deco,body.jj-choose-cover #jj-sitting-alien,body.jj-choose-cover #jj-hs-alien,body.jj-choose-cover .next-section-button,body.jj-choose-cover #jj-subtitle{visibility:hidden!important;}' +
       /* the lite level (html.jj-lite, site-footer.js): the chooser without its costliest dressing. The two halves' soft inner edges were masks (each half drawn off
          screen and masked every frame, with clips playing inside): a plain gradient laid over the seam does the same job; glows and drop shadows go. */
+      'html.jj-lite #jj-flyer video{filter:none!important;}' +   /* a drop shadow on a playing clip is worked out again for every frame of it */
       'html.jj-lite #jj-choose .jjch-clip{-webkit-mask-image:none!important;mask-image:none!important;}' +
       'html.jj-lite #jj-choose .jjch-clip::after{content:"";position:absolute;top:0;bottom:0;width:30%;pointer-events:none;z-index:6;}' +
       'html.jj-lite #jj-choose .story .jjch-clip::after{right:0;background:linear-gradient(to right,rgba(8,12,30,0),#080c1e);}html.jj-lite #jj-choose .work .jjch-clip::after{left:0;background:linear-gradient(to left,rgba(8,12,30,0),#080c1e);}' +
@@ -2774,12 +2775,16 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       if (it.el.parentElement !== stage) { stage = it.el.parentElement; stageOk = seen(stage, document.documentElement); }     /* the wrappers share one parent: its chain is read once a tick */
       var cvOk = !it.cv || getComputedStyle(it.cv).display !== 'none';
       var parked = it.trigs.length > 0 && !it.entered;                  /* its entrance has never run: still where the Designer parked it */
-      var want = stageOk && cvOk && (now < it.lead || (seen(it.el, stage) && (!parked || (!locked && zoneOf(it)))));
+      /* h-1012b (Joe's Intel Mac, the horizontal scroll): 'seen' was opacity alone, so a file sitting BELOW the screen with opacity 1 (the rocket, for the last
+         third of the scroll) or fading in a panel ahead (roads, the code rain) played unseen: a full-screen canvas redrawn every frame for nobody. It must now
+         also be on the screen. In the lite level there is no head start either (it wakes within a tick of showing) and it sleeps at once. */
+      var lite = !!(window.jjLite && window.jjLite.on), bb = (it.cv || it.el).getBoundingClientRect(), onScr = bb.width > 0 && bb.bottom > 2 && bb.top < window.innerHeight - 2 && bb.right > 2 && bb.left < window.innerWidth - 2;
+      var want = !it.el._jjNoRive && stageOk && cvOk && ((!lite && now < it.lead) || (onScr && seen(it.el, stage) && (!parked || (!locked && zoneOf(it)))));
       if (it.asleep) { var playing = false; try { playing = r.isPlaying; } catch (e) { continue; }
         if (playing) { it.asleep = false; it.names = null; it.since = want ? 0 : now; }      /* the page started it itself: handed back */
         else if (want) wake(it, r); }
       else if (want) it.since = 0;
-      else { if (!it.since) it.since = now; if (now - it.since >= it.hold) sleep(it, r); }
+      else { if (!it.since) it.since = now; if (now - it.since >= (lite ? Math.min(it.hold, 150) : it.hold)) sleep(it, r); }
     }
   }
   function start() {
@@ -2795,4 +2800,9 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
     mapped: function () { return mapped; }
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  /* h-1012c: the four looping backgrounds of the horizontal scroll (waves, roads, code rain, rocket) are rebuilt as pictures the browser moves (rv-scenes.js, made from
+     the Rive files themselves: see experiments/rive-rebuild). It takes each wrapper over once its pictures are in (el._jjNoRive: that Rive file then stays asleep, above);
+     if it does not load, Rive carries on as before. /?rive=1 keeps Rive, to compare. */
+  if (!/[?&]rive=1\b/.test(location.search)) { var rvGo = function () { var sc = document.createElement('script'); sc.src = (window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/') + 'rv-scenes.js?v=1'; sc.async = true; document.head.appendChild(sc); };
+    if (document.readyState === 'complete') setTimeout(rvGo, 1200); else window.addEventListener('load', function () { setTimeout(rvGo, 1200); }); }
 })();

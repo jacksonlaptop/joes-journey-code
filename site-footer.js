@@ -1,5 +1,5 @@
 /* BUILD f-1008a (2026-10-08) · performance round 2: one lenis.raf per frame (it was stepped twice, the wrong way and back); the modal guard's nav rule no longer re-styles the whole page. f-1007a · loading: the site's music is streamed and only created when it is first played (it was an 8.6 MB download and a full decode on every page load); the menu's card art loads when the menu is first reached for; the starfield can fetch three.js itself. */
-window.JJ_FOOTER_BUILD = 'f-1012c';
+window.JJ_FOOTER_BUILD = 'f-1012d';
 /* THE SOUND MOON, FROM THE FIRST PAINT (Joe, 2026-09-30: "the sound button should always be there, and it should still work and expand...
    no matter what, between pages etc"). The same function lives in jj-loader.js (the first of the site's scripts on every page, so the
    moon is drawn in the same frame as the loader) and in site-footer.js (in case a page has no loader). It draws the moon in its resting
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function animate() {
       requestAnimationFrame(animate);
       animate.n = (animate.n || 0) + 1; if (animate.n & 1) return;
-      if (animate.n % 30 === 0) animate.hid = getComputedStyle(container).visibility === 'hidden';   /* f-1012c: looked at twice a second: while the sky is hidden (the chooser has covered the page) nothing is drawn */
+      if (animate.n % 30 === 0) { animate.hid = false; for (var se = container, sd = 0; se && se.nodeType === 1 && sd < 5; se = se.parentElement, sd++) { var scs = getComputedStyle(se); if (scs.visibility === 'hidden' || scs.display === 'none' || !(parseFloat(scs.opacity) > 0.01)) { animate.hid = true; break; } } }   /* f-1012d: hidden, or faded right out (the whole horizontal scroll: it was still being drawn at opacity 0) */   /* f-1012c: looked at twice a second: while the sky is hidden (the chooser has covered the page) nothing is drawn */
       if (animate.hid) return;   /* f-1010b: the starfield is drawn on every other frame (30 a second: slow drift and twinkle), its steps doubled so it moves at the same speed. A full-screen WebGL canvas redrawn 60 times a second made everything laid over it be composited again each time */
       const elapsed = clock.getElapsedTime();
       // Cached size — reading getBoundingClientRect here forced a layout every frame.
@@ -1586,8 +1586,24 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
   box.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:2147483000;width:340px;max-width:calc(100vw - 28px);padding:14px 16px;border-radius:12px;background:#0b0f1a;border:1px solid rgba(255,255,255,.35);color:#fff;font:13px/1.45 system-ui,-apple-system,sans-serif;pointer-events:auto;box-shadow:0 8px 30px rgba(0,0,0,.5);';
   box.innerHTML = '<div style="font-weight:700;font-size:14px">Performance probe</div><div class="now" style="margin:4px 0 10px;opacity:.85">Measuring…</div><div class="rows"></div>' +
     '<div class="info" style="margin:8px 0;opacity:.6;font-size:11px"></div><button type="button" class="go" data-cursor="hover" style="all:unset;cursor:pointer;padding:7px 12px;border-radius:8px;background:#ff00f5;color:#fff;font-weight:700">Run the test (about 45 seconds)</button> ' +
-    '<button type="button" class="cp" data-cursor="hover" style="all:unset;cursor:pointer;padding:7px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.5);display:none">Copy results</button>';
+    '<button type="button" class="cp" data-cursor="hover" style="all:unset;cursor:pointer;padding:7px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.5);display:none">Copy results</button>' +
+    '<div style="margin-top:8px"><button type="button" class="su" data-cursor="hover" style="all:unset;cursor:pointer;padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.5);font-size:12px">Copy start-up report</button></div>';
   var add = function () { if (!document.body) { setTimeout(add, 200); return; } document.body.appendChild(box); }; add();
+  /* f-1012d · THE START-UP RECORDER (Joe: the loader's blob stands still then stutters; the logo's reveal freezes for seconds; on his Mac only). From this script's
+     first moment, for 45 s: every gap between frames over 120 ms, every stretch a script held the page for 50 ms or more, and when things happened (loader up /
+     gone, page loaded, first press, lite on). "Copy start-up report" gives it as text: a freeze with no script behind it is the graphics chip's. */
+  var SU = { gaps: [], lts: [], marks: [] }, suLast = 0, suLd = null, suMark = function (w) { SU.marks.push([Math.round(performance.now()), w]); };
+  try { new PerformanceObserver(function (l) { l.getEntries().forEach(function (e) { if (e.startTime < 45000) SU.lts.push([Math.round(e.startTime), Math.round(e.duration)]); }); }).observe({ type: 'longtask', buffered: true }); } catch (e) {}
+  (function suRaf(t) { if (t > 45000) return; if (suLast && t - suLast > 120) SU.gaps.push([Math.round(suLast), Math.round(t - suLast)]); suLast = t;
+    var ld = !!document.getElementById('jjld'); if (ld !== suLd) { suMark(ld ? 'loader up' : (suLd === null ? 'no loader on screen yet' : 'loader gone')); suLd = ld; } requestAnimationFrame(suRaf); })(performance.now());
+  suMark('probe started'); window.addEventListener('load', function () { suMark('page loaded'); }); window.addEventListener('pointerdown', function () { suMark('first press'); }, { once: true, capture: true }); window.addEventListener('jj:lite', function (e) { suMark('lite ' + (e.detail && e.detail.on ? 'on' : 'off')); });
+  var suText = function () { var sec = function (ms) { return (ms / 1000).toFixed(1) + ' s'; }, held = function (a, d) { var n = 0; SU.lts.forEach(function (q) { var x = Math.min(a + d, q[0] + q[1]) - Math.max(a, q[0]); if (x > 0) n += x; }); return Math.round(n); };
+    var tot = SU.gaps.reduce(function (a, g) { return a + g[1]; }, 0), ltot = SU.lts.reduce(function (a, g) { return a + g[1]; }, 0);
+    return 'Joe\'s Journey start-up report (first 45 s)\n' + mkInfo() + '\nWhen: ' + SU.marks.map(function (m) { return m[1] + ' at ' + sec(m[0]); }).join(' · ') +
+      '\nFreezes over 120 ms: ' + SU.gaps.length + ', ' + tot + ' ms in all · scripts held the page for ' + ltot + ' ms in all (' + SU.lts.length + ' stretches)\n' +
+      SU.gaps.slice().sort(function (a, b) { return b[1] - a[1]; }).slice(0, 24).sort(function (a, b) { return a[0] - b[0]; }).map(function (g) { var h = held(g[0], g[1]); return 'at ' + sec(g[0]) + ': frozen ' + g[1] + ' ms, of which scripts ' + h + ' ms' + (h < g[1] * 0.3 ? ' (graphics)' : h > g[1] * 0.7 ? ' (scripts)' : ' (both)'); }).join('\n') +
+      '\nLongest script stretches: ' + SU.lts.slice().sort(function (a, b) { return b[1] - a[1]; }).slice(0, 10).map(function (q) { return q[1] + ' ms at ' + sec(q[0]); }).join(', '); };
+  box.querySelector('.su').addEventListener('click', function (e) { e.stopPropagation(); var b = this, t = suText(); try { navigator.clipboard.writeText(t).then(function () { b.textContent = 'Start-up report copied'; }, function () { b.textContent = 'Could not copy'; }); } catch (x) { b.textContent = 'Could not copy'; } window.jjPerfStartup = t; });
   var ft = [], lastT = 0; (function raf(t) { if (lastT) ft.push([t, t - lastT]); lastT = t; if (ft.length > 4000) ft.splice(0, 2000); requestAnimationFrame(raf); })(0);
   var lt = []; try { new PerformanceObserver(function (l) { l.getEntries().forEach(function (e) { lt.push([e.startTime, e.duration]); }); if (lt.length > 600) lt.splice(0, 300); }).observe({ entryTypes: ['longtask'] }); } catch (e) {}   // scripts holding the page for 50 ms or more at a go
   var rate = function (ms) { var now = performance.now(), n = 0, worst = 0, busy = 0; for (var i = ft.length - 1; i >= 0 && ft[i][0] >= now - ms; i--) { n++; if (ft[i][1] > worst) worst = ft[i][1]; } lt.forEach(function (q) { if (q[0] >= now - ms) busy += q[1]; }); return { fps: n / (ms / 1000), worst: worst, busy: 100 * busy / ms }; };

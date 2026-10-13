@@ -178,18 +178,24 @@
     var place = XL ? function (el, x, y) { el.style.translate = x.toFixed(2) + 'px ' + y.toFixed(2) + 'px'; } : function (el, x, y) { el.style.left = x + 'px'; el.style.top = y + 'px'; };
     var running = false, wake = function () { if (!running) { running = true; requestAnimationFrame(tick); } };
     window.addEventListener('mousemove', wake, { passive: true });
-    function tick(){
-      cursorX += (mouseX - cursorX) * 0.28; cursorY += (mouseY - cursorY) * 0.28;
-      trailX  += (mouseX - trailX)  * 0.16; trailY  += (mouseY - trailY)  * 0.16;
+    /* v16 (Joe, 12 Oct: 'the cursor is a split second behind, and a slower screen shows it even more'). The cursor eased toward the pointer by a fixed share
+       per FRAME: at 20 frames a second it took three times as long to arrive as at 60. The easing is now by TIME, so it trails by the same short moment at any
+       frame rate; and in the lite level (a machine measured to be slow) it follows tighter still. */
+    var lastTick = 0, ease = function (k, dt) { return 1 - Math.pow(1 - k, dt / 16.667); };
+    function tick(now){
+      var dt = lastTick ? Math.min(100, Math.max(1, (now || performance.now()) - lastTick)) : 16.667; lastTick = now || performance.now();
+      var lite = !!(window.jjLite && window.jjLite.on), kc = ease(lite ? 0.55 : 0.28, dt), kt = ease(0.16, dt), kl = ease(0.2, dt);
+      cursorX += (mouseX - cursorX) * kc; cursorY += (mouseY - cursorY) * kc;
+      trailX  += (mouseX - trailX)  * kt; trailY  += (mouseY - trailY)  * kt;
       place(cursor, cursorX, cursorY); place(trail, trailX, trailY);
 
       var dx = mouseX - lastX, dy = mouseY - lastY;
       trail.style.opacity = Math.sqrt(dx * dx + dy * dy) > 1 ? '0.45' : '0';   // subtle trail, not too noticeable
       var angle = Math.atan2(dy, dx) * 180 / Math.PI;
       trail.style.transform = 'translate(-50%, -50%) rotate(' + (angle + 180) + 'deg)';
-      lastX += (mouseX - lastX) * 0.2; lastY += (mouseY - lastY) * 0.2;
+      lastX += (mouseX - lastX) * kl; lastY += (mouseY - lastY) * kl;
       if (Math.abs(mouseX - cursorX) < .05 && Math.abs(mouseY - cursorY) < .05 && Math.abs(mouseX - trailX) < .05 && Math.abs(mouseY - trailY) < .05 && Math.abs(mouseX - lastX) < .05 && Math.abs(mouseY - lastY) < .05) {
-        cursorX = trailX = lastX = mouseX; cursorY = trailY = lastY = mouseY; place(cursor, cursorX, cursorY); place(trail, trailX, trailY); trail.style.opacity = '0'; running = false; return; }   // at rest: nothing to do until the pointer moves again
+        cursorX = trailX = lastX = mouseX; cursorY = trailY = lastY = mouseY; place(cursor, cursorX, cursorY); place(trail, trailX, trailY); trail.style.opacity = '0'; running = false; lastTick = 0; return; }   // at rest: nothing to do until the pointer moves again
       requestAnimationFrame(tick);
     }
     wake();

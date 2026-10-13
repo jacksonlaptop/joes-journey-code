@@ -151,14 +151,16 @@
   var trail = document.createElement('div');
   trail.className = 'cursor-trail';
 
-  /* v15 (Joe, 12 Oct: 'laggy on the loader with the mouse: probably don't need to show the mouse until the loader is done'). While a loader is up (#jjld, a child
-     of <body>) the drawn cursor and its trail are not shown and the system pointer is: the page is at its busiest then, so a cursor drawn by the page stutters,
-     and the system's own never does. One observer on <body>'s own children; nothing per frame. */
-  function ldWatch(){ var de = document.documentElement, st = document.createElement('style');
-    st.textContent = 'html.jj-ld-up .custom-cursor,html.jj-ld-up .cursor-trail{display:none!important;}html.jj-ld-up,html.jj-ld-up body,html.jj-ld-up a,html.jj-ld-up button,html.jj-ld-up [data-cursor]{cursor:auto!important;}';
-    document.head.appendChild(st);
-    var sync = function () { var up = !!document.getElementById('jjld'); if (de.classList.contains('jj-ld-up') !== up) de.classList.toggle('jj-ld-up', up); };
-    sync(); try { new MutationObserver(sync).observe(document.body, { childList: true }); } catch (e) {} }
+  /* v17 (Joe, 13 Oct: 'users will be annoyed their mouse doesn't show from the beginning: make it work always'). There is ALWAYS a pointer now. The site's head code
+     hides the system pointer on every element (* {cursor:none!important}) from the first paint, so until this file had loaded AND the mouse had moved there was no
+     pointer at all, and through a loader (where v15 put the drawn cursor away) there was none either. The gate below gives the system pointer back, on every element,
+     until html.jj-cur-live: set once the drawn cursor has a position (the first mouse move) and no loader is up. So: system pointer from the first paint and through a
+     loader (it never stutters, however busy the page is), the drawn cursor from then on. jj-loader.js writes the same gate at the top of the page, before this file
+     has arrived. If this file never loads, the system pointer simply stays. */
+  var moved = false;
+  function liveSync(){ var de = document.documentElement, on = moved && !document.getElementById('jjld'); if (de.classList.contains('jj-cur-live') !== on) de.classList.toggle('jj-cur-live', on); }
+  function ldWatch(){ if (!document.getElementById('jj-cur-gate')) { var st = document.createElement('style'); st.id = 'jj-cur-gate'; st.textContent = 'html:not(.jj-cur-live),html:not(.jj-cur-live) *{cursor:revert!important}html:not(.jj-cur-live) .custom-cursor,html:not(.jj-cur-live) .cursor-trail{display:none!important}'; document.head.appendChild(st); }
+    liveSync(); try { new MutationObserver(liveSync).observe(document.body, { childList: true }); } catch (e) {} }
   function mount(){ document.body.appendChild(trail); document.body.appendChild(cursor); start(); ldWatch(); }
   if (document.body) mount(); else document.addEventListener('DOMContentLoaded', mount);
 
@@ -167,7 +169,7 @@
 
     window.addEventListener('mousemove', function (e) {
       mouseX = e.clientX; mouseY = e.clientY;
-      if (!seen) { seen = true; cursorX = trailX = lastX = mouseX; cursorY = trailY = lastY = mouseY; }   // jump in, don't fly from the corner
+      if (!seen) { seen = true; cursorX = trailX = lastX = mouseX; cursorY = trailY = lastY = mouseY; moved = true; liveSync(); }   // jump in, don't fly from the corner
     });
 
     /* v14 (2026-10-10, Joe's Intel Mac: 'laggy the second the mouse entered'): the cursor and its trail are moved with `translate`, not left / top. left / top

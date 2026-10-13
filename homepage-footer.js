@@ -1,5 +1,5 @@
 /* BUILD h-1007c (2026-10-07) · the Rive sleeper: each Webflow Rive canvas is paused while it cannot be seen and woken one panel ahead of arriving; c: the waves sleep while they are parked below the screen (landing, Big Bang). See the last block of this file. `/?rivesleep=0` turns it off. */
-window.JJ_HOME_BUILD = 'h-1012c';
+window.JJ_HOME_BUILD = 'h-1013b';
 /* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
 if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
 (function () {
@@ -223,7 +223,10 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       '#jj-flyer.dive{pointer-events:none;}' +
       '#jj-flyer video{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 12px rgba(0,0,0,.35));animation:jjFlyBob 2.4s ease-in-out infinite;}' +
       '@keyframes jjFlyBob{0%,100%{translate:0 0;rotate:-2deg}50%{translate:0 -6px;rotate:2deg}}' +
-      '.jj-flyover{display:block;width:75px;height:auto;filter:drop-shadow(0 6px 12px rgba(0,0,0,.35));}' +
+      '.jj-flyover{display:block;width:84px;height:auto;}' +
+      '.jj-flyover video{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 12px rgba(0,0,0,.35));transform-origin:50% 62%;transition:transform .55s cubic-bezier(.3,0,.3,1);}' +
+      '.jj-flyover.lean video{transform:rotate(11deg);}' +   /* happy, and still flying: the clip sits him upright after the logo, so he is tipped back into the flight */
+      'html.jj-lite .jj-flyover video{filter:none;}' +
       '#jj-flyer.on.over-text{opacity:.22;}';   /* he steps back while words pass under him, so a line is never hidden behind his head */
     (document.head || document.documentElement).appendChild(st);
     (function () {                                             /* the watcher: any panel line crossing flying Joe fades him down */
@@ -243,6 +246,36 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       v.innerHTML = '' + jjClipSrc(ABASE + 'joe-fly-loop') + '';
       var p = v.play(); if (p && p.catch) p.catch(function () {});
       return v;
+    }
+    /* h-1013a: the landing fly-through is the blue alien now (Joe: Joe himself is only introduced in Storytime). ONE clip, played once, in step with intro.js's
+       5 s flight along #character-path: determined on the way in, a jolt as he goes through the logo, happy on the way out. The clip's own clock follows the
+       flight's (gsap's), so a slow start or a held frame cannot leave him smiling before he has got there. */
+    /* Measured in the page (1440 wide): he loops round the left side, then crosses level through the logo from about 2.9 s (the logo shows at 3.0 s, he is at its
+       middle at 3.3 s) and is off the right edge by 4.2 s. So: determined until 2.9 s; the jolt and the blink (2.6 to 3.6 s of the clip) at double speed across
+       the logo; happy, and tipped into the flight, from 3.4 s to the edge. */
+    function alClip(t) { return t < 2.9 ? Math.max(0, t - .3) : t < 3.4 ? 2.6 + (t - 2.9) * 2 : 3.6 + (t - 3.4); }
+    function alRate(t) { return t >= 2.9 && t < 3.4 ? 2 : 1; }
+    var AL_LEAN = 3.3;                                                 /* flight time from which he is tipped forward */
+    /* h-1013b (Joe: 'too fast once he has finished the reveal: slow him down before he goes off screen so we can see him happy'). The flight's own easing has him
+       gone 0.7 s after the logo. From AL_SLOW (he is over the last letters, which write themselves behind him) the flight itself is slowed to AL_PACE of its speed, eased in
+       over 0.3 s, so the last stretch to the edge takes about three seconds; from then on his clip runs on its own clock at normal speed (happy all the way out). */
+    var AL_SLOW = 3.36, AL_PACE = .28;
+    function alienOver() {
+      var w = document.createElement('div'); w.className = 'flying-character jj-flyover';
+      var v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+      v.poster = ABASE + 'alien-fly-poster.webp'; v.innerHTML = '' + jjClipSrc(ABASE + 'alien-fly') + ''; w.appendChild(v);
+      var tw = null, done = false, slow = false, iv = setInterval(function () {
+        if (!tw) { try { tw = window.gsap && gsap.getTweensOf(w)[0]; } catch (e) {} if (!tw) return; }
+        var t = tw.time(), want = alClip(t), rate = alRate(t);
+        if (t <= 0) { if (done || slow) { done = false; slow = false; try { tw.timeScale(1); } catch (e) {} w.classList.remove('lean'); try { v.pause(); v.currentTime = 0; } catch (e) {} } return; }   /* waiting to set off (or set back to the start) */
+        if (tw.progress() >= 1) { if (!done) { done = true; try { v.pause(); } catch (e) {} } return; }                                       /* off the far side: nothing left to play */
+        if (!slow && t >= AL_SLOW) { slow = true; try { gsap.to(tw, { timeScale: AL_PACE, duration: .3, ease: 'power1.out' }); } catch (e) {} }
+        if (slow) { if (v.playbackRate !== 1) v.playbackRate = 1; }
+        else { if (v.playbackRate !== rate) v.playbackRate = rate; if (Math.abs(v.currentTime - want) > .25) { try { v.currentTime = want; } catch (e) {} } }
+        if (v.paused && !v.ended && !tw.paused()) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } else if (!v.paused && tw.paused()) v.pause();
+        w.classList.toggle('lean', t >= AL_LEAN);
+      }, 60);
+      return w;
     }
     var fly = null, home = null;
     function place(x, y, animate) { fly.style.transition = animate ? '' : 'none'; fly.style.transform = 'translate(' + Math.round(x) + 'px,' + Math.round(y) + 'px)'; if (!animate) void fly.offsetWidth; }
@@ -299,7 +332,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       var fr = document.querySelector('.fly-rive'); if (fr && !fr._jjFly) { fr._jjFly = true; releaseRive(fr, 0); }
       var fc = document.querySelector('img.flying-character');
       if (fc && !fc._jjFly) {                                      // same class, same path: intro.js now flies Joe
-        fc._jjFly = true; var v = flyVid('flying-character jj-flyover');
+        fc._jjFly = true; var v = alienOver();
         fc.parentNode.insertBefore(v, fc); fc.classList.remove('flying-character'); fc.style.display = 'none';
       }
     }
@@ -2805,4 +2838,41 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
      if it does not load, Rive carries on as before. /?rive=1 keeps Rive, to compare. */
   if (!/[?&]rive=1\b/.test(location.search)) { var rvGo = function () { var sc = document.createElement('script'); sc.src = (window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/') + 'rv-scenes.js?v=1'; sc.async = true; document.head.appendChild(sc); };
     if (document.readyState === 'complete') setTimeout(rvGo, 1200); else window.addEventListener('load', function () { setTimeout(rvGo, 1200); }); }
+})();
+
+
+/* ===== NOTHING IN FRONT OF "CLICK TO BEGIN" (h-1013b; Joe, 13 Oct: 'click to begin should be the top always, nothing in front') =====
+   The button lives deep inside .all_container_wrapper (z 2), and the landing's decorations (the stars and glowing dots, the aliens: .jj-intro-deco at z 3 and 4, and the
+   drifting star strip #jj-anim-stars-wrap) are laid over that whole container, so whichever of them happens to sit where the button is at this window size is painted on
+   top of it. They cannot go under the container (the backgrounds are inside it) and the button cannot leave it (Webflow's interactions and the click gate hold it there).
+   So while the button is showing, anything of theirs that would cross it is kept clear: a small still decoration fades out; an alien is slid sideways or down until it
+   clears the button (with the CSS `translate` property, which adds to whatever its own animation is doing). Checked when the button appears, on resize and a few times
+   a second while it is up (the aliens move); nothing runs once the landing has gone. */
+(function () {
+  if (window.jjCtaClear) return;
+  var st = document.createElement('style'); st.textContent = '.jj-cta-out{opacity:0!important;transition:opacity .3s ease!important;}.jj-cta-slid{transition:translate .45s cubic-bezier(.3,0,.3,1);}'; document.head.appendChild(st);
+  var PAD = 12, cta = null, gone = 0;
+  function box() {
+    if (!cta || !cta.isConnected) { var l = document.querySelectorAll('.enter-link_wrapper'); cta = null; for (var i = 0; i < l.length; i++) if (/click to begin/i.test(l[i].textContent || '')) { cta = l[i]; break; } }
+    if (!cta) return null; var r = cta.getBoundingClientRect(); if (r.width < 20) return null;
+    for (var p = cta; p && p !== document.documentElement; p = p.parentElement) { var c = getComputedStyle(p); if (c.display === 'none' || c.visibility === 'hidden' || !(parseFloat(c.opacity) > .05)) return null; }
+    return { l: r.left - PAD, t: r.top - PAD, r: r.right + PAD, b: r.bottom + PAD };
+  }
+  function release() { var a = document.querySelectorAll('.jj-cta-out'), i; for (i = 0; i < a.length; i++) a[i].classList.remove('jj-cta-out'); a = document.querySelectorAll('.jj-cta-slid'); for (i = 0; i < a.length; i++) { a[i].style.translate = ''; a[i]._jjSl = null; } }
+  function check() {
+    var b = box(); if (!b) { if (gone === 0) release(); gone++; return; } gone = 0;
+    var els = document.querySelectorAll('.jj-intro-deco, .jj-poke-sprite, #jj-sitting-alien, #jj-anim-stars-inner img');
+    for (var i = 0; i < els.length; i++) { var e = els[i], r = e.getBoundingClientRect(); if (r.width < 2) continue;
+      var sl = e._jjSl || [0, 0], l = r.left - sl[0], t = r.top - sl[1], rr = r.right - sl[0], bb = r.bottom - sl[1];                 /* where it would be if this had not moved it */
+      var hit = rr > b.l && l < b.r && bb > b.t && t < b.b, big = e.tagName === 'VIDEO' || r.width > 90;
+      if (!big) { if (hit !== e.classList.contains('jj-cta-out')) e.classList.toggle('jj-cta-out', hit); continue; }
+      if (!hit) { if (e._jjSl) { e.style.translate = ''; e._jjSl = null; } continue; }
+      var c = [b.l - rr, b.r - l, b.b - t], k = 0; if (l + c[0] < -r.width * .6) c[0] = -1e6; if (rr + c[1] > innerWidth + r.width * .6) c[1] = 1e6;    /* left, right or down: the shortest way that keeps it on the page */
+      for (var j = 1; j < 3; j++) if (Math.abs(c[j]) < Math.abs(c[k])) k = j;
+      var dx = k < 2 ? Math.round(c[k]) : 0, dy = k === 2 ? Math.round(c[2]) : 0;
+      if (!e._jjSl || e._jjSl[0] !== dx || e._jjSl[1] !== dy) { e.classList.add('jj-cta-slid'); e._jjSl = [dx, dy]; e.style.translate = dx + 'px ' + dy + 'px'; } }
+  }
+  var n = 0; setInterval(function () { if (document.hidden) return; if (gone > 400 && (++n % 10)) return; check(); }, 300);                                /* once the button has been gone two minutes it looks only every 3 s */
+  window.addEventListener('resize', function () { setTimeout(check, 60); });
+  window.jjCtaClear = check;
 })();

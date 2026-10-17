@@ -87,7 +87,7 @@ body{display:flex;flex-direction:column;min-height:100svh;overflow-x:hidden;}
   var cur = { scene: 'village', style: 'cartoon' }, run = 0, timers = [], vids = [], snow = null;
   function later(fn, ms) { var r = run; timers.push(setTimeout(function () { if (r === run) fn(); }, ms)); }
   function vid(src, loop) { var v = document.createElement('video'); v.muted = true; v.defaultMuted = true; v.playsInline = true; v.loop = !!loop; v.preload = 'auto';
-    v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.src = B + src; pane.insertBefore(v, black); vids.push(v); return v; }
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.src = B + src; if (!/-s\.mp4$|cartoon/.test(src)) v.addEventListener('error', function () { v.src = B + src.replace(/\.mp4$/, '-s.mp4'); go(v); }, { once: true });   // (a big file that will not load falls back to the phone-size one) pane.insertBefore(v, black); vids.push(v); return v; }
   function go(v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
   function show(v, others) { v.classList.add('on'); setTimeout(function () { (others || []).forEach(function (o) { o.classList.remove('on'); try { o.pause(); } catch (e) {} }); }, 420); }
   var typeT = 0;

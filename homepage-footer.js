@@ -1,5 +1,5 @@
 /* BUILD h-1007c (2026-10-07) · the Rive sleeper: each Webflow Rive canvas is paused while it cannot be seen and woken one panel ahead of arriving; c: the waves sleep while they are parked below the screen (landing, Big Bang). See the last block of this file. `/?rivesleep=0` turns it off. */
-window.JJ_HOME_BUILD = 'h-1013b';
+window.JJ_HOME_BUILD = 'h-1013c';
 /* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
 if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
 (function () {
@@ -217,12 +217,9 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
        from the left like the first time. The landing flyover (the SVG on #character-path) is Joe too. Half size. */
     var st = document.createElement('style');
     st.textContent = '.fly-rive canvas{display:none!important;}' +
-      '#jj-flyer{position:fixed;left:0;top:0;z-index:1000;width:clamp(45px,6.25vw,105px);opacity:0;pointer-events:none;cursor:pointer;' +
+      '#jj-flyer{position:fixed;left:0;top:0;z-index:1000;width:clamp(45px,6.25vw,105px);aspect-ratio:442/420;visibility:hidden;opacity:0;pointer-events:none!important;' +
         'transition:transform 1.2s cubic-bezier(.22,1,.36,1),opacity .6s ease;}' +
-      '#jj-flyer.on{opacity:1;pointer-events:auto;}' +
-      '#jj-flyer.dive{pointer-events:none;}' +
-      '#jj-flyer video{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 12px rgba(0,0,0,.35));animation:jjFlyBob 2.4s ease-in-out infinite;}' +
-      '@keyframes jjFlyBob{0%,100%{translate:0 0;rotate:-2deg}50%{translate:0 -6px;rotate:2deg}}' +
+      '#jj-flyer.on{opacity:1;}' +
       '.jj-flyover{display:block;width:84px;height:auto;}' +
       '.jj-flyover video{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 12px rgba(0,0,0,.35));transform-origin:50% 62%;transition:transform .55s cubic-bezier(.3,0,.3,1);}' +
       '.jj-flyover.lean video{transform:rotate(11deg);}' +   /* happy, and still flying: the clip sits him upright after the logo, so he is tipped back into the flight */
@@ -240,13 +237,6 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
           for (var j = 0; j < cs.length; j++) { var q = cs[j].getBoundingClientRect(); if (q.width > 1 && q.right > r.left + ix && q.left < r.right - ix && q.bottom > r.top + iy && q.top < r.bottom - iy && parseFloat(getComputedStyle(cs[j]).opacity) > .3) { hit = true; break; } } }
         f.classList.toggle('over-text', hit); }, 140);
     })();
-    function flyVid(cls) {
-      var v = document.createElement('video'); v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.preload = 'auto';
-      v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); if (cls) v.className = cls; v.poster = ABASE + 'joe-fly-loop-poster.webp';
-      v.innerHTML = '' + jjClipSrc(ABASE + 'joe-fly-loop') + '';
-      var p = v.play(); if (p && p.catch) p.catch(function () {});
-      return v;
-    }
     /* h-1013a: the landing fly-through is the blue alien now (Joe: Joe himself is only introduced in Storytime). ONE clip, played once, in step with intro.js's
        5 s flight along #character-path: determined on the way in, a jolt as he goes through the logo, happy on the way out. The clip's own clock follows the
        flight's (gsap's), so a slow start or a held frame cannot leave him smiling before he has got there. */
@@ -301,30 +291,10 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
     }
     window.jjFlyerIn = function (texts) {
       if (!fly) {
-        fly = document.createElement('div'); fly.id = 'jj-flyer'; fly.setAttribute('data-cursor', 'hover'); fly.appendChild(flyVid());
-        document.body.appendChild(fly);
-        fly.addEventListener('click', function () {                     // a wind-up, a loop over the top, then away off the right — then back in from the left
-          if (fly.classList.contains('dive')) return;
-          fly.classList.add('dive');
-          var x = Math.round(home.x), y = Math.round(home.y), off = innerWidth + 80 - x;
-          var T = function (dx, dy, sc, rot) { return 'translate(' + (x + dx) + 'px,' + (y + dy) + 'px) scale(' + sc + ') rotate(' + rot + 'deg)'; };
-          fly.style.transition = 'transform .22s ease-out';                 // wind-up: leans back and dips
-          fly.style.transform = T(-28, 16, 1.08, -14);
-          setTimeout(function () {                                          // up and over the top
-            fly.style.transition = 'transform .45s cubic-bezier(.3,0,.35,1)';
-            fly.style.transform = T(90, -84, 1, 16);
-          }, 230);
-          setTimeout(function () {                                          // and away off the right, shrinking into the distance
-            fly.style.transition = 'transform .95s cubic-bezier(.45,0,.85,.4), opacity .7s ease .3s';
-            fly.style.transform = T(off, -innerHeight * .16, .28, 28);
-            fly.style.opacity = '0';
-          }, 690);
-          setTimeout(function () {
-            fly.style.transition = 'none'; fly.classList.remove('on'); fly.style.removeProperty('opacity');
-            place(-(fly.offsetWidth || 90) - 40, y, false);
-            setTimeout(flyIn, 700);
-          }, 1700);
-        });
+        /* h-1013c (Joe, 13 Oct): Joe's flying head is gone from the horizontal scroll: the visitor's own companion flies in his place (the blue alien until they choose
+           another). #jj-flyer stays as an unseen marker, the same size, placed and moved exactly as before; jj-companion.js parks the companion on it. A press on the
+           companion is the companion's own (a hop, and the store opens on Change), so the old loop-the-loop has gone with the head. */
+        fly = document.createElement('div'); fly.id = 'jj-flyer'; fly.setAttribute('aria-hidden', 'true'); document.body.appendChild(fly);
       }
       setTimeout(function () { home = target(texts); flyIn(); }, 60);   // measure once the text has its layout
     };

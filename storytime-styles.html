@@ -66,8 +66,8 @@ body{display:flex;flex-direction:column;min-height:100svh;overflow-x:hidden;}
 </div>
 <script>
 (function () {
-  var REF = /githack/.test(location.hostname) ? (location.pathname.split('/')[3] || 'main') : '';   // online the page is opened at a commit (raw.githack.com/<user>/<repo>/<commit>/...)
-  var B = REF ? 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@' + REF + '/' : '';   // and its videos come from jsDelivr at that same commit (the repo is too big for jsDelivr to serve new files at @main); locally from beside the page
+  var REF = (/[?&]ref=([\w.-]+)/.exec(location.search) || [])[1] || (/githack/.test(location.hostname) ? (location.pathname.split('/')[3] || 'main') : '');   // online the page is opened at a commit (raw.githack.com/<user>/<repo>/<commit>/...)
+  var B = REF ? 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@' + REF + '/' : '', B2 = REF ? 'https://raw.githubusercontent.com/jacksonlaptop/joes-journey-code/' + REF + '/' : '';   // B2: GitHub's own file server, when jsDelivr refuses a file   // and its videos come from jsDelivr at that same commit (the repo is too big for jsDelivr to serve new files at @main); locally from beside the page
   var big = Math.max(innerWidth, innerHeight) * (window.devicePixelRatio || 1) > 2200 && innerWidth > 900;   // a phone gets the 1280 files
   var SC = {
     village: {
@@ -88,7 +88,9 @@ body{display:flex;flex-direction:column;min-height:100svh;overflow-x:hidden;}
   var cur = { scene: 'village', style: 'cartoon' }, run = 0, timers = [], vids = [], snow = null;
   function later(fn, ms) { var r = run; timers.push(setTimeout(function () { if (r === run) fn(); }, ms)); }
   function vid(src, loop) { var v = document.createElement('video'); v.muted = true; v.defaultMuted = true; v.playsInline = true; v.loop = !!loop; v.preload = 'auto';
-    v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.src = B + src; if (!/-s\.mp4$|cartoon/.test(src)) v.addEventListener('error', function () { v.src = B + src.replace(/\.mp4$/, '-s.mp4'); go(v); }, { once: true });   // (a big file that will not load falls back to the phone-size one) pane.insertBefore(v, black); vids.push(v); return v; }
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.src = B + src; var tries = [B2 + src].concat(/-s\.mp4$|cartoon/.test(src) ? [] : [B + src.replace(/\.mp4$/, '-s.mp4'), B2 + src.replace(/\.mp4$/, '-s.mp4')]);
+    v.addEventListener('error', function () { var n = tries.shift(); if (!n || !B) return; v.src = n; if (v.classList.contains('on')) go(v); });
+    pane.insertBefore(v, black); vids.push(v); return v; }   // (a file the CDN refuses comes from GitHub instead; then the phone-size copy)
   function go(v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
   function show(v, others) { v.classList.add('on'); setTimeout(function () { (others || []).forEach(function (o) { o.classList.remove('on'); try { o.pause(); } catch (e) {} }); }, 420); }
   var typeT = 0;
@@ -105,7 +107,7 @@ body{display:flex;flex-direction:column;min-height:100svh;overflow-x:hidden;}
       later(function () { black.classList.add('on'); try { v.pause(); } catch (e) {} replay.classList.add('on'); }, T.end * 1000);
     } else {
       var s = big ? '' : '-s', a = vid(T.base + '-a' + s + '.mp4', true), b = vid(T.base + '-b' + s + '.mp4', false), c = vid(T.base + '-c' + s + '.mp4', true);
-      a.poster = B + T.base + s + '-poster.webp'; show(a); go(a); if (T.snow) { snow = makeSnow(); snow.on(true); } lines(S.lines);
+      a.poster = (B2 || '') + T.base + s + '-poster.webp'; show(a); go(a); if (T.snow) { snow = makeSnow(); snow.on(true); } lines(S.lines);
       ring.style.left = (T.ring[0] * 100) + '%'; ring.style.top = (T.ring[1] * 100) + '%';
       later(function () { ring.classList.add('on'); tap.classList.add('on'); }, 8600);   // (the prompt comes in under Clive's line; it never replaces it)
       ring.onclick = function () { if (!ring.classList.contains('on')) return; ring.classList.remove('on'); tap.classList.remove('on'); b.currentTime = 0; go(b); show(b, [a]); if (snow) snow.on(false);

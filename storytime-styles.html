@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Storytime styles</title>
+<meta name="description" content="Two Storytime scenes, each in the cartoon style and the new painted style.">
+<style>
+/* Storytime styles: a demo for phones (Joe, 17 Oct). Two scenes (the village, the ice cliffs), each in two styles (cartoon, painted), one at a time in a 16:9
+   picture with black above and below, the narration in the Storytime box under it. The ice cliffs wait for a tap on the dragon, as in the tale. */
+@font-face{font-family:"Sketch Gothic School";src:url("https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/sketch-gothic-school.woff2") format("woff2"),url("sketch-gothic-school.woff2") format("woff2");font-display:swap;}
+:root{--ink:#3a2a12;--paper:#f3e2ba;--pink:#FF00F5;--bg:#04060b;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;height:100%;background:var(--bg);color:#fff;font-family:"Sketch Gothic School",Georgia,serif;}
+body{display:flex;flex-direction:column;min-height:100svh;overflow-x:hidden;}
+.top{display:flex;flex-direction:column;gap:10px;align-items:center;padding:calc(14px + env(safe-area-inset-top)) 16px 10px;}
+.title{font-size:15px;opacity:.75;letter-spacing:.02em;}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.seg{display:flex;gap:4px;padding:4px;border-radius:999px;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}
+.seg button{position:relative;overflow:hidden;font:inherit;font-size:15px;color:#fff;background:transparent;border:0;border-radius:999px;padding:9px 15px;cursor:pointer;min-height:40px;}
+.seg button::before{content:"";position:absolute;inset:0;border-radius:inherit;background:rgba(255,255,255,.5);transform:scaleX(0);transform-origin:left;transition:transform .35s ease;z-index:-1;}
+@media (hover:hover){.seg button:hover::before{transform:scaleX(1);}}
+.seg button{z-index:0;}
+.seg button.on{background:rgba(255,255,255,.9);color:#140a24;}
+.seg button:active{filter:brightness(.9) drop-shadow(2px 2px 0 var(--pink));transform:translateY(2px);}
+.stage{flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;padding-bottom:calc(16px + env(safe-area-inset-bottom));}
+.pane{position:relative;width:100%;max-width:min(100vw,calc((100svh - 280px) * 16 / 9));margin:0 auto;aspect-ratio:16/9;overflow:hidden;background:var(--bg);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 5%,#000 95%,transparent 100%),linear-gradient(to right,transparent 0,#000 2%,#000 98%,transparent 100%);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to bottom,transparent 0,#000 5%,#000 95%,transparent 100%),linear-gradient(to right,transparent 0,#000 2%,#000 98%,transparent 100%);mask-composite:intersect;}
+.pane video,.pane canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s ease;}
+.pane video.on,.pane canvas.on{opacity:1;}
+.pane .black{position:absolute;inset:0;background:var(--bg);opacity:0;transition:opacity .8s ease;pointer-events:none;z-index:5;}
+.pane .black.on{opacity:1;}
+.bub{position:absolute;z-index:6;max-width:46%;padding:6px 9px 7px;border-radius:12px;border:1px solid rgba(255,255,255,.5);background:rgba(10,14,26,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  font-size:clamp(10px,2.6vw,17px);line-height:1.25;opacity:0;translate:0 6px;transition:opacity .35s ease,translate .35s ease;pointer-events:none;}
+.bub.on{opacity:1;translate:0 0;}
+.bub b{display:block;font-weight:normal;font-size:.75em;opacity:.7;margin-bottom:2px;}
+.ring{position:absolute;z-index:7;width:max(48px,13%);aspect-ratio:1;translate:-50% -50%;border-radius:50%;border:2px solid rgba(255,230,140,.95);box-shadow:0 0 14px rgba(255,214,90,.8),inset 0 0 12px rgba(255,214,90,.5);
+  background:radial-gradient(closest-side,rgba(255,240,180,.25),rgba(255,240,180,0));opacity:0;pointer-events:none;cursor:pointer;transition:opacity .4s ease;animation:pulse 1.6s ease-in-out infinite;}
+.ring.on{opacity:1;pointer-events:auto;}
+@keyframes pulse{50%{scale:1.12;}}
+.cap{position:relative;width:min(92vw,720px);margin:0 auto;min-height:118px;padding:16px 20px 18px;border-radius:14px;background:var(--paper);color:var(--ink);
+  box-shadow:0 0 0 4px #8d8f96,0 0 0 6px #4b4d55,0 8px 28px rgba(0,0,0,.6);font-size:clamp(15px,4.2vw,21px);line-height:1.3;}
+.cap .who{font-size:.72em;opacity:.65;margin-bottom:4px;min-height:1em;}
+.cap .txt{white-space:pre-wrap;}
+.cap .tap{margin-top:10px;color:#7a2f9a;opacity:0;transition:opacity .4s ease;}
+.cap .tap.on{opacity:1;}
+.foot{display:flex;justify-content:center;}
+.replay{font:inherit;font-size:15px;color:#fff;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:9px 18px;min-height:40px;cursor:pointer;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .4s ease;}
+.replay.on{opacity:1;pointer-events:auto;}
+.replay:active{filter:brightness(.9) drop-shadow(2px 2px 0 var(--pink));transform:translateY(2px);}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="title">Storytime: two styles</div>
+  <div class="row">
+    <div class="seg" id="scene"><button data-v="village" class="on">The village</button><button data-v="ice">The ice cliffs</button></div>
+    <div class="seg" id="style"><button data-v="cartoon" class="on">Cartoon</button><button data-v="painted">Painted</button></div>
+  </div>
+</div>
+<div class="stage">
+  <div class="pane" id="pane"><div class="black" id="black"></div><div class="bub" id="bub"><b></b><span></span></div><div class="ring" id="ring" role="button" aria-label="Tap the ice dragon"></div></div>
+  <div class="cap"><div class="who" id="who"></div><div class="txt" id="txt"></div><div class="tap" id="tap">Tap the ice dragon ↑</div></div>
+  <div class="foot"><button class="replay" id="replay">Play again</button></div>
+</div>
+<script>
+(function () {
+  var B = /githack|github/.test(location.hostname) ? 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/' : '';   // online: the videos come from jsDelivr (fast, seekable); locally from beside the page
+  var big = Math.max(innerWidth, innerHeight) * (window.devicePixelRatio || 1) > 2200 && innerWidth > 900;   // a phone gets the 1280 files
+  var SC = {
+    village: {
+      cartoon: { play: 'demo-village-cartoon.mp4', end: 12.2 },
+      painted: { play: big ? 'demo-village-painted.mp4' : 'demo-village-painted-s.mp4', end: 12.5 },
+      lines: [ [0, 'nar', '', 'He had a fascination for gold, jewels, treasures and anything that sparkled...but also something more sinister...the local villagers!', 1100],
+               [1.4, 'bub', 'Villager', 'Is that...Trogdor!!!', [.04, .14], 3.4],
+               [5.0, 'nar', '', 'He had many names, Beast, Dragon, Death, but the one that put fear into the hearts of the locals was...Trogdor! Trogdor The Burninator...'] ] },
+    ice: {
+      cartoon: { base: 'story2-whole-3_4', done: 11.0, ring: [.78, .42] },
+      painted: { base: 'story2-whole-3_4-ns', done: 10.0, ring: [.80, .46], snow: true },
+      lines: [ [.6, 'nar', '', 'First, the ice cliffs. Joe kept his distance...and one hand on his sword.'],
+               [5.2, 'say', 'Clive', 'Ice dragons. Moody, but artists at heart. Go on, say hello.'] ],
+      after: ['say', 'Joe', 'Is that...me? I mean I think I’ve got better hair than that but...'] }
+  };
+  var pane = document.getElementById('pane'), black = document.getElementById('black'), bub = document.getElementById('bub'), ring = document.getElementById('ring'),
+      who = document.getElementById('who'), txt = document.getElementById('txt'), tap = document.getElementById('tap'), replay = document.getElementById('replay');
+  var cur = { scene: 'village', style: 'cartoon' }, run = 0, timers = [], vids = [], snow = null;
+  function later(fn, ms) { var r = run; timers.push(setTimeout(function () { if (r === run) fn(); }, ms)); }
+  function vid(src, loop) { var v = document.createElement('video'); v.muted = true; v.defaultMuted = true; v.playsInline = true; v.loop = !!loop; v.preload = 'auto';
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.src = B + src; pane.insertBefore(v, black); vids.push(v); return v; }
+  function go(v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+  function show(v, others) { v.classList.add('on'); setTimeout(function () { (others || []).forEach(function (o) { o.classList.remove('on'); try { o.pause(); } catch (e) {} }); }, 420); }
+  var typeT = 0;
+  function type(name, text, ms) { clearInterval(typeT); who.textContent = name || ''; txt.textContent = ''; var i = 0, step = Math.max(14, (ms || text.length * 38) / text.length);
+    typeT = setInterval(function () { i++; txt.textContent = text.slice(0, i); if (i >= text.length) clearInterval(typeT); }, step); }
+  function bubble(name, text, at, secs) { bub.querySelector('b').textContent = name; bub.querySelector('span').textContent = text; bub.style.left = (at[0] * 100) + '%'; bub.style.top = (at[1] * 100) + '%';
+    bub.classList.add('on'); later(function () { bub.classList.remove('on'); }, secs * 1000); }
+  function lines(L) { L.forEach(function (l) { later(function () { if (l[1] === 'bub') bubble(l[2], l[3], l[4], l[5]); else type(l[2], l[3], l[4]); }, l[0] * 1000); }); }
+  function stop() { run++; timers.forEach(clearTimeout); timers = []; clearInterval(typeT); vids.forEach(function (v) { try { v.pause(); v.removeAttribute('src'); v.load(); } catch (e) {} v.remove(); }); vids = [];
+    if (snow) { snow.stop(); snow = null; } bub.classList.remove('on'); ring.classList.remove('on'); tap.classList.remove('on'); replay.classList.remove('on'); who.textContent = ''; txt.textContent = ''; }
+  function start() { stop(); var S = SC[cur.scene], T = S[cur.style]; black.classList.add('on'); setTimeout(function () { black.classList.remove('on'); }, 60);
+    if (cur.scene === 'village') {
+      var v = vid(T.play, false); show(v); go(v); lines(S.lines);
+      later(function () { black.classList.add('on'); try { v.pause(); } catch (e) {} replay.classList.add('on'); }, T.end * 1000);
+    } else {
+      var s = big ? '' : '-s', a = vid(T.base + '-a' + s + '.mp4', true), b = vid(T.base + '-b' + s + '.mp4', false), c = vid(T.base + '-c' + s + '.mp4', true);
+      a.poster = B + T.base + s + '-poster.webp'; show(a); go(a); if (T.snow) { snow = makeSnow(); snow.on(true); } lines(S.lines);
+      ring.style.left = (T.ring[0] * 100) + '%'; ring.style.top = (T.ring[1] * 100) + '%';
+      later(function () { ring.classList.add('on'); tap.classList.add('on'); }, 8600);   // (the prompt comes in under Clive's line; it never replaces it)
+      ring.onclick = function () { if (!ring.classList.contains('on')) return; ring.classList.remove('on'); tap.classList.remove('on'); b.currentTime = 0; go(b); show(b, [a]); if (snow) snow.on(false);
+        b.onended = function () { c.currentTime = 0; go(c); show(c, [b]); if (snow) snow.on(true); };
+        later(function () { type(S.after[1], S.after[2]); }, T.done * 1000);
+        later(function () { replay.classList.add('on'); }, T.done * 1000 + 3500); };
+    } }
+  /* the snow over the painted ice while it is held still: soft pale flakes drifting down (the same as Storytime 2's) */
+  function makeSnow() { var cv = document.createElement('canvas'); pane.insertBefore(cv, black); cv.style.zIndex = 2; var x = cv.getContext('2d'), F = [], raf = 0, t0 = 0, live = true;
+    for (var i = 0; i < 90; i++) { var near = Math.random() < .18; F.push({ x: Math.random(), y: Math.random(), r: near ? .0026 + Math.random() * .0018 : .0009 + Math.random() * .0012, v: near ? .085 + Math.random() * .04 : .04 + Math.random() * .035, ph: Math.random() * 6.28, sw: .004 + Math.random() * .008, a: near ? .75 : .45 + Math.random() * .4 }); }
+    function step(now) { if (!live) return; raf = requestAnimationFrame(step); var dt = t0 ? Math.min(.05, (now - t0) / 1000) : 0; t0 = now; var W = cv.clientWidth, H = cv.clientHeight, d = Math.min(2, window.devicePixelRatio || 1);
+      if (!W) return; if (cv.width !== Math.round(W * d)) { cv.width = Math.round(W * d); cv.height = Math.round(H * d); } x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, H);
+      F.forEach(function (f) { f.y += f.v * dt; f.ph += dt * 1.3; if (f.y > 1.03) { f.y = -.03; f.x = Math.random(); } var px = (f.x + Math.sin(f.ph) * f.sw) * W, py = f.y * H, r = Math.max(.6, f.r * W);
+        var g = x.createRadialGradient(px, py, 0, px, py, r * 2.2); g.addColorStop(0, 'rgba(244,248,255,' + f.a + ')'); g.addColorStop(.45, 'rgba(226,236,255,' + (f.a * .55).toFixed(2) + ')'); g.addColorStop(1, 'rgba(210,225,255,0)');
+        x.fillStyle = g; x.beginPath(); x.arc(px, py, r * 2.2, 0, 6.2832); x.fill(); }); }
+    raf = requestAnimationFrame(step);
+    return { on: function (y) { cv.classList.toggle('on', !!y); }, stop: function () { live = false; cancelAnimationFrame(raf); cv.remove(); } }; }
+  function seg(id, key) { var el = document.getElementById(id); el.addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return;
+    [].forEach.call(el.children, function (c) { c.classList.toggle('on', c === b); }); cur[key] = b.dataset.v; start(); }); }
+  seg('scene', 'scene'); seg('style', 'style'); replay.addEventListener('click', start);
+  document.addEventListener('visibilitychange', function () { if (document.hidden) vids.forEach(function (v) { try { v.pause(); } catch (e) {} }); else vids.forEach(function (v) { if (v.classList.contains('on') && !v.ended) go(v); }); });
+  start();
+})();
+</script>
+</body>
+</html>

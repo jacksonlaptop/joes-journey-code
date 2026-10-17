@@ -66,7 +66,8 @@ body{display:flex;flex-direction:column;min-height:100svh;overflow-x:hidden;}
 </div>
 <script>
 (function () {
-  var B = /githack|github/.test(location.hostname) ? 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/' : '';   // online: the videos come from jsDelivr (fast, seekable); locally from beside the page
+  var REF = /githack/.test(location.hostname) ? (location.pathname.split('/')[3] || 'main') : '';   // online the page is opened at a commit (raw.githack.com/<user>/<repo>/<commit>/...)
+  var B = REF ? 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@' + REF + '/' : '';   // and its videos come from jsDelivr at that same commit (the repo is too big for jsDelivr to serve new files at @main); locally from beside the page
   var big = Math.max(innerWidth, innerHeight) * (window.devicePixelRatio || 1) > 2200 && innerWidth > 900;   // a phone gets the 1280 files
   var SC = {
     village: {

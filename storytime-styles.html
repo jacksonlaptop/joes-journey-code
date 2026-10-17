@@ -111,7 +111,8 @@ body{position:relative;display:flex;flex-direction:column;min-height:100vh;min-h
   function go(v) { var p = v.play(); if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError' && v.classList.contains('on')) tapplay.classList.add('on'); }); }
   function show(v, others) { v.classList.add('on'); setTimeout(function () { (others || []).forEach(function (o) { o.classList.remove('on'); try { o.pause(); } catch (e) {} }); }, 420); }
   var typeT = 0;
-  function type(name, text, ms) { clearInterval(typeT); who.textContent = name || ''; txt.textContent = ''; var i = 0, step = Math.max(14, (ms || text.length * 38) / text.length);
+  function type(name, text, ms) { clearInterval(typeT); who.textContent = name || 'Narrator';   // (Joe: narration has a name too, so the label line is never empty)
+    txt.textContent = ''; var i = 0, step = Math.max(14, (ms || text.length * 38) / text.length);
     typeT = setInterval(function () { i++; txt.textContent = text.slice(0, i); if (i >= text.length) clearInterval(typeT); }, step); }
   function bubble(name, text, at, secs) { bub.querySelector('b').textContent = name; bub.querySelector('span').textContent = text; bub.style.left = (at[0] * 100) + '%'; bub.style.top = (at[1] * 100) + '%';
     bub.classList.add('on'); later(function () { bub.classList.remove('on'); }, secs * 1000); }

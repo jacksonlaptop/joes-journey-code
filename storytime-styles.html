@@ -12,7 +12,7 @@
 :root{--ink:#3a2a12;--paper:#f3e2ba;--pink:#FF00F5;--bg:#04060b;}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;height:100%;background:var(--bg);color:#fff;font-family:"Joes Journey Headline",sans-serif;}
-body{display:flex;flex-direction:column;min-height:100svh;overflow-x:hidden;}
+body{position:relative;display:flex;flex-direction:column;min-height:100vh;min-height:100svh;overflow-x:hidden;}
 .top{display:flex;flex-direction:column;gap:10px;align-items:center;padding:calc(14px + env(safe-area-inset-top)) 16px 10px;}
 .title{font-size:15px;opacity:.75;letter-spacing:.02em;}
 .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
@@ -49,6 +49,21 @@ body{display:flex;flex-direction:column;min-height:100svh;overflow-x:hidden;}
 .replay{font:inherit;font-size:15px;color:#fff;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:9px 18px;min-height:40px;cursor:pointer;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .4s ease;}
 .replay.on{opacity:1;pointer-events:auto;}
 .replay:active{filter:brightness(.9) drop-shadow(2px 2px 0 var(--pink));transform:translateY(2px);}
+.tapplay{position:absolute;inset:0;z-index:8;display:none;align-items:center;justify-content:center;background:rgba(4,6,11,.35);border:0;font:inherit;color:#fff;font-size:18px;cursor:pointer;}
+.tapplay span{padding:10px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.5);background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}
+.tapplay.on{display:flex;}
+/* a phone on its side: the picture fills the height, the switchers sit over its top and the dialogue box over its foot (as in the tale) */
+@media (orientation:landscape) and (max-height:560px){
+  .top{position:absolute;left:0;right:0;top:0;z-index:20;padding:calc(6px + env(safe-area-inset-top)) 12px 0;}
+  .title{display:none;}
+  .seg button{font-size:13px;padding:6px 11px;min-height:34px;}
+  .stage{padding:0;gap:0;}
+  .pane{max-width:min(100vw,calc(100vh * 16 / 9));max-width:min(100vw,calc(100svh * 16 / 9));}
+  .cap{position:absolute;left:50%;bottom:calc(8px + env(safe-area-inset-bottom));translate:-50% 0;width:min(78vw,640px);min-height:0;padding:8px 14px 10px;font-size:14px;background:rgba(243,226,186,.95);z-index:15;}
+  .cap .who{margin-bottom:2px;}
+  .cap .tap{margin-top:4px;}
+  .foot{position:absolute;right:12px;top:calc(50px + env(safe-area-inset-top));z-index:20;}
+}
 </style>
 </head>
 <body>
@@ -60,7 +75,7 @@ body{display:flex;flex-direction:column;min-height:100svh;overflow-x:hidden;}
   </div>
 </div>
 <div class="stage">
-  <div class="pane" id="pane"><div class="black" id="black"></div><div class="bub" id="bub"><b></b><span></span></div><div class="ring" id="ring" role="button" aria-label="Tap the ice dragon"></div></div>
+  <div class="pane" id="pane"><div class="black" id="black"></div><div class="bub" id="bub"><b></b><span></span></div><div class="ring" id="ring" role="button" aria-label="Tap the ice dragon"></div><button class="tapplay" id="tapplay"><span>Tap to play</span></button></div>
   <div class="cap"><div class="who" id="who"></div><div class="txt" id="txt"></div><div class="tap" id="tap">Tap the ice dragon ↑</div></div>
   <div class="foot"><button class="replay" id="replay">Play again</button></div>
 </div>
@@ -91,7 +106,9 @@ body{display:flex;flex-direction:column;min-height:100svh;overflow-x:hidden;}
     v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.src = B + src; var tries = [B2 + src].concat(/-s\.mp4$|cartoon/.test(src) ? [] : [B + src.replace(/\.mp4$/, '-s.mp4'), B2 + src.replace(/\.mp4$/, '-s.mp4')]);
     v.addEventListener('error', function () { var n = tries.shift(); if (!n || !B) return; v.src = n; if (v.classList.contains('on')) go(v); });
     pane.insertBefore(v, black); vids.push(v); return v; }   // (a file the CDN refuses comes from GitHub instead; then the phone-size copy)
-  function go(v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+  var tapplay = document.getElementById('tapplay');   // (an iPhone in Low Power Mode will not start a video by itself: one tap starts it)
+  tapplay.addEventListener('click', function () { tapplay.classList.remove('on'); vids.forEach(function (v) { if (v.classList.contains('on') && !v.ended) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } }); });
+  function go(v) { var p = v.play(); if (p && p.catch) p.catch(function (e) { if (e && e.name === 'NotAllowedError' && v.classList.contains('on')) tapplay.classList.add('on'); }); }
   function show(v, others) { v.classList.add('on'); setTimeout(function () { (others || []).forEach(function (o) { o.classList.remove('on'); try { o.pause(); } catch (e) {} }); }, 420); }
   var typeT = 0;
   function type(name, text, ms) { clearInterval(typeT); who.textContent = name || ''; txt.textContent = ''; var i = 0, step = Math.max(14, (ms || text.length * 38) / text.length);
@@ -100,7 +117,7 @@ body{display:flex;flex-direction:column;min-height:100svh;overflow-x:hidden;}
     bub.classList.add('on'); later(function () { bub.classList.remove('on'); }, secs * 1000); }
   function lines(L) { L.forEach(function (l) { later(function () { if (l[1] === 'bub') bubble(l[2], l[3], l[4], l[5]); else type(l[2], l[3], l[4]); }, l[0] * 1000); }); }
   function stop() { run++; timers.forEach(clearTimeout); timers = []; clearInterval(typeT); vids.forEach(function (v) { try { v.pause(); v.removeAttribute('src'); v.load(); } catch (e) {} v.remove(); }); vids = [];
-    if (snow) { snow.stop(); snow = null; } bub.classList.remove('on'); ring.classList.remove('on'); tap.classList.remove('on'); replay.classList.remove('on'); who.textContent = ''; txt.textContent = ''; }
+    if (snow) { snow.stop(); snow = null; } bub.classList.remove('on'); tapplay.classList.remove('on'); ring.classList.remove('on'); tap.classList.remove('on'); replay.classList.remove('on'); who.textContent = ''; txt.textContent = ''; }
   function start() { stop(); var S = SC[cur.scene], T = S[cur.style]; black.classList.add('on'); setTimeout(function () { black.classList.remove('on'); }, 60);
     if (cur.scene === 'village') {
       var v = vid(T.play, false); show(v); go(v); lines(S.lines);

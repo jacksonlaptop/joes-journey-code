@@ -1,5 +1,5 @@
 /* BUILD f-1008a (2026-10-08) · performance round 2: one lenis.raf per frame (it was stepped twice, the wrong way and back); the modal guard's nav rule no longer re-styles the whole page. f-1007a · loading: the site's music is streamed and only created when it is first played (it was an 8.6 MB download and a full decode on every page load); the menu's card art loads when the menu is first reached for; the starfield can fetch three.js itself. */
-window.JJ_FOOTER_BUILD = 'f-1012d';
+window.JJ_FOOTER_BUILD = 'f-1021a';   // f-1021a: with the menu open, the first-achievement card and the Part Two offer take clicks only while they are SHOWING (.on); hidden, they lay over the whole page and swallowed every click and hover in the menu
 /* THE SOUND MOON, FROM THE FIRST PAINT (Joe, 2026-09-30: "the sound button should always be there, and it should still work and expand...
    no matter what, between pages etc"). The same function lives in jj-loader.js (the first of the site's scripts on every page, so the
    moon is drawn in the same frame as the loader) and in site-footer.js (in case a page has no loader). It draws the moon in its resting
@@ -304,7 +304,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var st = document.createElement('style'); st.id = 'jj-menu-polish'; st.textContent =
       'body.jj-menu-open *{pointer-events:none!important}body.jj-menu-open .menu-wrap,body.jj-menu-open .menu-wrap *,body.jj-menu-open .menu-container,body.jj-menu-open .menu-container *,body.jj-menu-open .nav-logo-link,body.jj-menu-open .nav-logo-link *,body.jj-menu-open #jj-sound-btn,body.jj-menu-open #jj-sound-btn *,body.jj-menu-open .audio-container-controller,body.jj-menu-open .audio-container-controller *,body.jj-menu-open #jj-sc-hud,body.jj-menu-open #jj-sc-hud *,body.jj-menu-open #jj-co-nav,body.jj-menu-open #jj-co-nav *{pointer-events:auto!important}' +
-      'body.jj-menu-open .jjst-ov.on,body.jj-menu-open .jjst-ov.on *,body.jj-menu-open #jj-first,body.jj-menu-open #jj-first *,body.jj-menu-open #jj-t2offer,body.jj-menu-open #jj-t2offer *{pointer-events:auto!important}body.jj-menu-open{overflow:hidden!important}body.jj-menu-open .menu-wrap{isolation:isolate;cursor:default}' +
+      'body.jj-menu-open .jjst-ov.on,body.jj-menu-open .jjst-ov.on *,body.jj-menu-open #jj-first.on,body.jj-menu-open #jj-first.on *,body.jj-menu-open #jj-t2offer.on,body.jj-menu-open #jj-t2offer.on *{pointer-events:auto!important}body.jj-menu-open{overflow:hidden!important}body.jj-menu-open .menu-wrap{isolation:isolate;cursor:default}' +
       '.menu-wrap::before{content:"";position:fixed;inset:0;z-index:-3;background:rgba(4,7,16,.92);-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);pointer-events:none;opacity:0;transition:opacity .9s ease}' +   // the dim + blur eases in behind the wipe, never snaps
       'body.jj-menu-open .menu-wrap::before{opacity:1}' +
       /* Close pressed: everything the menu put on screen — the art, the links, the rail, the moon, the companion card — is gone

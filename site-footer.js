@@ -1,5 +1,5 @@
 /* BUILD f-1008a (2026-10-08) · performance round 2: one lenis.raf per frame (it was stepped twice, the wrong way and back); the modal guard's nav rule no longer re-styles the whole page. f-1007a · loading: the site's music is streamed and only created when it is first played (it was an 8.6 MB download and a full decode on every page load); the menu's card art loads when the menu is first reached for; the starfield can fetch three.js itself. */
-window.JJ_FOOTER_BUILD = 'f-1021a';   // f-1021a: with the menu open, the first-achievement card and the Part Two offer take clicks only while they are SHOWING (.on); hidden, they lay over the whole page and swallowed every click and hover in the menu
+window.JJ_FOOTER_BUILD = 'f-1025a';   // f-1025a: window.jjSoundOff (one-press mute for Storytime's transport) ·   // f-1021a: with the menu open, the first-achievement card and the Part Two offer take clicks only while they are SHOWING (.on); hidden, they lay over the whole page and swallowed every click and hover in the menu
 /* THE SOUND MOON, FROM THE FIRST PAINT (Joe, 2026-09-30: "the sound button should always be there, and it should still work and expand...
    no matter what, between pages etc"). The same function lives in jj-loader.js (the first of the site's scripts on every page, so the
    moon is drawn in the same frame as the loader) and in site-footer.js (in case a page has no loader). It draws the moon in its resting
@@ -1028,6 +1028,7 @@ if (flyRiveEl) { flyRiveEl.style.display = 'block'; flyRiveEl.style.opacity = '1
   function jjMixClose() { if (!jjMixP) return; var b = document.getElementById('jj-sound-btn'); if (!jjMixP.classList.contains('open')) return; jjMixP.classList.add('closing'); jjMixP.classList.remove('open'); if (b) b.setAttribute('aria-expanded', 'false'); setTimeout(function () { if (!jjMixP.classList.contains('open')) document.documentElement.classList.remove('jj-mx-on'); }, 300); clearTimeout(jjMixP._shT); jjMixP._shT = setTimeout(function () { if (!jjMixP.classList.contains('open')) jjMixP.classList.remove('shown', 'closing'); }, 460); }   /* it keeps its theme until it has faded, so it never goes pale on the way back */
   function jjMixToggle() { if (jjMixP && jjMixP.classList.contains('open')) jjMixClose(); else jjMixOpen(); }
   window.jjMixOpen = jjMixOpen;
+  window.jjSoundOff = function () { jjSetMuted(true); };   /* f-1025a: one-press mute, for Storytime's transport (?ui=2): the mixer's own 'Mute all' state */
   /* f-1008b: "sound on", for a page script that asks the visitor (Storytime's prompt). It pressed the moon, which toggled mute before the mixer existed; the moon now
      opens the mixer, so "Yes" opened a panel and left every group at 0. This is the mixer's own "Unmute all": the levels the visitor last had, or full. */
   window.jjSoundOn = function () { var K = ['voice', 'sfx', 'music'], prev = null; if (jjUserMuted) jjSetMuted(false);

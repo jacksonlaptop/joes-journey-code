@@ -1662,7 +1662,11 @@
   /* the castle's low-pass: one BiquadFilter spliced in after the playing sound's own gain (Howler's Web Audio path); its cut-off glides on a log scale */
   function musFilt(M, dt) { if (M.lpT == null || M.id == null || !window.Howler || !Howler.ctx || !Howler.masterGain) return; var h = sndH[M.f], q = h && h._soundById && h._soundById(M.id); if (!q || !q._node) return;
     M.lpHz = Math.exp(Math.log(M.lpHz || M.lpT) + (Math.log(M.lpT) - Math.log(M.lpHz || M.lpT)) * Math.min(1, dt / (M.lpMs || 2500) * 3));
-    try { if (!q._jjLp) { var f = Howler.ctx.createBiquadFilter(); f.type = 'lowpass'; f.Q.value = .5; q._node.disconnect(); q._node.connect(f); f.connect(Howler.masterGain); q._jjLp = f; }
+    /* (Joe: 'it's auto playing music even if on mute'): the filter must hand on to where the sound was going: the site's mixer gives every sound its group's
+       gain (n._jjG: Music, Sound effects, Voices: mute and the moon's levels live there), so the filter feeds that, and is re-joined whenever the mixer moves it */
+    try { var n = q._node, to = n._jjG || Howler.masterGain;
+      if (!q._jjLp) { q._jjLp = Howler.ctx.createBiquadFilter(); q._jjLp.type = 'lowpass'; q._jjLp.Q.value = .5; q._jjLpTo = null; }
+      if (q._jjLpTo !== to || q._jjLpG !== n._jjG) { try { n.disconnect(); } catch (e1) {} try { q._jjLp.disconnect(); } catch (e2) {} n.connect(q._jjLp); q._jjLp.connect(to); q._jjLpTo = to; q._jjLpG = n._jjG; }
       q._jjLp.frequency.setTargetAtTime(Math.min(20000, M.lpHz), Howler.ctx.currentTime, .03); } catch (e) {} }
   /* the sword-draw frame of 3.2 (watched on the clip's own clock): the music is eased DOWN to its quietest over 1.2 s. Nothing else: no jump, no change of speed */
   function drawWatch(a, id) { cancelAnimationFrame(drawRaf); var M = MUSIC.oasis, loop = function () { if (a.comp() !== 's2_' + id || M.drawn || !M.want) return; drawRaf = requestAnimationFrame(loop); if (a.paused()) return;
@@ -2556,9 +2560,9 @@
   function onFx(name, key, e, a) { var m = name.split(':'), shotId = m[0], k = m[1], sh = SHOTS[shotId]; if (!sh || (e && a.paused())) return;   // st2-14 · rule 2: nothing answers a press while paused
     var cfg = (sh.ints || []).filter(function (x) { return x.key === k; })[0] || (sh.ints || [])[0] || { react: 'tap' }, rec = a.layers()[k], el = rec && rec.el, id = shotId + ':' + k;
     taps[id] = (taps[id] || 0) + 1;
-    if (WH && WH.id === shotId && WH.state === 'idle') { var ws = (a.pane ? a.pane() : a.stage()), wr0 = ws && ws.getBoundingClientRect(), fx = WH.W.tapFx && WH.W.tapFx[k];   // st2-29: a press on a painted take (its things are painted into the picture)
-      if (fx && wr0 && el) { var wb = el.getBoundingClientRect(); burst((e ? e.clientX : wb.left + wb.width / 2) - wr0.left, (e ? e.clientY : wb.top + wb.height / 2) - wr0.top, fx); }
-      if (WH.W.cracks && k === 'egg') wholeCrack(WH, taps[id]); }
+    if (WH && WH.id === shotId) { var ws = (a.pane ? a.pane() : a.stage()), wr0 = ws && ws.getBoundingClientRect(), fx = WH.W.tapFx && WH.W.tapFx[k];   /* st2-32 (Joe: 'it says tap the vials but nothing happens'): the vials and staffs sit still in the picture the whole shot, and the landing is on its end frame only a moment, so a press answers at any point of the take */   // st2-29: a press on a painted take (its things are painted into the picture)
+      if (fx && wr0 && el) { var wb = el.getBoundingClientRect(); burst((e ? e.clientX : wb.left + wb.width / 2) - wr0.left, (e ? e.clientY : wb.top + wb.height / 2) - wr0.top, fx);  if (fx && e) st2sfx(a, k === 'vial' ? 'puff' : 'chime', .25, true, true); }
+      if (WH.W.cracks && k === 'egg' && WH.state === 'idle') wholeCrack(WH, taps[id]); }
     var ld = (sh.layers || []).filter(function (x) { return x.key === k; })[0], stg = (a.pane ? a.pane() : a.stage()), sr0 = stg ? stg.getBoundingClientRect() : null;
     if (cfg.react === 'choose') { if (a.comp() === 's2_' + shotId && !document.getElementById('jjst2-choice')) { skipTo = shotId; a.next(); } return; }   // an egg in the nest: the choice opens now
     if (ld && ld.hot && sr0 && el) { var hb = el.getBoundingClientRect(); burst((e ? e.clientX : hb.left + hb.width / 2) - sr0.left, (e ? e.clientY : hb.top + hb.height * .6) - sr0.top, 'spark'); }   // nothing of its own to wiggle (it is painted into the land): a spark where it was pressed (or at its heart, when it goes off by itself)

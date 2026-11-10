@@ -1,3 +1,4 @@
+window.jjQL = window.jjQL || function () { var Q = window.jjQuality; return Q ? Q.level : ((window.jjLite && window.jjLite.on) ? 1 : 3); };   /* m-1110a: Grandad is 'the wizard' (Storytime's narrator is someone else). m-1107a: the site's picture level, 0 Ultra lite .. 3 Full power (site-footer f-1107a) */
 /* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
 if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
 /* ============================================================================
@@ -9,15 +10,15 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
    the NEXT ↓ button, and the bottom era anchor nav (click = scroll to era).
 
    WEBFLOW: load before </body> on the Storytime page (after storytime.js):
-     <script src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/mystory.js?v=1"></script>
+     <script src="https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/mystory.js?v=1"></script>
    It appends itself to <body> (or to #jj-mystory-mount if that div exists).
    All copy/eras/years live in the CONFIG below.
    ============================================================================ */
 (function () {
-  window.JJ_MYSTORY_BUILD = 'm-1008b "Let there be Joe" is spoken as the light lands, after the tale\'s last line · m-1008a the sleep rule finished: steps and the finale animate only on screen, eras only while showing, clips play only on screen and loops far away give their decoder back, the map canvas is drawn on approach; a score card or panel no longer re-styles the story; BEHIND A SWITCH, off by default (?skipfar=1, or =steps / =sky for one half): steps and eras more than a screen away are not rendered, and the sky hides what is far; m-1007a dormant until the hand-over: nothing is built under the tale (jjTale / jj:mystory-prefetch, -wake, -ready, -lift, -sleep), sleepable after a replay, the opacity polls are gone; m-1002a the sound moon: quiet (sound on, nothing playing) keeps the light moon with resting bars, only muted goes dark; m-1001b the octopus is a story layer in front of the photos and comes back after his ink jet; the J rocket rises at under half speed; the homepage Jupiter + Mars in the Information Age sky · m-1001 the modern map is drawn in code (dot-matrix world, pins from real lat/long, trails, scanlines); old-map projection config ready · m-0930d the coral octopus is the Precambrian award (no flip; the purple one retired), Joe\u2019s rocket flies with flames, the UFO hovers on thrusters · m-0930c Joe\u2019s octopus swims the Precambrian sea (ms-octopus-swim), no easel, Mars + Jupiter for the ringed planet, a narrower Figma middle pane · m-0930b volcano eruption (click, Blender one-shot + code fallback, Prehistoric achievement), creatures back to their stepped frames, themed film skip buttons, Figma page list back (one column, Wanda first, prompts), exam CTA as the Replay Storytime banner, finale settles on a return · m-0930 Blender volcano + campfire, crossfaded creature frames, J banner cloth, cinema hover in the dark + themed X, no Canada on map one, Super Reel flatter window + bigger phones, scroll fades, captions · m-0928 drag hint (fire + post-it), fire drag no longer freezes the cursor, slower shadows, Taiwan pill between slides, dream room never upscales Joe, BIMA statues, Super Reel even spacing + phones fade · m-0917 perf governor + block captions + one games slide + header on the nav line · M111 - Big Bang and quiz achievements wired';
+  window.JJ_MYSTORY_BUILD = 'm-1107a the four picture levels: Lite and Ultra lite skip far slides and far sky (the skipfar switch), still sky layers (no parallax), era scenery as stills; Ultra lite holds the sky\'s twinkle; fewer finale specks; the sound bars rest when muted · m-1008b "Let there be Joe" is spoken as the light lands, after the tale\'s last line · m-1008a the sleep rule finished: steps and the finale animate only on screen, eras only while showing, clips play only on screen and loops far away give their decoder back, the map canvas is drawn on approach; a score card or panel no longer re-styles the story; BEHIND A SWITCH, off by default (?skipfar=1, or =steps / =sky for one half): steps and eras more than a screen away are not rendered, and the sky hides what is far; m-1007a dormant until the hand-over: nothing is built under the tale (jjTale / jj:mystory-prefetch, -wake, -ready, -lift, -sleep), sleepable after a replay, the opacity polls are gone; m-1002a the sound moon: quiet (sound on, nothing playing) keeps the light moon with resting bars, only muted goes dark; m-1001b the octopus is a story layer in front of the photos and comes back after his ink jet; the J rocket rises at under half speed; the homepage Jupiter + Mars in the Information Age sky · m-1001 the modern map is drawn in code (dot-matrix world, pins from real lat/long, trails, scanlines); old-map projection config ready · m-0930d the coral octopus is the Precambrian award (no flip; the purple one retired), Joe\u2019s rocket flies with flames, the UFO hovers on thrusters · m-0930c Joe\u2019s octopus swims the Precambrian sea (ms-octopus-swim), no easel, Mars + Jupiter for the ringed planet, a narrower Figma middle pane · m-0930b volcano eruption (click, Blender one-shot + code fallback, Prehistoric achievement), creatures back to their stepped frames, themed film skip buttons, Figma page list back (one column, Wanda first, prompts), exam CTA as the Replay Storytime banner, finale settles on a return · m-0930 Blender volcano + campfire, crossfaded creature frames, J banner cloth, cinema hover in the dark + themed X, no Canada on map one, Super Reel flatter window + bigger phones, scroll fades, captions · m-0928 drag hint (fire + post-it), fire drag no longer freezes the cursor, slower shadows, Taiwan pill between slides, dream room never upscales Joe, BIMA statues, Super Reel even spacing + phones fade · m-0917 perf governor + block captions + one games slide + header on the nav line · M111 - Big Bang and quiz achievements wired';
   try { console.log('%c[JJ] mystory.js build: ' + window.JJ_MYSTORY_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
 
-  var GB = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
+  var GB = 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/';
   /* demo pages can point at local copies via window.JJ_SPRITE_BASE */
   var SB = window.JJ_SPRITE_BASE || GB;
 
@@ -258,7 +259,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
   /* the star layers drifting at their own speeds on scroll. Each layer holds dozens of individually
      composited (animated) stars, so translating the parent forces them all to re-composite every
      frame — flip to false to leave the field still and let it scroll with the story. */
-  var SKY_PARALLAX = true;   /* the stars drift at their own speed behind the words (Joe, 2026-09-18) */
+  var SKY_PARALLAX = window.jjQL() >= 2;   /* m-1107a: Lite and Ultra lite leave the sky still behind the words (six full-height layers not moved every scroll frame) */   /* the stars drift at their own speed behind the words (Joe, 2026-09-18) */
   /* ---- every job, pinned to the ruler: the year label sits directly ABOVE its job ----
      `logo` is a filename in the sprite folder (drop the real logos in and they appear); until then
      each one falls back to a monogram tile built from the company's initials. */
@@ -308,7 +309,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
        joins Store > Videos for later). A normal-width slide now, so its caption lines up with the others (Joe, 2026-09-18). The wizard
        from the Big Bang loops bottom-left: his character, keeping the old man company. */
     { era: 5, cap: 'I\u2019m sure you want to put a face to the name - let\u2019s see if you can recognise this crazy old man\u2019s voice....', sub: 'Press it for sound',
-      reveal: { src: 'vid-grandad.mp4', poster: 'vid-grandad.jpg', cap: 'The voice of Storytime' }, wiz: true }
+      reveal: { src: 'vid-grandad.mp4', poster: 'vid-grandad.jpg', cap: 'The voice of the wizard' }, wiz: true }
   ];
   /* SHOW_JOBS spreads the ruler to the design's density (116px/year) so a whole job card fits between
      one year label and the next; with the rail off it returns to the original compact 60px/year. */
@@ -2167,6 +2168,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
            all. Which ones are near is worked out in render() from numbers it already has (each item's place in its layer, the layer's
            drift): no observer, no reads of the items. Same sky: the same 314 things in the same places, drifting at the same speeds. */
       'html.jjms-skipfar #jjms .step.jj-far,html.jjms-skipfar #jjms .finale.jj-far{content-visibility:hidden;}' +
+      'html.jj-ultra #jjms-sky *{animation-play-state:paused!important;}' +   /* m-1107a: Ultra lite: the sky holds its twinkle (still there, still scrolling with the story) */
       'html.jjms-skipfar #jjms-world .wera:not(.on){content-visibility:hidden;}' +
       'html.jjms-skyfar #jjms-sky .jj-off,html.jjms-skyfar #jjms-sky .jj-off img{visibility:hidden!important;will-change:auto!important;}' +
       'html.jjms-skyfar #jjms-sky img.gdot:not(.tw),html.jjms-skyfar #jjms-sky img.gstar:not(.tw){will-change:auto;}' +
@@ -2607,7 +2609,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
           s.atlas ? '<div class="jja-rib"><p class="cap">' + cap + '</p>' + (s.sub ? '<p class="sub jja-sub">' + esc(s.sub) + '</p>' : '') + '</div>' :   /* the map's title, on a parchment ribbon */
         '<p class="cap' + (i === 0 ? ' hero' : '') + '">' + cap + '</p>' +
         (s.sub ? '<p class="sub">' + (s.tall && !s.feat ? esc(s.sub) : disperseCap(s.sub, null, s.funk)) + '</p>' : '')) +
-        (s.reveal ? '<button type="button" class="jjms-reveal" data-vid="' + esc(s.reveal.src) + '" data-cap="' + esc(s.reveal.cap) + '" data-cursor="hover" aria-label="Reveal the voice of Storytime">' +
+        (s.reveal ? '<button type="button" class="jjms-reveal" data-vid="' + esc(s.reveal.src) + '" data-cap="' + esc(s.reveal.cap) + '" data-cursor="hover" aria-label="Reveal the voice of the wizard">' +
           '<span class="rvshell"><img src="' + SB + esc(s.reveal.poster) + '" alt="" decoding="async"><span class="rvq">?</span></span><span class="rvbtn">Press to reveal</span></button>' : '') +
         (s.tall ? '</div>' : '') + '</div>';   /* sub disperses + floats like the caption */
     }
@@ -2626,7 +2628,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
         'width:' + w + 'px;height:' + h + 'px;background:' + col + '"></span>';
     }
     var dests = '';
-    var MB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';   /* the menu's art lives with the score files */
+    var MB = window.JJ_SCORE_BASE || 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/';   /* the menu's art lives with the score files */
     for (var l = 0; l < LINKS.length; l++)
       dests += '<a href="' + LINKS[l].href + '" class="door" data-key="' + LINKS[l].key + '" data-cursor="hover" style="--hue:' + LINKS[l].hue + '" aria-label="' + LINKS[l].label + '">' +
         '<img alt="" loading="lazy" src="' + MB + LINKS[l].img + '"><span class="dsub">' + LINKS[l].sub + '</span><span class="dcta">' + LINKS[l].cta + '</span>' +
@@ -2718,7 +2720,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
     var dustCollapse = null;
     (function () {
       var field = finale.querySelector('.dfield'), dustEl = finale.querySelector('.dust'), countEl = finale.querySelector('.dcount'); if (!field || !dustEl) return;
-      var N = 110, M = [], W = 0, H = 0, cx = 0, cy = 0, cur = { x: -1e5, y: -1e5 }, held = 0, raf = 0, on = false, mode = 0, tick = 0, full = false;
+      var N = Math.round(110 * [.35, .5, .8, 1][window.jjQL()]), M = [], W = 0, H = 0, cx = 0, cy = 0, cur = { x: -1e5, y: -1e5 }, held = 0, raf = 0, on = false, mode = 0, tick = 0, full = false;
       var html = ''; for (var i = 0; i < N; i++) html += '<b style="--s:' + (2 + Math.random() * 3.5).toFixed(1) + 'px;--o:' + (0.35 + Math.random() * 0.55).toFixed(2) + '"></b>'; field.innerHTML = html;
       var els = field.children; for (var j = 0; j < N; j++) M.push({ el: els[j], x: 0, y: 0, hx: 0, hy: 0, vx: 0, vy: 0, st: 0, a: 0, r: 0, w: 0, ph: Math.random() * 6.28 });
       function measure() { var fr = finale.getBoundingClientRect(), dr = dustEl.getBoundingClientRect(); W = fr.width; H = fr.height; cx = dr.left - fr.left + dr.width / 2; cy = dr.top - fr.top + dr.height / 2; }
@@ -2946,7 +2948,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
          legs. Press it and it wobbles and chirps (the orb shimmer). Transforms / opacity only; the loop runs only while the era is on screen;
          phones and reduced motion get both parked, with a gentle CSS bob. Upright screens: the words fill the sky, so the UFO stays away. */
       var sky5 = null;
-      (function () { var E5 = world.querySelector('.wera[data-era="5"]'), near = E5.querySelector('.wnear'), STILL = !!(window.matchMedia && (window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(hover: none) and (pointer: coarse)').matches));
+      (function () { var E5 = world.querySelector('.wera[data-era="5"]'), near = E5.querySelector('.wnear'), STILL = window.jjQL() <= 1 || !!(window.matchMedia && (window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(hover: none) and (pointer: coarse)').matches));
         var FL = '<i class="fla"><i class="f1"></i><i class="f2"></i><i class="f3"></i></i>';
         var rj = document.createElement('div'); rj.className = 'wrj' + (STILL ? ' still' : ''); rj.innerHTML = '<i class="rjfl">' + FL + '</i><img alt="" src="' + SB + 'era-5-rocket-joe.webp">';
         var uf = document.createElement('div'); uf.className = 'wufo' + (STILL ? ' still' : ''); uf.innerHTML = '<i class="ufin"><i class="uth" style="left:22%;top:83%"></i><i class="uth" style="left:48%;top:95%"></i><i class="uth" style="left:76%;top:97%"></i><img alt="" src="' + SB + 'era-5-ufo-alien.webp"></i>';
@@ -3001,7 +3003,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
            Prehistoric land is on screen and only play while it is; phones and reduced motion get the posters. */
         var FXL = [[ff, 'wfx vfx', 'left:56.667%;top:-13.333%;width:17.5%;aspect-ratio:420/460', [['ms-fx-volcano-smoke', 'sm'], ['ms-fx-volcano-glow-a', 'gl']]],
           [fm, 'wfx ffx', 'left:49.208%;top:46.778%;width:6.25%;aspect-ratio:150/200', [['ms-fx-campfire-glow-a', 'gl'], ['ms-fx-campfire', 'sm']]]], FXV = [],
-          FXS = !!(window.matchMedia && (window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(hover: none) and (pointer: coarse)').matches));
+          FXS = window.jjQL() <= 1 || !!(window.matchMedia && (window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(hover: none) and (pointer: coarse)').matches));
         FXL.forEach(function (L) { var box = document.createElement('div'); box.className = L[1]; box.style.cssText = L[2];
           L[3].forEach(function (c) { var el; if (FXS) { el = document.createElement('img'); el.alt = ''; el.setAttribute('data-psrc', SB + c[0] + '-poster.webp'); }
             else { el = document.createElement('video'); el.muted = true; el.loop = true; el.playsInline = true; el.setAttribute('muted', ''); el.setAttribute('playsinline', ''); el.preload = 'none'; el.poster = SB + c[0] + '-poster.webp'; el._base = SB + c[0]; FXV.push(el); }
@@ -5449,6 +5451,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       (function sndTick() {
         requestAnimationFrame(sndTick);
         if (++sndFrame % 2) return;
+        if (userMuted && sndCur[0] + sndCur[2] < 0.002) return;   /* m-1107a: muted and already at rest: nothing to write */
         var t = performance.now() / 1000;
         var driver = (userMuted || !ambStarted) ? 0 : (0.42 + 0.34 * Math.sin(t * 2)) * (ambDucked ? 0.4 : 1);
         for (var bi = 0; bi < 5; bi++) {
@@ -6101,7 +6104,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
     cut.querySelector('.cskip').addEventListener('click', function (e) { e.stopPropagation(); cutEnd(); });
     jjOn(document, 'keydown', function (e) { if (cutOn && (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); cutEnd(); } }, true);
     var rv = wrap.querySelector('.jjms-reveal');
-    if (rv) rv.addEventListener('click', function (e) { e.stopPropagation(); var first = !rv.classList.contains('done'); rv.classList.add('done'); rv.querySelector('.rvbtn').textContent = 'Watch again'; var wc = wrap.querySelector('.wizcap'); if (wc) { wc.textContent = 'Jim Jackson - Wizard & Narrator'; wc.classList.add('named'); }
+    if (rv) rv.addEventListener('click', function (e) { e.stopPropagation(); var first = !rv.classList.contains('done'); rv.classList.add('done'); rv.querySelector('.rvbtn').textContent = 'Watch again'; var wc = wrap.querySelector('.wizcap'); if (wc) { wc.textContent = 'Jim Jackson - the wizard'; wc.classList.add('named'); }
       openVideo(rv); if (window.jjScore) window.jjScore.award('vid-grandad');
       if (first) closeVideo.after = function () { toast('Want him again? He lives in <b>Store &gt; Videos</b> now'); }; });
     function toast(html) { var t = document.getElementById('jjms-toast'); if (!t) { t = document.createElement('div'); t.id = 'jjms-toast'; document.body.appendChild(t); }
@@ -6149,7 +6152,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
        A skipped step still answers measurements (the browser lays it out when asked), so nothing in init needed to change. That is tested
        once, with a 7 px probe in the first step that is skipped; only a browser that answers 0 gets the belt and braces: a step that wakes
        for the first time since a RESIZE re-runs init's own resize handlers once (the same re-measure the hand-over's wake does). */
-    var SKF = (location.search.match(/[?&]skipfar=(1|steps|sky)\b/) || [])[1] || (window.JJ_MS_SKIPFAR === true ? '1' : (window.JJ_MS_SKIPFAR === 'steps' || window.JJ_MS_SKIPFAR === 'sky') ? window.JJ_MS_SKIPFAR : '');
+    var SKF = (location.search.match(/[?&]skipfar=(1|steps|sky)\b/) || [])[1] || (window.JJ_MS_SKIPFAR === true ? '1' : (window.JJ_MS_SKIPFAR === 'steps' || window.JJ_MS_SKIPFAR === 'sky') ? window.JJ_MS_SKIPFAR : (/[?&]skipfar=0\b/.test(location.search) || window.JJ_MS_SKIPFAR === false ? '' : window.jjQL() <= 1 ? '1' : ''));   /* m-1107a: on by default in Lite and Ultra lite; ?skipfar=0 keeps it off */
     if (SKF === '1' || SKF === 'sky') (function skyFar() {   /* THE SKY, same switch (the class is read by governSky() and dodgeStars(), which start later) */
       var skyEl = document.getElementById('jjms-sky'); if (!skyEl || !slayers.length) return; document.documentElement.classList.add('jjms-skyfar');
       var items = []; slayers.forEach(function (sl) { var k = SKY_PARALLAX ? 1 - (+sl.getAttribute('data-f')) : 0;

@@ -1,5 +1,7 @@
 /* BUILD h-1007c (2026-10-07) · the Rive sleeper: each Webflow Rive canvas is paused while it cannot be seen and woken one panel ahead of arriving; c: the waves sleep while they are parked below the screen (landing, Big Bang). See the last block of this file. `/?rivesleep=0` turns it off. */
-window.JJ_HOME_BUILD = 'h-1013c';
+window.JJ_HOME_BUILD = 'h-1107a';   // h-1107a: the four picture levels (Ultra lite, Lite, Medium, Full power) and the free wins: see 'h-1107a' notes
+window.jjQL = window.jjQL || function () { var Q = window.jjQuality; return Q ? Q.level : ((window.jjLite && window.jjLite.on) ? 1 : 3); };   /* the site's picture level, 0 Ultra lite .. 3 Full power (site-footer f-1107a) */
+
 /* jjClipSrc(base[, query]): ONE <source> per clip, the format this browser should use (Safari: the HEVC-alpha .mov; everyone else: the VP9-alpha .webm), so nothing downloads or probes the other */
 if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return function (b, q) { if (hevc === null) { try { hevc = !window.chrome && !!document.createElement('video').canPlayType('video/mp4; codecs="hvc1"'); } catch (e) { hevc = false; } } q = q || ''; return hevc ? '<source src="' + b + '.mov' + q + '" type=\'video/mp4; codecs="hvc1"\'>' : '<source src="' + b + '.webm' + q + '" type="video/webm">'; }; })();
 (function () {
@@ -17,7 +19,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
   var SITTING_ALIEN_SAD   = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a1020606c5b65a83f63a171_sassy%20boy%201.svg';
   var SITTING_ALIEN_HAPPY = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a102060d6130fe4145e128e_happy%20boy.svg';
   /* the Seedance alien clips (keyed, repo root): the five peeking aliens play their full clip once when they peer in; the sitting alien has four states */
-  var ABASE = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
+  var ABASE = window.JJ_SCORE_BASE || 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/';
   var PEEK = { TL: 'alien-peek-tl', TM: 'alien-peek-tm', BR: 'alien-peek-br', BL: 'alien-peek-bl', BM: 'alien-peek-bm' };   // TR has no clip yet — it keeps the SVG
   function clipVideo(name, loop) {
     var v = document.createElement('video'); v.muted = true; v.loop = !!loop; v.playsInline = true; v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
@@ -227,6 +229,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       '#jj-flyer.on.over-text{opacity:.22;}';   /* he steps back while words pass under him, so a line is never hidden behind his head */
     (document.head || document.documentElement).appendChild(st);
     (function () {                                             /* the watcher: any panel line crossing flying Joe fades him down */
+      return;   /* h-1107a: #jj-flyer has been an unseen marker since h-1013c, so there is nothing to fade: the 140 ms scan of every letter is off */
       var boxes = [], lastScan = 0;
       setInterval(function () { var f = document.getElementById('jj-flyer'); if (!f || !f.classList.contains('on')) return;
         var now = Date.now(); if (now - lastScan > 1500) { lastScan = now; var set = []; document.querySelectorAll('.jj-panel-char').forEach(function (c) { var p = c.parentElement; if (p && set.indexOf(p) < 0) set.push(p); }); boxes = set; }
@@ -625,8 +628,15 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
   function startFloatLoop() {
     if (floatLoopStarted) return;
     floatLoopStarted = true;
+    var fN = 0, frozen = false;
     function loop() {
       if (!bgEnabled) { requestAnimationFrame(loop); return; }
+      /* h-1107a: nothing while the chooser covers the page or the tab is away; Ultra lite holds the letters still (one write to put them back), Lite moves
+         them every 3rd frame, Medium every 2nd, Full power every frame; and a line off the screen is not moved at all */
+      var lv = window.jjQL();
+      if (document.hidden || document.body.classList.contains('jj-choose-open')) { requestAnimationFrame(loop); return; }
+      if (lv === 0) { if (!frozen) { frozen = true; for (var z = 0; z < allPanelChars.length; z++) if (!allPanelChars[z]._disintegrating) allPanelChars[z].style.transform = ''; } setTimeout(function () { requestAnimationFrame(loop); }, 500); return; }
+      frozen = false; fN++; if (fN % [1, 3, 2, 1][lv]) { requestAnimationFrame(loop); return; }
       var t = performance.now() / 1000;
       var vw = window.innerWidth;
       var parentAmps = new Map();
@@ -640,6 +650,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
           amp = parentAmps.get(parent);
         } else {
           var rect = parent.getBoundingClientRect();
+          if (rect.right < -80 || rect.left > vw + 80 || rect.bottom < -80 || rect.top > window.innerHeight + 80) { parentAmps.set(parent, -1); continue; }   /* h-1107a: off the screen */
           var center = (rect.left + rect.right) / 2;
           var normPos = center / vw;
           if (normPos >= 0.5)      amp = 0.08;
@@ -647,6 +658,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
           else                     amp = 0.08 + ((0.5 - normPos) / 0.5) * 1.52;
           parentAmps.set(parent, amp);
         }
+        if (amp < 0) continue;
         var seed = c._floatSeed;
         var y = (Math.sin(t * 0.7 + seed * 1.3) * 0.65 + Math.sin(t * 1.3 + seed * 2.5) * 0.35) * 24 * amp;
         var x = (Math.sin(t * 0.9 + seed * 2.1) * 0.65 + Math.sin(t * 1.5 + seed * 0.9) * 0.35) * 12 * amp;
@@ -1427,10 +1439,10 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       if (!running) return;
       rafId = requestAnimationFrame(loop);
       frame++;
-      if (frame % 3) return; // ~20fps is plenty for rain
+      var mq = window.jjQL(); if (frame % [5, 4, 3, 3][mq]) return; // ~20fps is plenty for rain (h-1107a: 15 in Lite, 12 in Ultra lite)
       ctx.clearRect(0, 0, W, H);
       ctx.font = 'bold ' + fontSize + 'px monospace';
-      for (var c = 0; c < cols; c++) {
+      for (var c = 0; c < cols; c += (mq === 0 ? 2 : 1)) {   /* h-1107a: Ultra lite rains in every other column */
         var x = c * fontSize, head = drops[c];
         if (Math.random() < .08) cells[c][(Math.random() * 10) | 0] = GLYPHS[(Math.random() * GLYPHS.length) | 0];
         for (var t = 0; t < 10; t++) {
@@ -1688,7 +1700,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
        "gazed back upon us?". 15.1s of clip across his 19.6s on screen (PHIL_IN → PHIL_OUT), so it plays at 0.77x.
        Sized and placed so his BODY sits where the old sprite stood (lower-left, ~26vh tall): in the clip's frame his
        body spans 21-59% across and 31-87% down, so the 4:3 box is 46.4vh tall and pushed left/up to match. */
-    var wiz = document.createElement('video');
+    var wiz = document.createElement('video'); wiz.className = 'jj-bbwiz';
     wiz.muted = true; wiz.playsInline = true; wiz.preload = 'auto'; wiz.setAttribute('muted', ''); wiz.setAttribute('playsinline', '');
     wiz.poster = ABASE + 'bb-wizard-poster.webp';
     wiz.innerHTML = '' + jjClipSrc(ABASE + 'bb-wizard') + '';
@@ -1777,11 +1789,11 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
   // self-contained json in the GitHub repo) and three round glimpses of the site's
   // own worlds — village, woods, castle — drift out of it, then everything slips
   // away as "Poetic, indeed." lands. Degrades to nothing if lottie failed to load.
-  var DOORWAY_JSON = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/Flow%202%20(2).json';
+  var DOORWAY_JSON = 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/Flow%202%20(2).json';
   var WORLD_GLIMPSES = [
-    'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/story-vil-bg.webp',
-    'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/story-wood-bg.webp',
-    'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/story-cas-bg.webp'
+    'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/story-vil-bg.webp',
+    'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/story-wood-bg.webp',
+    'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/story-cas-bg.webp'
   ];
   /* The doorway beat ("…wondering if they were doorways into another world"). Joe's stone arch — a still for now,
      his Seedance "turning on" clip once it lands — with the tale's village masked into the opening, and his four
@@ -2102,7 +2114,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
     inner.id = 'jj-anim-stars-inner';
     inner.style.cssText = 'position: absolute; top: 0; left: 0; width: 300vw; height: 100vh; will-change: transform;';
     wrap.appendChild(inner);
-    for (var i = 0; i < 40; i++) {
+    for (var i = 0, nS = [16, 26, 34, 40][window.jjQL()]; i < nS; i++) {   /* h-1107a: fewer stars in the lighter levels */
       var star = document.createElement('img');
       star.src = ASSET_STAR;
       var size = 8 + Math.random() * 22;
@@ -2157,7 +2169,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       backWrap.style.opacity  = op;
       frontWrap.style.opacity = op;
       if (!bgEnabled) {
-        if (animStarsWrap) animStarsWrap.style.opacity = animStarsWrap._jjForceVisible ? '1' : '0';
+        if (animStarsWrap) { animStarsWrap.style.opacity = animStarsWrap._jjForceVisible ? '1' : '0'; animStarsWrap.classList.toggle('jj-zz', !animStarsWrap._jjForceVisible); }   /* h-1107a: unseen = its animations held */
         return;
       }
       var x     = getTranslateX(hsw);
@@ -2167,7 +2179,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       var progress     = Math.min(1, Math.abs(x) / maxTranslate);
       // Fade the star field out over the last stretch so the scroll doesn't end on stars-on-black.
       var endFade = progress > 0.78 ? Math.max(0, (0.93 - progress) / 0.15) : 1;
-      if (animStarsWrap) animStarsWrap.style.opacity = String(endFade);
+      if (animStarsWrap) { animStarsWrap.style.opacity = String(endFade); animStarsWrap.classList.toggle('jj-zz', endFade <= 0); }
       var backTravel  = Math.max(0, imgRenderedWidth(back,  viewH) - viewW);
       var frontTravel = Math.max(0, imgRenderedWidth(front, viewH) - viewW);
       back.style.transform  = 'translateX(' + (-progress * backTravel  * BACK_SPEED) + 'px)';
@@ -2196,7 +2208,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
    motion stays one fluid movement. The Rive canvas is hidden; the outline art flies; a click pops the FILLED art in (the flight
    carries on) and ticks Planet Hunter (2 parts). ===== */
 (function () {
-  var PGB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';   // JJ_SCORE_BASE: local preview override
+  var PGB = window.JJ_SCORE_BASE || 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/';   // JJ_SCORE_BASE: local preview override
   var ART = { jupiter: { line: PGB + 'score-jupiter-line.webp', fill: PGB + 'score-jupiter.webp', w: 11.5, from: 0.0,  to: 0.98 },
               mars:    { line: PGB + 'score-mars-line.webp',    fill: PGB + 'score-mars.webp',    w: 6.4,  from: 0.03, to: 0.98 } };   // both in from the first scroll, together, for the "Jupiter and Mars" line
   /* [u, left%, top%] along each planet's own path (u 0→1), % of the 16:9 box */
@@ -2278,7 +2290,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
    VISITS: [progress window, side, bottom]. LOOP_END / FLYOFF: when the two-part clip lands (hover loop first, then angrier + exit),
    set LOOP_END to where the loop should wrap and FLYOFF to where the exit starts; the click then plays that instead of the CSS fly-off. ===== */
 (function () {
-  var PGB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';   // JJ_SCORE_BASE: local preview override
+  var PGB = window.JJ_SCORE_BASE || 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/';   // JJ_SCORE_BASE: local preview override
   var VISITS = [ [0.18, 0.30, 'right', '18vh'], [0.48, 0.60, 'right', '42vh'], [0.78, 0.90, 'right', '28vh'] ];   // always from the RIGHT, facing into the page (rule 26) — the middle visit used to come from the left
   var LOOP_END = 6.0, FLYOFF = 6.1, LOOP_RATE = 0.55;   // the shifty loop runs at just over half speed so he lingers; the exit plays at full speed   // hs-alien = shiftygrumpy alien.mp4 re-cut: 0–3s shifty hover, 3–6s the same played backwards (no jump at the wrap), 6.1s → angrier, shoots off up-right, gone by 9.6s
   var st = document.createElement('style');
@@ -2288,7 +2300,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
     '#jj-hs-alien.off{transition:transform 1.1s cubic-bezier(.5,0,.8,1),opacity .8s ease .3s;opacity:0;}#jj-hs-alien.right.off{transform:translate(60vw,-70vh) scale(.5) rotate(20deg);}#jj-hs-alien.left.off{transform:translate(-60vw,-70vh) scale(.5) scaleX(-1) rotate(-20deg);}' +
     'body.jj-modal-open #jj-hs-alien{pointer-events:none!important;}';
   document.head.appendChild(st);
-  var v = document.createElement('video'); v.id = 'jj-hs-alien'; v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+  var v = document.createElement('video'); v.id = 'jj-hs-alien'; v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = false;   /* h-1107a: show() plays him; before his first visit he no longer decodes unseen */ v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
   v.poster = PGB + 'hs-alien-poster.webp'; v.setAttribute('data-cursor', 'hover');
   v.innerHTML = '' + jjClipSrc(PGB + 'hs-alien') + '';
   document.body.appendChild(v);
@@ -2358,7 +2370,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
    Sounds (silent until the files land at the repo root): choose-boo.mp3 on Work, choose-cheer.mp3 then
    choose-narr-1.mp3 ("oooo I love story time") and choose-narr-2.mp3 ("oh me too") on Story Time. */
 (function () {
-  var GB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
+  var GB = window.JJ_SCORE_BASE || 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/';
   var FONT = "'Joes Journey Headline', 'Quicksand', sans-serif";
   var CS = [{"href": "/case-studies/bbc-mobile", "key": "bbc-mobile", "ar": "548/235", "rot": "-3deg", "css": "left:10%;top:12%;width:34%", "pick": "left:6%;top:36%;width:24%", "sats": [{"f": "cs-bbc-mobile-sat0.webp", "l": -9.9, "t": -52.7, "w": 27.7},
     {"f": "cs-bbc-mobile-sat1.webp", "l": 78.1, "t": -52.0, "w": 14.8},
@@ -2421,7 +2433,9 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
       'body.jj-choose-cover .all_container_wrapper,body.jj-choose-cover .jj-intro-deco,body.jj-choose-cover #jj-sitting-alien,body.jj-choose-cover #jj-hs-alien,body.jj-choose-cover .next-section-button,body.jj-choose-cover #jj-subtitle{visibility:hidden!important;}' +
       /* the lite level (html.jj-lite, site-footer.js): the chooser without its costliest dressing. The two halves' soft inner edges were masks (each half drawn off
          screen and masked every frame, with clips playing inside): a plain gradient laid over the seam does the same job; glows and drop shadows go. */
-      'html.jj-lite #jj-flyer video{filter:none!important;}' +   /* a drop shadow on a playing clip is worked out again for every frame of it */
+      'html.jj-lite #jj-flyer video{filter:none!important;}' +
+      /* h-1107a: anything marked jj-zz is unseen, so its animations are held; the wand's blurred under-stroke and the Big Bang wizard's glow go in Lite */
+      '.jj-zz,.jj-zz *{animation-play-state:paused!important;}html.jj-lite #jj-spiral .soft{display:none!important;}html.jj-lite .jj-bbwiz{filter:none!important;}' +   /* a drop shadow on a playing clip is worked out again for every frame of it */
       'html.jj-lite #jj-choose .jjch-clip{-webkit-mask-image:none!important;mask-image:none!important;}' +
       'html.jj-lite #jj-choose .jjch-clip::after{content:"";position:absolute;top:0;bottom:0;width:30%;pointer-events:none;z-index:6;}' +
       'html.jj-lite #jj-choose .story .jjch-clip::after{right:0;background:linear-gradient(to right,rgba(8,12,30,0),#080c1e);}html.jj-lite #jj-choose .work .jjch-clip::after{left:0;background:linear-gradient(to left,rgba(8,12,30,0),#080c1e);}' +
@@ -2519,7 +2533,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
   function play(v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
   function sparks(box) {                                                     // h-1008a: one scatter a side, made the first time it lights (a fresh 36 animated nodes on every hover was part of the hover's lag)
     if (!box || box.firstChild) return; var h = '';
-    for (var i = 0; i < 36; i++) {
+    for (var i = 0, nP = [12, 18, 28, 36][window.jjQL()]; i < nP; i++) {
       var big = i % 4 === 0, sz = big ? (9 + Math.random() * 10) : (2 + Math.random() * 4), c = SPARK[i % SPARK.length];
       h += '<i' + (big ? ' class="st"' : '') + ' style="left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 100).toFixed(1) + '%;width:' + sz.toFixed(1) + 'px;height:' + sz.toFixed(1) + 'px;--c:' + c +
            ';--d:' + (2.4 + Math.random() * 2.8).toFixed(1) + 's;--dl:-' + (Math.random() * 5).toFixed(1) + 's;--fd:' + (8 + Math.random() * 10).toFixed(1) + 's;--fx:' + (Math.random() * 6 - 3).toFixed(1) + 'vw;--fy:' + (-(3 + Math.random() * 8)).toFixed(1) + 'vh"></i>';
@@ -2638,12 +2652,12 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
     var space = document.createElement('div'); space.className = 'jjch-space';
     var bgImg = document.getElementById('jj-bg-back'), swUrl = bgImg && (bgImg.currentSrc || bgImg.src);
     var sp = swUrl ? '<div class="sw" style="--sw:url(' + swUrl + ')"></div>' : '';
-    for (var k = 0; k < 26; k++) { var ss = (8 + Math.random() * 22).toFixed(0); sp += '<img alt="" src="' + SP.star + '" style="left:' + (Math.random() * 98).toFixed(1) + '%;top:' + (Math.random() * 94).toFixed(1) + '%;width:' + ss + 'px;animation:jj-twinkle ' + (1.5 + Math.random() * 2.5).toFixed(1) + 's ease-in-out ' + (Math.random() * 3).toFixed(1) + 's infinite">'; }
+    for (var k = 0, nK = [8, 13, 20, 26][window.jjQL()]; k < nK; k++) {   /* h-1107a: fewer in the lighter levels */ var ss = (8 + Math.random() * 22).toFixed(0); sp += '<img alt="" src="' + SP.star + '" style="left:' + (Math.random() * 98).toFixed(1) + '%;top:' + (Math.random() * 94).toFixed(1) + '%;width:' + ss + 'px;animation:jj-twinkle ' + (1.5 + Math.random() * 2.5).toFixed(1) + 's ease-in-out ' + (Math.random() * 3).toFixed(1) + 's infinite">'; }
     for (var k = 0; k < 4; k++) { var ms = (50 + Math.random() * 60).toFixed(0); sp += '<img class="moon" alt="" src="' + SP.moon + '" style="left:' + (6 + k * 26 + Math.random() * 8).toFixed(1) + '%;top:' + (k % 2 ? 78 + Math.random() * 12 : 4 + Math.random() * 10).toFixed(1) + '%;width:' + ms + 'px;--md:' + (3.5 + Math.random() * 2).toFixed(1) + 's;--dl:-' + (Math.random() * 3).toFixed(1) + 's">'; }
     for (var k = 0; k < 6; k++) { var gs = (30 + Math.random() * 30).toFixed(0); sp += '<img alt="" src="' + SP.galaxy + '" style="left:' + (3 + k * 16 + Math.random() * 8).toFixed(1) + '%;top:' + (8 + Math.random() * 70).toFixed(1) + '%;width:' + gs + 'px;animation:' + (k % 2 ? 'jj-swirl-reverse ' : 'jj-swirl ') + (9 + Math.random() * 7).toFixed(1) + 's cubic-bezier(.45,0,.55,1) ' + (-Math.random() * 12).toFixed(1) + 's infinite">'; }
     space.innerHTML = sp;
     var stars = document.createElement('div'); stars.className = 'jjch-stars'; var sh = '';
-    for (var i = 0; i < 22; i++) { var sz = (1 + Math.random() * 2.2).toFixed(1); sh += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;width:' + sz + 'px;height:' + sz + 'px;--o:' + (.25 + Math.random() * .6).toFixed(2) + ';--sd:' + (28 + Math.random() * 40).toFixed(0) + 's;--dl:-' + (Math.random() * 60).toFixed(0) + 's;--sx:' + (Math.random() * 10 - 5).toFixed(1) + 'vw"></i>'; }
+    for (var i = 0, nR = [6, 11, 16, 22][window.jjQL()]; i < nR; i++) { var sz = (1 + Math.random() * 2.2).toFixed(1); sh += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;width:' + sz + 'px;height:' + sz + 'px;--o:' + (.25 + Math.random() * .6).toFixed(2) + ';--sd:' + (28 + Math.random() * 40).toFixed(0) + 's;--dl:-' + (Math.random() * 60).toFixed(0) + 's;--sx:' + (Math.random() * 10 - 5).toFixed(1) + 'vw"></i>'; }
     stars.innerHTML = sh;
     root.appendChild(space); root.appendChild(stars); root.appendChild(story); root.appendChild(work); root.appendChild(back); root.appendChild(wiz); root.appendChild(cap);
     var lg = document.querySelector('.nav-logo-link, .nav-logo, .nav a[href="/"]'); if (lg) { var lr = lg.getBoundingClientRect(); if (lr.width) root.style.setProperty('--lx', Math.round(lr.left) + 'px'); }   // Back lines up with the J
@@ -2782,7 +2796,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
          third of the scroll) or fading in a panel ahead (roads, the code rain) played unseen: a full-screen canvas redrawn every frame for nobody. It must now
          also be on the screen. In the lite level there is no head start either (it wakes within a tick of showing) and it sleeps at once. */
       var lite = !!(window.jjLite && window.jjLite.on), bb = (it.cv || it.el).getBoundingClientRect(), onScr = bb.width > 0 && bb.bottom > 2 && bb.top < window.innerHeight - 2 && bb.right > 2 && bb.left < window.innerWidth - 2;
-      var want = !it.el._jjNoRive && stageOk && cvOk && ((!lite && now < it.lead) || (onScr && seen(it.el, stage) && (!parked || (!locked && zoneOf(it)))));
+      var want = !it.el._jjNoRive && stageOk && cvOk && ((window.jjQL() >= 3 && now < it.lead) || (onScr && seen(it.el, stage) && (!parked || (!locked && zoneOf(it)))));
       if (it.asleep) { var playing = false; try { playing = r.isPlaying; } catch (e) { continue; }
         if (playing) { it.asleep = false; it.names = null; it.since = want ? 0 : now; }      /* the page started it itself: handed back */
         else if (want) wake(it, r); }
@@ -2806,7 +2820,7 @@ if (!window.jjClipSrc) window.jjClipSrc = (function () { var hevc = null; return
   /* h-1012c: the four looping backgrounds of the horizontal scroll (waves, roads, code rain, rocket) are rebuilt as pictures the browser moves (rv-scenes.js, made from
      the Rive files themselves: see experiments/rive-rebuild). It takes each wrapper over once its pictures are in (el._jjNoRive: that Rive file then stays asleep, above);
      if it does not load, Rive carries on as before. /?rive=1 keeps Rive, to compare. */
-  if (!/[?&]rive=1\b/.test(location.search)) { var rvGo = function () { var sc = document.createElement('script'); sc.src = (window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/') + 'rv-scenes.js?v=1'; sc.async = true; document.head.appendChild(sc); };
+  if (!/[?&]rive=1\b/.test(location.search)) { var rvGo = function () { var sc = document.createElement('script'); sc.src = (window.JJ_SCORE_BASE || 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/') + 'rv-scenes.js?v=1'; sc.async = true; document.head.appendChild(sc); };
     if (document.readyState === 'complete') setTimeout(rvGo, 1200); else window.addEventListener('load', function () { setTimeout(rvGo, 1200); }); }
 })();
 

@@ -1,9 +1,10 @@
+function jjQL() { var Q = window.jjQuality; return Q ? Q.level : ((window.jjLite && window.jjLite.on) ? 1 : 3); }   /* q-1107 (7 Nov): the site's picture level, 0 Ultra lite .. 3 Full power */
 /* ============================================================================
    Joe's Journey — Contact page intro  (hosted via GitHub + raw.githack.com,
    same as the site's other scripts — githack refreshes without any purge step)
 
    IN WEBFLOW (Contact page → Page Settings → Before </body> tag) add ONLY:
-     <script src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/contact.js"></script>
+     <script src="https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/contact.js"></script>
 
    TO UPDATE: edit this file → re-upload contact.js (+ any changed assets) to the
    repo. githack picks up the new commit within ~minutes — no purge needed.
@@ -15,7 +16,7 @@
 (function () {
   /* Build marker — to confirm the browser is running the latest file, open the console and look for this
      line (or type window.JJ_CONTACT_BUILD). If it's missing/old, you're on a cached copy → bump ?v in Webflow. */
-  window.JJ_CONTACT_BUILD = 'r12 · credits rewards and Level 6 mixed-theme step';
+  window.JJ_CONTACT_BUILD = 'r13 · the four picture levels (q-1107): waves at 1x and still moon glows in Lite, the book stops at the credits, the hidden dragon and a paused board write nothing · r12 · credits rewards and Level 6 mixed-theme step';
   try { console.log('%c[JJ] contact.js build: ' + window.JJ_CONTACT_BUILD, 'color:#FF00F5;font-weight:bold'); } catch (e) {}
   /* ---- 1. styles: uses the site's OWN Webflow brand fonts (already served) ---- */
   var CSS = `
@@ -27,6 +28,7 @@
 @keyframes jj-flash{0%,100%{transform:scale(0.66);}50%{transform:scale(1.4);}}
 @keyframes jj-glow{0%,100%{filter:drop-shadow(0 0 8px rgba(255,255,255,0.7)) drop-shadow(0 0 24px rgba(255,255,255,0.4));}50%{filter:drop-shadow(0 0 45px rgba(255,255,255,1)) drop-shadow(0 0 90px rgba(255,255,255,0.75)) drop-shadow(0 0 160px rgba(180,200,255,0.5));}}
 @keyframes jj-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+html.jj-lite .jj-deco.jj-gm{animation:none!important;filter:drop-shadow(0 0 14px rgba(255,255,255,.75)) drop-shadow(0 0 34px rgba(255,255,255,.35));}
 @keyframes jj-spin-reverse{from{transform:rotate(360deg);}to{transform:rotate(0deg);}}
 #jj-dark{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;}
 #jj-story{position:absolute;left:0;top:0;margin-left:calc(min(100vw,1600px) * -0.5);margin-top:calc(min(100vw,1600px) * -0.3);width:min(100vw,1600px);aspect-ratio:1/1;opacity:0;pointer-events:none;}
@@ -87,7 +89,7 @@
 .jj-head{position:relative;--r:100%;font-family:'Joes Journey Headline',sans-serif;color:#fff;-webkit-text-stroke:1px rgba(0,0,0,.35);paint-order:stroke fill;text-shadow:0 2px 10px rgba(0,0,0,.5);clip-path:inset(0 var(--r) 0 0);}
 .jj-head .jj-char{display:inline-block;will-change:transform,opacity;}
 #jj-dragon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:155px;pointer-events:none;}
-#jj-dragon .jj-dragon-sprite{width:100%;height:100%;background-image:url('https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-sprite.webp');background-repeat:no-repeat;background-size:900% 800%;}
+#jj-dragon .jj-dragon-sprite{width:100%;height:100%;background-image:url('https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/dragon-sprite.webp');background-repeat:no-repeat;background-size:900% 800%;}
 /* hide the Webflow "Back to Contact" button (.next-section-button.back) everywhere EXCEPT inside the credits game (where setupCredits adds .jj-credits-on to <html>) */
 html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-events:none !important;}`;
 
@@ -98,7 +100,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
 
   /* Lottie player for the animated storybook (page-turn). Loaded up front so it's
      ready by the time the story scene fades in (~8s). */
-  var BOOK_URL = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/book.json?v=3';  // ?v bumps to dodge stale CDN/browser cache when book.json content changes
+  var BOOK_URL = 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/book.json?v=3';  // ?v bumps to dodge stale CDN/browser cache when book.json content changes
   if (!window.lottie) {
     var ls = document.createElement('script');
     ls.src = 'https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js';
@@ -110,7 +112,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     if (!window.lottie) { setTimeout(mountBook, 150); return; }   // wait for the player
     el._jjBook = true;
     var anim = window.lottie.loadAnimation({ container:el, renderer:'svg', loop:true, autoplay:true, path:BOOK_URL });
-    anim.setSpeed(0.4);  // slow the loop down — full speed is distracting
+    anim.setSpeed(0.4);
+    window._jjBookAnim = anim; try { if (jjQL() <= 2) anim.setSubframe(false); } catch (e) {}   // q-1107: below Full power the book draws at its own frame rate, not every screen refresh  // slow the loop down — full speed is distracting
   }
 
   /* Contact-page song. Goes through Howler (the site's audio lib) so the existing
@@ -227,8 +230,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
   <div id="jj-dark"></div>
   <div id="jj-stars"></div>
   <div id="jj-story"></div>
-  <img id="jj-philosopher" src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/wizard-normal.webp" alt="" data-cursor="hover">
-  <img id="jj-rest-dragon" src="https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-rest.webp" alt="" data-cursor="hover">
+  <img id="jj-philosopher" src="https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/wizard-normal.webp" alt="" data-cursor="hover">
+  <img id="jj-rest-dragon" src="https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/dragon-rest.webp" alt="" data-cursor="hover">
   <div id="jj-contacts"></div>
   <div id="jj-caption"></div>
   <img id="jj-spacebar" src="https://cdn.prod.website-files.com/6a19b8f4191d4fbca532591e/6a32c43b02d23ed8f42fb5a6_Space%20bar.svg" alt="Press Space" data-cursor="hover">
@@ -391,7 +394,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
   var ORB = { cx:48, cy:43, rx:33, ry:26 };
   var ANG = { linkedin:270, credits:342, cv:54, mail:126, phone:198 };   // degrees, evenly spaced
   function ellipsePos(deg){ var r = deg * Math.PI / 180; return { x: ORB.cx + ORB.rx * Math.cos(r), y: ORB.cy + ORB.ry * Math.sin(r) }; }
-  var ICN = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';            // cropped contact icons (no padding, art to the edge)
+  var ICN = 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/';            // cropped contact icons (no padding, art to the edge)
   var CONTACTS = [
     { key:'phone',    label:'Phone',    dgap:0,   def:ICN+'icon-phone.webp',    fill:ICN+'icon-phone-fill.webp',    detail:'+44 7565 040886',                       act:'copy', copy:'+447565040886' },
     { key:'linkedin', label:'LinkedIn', dgap:0,   def:ICN+'icon-linkedin.webp', fill:ICN+'icon-linkedin-fill.webp', detail:'www.linkedin.com/in/joseph-jackson-ui/', act:'open', href:'https://www.linkedin.com/in/joseph-jackson-ui/' },
@@ -515,7 +518,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
   function resumeContacts(){ contactMotion.forEach(function (t) { t.resume(); }); }
 
   /* ---- wizard captions: rapid typed lines bottom-centre; he reacts sad → happy ---- */
-  var WIZB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';
+  var WIZB = window.JJ_SCORE_BASE || 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/';
   var WIZ = {                                                               // the jetpack wizard: one pose, three faces (painted from his sheet), so swaps are instant
     normal: WIZB + 'wizard-normal.webp',
     blink:  WIZB + 'wizard-blink.webp',
@@ -631,8 +634,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
   function hideWfBack(){ if (creditsRunning) return;                                            // once credits start, setupCredits owns this button — don't let the load-time retries re-hide it
     var b = findWfBack(); if (b) { b.style.setProperty('opacity', '0', 'important'); b.style.setProperty('pointer-events', 'none', 'important'); b.style.transition = 'opacity .6s ease'; } }
   // ---- music: fade the contact song out over 5s, then roll the two 8-bit tracks ----
-  var GM1 = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/game-music-1.mp3';   // 8-bit Console From My Childhood
-  var GM2 = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/game-music-2.mp3';   // The World of 8-bit Games
+  var GM1 = 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/game-music-1.mp3';   // 8-bit Console From My Childhood
+  var GM2 = 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/game-music-2.mp3';   // The World of 8-bit Games
   function fadeOutSong(ms){
     var s = window._jjSong; if (!s) return;
     if (s.fade && s.volume) { try { s.fade(s.volume(), 0, ms); } catch (e) {} setTimeout(function () { try { s.stop(); } catch (e) {} }, ms + 80); }
@@ -716,8 +719,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     tl.set('#jj-wipe-v', { display:'none' }, coverAt + 2.7);                                   // gone for good — no black-out
   }
   /* ===== "Trogdor" — the credits catch-game (revealed by the downward wipe) ===== */
-  var GB = window.JJ_SCORE_BASE || 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/';   // game assets live at the repo root (uploaded flat, not in a /game/ folder)
-  var GSPRITE = 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-sprite.webp';
+  var GB = window.JJ_SCORE_BASE || 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/';   // game assets live at the repo root (uploaded flat, not in a /game/ folder)
+  var GSPRITE = 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/dragon-sprite.webp';
   // Homepage "hi I'm Joe" horizontal-scroll background art — reused so the credits scroll matches it.
   var BG_BACK  = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0c90afafa53a631f4ff3ac_Starry%20Board%20-%20Background.svg';
   var BG_FRONT = 'https://cdn.prod.website-files.com/69c2e676c74b81c8dcbd3651/6a0c964e79a06e8151f7f16b_Starry%20Board%20-%20Foreground2.svg';
@@ -734,15 +737,17 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
         var r = new window.rive.Rive({ src:WAVES_RIV, canvas:canvas, autoplay:true,
           stateMachines:'State Machine 1',
           layout:new window.rive.Layout({ fit:window.rive.Fit.Fill, alignment:window.rive.Alignment.BottomCenter }),   // full-screen canvas + Fill = identical to the homepage waves (no crop, no squish)
-          onLoad:function(){ try{ r.resizeDrawingSurfaceToCanvas(); }catch(e){} } });
+          onLoad:function(){ rz(); } });
         canvas._riveInst = r;
-        window.addEventListener('resize', function(){ try{ r.resizeDrawingSurfaceToCanvas(); }catch(e){} });
+        var rz = function(){ try{ if (jjQL() <= 1) r.resizeDrawingSurfaceToCanvas(1); else r.resizeDrawingSurfaceToCanvas(); }catch(e){} };   // q-1107: Lite and below draw the waves at 1x, as the homepage does
+        window.addEventListener('resize', rz); window.addEventListener('jj:quality', rz);
       } catch (e) {}
     }
     if (!window.rive && !document.getElementById('jj-rive-rt')) { var s=document.createElement('script'); s.id='jj-rive-rt'; s.src=RIVE_RUNTIME; document.head.appendChild(s); }
     go();
   }
   function setupCredits(){
+    try { if (window._jjBookAnim) window._jjBookAnim.pause(); } catch (e) {}   // q-1107: the intro's book is hidden from here on: it stops drawing
     var stage = document.getElementById('jj-credits'); if (!stage || stage._game) return; stage._game = true;
     document.documentElement.classList.add('jj-credits-on');                                       // lets the Webflow "Back to Contact" button show now that we're in the game
     ['jj-contacts','jj-caption','jj-spacebar','jj-dark','jj-story','jj-toast','jj-stage','jj-dragon'].forEach(function(id){ var el = document.getElementById(id); if (el) el.style.display = 'none'; });
@@ -766,6 +771,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       '.jj-item img{width:100%;height:100%;display:block;}'+
       '.jj-item.bad img{filter:drop-shadow(0 0 11px rgba(255,55,55,.75));}'+
       '.jj-item.good img{filter:drop-shadow(0 0 9px rgba(130,175,255,.55));}'+
+      'html.jj-lite .jj-moon{animation:none;filter:drop-shadow(0 0 12px rgba(255,255,255,.7));}html.jj-lite .jj-item img{filter:none!important;}'+   // q-1107: Lite: the moons glow without pulsing (a pulsing drop shadow is repainted every frame); no glow on the game items
       '@font-face{font-family:\'Mario\';src:url(\''+GB+'mario.ttf\') format(\'truetype\');font-display:swap;}'+
       '#jj-hud{position:absolute;left:50%;top:clamp(118px,13vh,170px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:24px;z-index:10;opacity:0;}'+
       '#jj-hud-card{position:relative;width:min(23vw,300px);background:none;border:20px solid transparent;border-image:url(' + GB + 'retro-card-w.webp) 20 fill / 20px / 0 round;image-rendering:pixelated;border-radius:0;box-shadow:none;padding:8px 11px 9px;display:flex;flex-direction:column;gap:6px;}'+
@@ -888,9 +894,10 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
       if(!stage._game) return;                                                                         // stops when the scene is torn down (page reload)
       if(bgLast==null) bgLast=t; var dt=t-bgLast; bgLast=t;
       if(!G.frozen && !paused) bgElapsed += dt;                                                         // freeze the drift during a tutorial freeze / menu pause
-      var e=bgElapsed/1000;
+      var e=bgElapsed/1000, bk=e+'|'+G.rollX;
+      if (bk !== bgScroll._k) { bgScroll._k = bk;                                                       // q-1107: nothing moved (paused, frozen) = nothing written
       moveStrip(stripBack,  G.rollX*BG_BACK_SPEED  - e*1.1);                                            // far board — slow parallax
-      moveStrip(stripFront, G.rollX*BG_FRONT_SPEED - e*2.2);                                            // near board — faster parallax
+      moveStrip(stripFront, G.rollX*BG_FRONT_SPEED - e*2.2); }                                          // near board — faster parallax
       requestAnimationFrame(bgScroll);
     }
     requestAnimationFrame(bgScroll);
@@ -1107,9 +1114,9 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
 
   /* the bottom-right dragon reacts: hover → happy, click → angry + sink (face only) then back, idle smile every 5–10s */
   var DR = {
-    normal: 'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-rest.webp',
-    happy:  'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-happy.webp',
-    angry:  'https://cdn.jsdelivr.net/gh/jacksonlaptop/joes-journey-code@main/dragon-angry.webp'
+    normal: 'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/dragon-rest.webp',
+    happy:  'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/dragon-happy.webp',
+    angry:  'https://rawcdn.githack.com/jacksonlaptop/joes-journey-code/f08d0cf8afdb608d6c2268ff6da768d3315c5b89/dragon-angry.webp'
   };
   function setupDragon(){
     var d = document.getElementById('jj-rest-dragon'); if (!d || !window.gsap || d._wired) return;
@@ -1297,7 +1304,7 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     [ { right:'8%', top:'12%', size:'95px' }, { left:'20%', top:'14%', size:'70px' }, { left:'38%', bottom:'15%', size:'80px' } ]
       .forEach(function (cfg, idx){
         var m = document.createElement('img');
-        m.src = MOON_SVG; m.className = 'jj-deco';
+        m.src = MOON_SVG; m.className = 'jj-deco jj-gm';
         m.style.opacity = '0';                                 // hidden until staggered entrance
         m.style.width = cfg.size; place(m, cfg);
         m.style.animation = 'jj-glow ' + (3.5 + Math.random() * 1.5) + 's ease-in-out ' + (idx * 0.6) + 's infinite';
@@ -1321,6 +1328,8 @@ html:not(.jj-credits-on) .next-section-button.back{opacity:0 !important;pointer-
     if (!sp) return;
     var FR = 72, COLS = 9, ROWS = 8, FPS = 12, f = 0, last = 0;
     function tick(t){
+      if (!sp.isConnected) return;
+      if (sp.offsetParent === null) { setTimeout(function(){ requestAnimationFrame(tick); }, 500); return; }   // q-1107: hidden (display:none) = no frames written
       if (!last) last = t;
       if (t - last >= 1000 / FPS) {
         last = t;

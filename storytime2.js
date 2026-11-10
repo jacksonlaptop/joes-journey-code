@@ -1,4 +1,4 @@
-/* storytime2.js — STORYTIME 2 (the sequel: "The tale continues through the portal"). Build st2-27q (st2-27q: TEST behind ?whole=1&look=ns: the ice cliffs as the new painterly style take (Dreamina, 17 Oct) · st2-27e (st2-27e: in a whole-scene shot the layered pictures underneath are not drawn and their clips are paused · st2-27d: TRIAL behind ?whole=1: the pools shot (3.5) as whole-scene video too · st2-27c: the water dragons' water line is soft; the letterbox (Part One s140): every vw / vh here is now cqw / cqh, measured on the 16:9 picture pane; the scene's own effects go into the pane (api.pane()), the bubbles, prompts and cards stay on the stage · st2-27b: TRIAL behind ?whole=1: the ice cliffs shot as whole-scene video (wait loop, action, after loop; letterboxed on tall windows; bubbles on the figures in the picture); st2-26q: the 'previously' book plays under Part One's book music, and the wasteland track fades in as the book ends; the oasis music is out through the lava fields, comes back with Joe's first step toward Ember, plays on, and is loudest at the mount · st2-26p: performance: the embers, snow, foam, drops, ripples and flecks are drawn on a canvas a layer by the engine (PFX); a flyer that has puffed away is not decoded; the credits tell My Story it may start fetching · st2-25: bugs from the back audit; the book's music; copy and pacing; the oasis music's slow arc; real dragon growl and roar · st2-24: the storybook's tighter working text (a trial) · st2-23: the storybook's painted art; Joe points at the oasis in 2.4 · st2-22: the 'previously' storybook's six lines (behind ?book=1) · st2-21: the 'previously' storybook behind ?book=1; lead prompts 500 ms after the line, quicker narration holds, the black dragon's pass 9.4 s · st2-20: pacing by reading time, a bubble placed once for the settled framing, 3.1 pressable while it pans, the real music in sections; scenes 1 to 3 with their real art: painted lands under code-built skies, the three habitats, the dragons; the rest still placeholder art).
+/* storytime2.js — STORYTIME 2 (the sequel: "The tale continues through the portal"). Build st2-47 (Scene 2 painted, moved in from the demo's scene2/ page: the walk with days passing and his footprints, the sign to rub clean, the nest and the shard of eggshell, the drop with the shimmer to focus on, a storm through all four) · st2-46 (a voiced line moves on by itself once its voice ends) · st2-45 (placeholder voices for every line behind ?vo=1: story2-vo-<id>.mp3 from storytime-2/tools/make-vo.js; a voiced line stays up until its voice ends) · st2-44 (the four picture levels from site-footer f-1107a: sky, snow, embers, motes and canvas sharpness per level) · st2-43 (Scene 1's talk on ChatGPT's expression plates (C2 to C5), Grik flying throughout; the portal shots with the J back on Joe's cloak) · st2-42 (Joe's notes, 5 Nov: the sky turns in the lite level too; the grey gloom rolls over the castle after the reveal; three knocks at the door; the spell book answers; the fire burns on after the sneeze; Joe suggests the dragon stays (no 'price'), no 'best friend'; the baby falls asleep in the pack; no chicken squawk at the hatch) · st2-41 (Scene 1 calmer (Joe, 5 Nov): one steady framing, no zoom per line; Grik keeps his own pose with a slow gentle hover, pointing east and waving goodbye the only gestures; the line before Joe's talk keeps Grik as he is) · st2-40 (Scene 1 moved in from the demo page (Joe, 5 Nov: one source of truth): C1, the portal press and C2, the talk with Grik's bobbing poses, a framing per line, the memory of the fire, the castle in the haze, the reply the visitor picks, C3; Joe's talk loop on his lines) · st2-39 (Joe, 5 Nov: nothing ever looks frozen: every painted shot breathes on one slow camera drift, and motes float over it: dust indoors, ash in the gloom and the wasteland, pollen in the sun, mist at the oasis, wind streaks in the sky) · st2-38 (Joe's beard: he finds it on the ice statue (3.4), Clive blames the portal, and it is gone when he is a cartoon again (6.1); the Joe and Clive talk loops on plate K1 (3.8)) · st2-37 (Joe's takes: memory one (5.3c), Joe climbs aboard the saucer (5B.1)) · st2-36 (Joe's Scene 5 takes in: memory two, the fizzle, the dragon at play, the goodbye, the transformation (the flight track's drop now on its burst at 5.95 s); the landing and the fire baby wait on Joe's idle loops) · st2-35 (Joe's first two Scene 5 Dreamina takes in: the dust sheet (5.3b) and the sneeze (5.3d); memory one starts on plate A3, Mabel as she was; Scene 5B painted from ChatGPT's plates E1 to E6: the saucer at the steps (tap it to climb aboard), over the clouds, the dead arch, the orb and the portal roaring open, the dive in; the castle music plays on through it) · st2-34 (Scene 5’s new middle painted from ChatGPT’s plates: the hall, the painting and memory one, the hearth, the workshop and memory two, the fizzle, the goodbye; 5.4 and 5.5 on the new stage-two Mabel) · st2-33 (Scene 5’s new middle, 5.3b to 5.4b, on placeholder boards: the hall, the painting, the hearth, the workshop, the fizzle, the goodbye) · st2-32 (Joe’s flight and castle music: the ride, the reveal and the transformation on the flight track, Scene 5 on the castle track, muffled until her magic comes back; a ‘move your mouse’ prompt on the ride) · st2-31 (performance: the snow and embers drawn from one cached sprite, canvases at 1.5x pixels at most, the swirling sky at half size and off in the lite level, the letterbox edges an overlay instead of a mask; the gear-up 8.0) st2-30 (Scene 4 painted: the ride over a sky loop, Joe following the pointer through three wind rings, and the clouds parting (Joe's C1 take); ?scenes=1: a scene picker for previews) st2-29 (Scene 5 painted with ?whole=1&look=ns: the landing, the door, the dragon at play and the transformation as Joe's takes, plate D1 held while Mabel speaks from behind the door, the purple orb drawn over the garden, the hatch: a crack per press and a pop of light into the baby in the backpack, frost or fire. st2-28o: the black dragon's pass over the painted oasis opening, painted; Ember awake while you reach out (3.6b's wait, 3.6's after) moves. st2-28n: the painted oasis opening redone from plate O1: no ledge, the oasis filling the frame, the little dragons playing and two far flocks; the Ember asleep idle in full. st2-28m: Ember redone closer: plates F1 to F4 and their three takes, their idles; the eggs and take-off idles; the oasis opening alive. st2-28l: the painted takes: only their own sounds (the hidden cartoon layer's puffs and roar were playing under them), softer; the sky keeps one clock across shots and dissolves with the videos; longer dissolves at the joins and into the afters; Ember's embers · st2-28k: the ice cliffs: Joe keeps fidgeting from the wait loop over the take's first 6 s, where Dreamina froze him (carry); no black flashes: a take or an after-loop comes up only once it has a frame; the swirling sky slower and smoother; st2-28j TEST: the swirling sky on the line of dragons, 3.2 to 3.3: the take drawn through a flow map round its painted spirals, under a sky mask; ?sky=0 turns it off; 3.3 picks up the after-loop where 3.2b left it · st2-28i: the waits and afters can be Dreamina idle loops: the take dissolves into its after; the ice cliffs wait is the first; st2-28h: the ice cliffs very snowy, over the take too, and the snow cap on the dialogue box; st2-28g: the ice cliffs 3.4 redone with the grown-up Joe; st2-28f: Scene 3 painted for real with ?whole=1&look=ns: Joe's seven Dreamina takes and the painted plates as whole-scene takes (auto, goAt, same, join, over, frames + cues) · st2-28e: the wizard Elnor is now Mabel the Magnificent, an enchantress (Joe, 2 Nov: a woman in the cast; Clive no longer calls her crazy) · st2-28d: ?look=ns: the oasis (3.1 to 3.3) painted too, from the painted stills; Joe's sword clips are still the cartoon ones · st2-28c: ?look=ns: the pools (3.5) painted, from the painted stills (story2-<name>-ns: the pools plate, the three water dragons, Joe's three faces, Clive) · st2-28: ?ui=2 spoken lines are the dialogue box, portrait and name, like Part One's · st2-27q: st2-27q: TEST behind ?whole=1&look=ns: the ice cliffs as the new painterly style take (Dreamina, 17 Oct) · st2-27e (st2-27e: in a whole-scene shot the layered pictures underneath are not drawn and their clips are paused · st2-27d: TRIAL behind ?whole=1: the pools shot (3.5) as whole-scene video too · st2-27c: the water dragons' water line is soft; the letterbox (Part One s140): every vw / vh here is now cqw / cqh, measured on the 16:9 picture pane; the scene's own effects go into the pane (api.pane()), the bubbles, prompts and cards stay on the stage · st2-27b: TRIAL behind ?whole=1: the ice cliffs shot as whole-scene video (wait loop, action, after loop; letterboxed on tall windows; bubbles on the figures in the picture); st2-26q: the 'previously' book plays under Part One's book music, and the wasteland track fades in as the book ends; the oasis music is out through the lava fields, comes back with Joe's first step toward Ember, plays on, and is loudest at the mount · st2-26p: performance: the embers, snow, foam, drops, ripples and flecks are drawn on a canvas a layer by the engine (PFX); a flyer that has puffed away is not decoded; the credits tell My Story it may start fetching · st2-25: bugs from the back audit; the book's music; copy and pacing; the oasis music's slow arc; real dragon growl and roar · st2-24: the storybook's tighter working text (a trial) · st2-23: the storybook's painted art; Joe points at the oasis in 2.4 · st2-22: the 'previously' storybook's six lines (behind ?book=1) · st2-21: the 'previously' storybook behind ?book=1; lead prompts 500 ms after the line, quicker narration holds, the black dragon's pass 9.4 s · st2-20: pacing by reading time, a bubble placed once for the settled framing, 3.1 pressable while it pans, the real music in sections; scenes 1 to 3 with their real art: painted lands under code-built skies, the three habitats, the dragons; the rest still placeholder art).
    Loaded only by storytime.js when the page is opened with ?st2=1 — Part One never downloads it. It registers itself with the
    engine (window.jjStory.register) and reuses the engine's banner, layers, transport, pause, Prev / Next, sound and the speech bubble's look.
 
@@ -36,6 +36,7 @@
      line takes to fill, at least */
   var int = function (text) { S.push({ t: 'int', text: text }); };
   var choice = function (text, options) { S.push({ t: 'choice', text: text, options: options }); };
+  var reply = function (options) { S.push({ t: 'reply', options: options }); };   // st2-40: the visitor picks Joe's reply in the box; the next two lines (o.reply 0 and 1) take its words
   var ach = function (text, id, o) { S.push({ t: 'ach', text: text, id: id, o: o || {} }); };          // id = the jj-score achievement
   var prompt = function (text) { S.push({ t: 'prompt', text: text }); };
   var sfx = function (text, play) { S.push({ t: 'sfx', text: text, play: play || [] }); };              // play = stand-in sounds the engine already has
@@ -51,28 +52,35 @@
   });
   note('BEFORE THIS SCENE, when the storybook opening plays (a prototype, behind ?book=1): a leather book on a candle-lit table opens and tells a six-line rhyme, one line and one miniature to a page, over three spreads: "Last time, a dragon set the village alight..." / "...so Joe the Righteous rode into the night." / "Through hills and woods, to an arch of stone..." / "...which swallowed him whole, with a flash and a groan." / "It whisked him away, to a land unknown..." / "...and spat him out there, all alone." (the working text, a tighter trial; before it: "Last time, a dragon came and set the village alight..." / "...so Joe the Righteous rode off into the night." / "He rode through hills and forests to find an arch of stone..." / "...which swallowed him whole, with a flash and a groan..." / "It whisked him far away, to a land unknown..." / "...and spat him out in a wasteland, all alone."). The sixth miniature is a painting of shot 1.1’s own first frame: the camera pushes into it until it fills the screen, a warm bloom rises, and under it the real shot takes its place.');
   note('For the record, Part One’s storybook (the same mechanism, in front of the cavern): "Many moons ago, in hills of green..." / "...there stood the proudest village ever seen." / "Its folk had taverns, hens and gold..." / "...and roofs of thatch, a sight to behold." / "But a beast lived in the sky, so it\'s told..." / "...in a lair in the clouds, dark and cold." (the working text, a tighter trial; before it: "Many moons ago, where the hills rolled green and wide..." / "...there sat a little village, full of chickens, and of pride." / "Its people had taverns, and pockets full of gold..." / "...and roofs of finest thatch, a wonder to behold." / "But a beast lived in the sky, or so the tale is told..." / "...in a lair above the clouds, where the nights are cold."). With the book, the cavern’s first line becomes: "High in the mountain, where no villager dared to climb, the evil beast slept, dwelling deep in the darkness..." The village’s name on the book’s map is Thatchwick.');
-  shot('1.1', 'WIDE', 'Ash drifts across the dead forest. A crackle of purple light, then the portal coughs Joe out onto the path. He lands flat on his face.');
-  sfx('Vortex burst, then a thud and a puff of ash.', ['sfx:flash-big', 'sfx:orb-thud@700']);
-  nar('Joe landed with a thud. The enchanted forest was gone...only ash and dust remained, and the portal behind him had gone cold.');
-  shot('1.2', 'MEDIUM', 'Joe gets up, dusts himself off and looks around, stunned.');
+  /* st2-40 (Joe, 5 Nov: 'can we use that as the source of truth moving forward'): Scene 1 as it plays in the painted demo (scene1/), moved in here: C1 the arrival,
+     the dead portal, C2 Grik arrives, the talk (Grik's poses bob over the plate, Joe's talk loop on his lines, a framing per line, the memory of the fire, the castle in the
+     haze), the reply the visitor picks, C3 Grik flies off. The lines are the demo's (Joe, 30 Oct). */
+  shot('1.1', 'WIDE', 'Ash drifts across the dead forest. A crackle of purple light, then the portal coughs Joe out onto the path. He lands, gets up and looks around.');
+  sfx('A flare from the portal, then a thud and a puff of ash.', []);
+  act('The portal coughs Joe out onto the path.', { hold: 3600 });
+  nar('Joe landed with a thud. Everything looked different, like a painting come to life...and the enchanted forest was gone, only ash remained.');
+  say('JOE', 'Something feels...different.', 'thought bubble', { st: 3 });
+  shot('1.2', 'MEDIUM', 'Joe dusts himself off and looks around, stunned. The arch behind him is dead.');
   say('JOE', 'Hello? What happened to this place?', '', { st: 1, lead: true });
   prompt('Tap the portal');
-  int('Required: tap the portal. It sputters, throws one sad spark and dies again. The noise is what brings Grik.');
-  shot('1.3', 'MEDIUM TWO-SHOT', 'Grik flies in from the right, buzzing, and stops nose to nose with Joe. Joe stares.');
-  say('GRIK', '⟟⏁ ⋏⟒⍜⍀ ⌇⌰⟟⏚?! ⏃⋏⎅ ⍙⊑⍜ ⏃⍀⟒ ⊬⍜⎍?!', 'in alien, very fast', { st: 1, hold: 3500 });   // st2-20 (Joe): auto, his talking clip running, then the confused beat · st2-25 (Joe): it and the clip stay 1.5s longer (2s → 3.5s after typing)
-  act('Joe just stares. Grik stops, tilts his head, confused. A beat with no bubble.', { hold: 1200, comp: '1.3a' });
-  say('GRIK', 'Ah. You’re not from around here, are you...', '', { st: 1 });
-  say('GRIK', 'Did you just come out of that portal? It hasn’t worked in centuries!', '', { st: 1 });   // st2-25 (Joe): auto
-  say('JOE', 'What...what happened here? Do you know how to fix this portal?', '', { st: 2, joe: 'concerned-stance' });
-  say('GRIK', 'Not gonna introduce yourself first?! Kids these days. I’m Grik.', '', { st: 1, comp: '1.3b' });
-  say('GRIK', 'There was a great fire. Rumour has it a monster with wings was the cause...', '', { st: 1, joe: 'concerned-standing' });
-  say('GRIK', '...but you shouldn’t believe everything you hear, buddy.', '', { st: 1 });
-  say('GRIK', 'The portal...hmm. I’ve heard of a magical wizard who lives to the east...', '', { st: 1, joe: 'happier-standing' });
-  say('GRIK', '...but I don’t believe in whispers.', '', { st: 2, joe: 'confused-standing' });
-  shot('1.4', 'WIDE', 'Grik says his goodbye, looks round, draws his swords and flies off into the distance without waiting for an answer.');
-  say('GRIK', 'Anyway, I’ve got stuff to be getting on with! See you around, buddy!', '', { st: 1 });
-  say('JOE', 'Uh...I’m Joe.', '', { st: 1, joe: 'nervous-stance' });
-  nar('But Grik was gone before Joe could get the words out.', { joe: 'sad-standing' });
+  int('Required: tap the portal. It sputters, throws one sad spark and dies again. The noise is what brings Grik, who flies in and stops nose to nose with Joe.');
+  shot('1.3', 'MEDIUM TWO-SHOT', 'Grik hovers nose to nose with Joe. A framing for each line; Grik gestures as he talks.');
+  say('GRIK', '⟟⏁ ⋏⟒⍜⍀ ⌇⌰⟟⏚?!', 'in alien, very fast', { st: 1, hold: 2600 });
+  act('Joe just stares. Grik stops, tilts his head.', { hold: 900 });
+  say('GRIK', 'Ah. You’re not from around here, are you?', '', { st: 1, lead: true });
+  reply([['I came through that portal.', 'Through that old thing? It hasn’t worked in years.'], ['What happened here?', 'Straight to the gossip, eh?']]);   // (Joe, 30 Oct: the visitor answers; Grik answers whichever was picked)
+  say('JOE', 'I came through that portal.', '', { st: 1, reply: 0 });
+  say('GRIK', 'Through that old thing? It hasn’t worked in years.', '', { st: 1, reply: 1 });
+  say('GRIK', 'Not even a hello? Kids these days. I’m Grik.', '', { st: 2 });
+  say('GRIK', 'A great fire. Some say a winged monster started it.', '', { st: 2 });   // (a memory of the fire plays as he says it)
+  say('GRIK', 'Don’t believe all you hear.', '', { st: 2 });
+  say('JOE', 'Can the portal be fixed?', '', { st: 2 });
+  say('GRIK', 'Hmm. Folk whisper of a wizard to the east.', '', { st: 2 });   // (a castle shows faintly in the haze as he points)
+  say('GRIK', 'I don’t believe in whispers.', '', { st: 2 });
+  say('GRIK', 'Anyway, stuff to do! See you around, buddy!', '', { st: 1 });
+  shot('1.4', 'WIDE', 'Grik looks round, draws his swords and flies off into the distance without waiting for an answer.');
+  say('JOE', 'Uh...I’m Joe.', '', { st: 1, wait: 2200 });
+  nar('But Grik was gone before Joe could get the words out.');
   cut('DUST WIPE TO:');
 
   /* ---------------- SCENE 2 ---------------- */
@@ -85,14 +93,20 @@
   nar('Joe walked for days through a desert of ash. Embers drifted on the wind, and burnt villages poked through the dust...');
   cut('DIP TO BLACK AND BACK (as the forest’s walk-up into the inspect shot):');
   shot('2.2', 'CLOSE', 'Joe stands left of the well, looking up at the burnt signpost to his right. The storm is at its darkest here: a near-black sky, dust blowing through the ruins, small fires still burning.');
-  say('JOE', 'Could this really all have been Trogdor?', 'thought bubble', { st: 4 });   // st2-25 (Joe): it waits for Next, unless the signpost is pressed: then the sign gets its read time and the two leave by themselves
-  int('Tap the signpost: a tattered old sign swings up large in the top-right gap. It reads "Welcome to ...head. Home of the ..." and the rest is burnt away. The sign stays up while Joe’s thought is up and leaves with it (the thought waits for Next; once the signpost is pressed the sign gets its time to be read, then the thought and the sign leave by themselves).');
+  say('JOE', 'Could this really all have been Trogdor?', 'thought bubble', { st: 4, nsLead: true });   // st2-25 (Joe): it waits for Next, unless the signpost is pressed: then the sign gets its read time and the two leave by themselves
+  int('Painted scene: the sign swings down by itself, caked in soot; rub it clean to read it. (Layered scene: tap the signpost: a tattered old sign swings up large in the top-right gap. It reads "Welcome to ...head. Home of the ..." and the rest is burnt away. The sign stays up while Joe’s thought is up and leaves with it (the thought waits for Next; once the signpost is pressed the sign gets its time to be read, then the thought and the sign leave by themselves).)');
+  act('Joe reads the sign.', { hold: 3400, ns: 1 });   // st2-47 (painted): the sign gets its read time once it is clean
   shot('2.3', 'CLOSE', 'Half-buried in the ash, a scorched dragon’s nest (small, not filling the frame). Two egg-shaped hollows sit in it...empty.');
-  say('JOE', 'A dragon’s nest...and the eggs are gone.', 'thought bubble', { st: 3 });
+  say('JOE', 'A dragon’s nest...and the eggs are gone.', 'thought bubble', { st: 3, nsLead: true });
+  int('Tap the nest: the camera moves in close.');   // st2-47 (painted: the demo's scene 2)
+  int('Tap the glint in the ash: a shard of red eggshell. Joe keeps it: it might matter later.');
+  say('JOE', 'A piece of eggshell...still warm.', '', { st: 1, ns: 1 });
   note('This is the first clue to the twist (see Scene 8).');
   shot('2.4', 'WIDE — SLOW PUSH', 'Joe drops to his knees. On the horizon, half out of frame at the right, something shimmers through the heat: a few palm tops, a thread of waterfall, a teal glow, sitting on the dunes. The camera pushes slowly toward it.');
   note('The distant oasis is a tiny, hazy, wobbling version of the real oasis art, so it reads as an oasis without showing what is in it.');
-  nar('Just as his legs gave way, Joe saw it...a glowing oasis, shimmering in the distance. Was it real, or was the desert playing tricks?');
+  nar('Just as his legs gave way, Joe saw it...a glowing oasis, shimmering in the distance.');
+  int('Tap the shimmer: his eyes focus on it.');   // st2-47 (painted): his sight has closed in, the world gone grey; the shimmer is the only colour left
+  nar('Was it real, or was the desert playing tricks?');
   cut('HEAT-SHIMMER DISSOLVE TO:');
 
   /* ---------------- SCENE 3 ---------------- */
@@ -120,7 +134,8 @@
   nar('First, the ice cliffs. Joe kept his distance...and one hand on his sword.');
   say('CLIVE', 'Ice dragons. Moody, but artists at heart. Go on, say hello.', '', { st: 1, lead: true });
   int('Required: tap the ice dragon (the prompt appears as Clive says "Go on, say hello"). She breathes a stream of frost and carves an ice statue of Joe, as tall as he is, right beside him. Tap again for more: a tiny Grik, a snowflake crown.');
-  say('JOE', 'Is that...me? I mean I think I’ve got better hair than that but...', '', { st: 2, joe: 'happier-stance' });
+  say('JOE', 'Is that...me? Wait...since when do I have a beard?!', '', { st: 2, joe: 'confused-stance' });   // (Joe, 5 Nov: the painted Joe is grown up from the ice cliffs on: the statue is where he finds out)
+  say('CLIVE', 'Portals, lad. Time runs funny through them. Every trip ages you a wee bit.', '', { st: 2 });
   shot('3.5', 'THE POOLS', 'A new backdrop: waterfalls and turquoise pools, spray in the air. A water dragon surfaces with a splash.');
   say('JOE', 'A water dragon? Water dragons don’t exist!', '', { st: 2 });
   say('CLIVE', 'That’s what they say on TV. Uh...I mean, in the stories.', 'annoyed', { st: 1 });
@@ -156,8 +171,8 @@
   say('CLIVE', '*cough* Master.', '', { st: 1, small: true, clive: 'side' });
   say('JOE', 'I was wondering if you could help with one last thing.', '', { st: 1, joe: 'nervous-stance' });
   say('JOE', 'I’m on a quest to find a wizard to help me get home...', '', { st: 2, joe: 'concerned-standing' });
-  say('CLIVE', 'A wizard, aye... There’s a crazy old man who apparently lives up in the sky.', '', { st: 1 });
-  say('CLIVE', 'Elnor the Enchanted, they call him. I haven’t heard of him in a while...', '', { st: 1 });
+  say('CLIVE', 'A wizard, aye... well, an enchantress. A grumpy old one, up in the sky.', '', { st: 1 });
+  say('CLIVE', 'Mabel the Magnificent, they call her. I haven’t heard of her in a while...', '', { st: 1 });
   say('CLIVE', 'You’ll need some wings if you wanna get there. *laughs* I think I know a guy.', '', { st: 2, clive: 'present' });
   act('Joe looks at him blankly. A beat. Clive’s grin drops; he sags.', { hold: 2000, joe: 'confused-standing', clive: 'side', cfx: 'slump' });
   say('CLIVE', 'It’s me. I’m a dragon tamer, remember?', '', { st: 2, clive: 'side', cfx: 'lean', actAfter: 'sigh' });   // st2-25 (Joe): once the line has typed, his long sigh (the clip)
@@ -177,38 +192,78 @@
   int('Optional: the dragon gently follows the pointer up and down. Fly through three glowing wind rings for a little sparkle and a coin each. There is no way to fail.');
   shot('4.2', 'WIDE — REVEAL', 'The clouds part. A castle sits on a floating island, waterfalls pouring off its edges into nothing.');
   nar('...when suddenly the clouds parted, and there it was. A castle floating in the sky.');
+  nar('But as they flew closer, a great grey cloud rolled over the island, as if the whole place had forgotten how to be happy.');   // (Joe, 5 Nov: the castle is bright in the reveal and gloomy on landing: the gloom rolls in here, and lifts when Mabel gets her magic back)
   cut('CUT TO:');
 
   /* ---------------- SCENE 5 ---------------- */
   scene('5', 'EXT. THE FLOATING CASTLE — DAY', {
-    Backdrop: 'An overgrown island, dark and gloomy when Joe arrives: a grey brooding sky, withered plants, broken potion bottles and vials in the grass, old staffs stuck in the ground like fence posts, cracked statues, dead runes. A great wooden door. When Elnor’s magic comes back the whole island changes with him, as if by magic: sunshine, blue sky, flowers opening, the runes glowing.',
-    Characters: 'Joe, his dragon, the egg (hatching), Elnor the Enchanted (grumpy and scruffy, his magic gone; then transformed), Blip (his little alien wizard, the wizard sprite)',
-    Music: 'Mysterious and old, with a music-box feel. It turns warm and bright when his magic comes back.' });
+    Backdrop: 'An overgrown island, dark and gloomy when Joe arrives: a grey brooding sky, withered plants, broken potion bottles and vials in the grass, old staffs stuck in the ground like fence posts, cracked statues, dead runes. A great wooden door. When Mabel’s magic comes back the whole island changes with her, as if by magic: sunshine, blue sky, flowers opening, the runes glowing.',
+    Characters: 'Joe, his dragon, the egg (hatching), Mabel the Magnificent, an enchantress (grumpy and scruffy, her magic gone; then transformed), Blip (her little alien wizard, the wizard sprite)',
+    Music: 'Mysterious and old, with a music-box feel. It turns warm and bright when her magic comes back.' });
   shot('5.1', 'WIDE', 'The dragon lands. Joe slides off and wanders between the broken vials and staffs towards the door.');
   nar('Joe wandered past broken potion bottles and old staffs stuck in the ground, towards a great wooden door...');
   int('Tap a vial: a puff of coloured smoke. Tap a staff: a fizz of sparks.');
   shot('5.2', 'MEDIUM — THE DOOR', 'Joe reaches for the knocker.');
-  say('ELNOR', 'Who goes there?!', 'behind the door');
-  say('JOE', 'Are you Elnor the Enchanted?');
-  say('ELNOR', 'I haven’t heard that name in a while...yes, it’s all coming back to me.');
-  shot('5.3', 'MEDIUM TWO-SHOT', 'The door creaks open. A grumpy, scruffy old man who has lost his magic leans on a cracked staff, beard to his knees. A little alien wizard floats at his shoulder, arms crossed.');
+  sfx('Joe lifts the knocker: three heavy knocks.', ['sfx:orb-thud@300', 'sfx:orb-thud@700', 'sfx:orb-thud@1100']);   // (Joe, 5 Nov: 'do we not need a shot of joe actually knocking the door')
+  say('MABEL', 'Who goes there?!', 'behind the door');
+  say('JOE', 'Are you Mabel the Magnificent?');
+  say('MABEL', 'I haven’t heard that name in a while...yes, it’s all coming back to me.');
+  shot('5.3', 'MEDIUM TWO-SHOT', 'The door creaks open. A grumpy, scruffy old woman who has lost her magic leans on a cracked staff, wild grey hair down to her knees. A little alien wizard floats at her shoulder, arms crossed.');
   say('JOE', 'I need the portal back on. Trogdor’s burning my village!');
-  say('ELNOR', 'I can help...but magic isn’t free, young man.');
-  shot('5.4', 'MEDIUM — THE GARDEN', 'Elnor’s eyes drift past Joe. Joe’s dragon has made himself at home: he is wearing a little wizard hat and chasing butterflies of light round the staffs.');
-  say('ELNOR', 'Your dragon seems happy here. Might I...keep him?');
-  say('ELNOR', 'Blip’s not the most...talkative of companions.');
+  say('MABEL', 'The portal? Nobody’s used that in years.');
+  say('MABEL', 'Well, don’t just stand there. Come in. Wipe your feet.');
+  /* st2-33 (Joe, 4 Nov: 'explore the castle a bit inside and out ... things on the way that jog her memory'): 5.3b to 5.4b are in on placeholder boards until their plates land (S5-19 to S5-21) */
+  shot('5.3b', 'WIDE — INT. THE GREAT HALL', 'A cold, still hall: dust on every clock, cobwebs, huge empty perches high on the walls, a cold fireplace with a painting over it under a dust sheet. The dragon squeezes in after them, sniffing everything.');
+  nar('Inside, the castle was cold and still. Dust on every clock, cobwebs on every perch...perches far too big for birds.');
+  say('JOE', 'What were all the perches for?');
+  say('MABEL', 'Never you mind. And don’t touch anything.');
+  int('Tap the dust sheet: it slides off the painting.');
+  shot('5.3c', 'CLOSE — THE PAINTING', 'A painting of a young Mabel, tall and shining, surrounded by dragons, the portal arch blazing behind her.');
+  say('JOE', 'Is that...you?');
+  say('MABEL', 'Mabel the Magnificent. I built that portal, you know.');
+  act('MEMORY ONE. A soft sparkle runs over her: one streak of her grey hair turns silver-white, and a twinkle comes back into her eyes. Blip’s monocle drops.', { hold: 4400 });   /* st2-37: the take's monocle drops at about 4.5 s */
+  sfx('Memory sting one.', ['sfx:orb-shimmer']);
+  say('BLIP', 'Blip?!', 'amazed');
+  shot('5.3d', 'MEDIUM — THE HEARTH', 'The dragon sniffs the cold fireplace. Dust tickles his nose...ACHOO! A burst of flame and the hearth roars alight. He looks very sheepish.');
+  int('Optional: tap the dragon’s nose to make him sneeze.');
+  act('The dragon sniffs the cold fireplace. Dust tickles his nose...', { hold: 3200 });   /* (a beat on the cold hearth: time to tap his nose; otherwise he sneezes as Mabel speaks) */
+  say('MABEL', 'Haven’t had a fire in here for years...');
+  shot('5.3e', 'MEDIUM — INT. THE WORKSHOP', 'Shelves of empty potion bottles, a cold cauldron, a huge spell book on a lectern. In the background the dragon chases Blip round the cauldron.');
+  int('Optional: tap the spell book: its pages flip by themselves and stop on a picture of a dragon.');
+  say('MABEL', 'A wizard’s magic comes from a happy dragon. Every wizard knows that.');
+  say('MABEL', 'Mine grew up and flew away. No dragons, no magic. No magic, no portal.');
+  say('JOE', 'Flew away? To an oasis? Lava, waterfalls, a big grumpy red one?');
+  say('MABEL', '...You’ve met them!');
+  act('MEMORY TWO. Another sparkle: the crack in her staff seals with a glint, and her patched rags turn a deep purple. She stands a little straighter.', { hold: 2400 });
+  sfx('Memory sting two.', ['sfx:orb-shimmer']);
+  say('MABEL', 'Blip’s not the most...talkative of companions.', 'as the dragon chases him past');
   say('BLIP', 'Blip!', 'angrily');
-  shot('5.5', 'CLOSE', 'The dragon closes his eyes, smiles, and rests his head in Elnor’s hand.');
-  act('His magic floods back. Elnor transforms: standing tall, beard shining white, robes of deep purple and gold stars, his staff whole and glowing. The whole island changes with him: the gloom lifts, the sun comes out, flowers open and the runes glow. Blip cheers.');
-  nar('The dragon closed his eyes and rested his head in the old wizard’s hand. He had found his home...and Elnor had his price.');
-  say('ELNOR', 'A deal! A new orb, purple this time. And take his harness...trust me.');
+  shot('5.3f', 'WIDE — EXT. THE GARDEN', 'The withered garden behind the castle: dead runes on the stones, old staffs, grey sky.');
+  say('MABEL', 'Right. Let’s see if the old staff remembers...');
+  act('She raises her staff. A sad little spark...and a tiny raincloud pops up over her head and rains on her.', { hold: 4200 });   /* st2-36: the take's cloud comes at about 2.5 s */
+  say('MABEL', 'See? Not enough. Not nearly enough.');
+  say('BLIP', 'Blip.', 'patting her shoulder');
+  shot('5.4', 'MEDIUM — THE GARDEN', 'Joe’s dragon has made himself at home: he is wearing a little wizard hat and chasing butterflies of light round the staffs. Wherever he lands, a patch of flowers opens.');
+  say('MABEL', 'Your dragon seems happy here.');
+  say('JOE', 'He does, doesn’t he? Maybe...maybe he should stay.');   // (Joe, 5 Nov: Joe's idea, not her price)
+  say('MABEL', 'I’d look after him. I’ve missed having a dragon about the place.');
+  shot('5.4b', 'CLOSE — JOE AND HIS DRAGON', 'Joe kneels. The dragon bounds over, the hat crooked, a butterfly on his nose.');
+  say('JOE', 'He got me all the way up here...');   // (Joe, 5 Nov: not 'best friend': they only just met)
+  say('JOE', '...but look at him. He’s never been this happy.');
+  say('JOE', 'Go on, buddy.');
+  act('The dragon nuzzles Joe goodbye, then pads over to Mabel.', { hold: 5600 });   /* st2-36: the nuzzle and the walk away (Joe's take) */
+  shot('5.5', 'CLOSE', 'The dragon closes his eyes, smiles, and rests his head in Mabel’s hand.');
+  act('Her magic floods back. Mabel transforms: standing tall, hair shining silver-white, robes of deep purple and gold stars, her staff whole and glowing. The whole island changes with him: the gloom lifts, the sun comes out, flowers open and the runes glow. Blip cheers.');
+  nar('The dragon closed his eyes and rested his head in the old enchantress’s hand. He had found his home...and Mabel had found her magic.');
+  say('MABEL', 'Thank you, Joe. A new orb for you, purple this time. And take his harness...trust me.');
   shot('5.6', 'CLOSE', 'A glowing purple orb rests in Joe’s palm.');
   ach('The purple orb cursor unlocks in Achievements, Cursors.', 'st2-orb');
   prompt('Psst...equip the purple orb cursor in your achievements. You’ll want it later.');
   shot('5.7', 'CLOSE — THE BACKPACK', 'The backpack rattles. Joe swings it round and lifts out the egg; a crack zig-zags across it.');
   int('Tap the egg (three taps): crack, crack...POP! The baby dragon hatches (frosty blue or fiery red, from the visitor’s choice), shakes off the shell and wriggles back into the backpack, peeking out.');
-  note('RUNES: dragons earn their runes when they are happy. The baby Joe carries gains its first runes here, at the wizard’s castle, and Elnor explains why. (Nothing is said about runes in the oasis: that scene is already long.)');
-  sfx('A tiny squeak.', ['one:chicken-squawk']);
+  note('RUNES: dragons earn their runes when they are happy. The baby Joe carries gains its first runes here, at the enchantress’s castle, and Mabel explains why. (Nothing is said about runes in the oasis: that scene is already long.)');
+  sfx('A tiny squeak.', []);   // (Joe, 5 Nov: the stand-in was Part One's chicken)
+  nar('Worn out from hatching, the baby curled up at the bottom of the backpack and fell fast asleep.');   // (Joe, 5 Nov: the baby showed and then vanished: it is asleep in the pack until the flight home)
   cut('CUT TO:');
 
   /* ---------------- SCENE 5B ---------------- */
@@ -218,6 +273,7 @@
     Music: 'The forest theme returns, hopeful now, with a cheeky lift when the saucer turns up.' });
   shot('5B.1', 'WIDE', 'A familiar buzz. Grik swoops down in a blue flying saucer and hovers by the steps.');
   say('GRIK', 'Told you I’d be around! Need a lift?');
+  int('Tap the saucer to climb aboard.');   /* st2-35 */
   shot('5B.2', 'TRACKING', 'Joe and Grik zip through the clouds in the saucer; the baby’s head pokes out of the dome.');
   shot('5B.3', 'WIDE — THE WASTELAND', 'The saucer lands by the dead portal. Joe and Grik climb out and leave the saucer parked in the ash.');
   shot('5B.4', 'CLOSE — THE ARCH', 'Joe holds the purple orb up to the runes.');
@@ -234,6 +290,7 @@
     Music: 'The Part One ride theme starts...and stops dead for the joke.' });
   shot('6.1', 'WIDE', 'Joe and Grik tumble out of the portal into the Part One woodland. The ride music starts; the hills board slides in.');
   nar('So Joe set off through the rolling hills and treacherous mountains...ha ha, wait. You’ve seen this bit. I won’t make you watch it again.', { triggers: [{ at: 'rolling hills', comp: 's2_6.1b' }] });
+  say('JOE', 'Huh. My beard’s gone. I was just getting used to it.', 'rubbing his chin', { st: 2 });   // (the payoff: back through the portal, back to cartoon, the beard gone)
   note('The saucer was left by the portal, so the joke is the narrator skipping the ride. The music scratches to a stop and there is a whip pan to the castle.');
   cut('RECORD SCRATCH — WHIP PAN TO:');
 
@@ -242,6 +299,23 @@
     Backdrop: 'The Part Two castle, scorched, with smoke rising. Trogdor looms in front of it.',
     Characters: 'Joe, Grik, the baby dragon, Trogdor',
     Music: 'Battle drums build...then drop to silence at the reveal, and swell into a tearful, joyful theme.' });
+  shot('8.0', 'MEDIUM — BEHIND A ROCK', 'At the foot of the hill, out of Trogdor’s sight, Joe gets ready. Every new look arrives in a puff of smoke, Grik more lost each time.');   // (Joe, 3 Nov: the gear-up: Joe tries on heroes; design references, puns on their names)
+  say('GRIK', 'So...what’s the plan, buddy?');
+  say('JOE', 'Every hero needs a look. Give me a second.');
+  act('Puff! Joe in a brown hooded robe, holding up a glowing stick.');
+  say('JOE', 'Hello there. Jo-bi-Wan Kenobi, at your service.', 'in a wise old voice');
+  say('GRIK', '...Hi?');
+  act('Puff! Joe in orange and gold silks, twirling a spear.');
+  say('JOE', 'Joberyn of Dorne. Nobody twirls a spear like me.');
+  act('The spear slips out of his hand and clatters onto the rocks.');
+  say('GRIK', 'You dropped it.');
+  act('Puff! Joe is back in his own armour. He snaps his visor fully shut.');
+  say('JOE', 'I am...the Mandalorijoe.');
+  say('GRIK', 'The Manda-what-now?');
+  say('JOE', 'They’ll get that one in the future.', 'to the camera');   // (breaks the fourth wall: a look straight out at us)
+  say('JOE', 'Anyway...let’s go!');
+  int('Optional: tap Joe for another look. The wardrobe can grow: every new design reference is one more puff of smoke and a pun.');
+  note('Art: Joe in the robe and in the silks, and Joe with his visor fully closed (no copied Mandalorian T-visor: the same helmet, visor down), all in the cartoon style of Scene 6 on; a smoke puff for each change; a look-to-camera pose.');
   shot('8.1', 'WIDE', 'Trogdor paces in front of the castle, furious, flames licking from his jaws. Joe and Grik march up the hill.');
   say('JOE', 'Your reign of terror is over, beast!');
   sfx('Trogdor roars.', ['one:vil-dragon-roar']);
@@ -285,28 +359,30 @@
   note('RUNES: in this final scene Trogdor is covered in runes.');
   say('CLIVE', 'Found your other one, big fella. Thought you might want him back.');
   nar('And so Joe was crowned king of the village, with Trogdor and his little one by his side...');
+  note('TWO NARRATORS (Joe, 10 Nov): Storytime is told by a professional female narrator. Grandad Jim is the wizard, the voice of the rest of the site, and is never called the narrator. Only here do the two meet: the narrator starts this last line and, word by word over its second half, her voice morphs into Grandad’s, so by “by his side...” it is him. The box still says Narrator (the reveal is the cut). Both record this same line at the same pace: Grandad first, then she matches his timing so the words line up for the blend.');
   cut('HARD CUT TO LIVE ACTION:');
   shot('10.2', 'INT. JOE’S REAL ROOM — LIVE ACTION', 'Real-life Joe sits wearing a cardboard crown. Grandad Jim sits in an armchair, reading from a storybook.');
   say('GRANDAD JIM', '...and they all lived happily ever after.', 'spoken, live action');
   say('OFF-CAMERA VOICE', 'What are you two doing?', 'spoken, live action');
   shot('10.3', 'CLOSE TWO-SHOT', 'Joe and Jim look at each other...then slowly at the camera.');
   ach('Happily ever after: awarded for finishing Storytime 2.', 'st2-end');
-  ach('Unlock: Blip, Elnor’s floating purple alien, as a companion (his look, in the Store or companion slot), after Storytime 2.', 'st2-blip');
+  ach('Unlock: Blip, Mabel’s floating purple alien, as a companion (his look, in the Store or companion slot), after Storytime 2.', 'st2-blip');
   cut('SMASH CUT TO: END CREDITS');
   act('Written, Directed, Designed, Developed & Animated by Joe Jackson');
-  act('Narrated by [female narrator]');
+  act('Narrated by [narrator’s name]');
   act('Trogdor voiced by [voice actor]');
-  act('Grandad played by Jim Jackson');
+  act('Grandad Jim and the wizard: Jim Jackson');
   act('Music: [song name] — [artist]');
 
   /* ====================================================================================================================
      2. THE CAST — the name shown on a bubble, the layer key its tail points at, a colour for its placeholder
      ==================================================================================================================== */
+  var ST2_WHO = { Joe: '#1f4fa0', Grik: '#2a8a76', Clive: '#6a2c91', Villager: '#2f7a3b', Mabel: '#5b2a8c', Blip: '#3a3f9a' }, ST2_FACE = { Joe: 2, Clive: 2, Villager: 1, Mabel: 1, Blip: 1, Grik: 1 };   /* st2-35: Grik, cut from plate E1 (S5B-1) */   // st2-29: Mabel and Blip, cut from the painted plates D2 and N2 (Mabel after her magic comes back: story-face-mabel-after, from 5.5 on)   // 2: there is a painted one too (story-face-<name>-painted.webp)   // st2-28 · the box's speaker colours (storytime.js UI_WHO) and who has a portrait (story-face-<name>.webp)
   var CAST = {
     'JOE':              { name: 'Joe',              key: 'joe',      tint: '#e8564f' },
     'GRIK':             { name: 'Grik',             key: 'grik',     tint: '#6fd36b' },
     'CLIVE':            { name: 'Clive',            key: 'clive',    tint: '#c98a3c' },
-    'ELNOR':            { name: 'Elnor',            key: 'elnor',    tint: '#9a7be0' },
+    'MABEL':            { name: 'Mabel',            key: 'mabel',    tint: '#9a7be0' },
     'BLIP':             { name: 'Blip',             key: 'blip',     tint: '#b46bff' },
     'TROGDOR':          { name: 'Trogdor',          key: 'trogdor',  tint: '#e06a8a' },
     'VILLAGER':         { name: 'Villager',         key: 'villager', tint: '#b9a26a' },
@@ -567,6 +643,12 @@
     under: [ A('landHI', 'story2-habitat-ice-land', [.5, 1, 1.16], { z: 1, label: 'The ice cliffs, with the snowy ledge' }), { key: 'fxHI', fx: 'snow', pos: [.5, 1, 1.16, AR], z: 1, label: 'Snow falling over the ice, glints on the cliffs (code, on the land)' } ] };
   SETS.hp = { n: '3', fly: 'water', name: 'The pools', rig: 'st2hp', sky: 'blue', km: 1, depth: 1, atmo: 'oasis', over: [],
     under: [ A('landHP', 'story2-habitat-pools-land', [.5, 1, 1.18], { z: 1, label: 'The waterfalls and pools, with the grassy bank' }), { key: 'fxHP', fx: 'pools', pos: [.5, 1, 1.18, AR], z: 1, label: 'Foam and splashes at the waterfall feet, mist over the pools (code, on the land)' } ] };
+  /* st2-28c · ?look=ns (Joe, 31 Oct: 'we have painted version of the water, why is that not there?'): there is no painted take of the pools, so 3.5 is built from
+     the painted stills (storytime-2/painted-pools/make.py): the painted plate (its own sky and its own foam, so no code foam and no cartoon flyers over it) and every
+     figure's -ns still, fitted to the canvas of the cartoon one it stands in for, so each stands exactly where the cartoon one did. */
+  var NS_LOOK = /[?&]look=ns\b/.test(location.search), NS_SHOT = { '3.5': { 'story2-dragon-water': 1, 'story2-dragon-water-bg1': 1, 'story2-dragon-water-bg2': 1, 'story2-joe-confused-stance': 1, 'story2-joe-calm-hands-up': 1, 'story2-joe-happier-standing': 1, 'story2-clive-side': 1 } };
+  function nsSrc(id, src) { return NS_LOOK && NS_SHOT[id] && NS_SHOT[id][src] ? src + '-ns' : src; }
+  if (NS_LOOK) { SETS.hp.under = [A('landHP', 'story2-habitat-pools-land-ns', [.5, 1, 1.18], { z: 1, label: 'The waterfalls and pools, painted' })]; SETS.hp.fly = null; }
   SETS.hl = { n: '3', fly: 'fire', name: 'The lava fields', rig: 'st2hl', sky: 'ember', km: 1, depth: 1, atmo: 'embers', over: [],
     under: [ A('landHL', 'story2-habitat-lava-land', [.5, 1, 1.2], { z: 1, label: 'The lava fields, with the dark rock shelf (st2-16: scaled about its bottom edge so the shelf’s top is at ~.60 of the board: Ember’s belly and paws, and every foot, rest on rock)' }), { key: 'fxHL', fx: 'lava', pos: [.5, 1, 1.2, AR], z: 1, label: 'Embers rising and small flames flickering over the lava (code, on the land)' } ] };
   var MOUNT39 = [.5, OY, .27, 900 / 830];   // where the mount stands in 3.9 (its feet on the ledge) · st2-25 · D8 (Joe: Clive must be FACING Joe as he flies off, and Clive is never mirrored): the shot is restaged left to right as Joe, the mount (facing right, as drawn), Clive (facing left, as drawn: toward them). It was Joe, Clive, mount: Clive had his back to the take-off.
@@ -640,7 +722,7 @@
        above the banner. Anchored to the screen, not to the picture. Two thin wisps of smoke trail from his nostrils (nose: where they are in his clip's
        frame; beats: the clip times of his wing downbeats, when a slightly bigger puff comes). The line holds ~14s, so he is well past the middle before it
        moves on. (st2-21: total = his whole pass, edge to edge, in ms: 9.4 s from the pan's midpoint, so he has left before the dip to 3.2.) size = his length as a fraction of the visible width; body = how much of the clip's frame his length takes. */
-    '3.1': { live: 'story2-oasis-live', sky: 'blue', bars: true, keep: .8, pan: 16000, panHold: 1500, file: 'oasis-live',   /* st2-20: a 16s pan (was 12), 1.5s held on the ice side, then on to 3.2 by itself: the line's time is the pan's (buildBeats) */
+    '3.1': { live: 'story2-oasis-live', sky: 'blue', bars: true, keep: .8, pan: 16000, panHold: 1500, capAway: 7500, file: 'oasis-live',   /* st2-31 · capAway: the box steps aside 7.5 s into the line (typed and read), so the rest of the pan is the oasis to explore (Joe: 'it takes up prime real estate') */   /* st2-20: a 16s pan (was 12), 1.5s held on the ice side, then on to 3.2 by itself: the line's time is the pan's (buildBeats) */
       explore: {   // the things to press while it pans: picture fractions [centre x, centre y, w, h]
         eggs: [[.2655, .500, .036, .082], [.2925, .518, .036, .078], [.5825, .535, .036, .082], [.6125, .550, .036, .064], [.9645, .618, .034, .086], [.9900, .632, .022, .068]],   // lava nest (pink, orange) · pool nest (blue, purple) · ice nest (pale blue, purple at the edge)
         dragons: [[.148, .645, .075, .105, 'lava'], [.555, .69, .11, .13, 'water'], [.70, .715, .12, .13, 'water'], [.857, .588, .058, .105, 'snow']] },   // the red one in the lava · the two in the pool · the white one in the snow
@@ -747,21 +829,49 @@
       L('vial', 'Broken potion vials', 'vials', 'still', [30, 24, 9, 1.6], { tint: '#7ad0c0', tap: true }),
       L('bigDragon', 'Joe’s dragon, landed', 'ride-rest', 'clip', [2, 25, 24, 900 / 830], { tint: '#6aa8d9', src: 'story2-mount' }),
       L('joe', 'Joe, wandering', 'joe-wander', 'clip', [56, 26, 9, .6], { tint: C('JOE') }) ] },
-    '5.2': { bg: null, file: 'bg-island-door', off: { ELNOR: 'right' }, layers: [
+    '5.2': { bg: null, file: 'bg-island-door', off: { MABEL: 'right' }, layers: [
       L('door', 'The door + knocker', 'door-close', 'still', [56, 20, 26, .7], { tint: '#6a4a2a' }),
       L('joe', 'Joe, reaching for the knocker', 'joe-knock', 'clip', [30, 22, 14, .6], { tint: C('JOE') }) ] },
     '5.3': { bg: null, file: 'bg-island-door', layers: [
       L('joe', 'Joe', 'joe-plead', 'clip', [24, 22, 13, .6], { tint: C('JOE') }),
-      L('elnor', 'Elnor, frail, leaning on his staff', 'elnor-door', 'clip', [56, 22, 13, .55], { tint: C('ELNOR') }),
-      L('blip', 'Blip, floating at his shoulder', 'blip-float', 'clip', [71, 48, 6, 1], { tint: C('BLIP') }) ] },
+      L('mabel', 'Mabel, frail, leaning on her staff', 'mabel-door', 'clip', [56, 22, 13, .55], { tint: C('MABEL') }),
+      L('blip', 'Blip, floating at her shoulder', 'blip-float', 'clip', [71, 48, 6, 1], { tint: C('BLIP') }) ] },
     '5.4': { bg: null, file: 'bg-island-garden', layers: [
       L('bigDragon', 'The dragon in a wizard hat, chasing light butterflies', 'ride-play', 'clip', [8, 25, 26, 900 / 830], { tint: '#6aa8d9', src: 'story2-mount' }),
       L('butterflies', 'Butterflies of light', 'butterflies', 'fx', [10, 46, 24, 2], { tint: '#fff2a8' }),
-      L('elnor', 'Elnor, watching', 'elnor-watch', 'clip', [58, 22, 13, .55], { tint: C('ELNOR') }),
+      L('mabel', 'Mabel, watching', 'mabel-watch', 'clip', [58, 22, 13, .55], { tint: C('MABEL') }),
       L('blip', 'Blip', 'blip-float', 'clip', [73, 48, 6, 1], { tint: C('BLIP') }) ] },
+    '5.3b': { bg: null, file: 'bg-castle-hall', ints: [{ key: 'sheet', react: 'tap', need: 1, hint: 'Tap the dust sheet' }], layers: [   /* st2-33: placeholders until S5-21's plates A1 to A6 */
+      L('sheet', 'The painting under a dust sheet (tap it)', 'painting-sheet', 'still', [60, 50, 20, 1.4], { tint: '#8a8a8a', tap: true }),
+      L('bigDragon', 'The dragon squeezing in at the door', 'dragon-door', 'clip', [2, 22, 20, 900 / 830], { tint: '#6aa8d9' }),
+      L('joe', 'Joe, looking around', 'joe-hall', 'clip', [26, 22, 11, .6], { tint: C('JOE') }),
+      L('mabel', 'Mabel, as she was', 'mabel-hall', 'clip', [40, 22, 11, .55], { tint: C('MABEL') }),
+      L('blip', 'Blip', 'blip-float', 'clip', [50, 46, 6, 1], { tint: C('BLIP') }) ] },
+    '5.3c': { bg: null, file: 'castle-painting', layers: [
+      L('painting', 'The painting: young Mabel with her dragons and the blazing portal', 'painting', 'still', [16, 20, 46, 1.6], { tint: '#c9a24a' }),
+      L('mabel', 'Mabel: one silver streak, a twinkle (memory one)', 'mabel-stage1', 'clip', [70, 20, 14, .55], { tint: C('MABEL') }),
+      L('blip', 'Blip, his monocle dropping', 'blip-float', 'clip', [84, 46, 6, 1], { tint: C('BLIP') }) ] },
+    '5.3d': { bg: null, file: 'bg-castle-hearth', ints: [{ key: 'bigDragon', react: 'tap' }], layers: [
+      L('hearth', 'The cold fireplace (roars alight on the sneeze)', 'hearth', 'still', [44, 20, 26, 1.2], { tint: '#7a5a3a' }),
+      L('bigDragon', 'The dragon, about to sneeze (tap his nose)', 'dragon-sneeze', 'clip', [12, 20, 28, 900 / 830], { tint: '#6aa8d9', tap: true }),
+      L('joe', 'Joe', 'joe-hearth', 'clip', [72, 22, 10, .6], { tint: C('JOE') }),
+      L('mabel', 'Mabel, stage one', 'mabel-stage1', 'clip', [84, 22, 10, .55], { tint: C('MABEL') }) ] },
+    '5.3e': { bg: null, file: 'bg-castle-workshop', ints: [{ key: 'book', react: 'tap' }], layers: [
+      L('book', 'The spell book (tap it: it flips to a dragon)', 'spellbook', 'still', [16, 30, 16, 1.3], { tint: '#8a5a2a', tap: true }),
+      L('mabel', 'Mabel: stage one, then two (memory two)', 'mabel-workshop', 'clip', [34, 22, 11, .55], { tint: C('MABEL') }),
+      L('joe', 'Joe', 'joe-workshop', 'clip', [47, 22, 10, .6], { tint: C('JOE') }),
+      L('bigDragon', 'The dragon chasing Blip round the cauldron', 'dragon-chase', 'clip', [62, 26, 22, 900 / 830], { tint: '#6aa8d9' }),
+      L('blip', 'Blip, fleeing', 'blip-flee', 'clip', [88, 46, 6, 1], { tint: C('BLIP') }) ] },
+    '5.3f': { bg: null, file: 'bg-island-garden', layers: [
+      L('joe', 'Joe, watching', 'joe-garden', 'clip', [24, 22, 10, .6], { tint: C('JOE') }),
+      L('mabel', 'Mabel, stage two, staff raised (a tiny raincloud)', 'mabel-fizzle', 'clip', [44, 22, 13, .55], { tint: C('MABEL') }),
+      L('blip', 'Blip, fingers crossed', 'blip-float', 'clip', [58, 46, 6, 1], { tint: C('BLIP') }) ] },
+    '5.4b': { bg: null, file: 'bg-island-garden', layers: [
+      L('joe', 'Joe, kneeling', 'joe-kneel', 'clip', [26, 22, 14, .8], { tint: C('JOE') }),
+      L('bigDragon', 'The dragon nuzzles Joe goodbye', 'dragon-nuzzle', 'clip', [46, 20, 30, 900 / 830], { tint: '#6aa8d9' }) ] },
     '5.5': { bg: null, file: 'bg-island-garden', layers: [
-      L('bigDragon', 'The dragon’s head in Elnor’s hand', 'ride-nuzzle', 'clip', [22, 20, 36, 900 / 830], { tint: '#6aa8d9', src: 'story2-mount' }),
-      L('elnor', 'Elnor, softened', 'elnor-soft', 'clip', [58, 20, 16, .55], { tint: C('ELNOR') }) ] },
+      L('bigDragon', 'The dragon’s head in Mabel’s hand', 'ride-nuzzle', 'clip', [22, 20, 36, 900 / 830], { tint: '#6aa8d9', src: 'story2-mount' }),
+      L('mabel', 'Mabel, softened', 'mabel-soft', 'clip', [58, 20, 16, .55], { tint: C('MABEL') }) ] },
     '5.6': { bg: null, file: 'bg-island-palm', hold: 6000, layers: [
       L('orb', 'The purple orb in Joe’s palm', 'orb-purple', 'clip', [40, 26, 20, 1], { tint: '#b46bff' }) ] },
     '5.7': { bg: null, file: 'bg-island-pack', ints: [{ key: 'egg', react: 'crack', need: 3, show: 'baby', hideSelf: true }], layers: [
@@ -769,7 +879,8 @@
       L('egg', 'The egg, rattling (three taps)', 'egg-hatch', 'clip', [43, 40, 14, .78], { tint: '#bfe6ff', pick: true, tap: true }),
       L('baby', 'The baby dragon, hatched', 'baby-hatch', 'clip', [42, 40, 16, 1], { tint: '#bfe6ff', pick: true, hide: true, pickSrc: BABY }) ] },
 
-    '5B.1': { bg: null, file: 'bg-island-steps', mood: '5', layers: [
+    '5B.1': { bg: null, file: 'bg-island-steps', mood: '5', ints: [{ key: 'saucer', react: 'tap', need: 1, hint: 'Tap the saucer' }], layers: [
+      L('saucer', 'The saucer (tap it to climb aboard)', 'saucer-hover', 'still', [52, 30, 22, 1.6], { tint: '#4a8ae0', tap: true }),
       L('grik', 'Grik in his blue flying saucer', 'saucer-hover', 'clip', [52, 44, 20, 1.6], { tint: '#4a8ae0' }),
       L('joe', 'Joe on the steps, baby in the backpack', 'joe-steps', 'clip', [26, 24, 11, .6], { tint: C('JOE'), pick: true }) ] },
     '5B.2': { bg: null, file: 'bg-sky', mood: '4', hold: 3500, layers: [
@@ -793,6 +904,9 @@
     '6.1b': { reuse: 'hills', file: '(Part One: story-hills-bg + the ride)', layers: [
       L('grik', 'Grik, keeping up', 'grik-fly', 'clip', [58, 48, 6, 900 / 680], { tint: C('GRIK'), src: 'story2-grik-fly', cls: 'st2hov' }) ] },
 
+    '8.0': { bg: 'cas-bg', bgFx: 'brightness(.7) sepia(.2)', file: '(Part One: story-cas-bg)', ints: [{ key: 'joe', react: 'wiggle' }], layers: [   /* st2-30 · the gear-up (art to come: the looks, the puffs) */
+      L('joe', 'Joe trying on looks (robe, silks, the closed visor)', 'joe-gearup', 'clip', [30, 30, 13, .6], { tint: C('JOE'), pick: true }),
+      L('grik', 'Grik, watching, more lost each time', 'grik-confused', 'clip', [52, 30, 8, 900 / 811], { tint: C('GRIK'), src: 'story2-grik-stand' }) ] },
     '8.1': { bg: 'cas-bg', bgFx: 'brightness(.8) sepia(.2)', file: '(Part One: story-cas-bg)', layers: [
       L('trogdor', 'Trogdor, pacing, flames licking (Part One’s castle clip)', 'trogdor-pace', 'clip', [0, 0, 0, 1], { real: 'castle1:cdragon' }),
       L('joe', 'Joe marching up, backpack on', 'joe-march', 'clip', [16, 24, 11, .6], { tint: C('JOE'), pick: true }),
@@ -969,7 +1083,7 @@
     var rec = a.layers().joe, el = rec && rec.el; if (!el || el.tagName !== 'IMG' || rec.src === a.F('story2-joe-reach')) return;
     if (sh.pack && !/-pack$/.test(face)) face += '-pack';                                    // from the egg pick on he wears the backpack
     var cur = el._face || l.face, css = null; if ((JXG[face] || JXG0) !== (JXG[cur] || JXG0)) { css = layerDef('3', id, JX(face, l.feet, { s: l.s, by: l.gy, flip: l.flip, still: l.still })).css; if (el.style.marginLeft) css += ';margin-left:' + el.style.marginLeft; }   // another canvas (a peacekeeping pose ↔ a standing one): its own box, measured so the helmet keeps its size and place
-    el._face = face; layerSwap(a, 'joe', 'story2-joe-' + face, css, cls || null, jumping ? 0 : 140); }
+    el._face = face; layerSwap(a, 'joe', nsSrc(id, 'story2-joe-' + face), css, cls || null, jumping ? 0 : 140); }
   /* st2-27b · TRIAL, only with ?whole=1 (Joe, 13 Oct): a shot as ordinary VIDEO OF THE WHOLE SCENE. The layered shot is still built underneath, unseen, exactly as
      before: its lines, its Next, its required press and what the press leaves behind all still run, so nothing about the tale's logic changes. On top of it:
        - a black ground and a 16:9 pane holding three clips cut from Joe's takes (experiments/storytime-2/whole-scene-trial/encode-3_4.sh):
@@ -984,70 +1098,553 @@
          its layer. So the unseen layers are moved onto the figures in the picture: at: { idle: {key: [x, y, w, h] of the frame}, end: {...} }, the 'end' set taking over
          once they have moved (moveAt s into b). A bubble is placed when its line starts, on the speaker as he then stands; it does not travel with him.
        done: seconds into b at which the press counts as finished (the next line may start: he has stopped by then) */
+  /* st2-28d · ?look=ns: THE OASIS PAINTED (Joe, 31 Oct: 'oasis in our new design?'), from the painted stills as the pools are (storytime-2/painted-stills/make.py):
+     · 3.1 pans a still of the painted oasis from the ledge, its dragons painted in where the press areas are (no cartoon flocks or black dragon over it);
+     · 3.2 to 3.3 stand on their own set ('on': the painted oasis, and its ledge cut from the same painting, no cartoon flyers in its sky); the three big dragons, Clive
+       (his folded still: no cartoon idle or sigh clip) and Joe's faces are the -ns stills on the cartoon ones' canvases; the frost dragon is a painted still, angry
+       while the sword is up, calm from 'Put that down!'; the smoke comes from the painted nostrils. Joe's sword draw and sheath are still the cartoon clips
+       (there is no painted sword art yet). 3.7 on stay cartoon until their turn. */
+  if (NS_LOOK) {
+    var NSO = { 'story2-joe-calm-hands-up': 1, 'story2-joe-confused-standing': 1, 'story2-joe-angry-standing': 1, 'story2-clive': 1, 'story2-oasis-dragon-frost-angry': 1, 'story2-oasis-dragon-frost-calm': 1 };
+    ['black', 'earth', 'red'].forEach(function (n) { NSO['story2-dragon-' + n + '-angry'] = NSO['story2-dragon-' + n + '-calm'] = 1; });
+    SETS.on = { n: '3', name: 'The dragon oasis, painted', rig: 'st2o', sky: 'blue', km: 1.12, depth: 1.1, atmo: 'oasis', over: [], fly: null,
+      under: [ A('landO', 'story2-oasis-land-ns', [.5, 1, 1], { k: 1, d: .92, z: 1, label: 'The oasis, painted (with its own sky)' }),
+               { key: 'oasisFx', fx: 'oasis', pos: [.5, 1, 1, AR], k: 1, d: .92, z: 1, label: 'Embers off the lava, foam at the falls, snow on the ice (code, on the land)' },
+               A('ledge', 'story2-oasis-fg-ns', [.5, 1.0, 1.08], { z: 2, label: 'The ledge, cut from the same painting' }) ] };
+    ['3.2', '3.2b', '3.3'].forEach(function (id) { var sh = SHOTS[id]; NS_SHOT[id] = NSO; sh.set = 'on';
+      sh.layers = sh.layers.map(function (l) { if (l.key !== 'frost') return l; var calm = id !== '3.2';
+        return B('frost', l.label, 'oasis-frost', 'clip', l.pos, { src: 'story2-oasis-dragon-frost-' + (calm ? 'calm' : 'angry'), cls: calm ? 'st2breathe' : 'st2angry', z: 5 }); }); });
+    DRAG.black.nose.splice(0, 2, .025, .405); DRAG.earth.nose.splice(0, 2, .101, .273); DRAG.red.nose.splice(0, 2, .035, .246); SMOKE.blackCalm[1] = [.02, .242];   // (the painted nostrils)
+    var S31 = SHOTS['3.1']; S31.live = 'story2-oasis-live-ns'; S31.flocks = []; S31.keep = .7;
+    S31.black = { vid: 'story2-flyer-black-ns', w: 892, h: 620, loop: 120 / 24, body: .862, size: .32, at: .35, ms: 11000, total: 9400, nose: [.905, .55], beats: [.92, 3.46] };   // st2-28o: the black dragon painted (S3-34 plate B1, S3-35 his flapping loop on green, keyed): the same slow pass over the top as the cartoon one, a little earlier (after the clip's fire flock), and bigger: the clip's flocks fly big, and he is the biggest in the sky   // (framed a little higher: more of the painted sky)
+    /* st2-28n: the opening is plate O1 now (S3-33: the cartoon opening's layout painted, no ledge), so the cartoon's press areas fit it as they are */ }
   /* st2-27h · THE PENCIL LOOK for the layered tale (Joe chose 'pencil and crayon', 15 Oct): with ?look=c the engine loads the -pc version of every picture named here
      (made by storytime-2/whole-scene-trial/grade/pencil_still.py). Everything with a -pc file: the backdrops, every figure and prop, every poster and keyed clip, the opening pan; the code-drawn skies get the paper laid over them. Joe: 'everyone needs hand drawn or none'. */
   window.JJ_PC = window.JJ_PC || {}; 'baby-fire baby-frost clive clive-idle clive-idle-poster clive-present clive-side clive-sigh clive-sigh-poster clive-startled clive-think desert-bg desert-land dragon-black-angry dragon-black-calm dragon-earth-angry dragon-earth-calm dragon-fire-fly-1 dragon-fire-fly-2 dragon-fire-fly-3 dragon-fire-lie dragon-fire-sit dragon-fire-stand dragon-ice dragon-ice-bg dragon-ice-fly-1 dragon-ice-fly-2 dragon-ice-fly-3 dragon-ice-lie dragon-ice-sit dragon-ice-stand dragon-red-angry dragon-red-calm dragon-shy dragon-water dragon-water-bg1 dragon-water-bg2 dragon-water-fly-1 dragon-water-fly-2 dragon-water-fly-3 dragon-water-lie dragon-water-sit dragon-water-stand egg-ember egg-frost egg-nest ember-asleep ember-asleep-alt ember-awake ember-lying flyer-black flyer-black-poster flyer-fire flyer-fire-poster flyer-frost flyer-frost-poster flyer-water flyer-water-poster flyers-fire flyers-fire-poster flyers-water flyers-water-play flyers-water-play-poster flyers-water-poster grik-confused grik-exit grik-exit-poster grik-fly grik-fly-loop grik-fly-loop-poster grik-stand habitat-ice-land habitat-lava-land habitat-pools-land ice-statue joe-angry-stance joe-angry-stance-pack joe-angry-standing joe-angry-standing-pack joe-approaching joe-approaching-pack joe-calm-hands-up joe-calm-hands-up-pack joe-cautious-peace joe-cautious-peace-pack joe-concerned-stance joe-concerned-stance-pack joe-concerned-standing joe-concerned-standing-pack joe-confused-stance joe-confused-stance-pack joe-confused-standing joe-confused-standing-pack joe-emotional-stance joe-emotional-stance-pack joe-emotional-standing joe-emotional-standing-pack joe-excited-rider-pack joe-focused-rider-pack joe-happier-stance joe-happier-stance-pack joe-happier-standing joe-happier-standing-pack joe-happy-rider-pack joe-nervous-stance joe-nervous-stance-pack joe-nervous-standing joe-nervous-standing-pack joe-pack joe-pointing joe-reach joe-reach-pack joe-sad-stance joe-sad-stance-pack joe-sad-standing joe-sad-standing-pack joe-sword-draw joe-sword-draw-poster joe-sword-hold joe-sword-hold-poster joe-sword-sheath joe-sword-sheath-poster joe-throne-joyful-crown joe-throne-joyful-no-crown joe-throne-warm-crown joe-throne-warm-no-crown mount nest-scorched oasis-bg oasis-dragon-frost-angry oasis-dragon-frost-angry-poster oasis-dragon-frost-calm oasis-dragon-frost-calm-poster oasis-dragon-frost-rise oasis-dragon-frost-rise-poster oasis-dragon-frost-settle oasis-dragon-frost-settle-poster oasis-fg oasis-land oasis-live oasis-live-poster oasis-road-bg sign wasteland-bg wasteland-land'.split(' ').forEach(function (n) { window.JJ_PC['story2-' + n] = 1; });   // every picture, poster and clip of the tale (145)
   if (/[?&]look=c\b/.test(location.search)) document.documentElement.classList.add('jj-pc');   // (the code-drawn skies get the paper: see .st2skyn)
-  var WHOLE_ON = /[?&]whole=1\b/.test(location.search), WH = null, WHOLE_PROPS = ['left', 'top', 'right', 'bottom', 'width', 'height', 'margin', 'translate', 'scale', 'rotate', 'transform', 'animation', 'transition', 'aspect-ratio'];
+  var WHOLE_Q = (/[?&]whole=([0-9a-z.,]+)/.exec(location.search) || [])[1] || '', WHOLE_ON = !!WHOLE_Q, WHOLE_ONLY = WHOLE_Q === '1' ? null : WHOLE_Q.split(','), WH = null,   /* st2-28: ?whole=3.4 = only that shot as its whole-scene take (?whole=1: every shot that has one) */ WHOLE_PROPS = ['left', 'top', 'right', 'bottom', 'width', 'height', 'margin', 'translate', 'scale', 'rotate', 'transform', 'animation', 'transition', 'aspect-ratio'];
   var WHOLE = { '3.4': { vid: 'story2-whole-3_4', look: true, safe: .97, done: 11.0, moveAt: 9.4, cFrom: 10 / 24,
     at: { idle: { joe: [.086, .39, .125, .32], clive: [.40, .34, .115, .36], iceDragon: [.655, .08, .25, .62], iceBg: [.585, .30, .115, .21] },
           end:  { joe: [.165, .385, .10, .35], clive: [.395, .33, .115, .37], iceDragon: [.70, .10, .24, .66], iceBg: [.585, .29, .115, .22], statue: [.265, .37, .105, .39] } },
-    ns: { vid: 'story2-whole-3_4-ns', done: 10.0, moveAt: 5.5, cFrom: 0, sfx: [[5.2, 'chime', .3]], snow: 1,   /* st2-27q · ?look=ns: the new painterly style (one Dreamina take: a = its first frame held, b = the whole take, c = its last frame held; Joe: a loop played there and back sent the snow upwards, and an idle is hard to get in this style. So the waits are the painting, still, with the snow falling over it in code (wholeSnow)) */
-      at: { idle: { joe: [.073, .41, .135, .33], clive: [.385, .31, .125, .43], iceDragon: [.665, .11, .27, .67], iceBg: [.585, .35, .115, .2] },
-            end:  { joe: [.094, .42, .115, .32], clive: [.375, .31, .125, .41], iceDragon: [.69, .15, .27, .65], iceBg: [.585, .45, .11, .13], statue: [.45, .22, .175, .58] } } } },
+    ns: { vid: 'story2-whole-3_4-ns', done: 11.0, moveAt: 6.5, cFrom: 0, sfx: [[6.0, 'chime', .3]], snow: 1, carry: [[.015, .30, .225, .97], 5.4],   /* st2-28k (Joe: 'how come beginning of ice joe is still?'): the take holds him still for 6 s, so his part of the wait loop carries on over it until 5.4 s, then dissolves into the take's Joe as he steps forward */   /* st2-27q · ?look=ns: the new painterly style (one Dreamina take: a = its first frame held, b = the whole take, c = its last frame held; Joe: a loop played there and back sent the snow upwards, and an idle is hard to get in this style. So the waits are the painting, still, with the snow falling over it in code (wholeSnow)).
+         st2-28g · Joe's redo with the grown-up Joe (S3-14, plates I1 to I2): the frost at 3.5 s, the statue up by 6, the knight stands at 7 */
+      at: { idle: { joe: [.06, .38, .15, .36], clive: [.385, .33, .115, .38], iceDragon: [.665, .12, .27, .63], iceBg: [.585, .35, .1, .19] },
+            end:  { joe: [.085, .36, .1, .38], clive: [.383, .335, .117, .38], iceDragon: [.69, .18, .25, .57], iceBg: [.585, .36, .1, .19], statue: [.505, .34, .11, .40] } } } },
     /* st2-27d · the pools (3.5) from Joe's two takes, colour-matched back to the plate (storytime-2/whole-scene-trial/encode-3_5.sh): nobody walks, so the boxes barely change */
-    '3.5': { vid: 'story2-whole-3_5', look: true, safe: .97, done: 9.6, moveAt: 8.0, cFrom: 0, sfx: [[2.2, 'water', .45]],   // sfx: [s into the action, name, level] (the drawn jet, which carries the sound, is skipped)
+    '3.5': { vid: 'story2-whole-3_5', look: true, motes: 'glint', safe: .97, done: 9.6, moveAt: 8.0, cFrom: 0, sfx: [[2.2, 'water', .45]],   // sfx: [s into the action, name, level] (the drawn jet, which carries the sound, is skipped)
       at: { idle: { joe: [.09, .365, .10, .345], clive: [.29, .32, .115, .38], waterDragon: [.55, .05, .23, .53], waterBg1: [.885, .30, .105, .26], waterBg2: [.38, .35, .105, .16] },
             end:  { joe: [.085, .36, .11, .35], clive: [.29, .32, .12, .38], waterDragon: [.56, .04, .23, .54], waterBg1: [.885, .30, .105, .26], waterBg2: [.38, .35, .105, .16] } } } };
+  /* st2-28f · SCENE 3 PAINTED, the real thing (Joe, 2 Nov: 'lets get chat working and then do the build'): with ?whole=1&look=ns every shot of the oasis is one of
+     Joe's Dreamina takes (C1 to C7) or a painted plate (storytime-2/whole-scene-trial/encode-scene3-ns.py; the close two-shot: close38.py). New here:
+       auto: ms   the action starts by itself that long after the shot comes up (no press: the sword, 'Put that down!', the huzzah, the take-off)
+       goAt       ...or on the line that starts with this text (Clive walks over to wake Ember as he says it)
+       same       a later step of a shot that carries on in the SAME take (the touch, her sleep, the rider): nothing is rebuilt
+       join       the take starts on the frame the last one ended on: it comes up whole under the old one, with no dip between
+       over       layers that stay drawn over the video (the flashback above Joe)
+       frames + cues   (3.8) pictures that change with the lines: [the line's first words, the picture] (joe + clive: d delighted, h hopeful, b blank · a amused, s sigh) */
+  var SKY = { line: { m: 'line', s: [.365, .07, .08, 1, .62, .088, .09, -1, .833, .088, .07, 1, .50, .045, .05, -1] }, waste: { m: 'waste', s: [.19, .07, .10, 1, .38, .09, .11, -1, .16, .19, .06, -1, .30, .02, .06, 1] },
+    s2w: { m: 's2w', s: [.875, .17, .12, 1, .27, .06, .10, -1, .60, .08, .09, 1, .58, .27, .06, -.6] }, s2s: { m: 's2s', s: [.87, .17, .12, 1, .33, .08, .10, -1, .56, .21, .08, 1, .12, .05, .07, -.6] },
+    s2n: { m: 's2n', s: [.78, .10, .12, -1, .27, .10, .11, 1, .93, .33, .08, 1, .50, .25, .08, .6] } };   // st2-47: Scene 2's three cameras (the demo's spirals; masks from its sky lines and still boxes)   // st2-40: the wasteland's (Scene 1, its mask from plate A)   // st2-28j: the swirling skies, one per camera (wholeSky): its mask, its four spirals
+  var NS3 = {
+    '3.2': { vid: 'story2-whole-3_2-ns', auto: 700, sky: SKY.line, done: 5.0, moveAt: 2.2, at: { idle: { joe: [.11, .36, .115, .39] }, end: { joe: [.05, .36, .14, .39] } } },
+    '3.2b': { vid: 'story2-whole-3_2b-ns', join: true, auto: 0, sky: SKY.line, done: 5.5, moveAt: 2.4, sfx: [[1.0, 'puff', .2], [1.3, 'roar', .18]],   /* st2-28l: softer (Joe: too loud) */
+      at: { idle: { joe: [.05, .36, .14, .39], clive: [.21, .33, .11, .42] }, end: { joe: [.09, .45, .12, .30], clive: [.21, .33, .11, .42] } } },
+    '3.3': { vid: 'story2-whole-3_3-ns', join: true, still: true, sky: SKY.line, sameLoop: true, at: { idle: { joe: [.09, .45, .12, .30], clive: [.21, .33, .11, .42] } } },
+    '3.6': { vid: 'story2-whole-3_6-ns', embers: 1, goAt: '...but get to know them', done: 6.0, moveAt: 4.5,   /* st2-28m: the closer camera (plates F1 to F4, S3-24; Joe: 'not every scene needs to be shot from the same distance') */
+      at: { idle: { joe: [.01, .25, .25, .66], clive: [.24, .17, .14, .70], ember: [.41, .22, .57, .68] }, end: { joe: [.05, .24, .28, .65], clive: [.74, .01, .19, .85], ember: [.37, .22, .22, .42] } } },   // (Ember: her head and neck, where Joe reaches: the press lands there)
+    '3.6b': { vid: 'story2-whole-3_6b-ns', embers: 1, join: true, done: 2.6, moveAt: 4.0, sfx: [[3.2, 'puff', .22]], over: ['flash'],
+      at: { idle: { joe: [.05, .24, .28, .65], clive: [.74, .01, .19, .85], ember: [.37, .22, .22, .42], flash: [.035, -.05, .48, .4] }, end: { joe: [.06, .26, .27, .65], clive: [.72, .04, .24, .76], ember: [.29, .33, .59, .58], flash: [.035, -.05, .48, .4] } } },
+    '3.6t': { same: '3.6b' }, '3.6c': { same: '3.6b' },
+    '3.6d': { vid: 'story2-whole-3_6d-ns', embers: 1, join: true, auto: 200, done: 4.0, moveAt: 1.0,
+      at: { idle: { joe: [.06, .26, .27, .65], clive: [.72, .04, .24, .76], ember: [.29, .33, .59, .58] }, end: { joe: [.06, .26, .27, .65], clive: [.73, .01, .20, .79], ember: [.29, .33, .59, .58] } } },
+    '3.7': { vid: 'story2-whole-3_7-ns', still: true,
+      at: { idle: { joe: [.344, .46, .066, .30], clive: [.61, .45, .09, .305], nest: [.44, .58, .14, .08], eggFrost: [.452, .53, .054, .10], eggFire: [.504, .525, .054, .105] } } },
+    '3.8': { vid: 'story2-whole-3_8k-ns', still: true, talk: { JOE: 'story2-whole-3_8k-ns-joe', CLIVE: 'story2-whole-3_8k-ns-clive' }, talkOff: ['It’s me.', 'I thought you said', 'Yeah, yeah'],   /* st2-42 (Joe: 'clive is supposed to be disappointed here ... the idle talking doesnt work there'): no happy loop on those lines until the annoyed ones (S3-39 to S3-41) */   /* st2-37 (Joe, 3 Nov: 'joe and clive conversational need work'): plate K1 at rest, and over it the speaker's talk loop (S3-37, S3-38) for as long as his line is up */
+      at: { idle: { joe: [.12, .14, .33, .86], clive: [.53, .1, .35, .9] } } },
+    '3.9': { vid: 'story2-whole-3_9-ns', auto: 300, done: 12, moveAt: 5.5,
+      at: { idle: { joe: [.2, .44, .075, .31], clive: [.73, .47, .11, .28], mount: [.355, .28, .27, .47] }, end: { joe: [.42, -.4, .1, .2], clive: [.73, .47, .11, .28], mount: [.42, -.6, .2, .3] } } },
+    '3.9r': { same: '3.9' },
+    /* st2-29 · SCENE 5 PAINTED (Joe, 3 Nov: 'start the build'): Joe's four Dreamina clips C1 to C4 and the plates (storytime-2/whole-scene-trial/encode-scene5-ns.py). New here:
+         tapFx   {layer: burst}   a press on that layer (painted into the take) answers with a burst where it was pressed (the vials and the staffs)
+         orb     [x, y, size]     a glowing purple orb drawn over the picture (5.6: Mabel's price paid; no plate of it in Joe's palm yet)
+         cracks                   each press on the egg draws a crack across it, glowing from inside (5.7); the third is the pop (the -b take: a burst of light, H1 to H2)
+         vid: function            the take chosen as the shot comes up (5.7: the egg that was picked, frost or fire) */
+    '5.1': { vid: 'story2-whole-5_1-ns', auto: 0, done: 9.0,   /* (at once: its first frame is the dragon in mid-air, so no held wait) */ moveAt: 3.2, tapFx: { vial: 'spark', staff: 'spark' },
+      at: { idle: { bigDragon: [.08, 0, .29, .23], joe: [.21, .02, .07, .15], door: [.8, .17, .12, .33], staff: [.17, .33, .06, .32], vial: [.30, .55, .16, .12] },
+            end: { bigDragon: [.07, .53, .19, .30], joe: [.64, .44, .12, .31], door: [.8, .17, .12, .33], staff: [.17, .33, .06, .32], vial: [.30, .55, .16, .12] } } },
+    '5.2': { vid: 'story2-whole-5_2-ns', still: true, at: { idle: { joe: [.48, .36, .2, .44], door: [.6, .18, .15, .42] } } },
+    '5.3': { vid: 'story2-whole-5_3-ns', join: true, auto: 300, done: 7.0, moveAt: 4.6,
+      at: { idle: { joe: [.48, .36, .2, .44], mabel: [.62, .3, .14, .36], blip: [.74, .33, .08, .16] }, end: { joe: [.42, .38, .18, .48], mabel: [.62, .3, .14, .36], blip: [.74, .33, .08, .16] } } },
+    /* st2-34 (Joe, 4 Nov: ChatGPT's castle plates, S5-19 to S5-21): the new middle painted, each move made in code until its Dreamina clip exists
+       (experiments/storytime-2/whole-scene-trial/encode-scene5b-ns.py): the sheet comes off on the press, the memories shimmer on their beats, the sneeze flashes */
+    '5.3b': { vid: 'story2-whole-5_3b-ns', done: 7.0, moveAt: 3.0, sfx: [[2.4, 'puff', .25]],   /* st2-35: Joe's Dreamina take (S5-23): the sheet falls 2.3 to 2.9 s, the dragon pads to the hearth */
+      at: { idle: { sheet: [.8, .07, .18, .4], bigDragon: [0, .22, .11, .55], joe: [.14, .36, .08, .5], mabel: [.26, .42, .12, .46], blip: [.31, .3, .09, .14] }, end: { sheet: [.69, .77, .28, .13], painting: [.8, .06, .19, .36], bigDragon: [.65, .52, .24, .24], joe: [.34, .46, .12, .44], mabel: [.45, .48, .12, .42], blip: [.5, .38, .1, .14] } } },
+    '5.3c': { vid: 'story2-whole-5_3c-ns', goAt: 'MEMORY ONE', done: 6.6, moveAt: 3.6,   /* st2-37: the painting, a 0.6 s dissolve into Joe's take (S5-24): the shimmer, the silver streak, Blip's monocle drops */
+      at: { idle: { painting: [.05, .05, .9, .9] }, end: { mabel: [0, .08, .42, .92], blip: [.5, .15, .2, .33] } } },
+    '5.3d': { vid: 'story2-whole-5_3d-ns', goAt: 'Haven’t had a fire', tapPlay: 'bigDragon', done: 5.0, moveAt: 3.3, sfx: [[3.0, 'fire-spurt', .4]],   /* st2-35: Joe's Dreamina take (S5-25): sniff, scrunch, the flame at 3.05 s, sheepish */
+      at: { idle: { bigDragon: [.38, .35, .42, .5], joe: [.16, .28, .23, .64], mabel: [.02, .15, .18, .75], hearth: [.67, .3, .3, .5] } } },
+    '5.3e': { vid: 'story2-whole-5_3e-ns', goAt: 'MEMORY TWO', tapFx: { book: 'spark' },   /* st2-42 (Joe: 'tap the spell book doesnt work'): a burst of sparks and a chime where it is pressed */ done: 5.0, moveAt: 3.2,   /* st2-36: Joe's take (S5-26): the chase round the cauldron, her sparkle peaks at 3.2 s */
+      at: { idle: { book: [.01, .38, .28, .6], mabel: [.29, .3, .14, .65], joe: [.42, .3, .13, .65], bigDragon: [.33, .1, .3, .27], blip: [.63, .12, .09, .15] }, end: { book: [.01, .38, .22, .58], mabel: [.13, .28, .14, .6], joe: [.28, .28, .17, .62], bigDragon: [.36, .15, .3, .3], blip: [.36, .15, .3, .3] } } },
+    '5.3f': { vid: 'story2-whole-5_3f-ns', goAt: 'She raises her staff', done: 6.0, moveAt: 3.0,   /* st2-36: Joe's take (S5-27): the spark, the raincloud */ at: { idle: { joe: [.17, .3, .16, .65], mabel: [.43, .08, .23, .87], blip: [.68, .43, .13, .2] }, end: { joe: [.2, .2, .13, .72], mabel: [.43, .15, .2, .75], blip: [.69, .4, .1, .17] } } },
+    '5.4': { vid: 'story2-whole-5_4-ns', auto: 300, done: 7.0, moveAt: 4.0,   /* st2-36: Joe's take (S5-28): the dragon at play, flowers where he lands */ at: { idle: { joe: [.06, .28, .12, .64], bigDragon: [.32, .3, .34, .45], butterflies: [.59, .2, .1, .14], mabel: [.75, .33, .15, .62], blip: [.88, .44, .08, .14] }, end: { joe: [.06, .26, .1, .66], bigDragon: [.29, .28, .24, .4], butterflies: [.58, .18, .1, .14], mabel: [.71, .26, .16, .68], blip: [.89, .4, .08, .13] } } },   /* (now M1 with the stage-two Mabel, held: the old clip had her as she was) */
+    '5.4b': { vid: 'story2-whole-5_4b-ns', goAt: 'The dragon nuzzles Joe goodbye', done: 7.0, moveAt: 4.0,   /* st2-36: Joe's take (S5-29): the nuzzle, then he pads away */ at: { idle: { joe: [.02, .14, .4, .85], bigDragon: [.4, .03, .58, .95] }, end: { joe: [.1, .12, .4, .85] } } },
+    '5.5': { vid: 'story2-whole-5_5-ns', auto: 300, done: 11.0, moveAt: 6.2, sfx: [[5.9, 'chime', .3]],   /* st2-36: Joe's take (S5-30): the glow, the burst at 5.95 s, the island in sunshine */   /* (from the new N1: 7 s of glow from her palm, the burst, N2) */
+      at: { idle: { mabel: [.07, .44, .2, .56], blip: [.2, .25, .14, .2], bigDragon: [.33, .08, .65, .9] }, end: { mabel: [.03, .38, .3, .62], blip: [.2, .27, .1, .15], bigDragon: [.35, .12, .6, .85] } } },
+    '5.6': { vid: 'story2-whole-5_6-ns', still: true, join: true, orb: [.5, .44, .16], at: { idle: { orb: [.42, .3, .16, .28] } } },
+    '5.7': { vid: function () { return 'story2-whole-5_7-' + pick() + '-ns'; }, done: 3.6, moveAt: .7, cracks: true, sfx: [[.15, 'chime', .3]],
+      at: { idle: { egg: [.41, .44, .15, .32], pack: [.08, .4, .2, .4] }, end: { baby: [.12, .24, .16, .2], pack: [.08, .4, .25, .45] } } },
+    '4.1': { vid: 'story2-whole-4_1-ns', still: true, snow: 'wind', ride: { x: .36, y: .5, size: .36, speed: .139 } },   /* st2-30 · the ride: the sky loop is the shot (no take), Joe on his dragon drawn over it (wholeRide), the snow blowing past */
+    '4.2': { vid: 'story2-whole-4_2-ns', join: true, auto: 300, done: 7.0, moveAt: 2.0, fxAt: [['But as they flew closer', 'gloom']] },   /* st2-42: the grey cloud rolls over the island on the second line (Joe: the bright castle, then a stormy landing) */
+    /* st2-40 · SCENE 1 PAINTED (moved in from the demo's scene1/ page): C1, plate B and C2 on the press, the talk, C3.
+         poses  {name: [left, top, width]}   cut-outs over the picture (Grik's gestures), bobbing, livelier while he speaks; the line's beat picks one
+         beats  [[the line's first words, { pose, cam, mem, castle, then: [pose, ms] }]]   per line: Grik's pose, the framing (S1CAM), the memory clip, the castle in the haze
+                (a line with no entry: Joe's lines frame on Joe and his talk loop covers the cut-outs) */
+    '1.1': { vid: 'story2-whole-1_1-ns', auto: 0, done: 15, moveAt: 3.3, sky: SKY.waste, motes: 'ash', sfx: [[1.9, 'flare', .5], [3.3, 'thud', .6]],
+      at: { idle: { joe: [.3, .27, .18, .62] }, end: { joe: [.3, .27, .18, .62] } } },
+    '1.2': { vid: 'story2-whole-1_2-ns', done: 10, moveAt: 4, sky: SKY.waste, motes: 'ash', sfx: [[1.2, 'portal-sputter', .5], [3.3, 'whoosh', .45]],
+      at: { idle: { portal: [.52, .12, .3, .58], joe: [.3, .27, .18, .62] }, end: { joe: [.31, .27, .17, .6], grik: [.53, .31, .13, .15] } } },
+    '1.3': { vid: 'story2-whole-1_3-ns', still: true, sky: SKY.waste, motes: 'ash', talk: { JOE: 'story2-whole-1_3-ns-joe' },
+      poses: {}, frames: ['c', 'c2', 'c3', 'c4', 'c5'],   /* st2-43 · ChatGPT's expression plates (S1-9: C2 puzzled, C3 grave, C4 east, C5 goodbye), Grik always flying; they change with the lines until their talk loops (S1-10 to S1-18) come */
+      cues: [['⟟', 'c2'], ['Ah. You', 'c2'], ['Through that old', 'c'], ['Not even a hello', 'c'], ['A great fire', 'c3'], ['Don’t believe', 'c3'], ['Hmm. Folk whisper', 'c4'], ['I don’t believe in whispers', 'c'], ['Anyway, stuff to do', 'c5']],
+      beats: [['Hmm. Folk whisper', { castle: 1100 }]],   /* st2-42 (Joe: 'I dont really like grik as much when hes not in his flying form'): he stays in his flying pose throughout; the new talk clips (S1-9 on) will replace this */   /* st2-41 (Joe, 5 Nov: 'grik moves around too much ... you resize him in the frame like he grows'): one steady framing for the whole talk (no zoom per line), Grik in his own plate pose, two gestures only: pointing east, and the wave goodbye */
+      at: { idle: { joe: [.31, .27, .17, .6], grik: [.53, .31, .13, .15] } } },
+    '1.4': { vid: 'story2-whole-1_4-ns', auto: 0, done: 5, moveAt: 1, sky: SKY.waste, motes: 'ash', sfx: [[1.5, 'whoosh', .55]],
+      at: { idle: { joe: [.31, .27, .17, .6], grik: [.53, .31, .13, .15] }, end: { joe: [.31, .27, .17, .6] } } },
+    /* st2-35 · SCENE 5B PAINTED, the way home (ChatGPT's plates E1 to E6, S5B-1): each move made in code until its Dreamina clip (S5B-2 to S5B-6) exists */
+    '5B.1': { vid: 'story2-whole-5B_1-ns', done: 6.0, moveAt: 3.5,   /* st2-37: Joe's take (S5B-2): he hops in, the dome slides shut */
+      at: { idle: { saucer: [.6, .25, .33, .6], grik: [.68, .42, .14, .18], joe: [.14, .2, .14, .72] }, end: { saucer: [.6, .3, .33, .6], joe: [.68, .38, .1, .25], grik: [.79, .4, .1, .22] } } },
+    '5B.2': { vid: function () { return 'story2-whole-5B_2-' + pick() + '-ns'; }, still: true, sfx: [[.2, 'whoosh', .25]],   /* (the wait is the move: the camera floats with the saucer) */
+      at: { idle: { saucer: [.35, .15, .45, .7], baby: [.52, .17, .12, .17], joe: [.48, .38, .1, .2], grik: [.58, .4, .1, .2] } } },
+    '5B.3': { vid: 'story2-whole-5B_3-ns', still: true, at: { idle: { saucer: [0, .44, .25, .32], joe: [.25, .38, .1, .48], grik: [.36, .52, .08, .3], portal: [.48, .02, .4, .7] } } },
+    '5B.4': { vid: 'story2-whole-5B_4-ns', done: 2.6, moveAt: 1.7, sfx: [[.1, 'chime', .3], [1.4, 'portal-on', .35]],
+      at: { idle: { portal: [.47, .05, .5, .8], joe: [.12, .17, .3, .8], grik: [.08, .15, .1, .17], orb: [.34, .17, .08, .13] }, end: { portal: [.45, .05, .5, .85], joe: [.07, .28, .3, .68], grik: [.04, .18, .1, .17] } } },
+    '5B.5': { vid: 'story2-whole-5B_5-ns', join: true, auto: 900, done: 2.4, moveAt: 1.0, sfx: [[.2, 'whoosh', .3]],
+      at: { idle: { portal: [.45, .05, .5, .85], joe: [.07, .28, .3, .68], grik: [.04, .18, .1, .17] } } } };   /* the clouds part (S4-2, C1: plate R1 to R2) */
+  Object.keys(NS3).forEach(function (id) { WHOLE[id] = WHOLE[id] || {}; WHOLE[id].ns = Object.assign({ safe: .97, cFrom: 0 }, NS3[id]); });
+  /* st2-47 · SCENE 2 PAINTED, moved in from the demo's scene2/ page (Joe, 10 Nov: 'we have a whole storytime 2 in painted already done', 'i want all that painted stuff on live').
+       2.1 the walk: days pass (night falls and lifts with stars and a moon), his footprints stay in the ash      2.2 the signpost: the sign swings down caked in soot; rub it clean to read it
+       2.3 the nest: tap it to look closer, tap the glint to keep the shard of eggshell                           2.4 the drop: his legs give way (the world drains grey, his sight closes in, his heart
+       pounds) and the far oasis is the only colour left; tap it to focus his eyes. A storm blows through all four (dust, murk, gusts and the wind), strongest at the nest.
+       The pictures are whole-scene takes like every other painted shot (storytime-2/whole-scene-trial/encode-scene2-ns.py: the empty-plate loop with Joe's two matted clips over it);
+       the extras are drawn here, over them (s2Go). Its small sounds: storytime-2/whole-scene-trial/s2-sounds.py. */
+  var NS2 = {
+    '2.1': { vid: 'story2-whole-2_1-ns', auto: 0, done: 8.0, moveAt: 7.6, sky: SKY.s2w, embers: 1, s2: { kind: 'walk', storm: .25 } },
+    '2.2': { vid: 'story2-whole-2_2-ns', still: true, sky: SKY.s2s, embers: 1, s2: { kind: 'sign', storm: .75 }, at: { idle: { sign: [.75, .2, .1, .16], joe: [.18, .29, .18, .5] } } },   // (sign: where the rub prompt rings, on the sign itself; joe: where his thought sits)
+    '2.3': { vid: 'story2-whole-2_3-ns', still: true, sky: SKY.s2n, embers: 1, s2: { kind: 'nest', storm: 1 },
+      at: { idle: { nest: [.745, .61, .09, .16], shard: [-.3, -.3, .01, .01], joe: [.51, .26, .17, .5] }, end: { nest: [-.3, -.3, .01, .01], shard: [.507, .43, .1, .178], joe: [-.3, -.3, .01, .01] } } },
+    '2.4': { vid: 'story2-whole-2_4-ns', auto: 900, done: 4.9, moveAt: 1.0, sky: SKY.s2w, embers: 1, s2: { kind: 'drop', storm: .4 },
+      at: { idle: { oasis: [.905, .374, .08, .142] }, end: { oasis: [.905, .374, .08, .142] } } } };
+  Object.keys(NS2).forEach(function (id) { WHOLE[id] = WHOLE[id] || {}; WHOLE[id].ns = Object.assign({ safe: .97, cFrom: 0 }, NS2[id]); });
+  var S2P = NS_LOOK && WHOLE_ON;   // (the painted Scene 2 replaces the layered one: its presses, its pictures, its extra beats)
+  if (S2P) { Object.keys(NS2).forEach(function (id) { NS_SHOT[id] = NS_SHOT[id] || {}; });   // (its lines get the painted portraits)
+    S.forEach(function (it) { if (it.nsLead) { it.lead = true; it.st = 3; } });   // (Joe's two thoughts stay up while their press waits, as in the demo)
+    SHOTS['2.1'].linger = 6800; SHOTS['2.4'].linger = 5200;
+    ['2.1', '2.2', '2.3', '2.4'].forEach(function (id) { SHOTS[id].cam = { x: .5, nx: .5, z: 1 }; delete SHOTS[id].pointAt; });   // (the hidden layered board stays still: its press areas are placed on the painting once, and a camera moving under them would carry them off it)   // (the walk's line lasts the walk; the drop's line, until the shimmer is there to press)
+    SHOTS['2.2'].ints = [{ key: 'sign', react: 's2rub', need: 1, hint: 'Rub the soot off the sign', s2on: 's2signdown' }];
+    SHOTS['2.2'].layers = [HOT('sign', 'Where the rub prompt points: the sign', [.8, .4, .1, 1]), HOT('joe', 'Joe, painted in: where his thought sits', [.27, .78, .18, 1])];
+    SHOTS['2.3'].ints = [{ key: 'nest', react: 's2nest', need: 1, hint: 'Tap the nest' }, { key: 'shard', react: 's2shard', need: 1, hint: 'Something glints in the ash. Tap it', pill: 'Joe keeps the shard. It might matter later.' }];
+    SHOTS['2.3'].layers = [HOT('nest', 'The nest: the press area', [.79, .77, .09, 1], { tap: true }), HOT('shard', 'The glint of eggshell, once the camera is close: the press area', [.56, .6, .1, 1], { tap: true }), HOT('joe', 'Joe, painted in: where his thought sits', [.6, .76, .17, 1])];
+    SHOTS['2.4'].ints = [{ key: 'oasis', react: 's2focus', need: 1, hint: 'Tap the shimmer to focus his eyes' }];
+    SHOTS['2.4'].layers = [HOT('oasis', 'The far oasis: the press area', [.945, .52, .08, 1], { tap: true })]; }
+  var S2_FEET = null, S2_WIND = { h: null, id: null, lv: 0 }, S2_SCRUB = { h: null, id: null, v: 0 }, S2_STREAK = null;
+  function s2Css() { if (document.getElementById('jjst2-s2-css')) return; var c = document.createElement('style'); c.id = 'jjst2-s2-css';
+    c.textContent = '.s2cam,.s2pic{position:absolute;inset:0;}.s2cam{transform-origin:50% 50%;}.s2pic{transition:filter 1.4s ease;}.s2pic.s2grey{filter:saturate(.1) brightness(.82) contrast(1.05);}' +
+      '.s2fill{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:7;}' +
+      '.s2tod{position:absolute;inset:0;z-index:7;mix-blend-mode:multiply;opacity:0;pointer-events:none;}.s2night{background:linear-gradient(#3a3f8c,#5b5fa8 55%,#6c6aa0);}.s2dawn{background:linear-gradient(#ffb7a8,#ffd2a0 60%,#fff0e0);}' +
+      '.s2murk{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;background:linear-gradient(rgba(16,6,10,.85),rgba(30,14,10,.25) 55%,rgba(10,6,6,.5));}' +
+      '.s2dust{position:absolute;inset:0;width:100%;height:100%;z-index:9;pointer-events:none;}' +
+      '@property --s2r{syntax:"<percentage>";inherits:false;initial-value:95%;}' +
+      '.s2tun{position:absolute;inset:0;z-index:10;pointer-events:none;opacity:0;--s2r:95%;background:radial-gradient(circle at 84% 52%,transparent calc(var(--s2r) - 40%),rgba(0,0,0,.92) var(--s2r));transition:opacity 1.2s ease,--s2r 2.4s ease;}.s2tun.on{opacity:1;--s2r:52%;}' +
+      '.s2sign{position:absolute;right:3%;top:3%;width:34%;aspect-ratio:760/666;z-index:11;transform-origin:50% 0;rotate:-16deg;translate:0 -8%;opacity:0;transition:rotate .9s cubic-bezier(.3,1.7,.5,1),translate .9s ease,opacity .35s ease;filter:drop-shadow(0 8px 16px rgba(0,0,0,.55));pointer-events:none;}' +
+      '.s2sign.on{rotate:0deg;translate:0 0;opacity:1;}.s2sign img,.s2sign canvas{position:absolute;inset:0;width:100%;height:100%;}.s2sign canvas{transition:opacity 1.2s ease;}.s2sign.rub canvas{pointer-events:auto;touch-action:none;}' +
+      '.s2shard{position:absolute;left:77.6%;top:66.8%;width:2.6%;opacity:0;transition:opacity .6s ease;filter:drop-shadow(0 0 3px rgba(255,190,90,.9));z-index:7;pointer-events:none;}' +
+      '.s2shard.on{opacity:1;animation:s2glint 1.4s ease-in-out infinite;}.s2shard.took{opacity:0;translate:-260% 300%;scale:.35;rotate:-40deg;transition:opacity .9s ease .2s,translate .9s cubic-bezier(.5,0,.75,.4),scale .9s ease,rotate .9s ease;animation:none;}' +
+      '@keyframes s2glint{50%{filter:drop-shadow(0 0 9px rgba(255,220,140,1)) brightness(1.25);}}' +
+      '.s2oasis{position:absolute;left:90.5%;top:39.6%;width:10%;aspect-ratio:420/222;opacity:0;transition:opacity 2.5s ease,scale 1.2s ease;z-index:7;pointer-events:none;}' +
+      '.s2glow{position:absolute;left:87%;top:33%;width:17%;height:22%;border-radius:50%;background:radial-gradient(closest-side,rgba(90,255,230,.35),rgba(90,255,230,0));opacity:0;transition:opacity 2.5s ease,scale 1.2s ease;z-index:6;mix-blend-mode:screen;pointer-events:none;}' +
+      '.s2oasis.on,.s2glow.on{opacity:1;}.s2oasis.focus{scale:1.12;}.s2glow.focus{scale:1.4;}';
+    document.head.appendChild(c); }
+  function s2Loop(L, name, v) { if (!L.h) L.h = sndGet('sfx-' + name, true); var h = L.h; if (!h) return;   // a looping sound held at a level (the wind, the rag on the sign); 0 or less lets it fade and stop
+    if (v > 0 && L.id == null) { try { L.id = h.play(); h.volume(0, L.id); } catch (e) { return; } } if (L.id == null) return;
+    L.lv = (L.lv || 0) + (Math.max(0, v) - (L.lv || 0)) * (v <= 0 ? .25 : .08); try { h.volume(L.lv * ST2_GAIN, L.id); } catch (e) {}
+    if (v <= 0 && L.lv < .004) { try { h.stop(L.id); } catch (e) {} L.id = null; L.lv = 0; } }
+  setInterval(function () { var off = !(WH && WH.W && WH.W.s2) || (api && api.paused && api.paused()); if (off && S2_WIND.id != null) s2Loop(S2_WIND, 'wind', -1); if ((off || !S2_SCRUB.on) && S2_SCRUB.id != null) s2Loop(S2_SCRUB, 'scrub', -1); }, 60);   // (out of Scene 2, or paused: they go)
+  function s2Push(cam, origin, z) { cam.style.transition = 'none'; cam.style.transformOrigin = origin; cam.style.transform = 'scale(1)'; void cam.offsetWidth; cam.style.transition = 'transform 9s cubic-bezier(.3,0,.25,1)'; cam.style.transform = 'scale(' + z + ')'; }
+  function s2Frame(cam, cx, cy, z, secs) { var m = getComputedStyle(cam).transform, k = 1, ex = 0, ey = 0, W = cam.offsetWidth, H = cam.offsetHeight;   // from wherever the slow push has got to (no jump): its matrix, re-said about the top-left corner
+    if (m && m !== 'none') { var q = m.match(/matrix\(([^)]+)\)/); if (q) { var v = q[1].split(',').map(parseFloat); k = v[0]; var o = getComputedStyle(cam).transformOrigin.split(' ').map(parseFloat); ex = v[4] + o[0] * (1 - k); ey = v[5] + o[1] * (1 - k); } }
+    cam.style.transition = 'none'; cam.style.transformOrigin = '0 0'; cam.style.transform = 'translate(' + ex.toFixed(1) + 'px,' + ey.toFixed(1) + 'px) scale(' + k.toFixed(4) + ')'; void cam.offsetWidth;
+    var tx = Math.min(0, Math.max(1 - z, .5 - z * cx)), ty = Math.min(0, Math.max(1 - z, .5 - z * cy));
+    cam.style.transition = 'transform ' + secs + 's cubic-bezier(.45,0,.25,1)'; cam.style.transform = 'translate(' + (tx * W).toFixed(1) + 'px,' + (ty * H).toFixed(1) + 'px) scale(' + z + ')'; }
+  function s2Go(w) { s2Css(); var K = w.W.s2, P = w.pane, pic = document.createElement('div'), cam = document.createElement('div'); pic.className = 's2pic'; cam.className = 's2cam';
+    while (P.firstChild) pic.appendChild(P.firstChild); cam.appendChild(pic); P.appendChild(cam); w.s2cam = cam; w.s2pic = pic;   // (the take, its sky and its embers go in a camera of their own: pushed, framed closer, drained of colour)
+    var mk = function (tag, cls, par) { var e = document.createElement(tag); if (cls) e.className = cls; (par || cam).appendChild(e); return e; };
+    var fit = function (cv) { var d = pxr(), W = Math.round(cv.clientWidth * d), H = Math.round(cv.clientHeight * d); if (W && (cv.width !== W || cv.height !== H)) { cv.width = W; cv.height = H; return true; } return false; };
+    var murk = mk('div', 's2murk', P), dust = mk('canvas', 's2dust', P), st = w.s2 = { storm: K.storm, to: K.storm, gust: 0, ng: 4 }, D = [], dc = dust.getContext('2d'), last = 0;
+    if (!S2_STREAK) { S2_STREAK = document.createElement('canvas'); S2_STREAK.width = 128; S2_STREAK.height = 4; var c0 = S2_STREAK.getContext('2d'), g0 = c0.createLinearGradient(0, 0, 128, 0); g0.addColorStop(0, 'rgba(225,200,175,0)'); g0.addColorStop(1, 'rgba(225,200,175,1)'); c0.fillStyle = g0; c0.fillRect(0, 0, 128, 4); }
+    for (var i = 0, N = Math.round(160 * jjqm([.35, .6, .85, 1])); i < N; i++) D.push({ x: Math.random(), y: Math.random(), z: .3 + Math.random() * .7, l: .02 + Math.random() * .05 });
+    var step = function (now) { if (WH !== w) return; w.s2Raf = requestAnimationFrame(step); var dt = last ? Math.min(.05, (now - last) / 1000) : 0; last = now; if (api.paused && api.paused()) return;
+      st.storm += (st.to - st.storm) * Math.min(1, dt * .8); st.ng -= dt; if (st.ng < 0) { st.gust = 1; st.ng = 3.5 + Math.random() * 3; } st.gust = Math.max(0, st.gust - dt * .9);
+      s2Loop(S2_WIND, 'wind', (.05 + st.storm * .22) * (1 + st.gust * 1.2) * 1.5);
+      murk.style.opacity = (st.storm * .55).toFixed(3); fit(dust); var W = dust.width, H = dust.height; dc.clearRect(0, 0, W, H);
+      if (st.storm > .02) { var n = Math.round(D.length * Math.min(1, st.storm)), sp = .35 + st.gust * .9;   // dust streaming left to right in layers; a gust shoves it all sideways
+        for (var i = 0; i < n; i++) { var p = D[i]; p.x += sp * p.z * dt * (.6 + st.storm); p.y += Math.sin(p.x * 9 + i) * dt * .02; if (p.x > 1.1) { p.x = -.1 - Math.random() * .2; p.y = Math.random(); }
+          var x = p.x * W, y = p.y * H, L = p.l * W * (1 + st.gust), al = (.10 + .22 * p.z) * Math.min(1, st.storm * 1.3), lw = Math.max(1, p.z * 2.2 * W / 1600);
+          dc.globalAlpha = al; dc.setTransform(1, 0, 0, 1, x - L, y - L * .04); dc.rotate(Math.atan2(L * .04, L)); dc.drawImage(S2_STREAK, 0, -lw / 2, L, lw); }
+        dc.setTransform(1, 0, 0, 1, 0, 0); dc.globalAlpha = 1; }
+      if (w.s2f) w.s2f(now, dt, fit); };
+    w.s2Raf = requestAnimationFrame(step);
+    if (K.kind === 'walk') s2Walk(w, mk); else if (K.kind === 'sign') s2Sign(w, mk); else if (K.kind === 'nest') s2Nest(w, mk); else if (K.kind === 'drop') s2Drop(w, mk); }
+  function s2Walk(w, mk) {   // days pass as he walks: night falls and lifts again (a tint, stars, a moon); his footprints stay in the ash behind him
+    var prints = mk('canvas', 's2fill'), night = mk('div', 's2tod s2night'), dawn = mk('div', 's2tod s2dawn'), stars = mk('canvas', 's2fill'), pc = prints.getContext('2d'), sc = stars.getContext('2d'), fi = 0, side = 1, lastP = -1, ST = [];
+    for (var i = 0; i < 90; i++) ST.push([Math.random(), Math.random() * .4, .4 + Math.random() * 1.2, Math.random() * 6.3]);
+    if (!S2_FEET) { S2_FEET = []; fetch(api.GB + 'story2-s2-feet.json' + api.AV).then(function (r) { return r.json(); }).then(function (j) { S2_FEET = j; }).catch(function () {}); }
+    var bump = function (t, a, b, c, d) { return t < a || t > d ? 0 : t < b ? (t - a) / (b - a) : t <= c ? 1 : 1 - (t - c) / (d - c); };
+    var stamp = function (f) { var W = prints.width, H = prints.height, x = (f[1] + side * f[3] * .22) * W, y = f[2] * H, rx = W * .0085, ry = H * .0062; side = -side;
+      var g = pc.createRadialGradient(x, y, 0, x, y, rx); g.addColorStop(0, 'rgba(34,20,26,.75)'); g.addColorStop(.7, 'rgba(34,20,26,.45)'); g.addColorStop(1, 'rgba(40,26,30,0)');
+      pc.save(); pc.translate(x, y); pc.scale(1, ry / rx); pc.translate(-x, -y); pc.fillStyle = g; pc.beginPath(); pc.arc(x, y, rx, 0, 6.29); pc.fill(); pc.restore(); };
+    w.s2f = function (now, dt, fit) { var t = w.state === 'action' ? w.b.currentTime : w.state === 'end' ? 99 : 0, nt = w.state === 'action' ? bump(t, 1.2, 2.8, 4.4, 6.0) : 0, dn = w.state === 'action' ? bump(t, 5.0, 5.9, 6.3, 7.4) : 0;
+      night.style.opacity = (nt * .8).toFixed(3); dawn.style.opacity = (dn * .55).toFixed(3);
+      if (fit(prints)) { fi = 0; lastP = -1; side = 1; }   // (a new size: drawn again)
+      while (fi < S2_FEET.length && S2_FEET[fi][0] + .45 <= t) { var f = S2_FEET[fi]; if (f[0] - lastP >= .38) { stamp(f); lastP = f[0]; } fi++; }   // (each print once his boot has lifted off it: the picture has Joe in it, so a print under his foot would sit on his boot)
+      if (w.state === 'action') S2_FEET.forEach(function (f, j) { if (!f._c && f[0] <= t && t - f[0] < .12 && (j === 0 || f[0] - S2_FEET[j - 1][0] >= .38)) { f._c = 1; st2sfx(api, 'crunch', .28, true, true); } });   // a crunch in the ash per step
+      fit(stars); var W = stars.width, H = stars.height; sc.clearRect(0, 0, W, H); if (nt <= 0) return; var s = now / 1000; sc.globalAlpha = nt;
+      ST.forEach(function (p) { var a = (.55 + .45 * Math.sin(s * 2 + p[3])) * (1 - p[1] * 1.6); sc.fillStyle = 'rgba(255,250,235,' + a.toFixed(3) + ')'; sc.beginPath(); sc.arc(p[0] * W, p[1] * H, p[2] * W / 1600, 0, 6.29); sc.fill(); });
+      var mx = W * (.18 + .1 * (t - 1.2) / 5), my = H * .13, mr = W * .022, g = sc.createRadialGradient(mx, my, mr * .6, mx, my, mr * 3.2);
+      g.addColorStop(0, 'rgba(255,248,225,.55)'); g.addColorStop(1, 'rgba(255,248,225,0)'); sc.fillStyle = g; sc.beginPath(); sc.arc(mx, my, mr * 3.2, 0, 6.29); sc.fill();
+      sc.fillStyle = 'rgba(255,250,232,.95)'; sc.beginPath(); sc.arc(mx, my, mr, 0, 6.29); sc.fill(); sc.globalAlpha = 1; };
+    S2_FEET.forEach && S2_FEET.forEach(function (f) { f._c = 0; }); }
+  function s2Sign(w, mk) { s2Push(w.s2cam, '62% 50%', 1.06);   // the sign: it swings down under soot when its press is asked for (s2signdown); rub it clean
+    var box = mk('div', 's2sign', w.pane), im = document.createElement('img'), cv = document.createElement('canvas'); im.alt = 'A burnt sign: Welcome to ...head. Home of the ...'; im.crossOrigin = 'anonymous'; im.src = api.GB + 'story2-s2-sign.webp' + api.AV;
+    cv.width = 760; cv.height = 666; cv.setAttribute('data-cursor', 'hover'); box.appendChild(im); box.appendChild(cv); w.s2sign = { box: box, im: im, cv: cv }; }
+  function s2SignDown(w, a) { var G = w.s2sign; if (!G || G.on) return; G.on = true; var cv = G.cv, x = cv.getContext('2d'), im = G.im, probe = document.createElement('canvas'), px = null, rubbing = false, rx = null, ry = 0, chk = 0;
+    probe.width = 76; probe.height = 67; px = probe.getContext('2d');
+    var cov = function () { try { px.clearRect(0, 0, 76, 67); px.drawImage(cv, 0, 0, 76, 67); var d = px.getImageData(0, 0, 76, 67).data, n = 0; for (var i = 3; i < d.length; i += 4) if (d[i] > 60) n++; return n; } catch (e) { return -1; } };
+    var up = function () { x.globalCompositeOperation = 'source-over'; x.clearRect(0, 0, 760, 666); x.fillStyle = 'rgba(26,18,14,.95)'; x.fillRect(0, 0, 760, 666);
+      for (var i = 0; i < 70; i++) { var X = Math.random() * 760, Y = Math.random() * 666, r = 20 + Math.random() * 70, g = x.createRadialGradient(X, Y, 0, X, Y, r), c = Math.random() < .5 ? '60,44,34' : '10,6,6';
+        g.addColorStop(0, 'rgba(' + c + ',.6)'); g.addColorStop(1, 'rgba(' + c + ',0)'); x.fillStyle = g; x.fillRect(X - r, Y - r, r * 2, r * 2); }
+      x.globalCompositeOperation = 'destination-in'; x.drawImage(im, 0, 0, 760, 666); x.globalCompositeOperation = 'destination-out'; G.full = cov(); };
+    if (im.complete && im.naturalWidth) up(); else im.addEventListener('load', up, { once: true });
+    G.box.classList.add('on', 'rub'); st2sfx(a, 'whoosh', .25, true, true);
+    var clean = function () { if (G.done) return; G.done = true; rubbing = false; S2_SCRUB.on = false; G.box.classList.remove('rub'); cv.style.opacity = '0'; onFx('2.2:sign', 'sign', null, a); };
+    var rub = function (e) { if (!rubbing || G.done || a.paused()) return; if (rx !== null) S2_SCRUB.v = Math.min(1, S2_SCRUB.v + Math.hypot(e.clientX - rx, e.clientY - ry) / 140); rx = e.clientX; ry = e.clientY;
+      var r = cv.getBoundingClientRect(); if (!r.width || !r.height || !cv.isConnected) return; var X = (e.clientX - r.left) * 760 / r.width, Y = (e.clientY - r.top) * 666 / r.height, g = x.createRadialGradient(X, Y, 0, X, Y, 170);
+      g.addColorStop(0, 'rgba(0,0,0,.95)'); g.addColorStop(.55, 'rgba(0,0,0,.7)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(X - 170, Y - 170, 340, 340);
+      if (!chk) chk = setTimeout(function () { chk = 0; var n = cov(); if (n < 0 || (G.full > 0 && n < G.full * .72)) clean(); }, 250); };   // (most of it off: clean; a canvas the browser will not read back counts as clean at the first rub)
+    cv.addEventListener('pointerdown', function (e) { if (a.paused() || G.done) return; rubbing = true; S2_SCRUB.on = true; try { cv.setPointerCapture(e.pointerId); } catch (z) {} rub(e); });
+    cv.addEventListener('pointermove', rub);
+    ['pointerup', 'pointercancel'].forEach(function (n) { cv.addEventListener(n, function () { rubbing = false; rx = null; S2_SCRUB.on = false; }); });
+    w.s2f = function (now, dt) { if (!S2_SCRUB.on) { S2_SCRUB.v = 0; return; } S2_SCRUB.v *= Math.pow(.02, dt); s2Loop(S2_SCRUB, 'scrub', S2_SCRUB.v * .6); }; }
+  function s2Nest(w, mk) { s2Push(w.s2cam, '72% 62%', 1.07); var sh = mk('img', 's2shard'); sh.alt = 'A shard of red eggshell'; sh.src = api.GB + 'story2-s2-shard.webp' + api.AV; w.s2shard = sh; }
+  function s2Drop(w, mk) {   // his legs give way: the world drains grey, his sight closes in, his heart pounds; the far oasis wobbles in the heat, the only colour left
+    var cam = w.s2cam, pic = w.s2pic, glow = mk('div', 's2glow'), oc = mk('canvas', 's2oasis'), tun = mk('div', 's2tun', w.pane), x = oc.getContext('2d'), im = new Image(), amp = 1, ampTo = 1, grey = false, seen = false;
+    oc.width = 420; oc.height = 222; im.src = api.GB + 'story2-s2-oasis.webp' + api.AV;
+    w.s2f = function (now, dt) { var t = w.state === 'action' ? w.b.currentTime : w.state === 'end' ? 99 : -1;
+      if (!w.s2focused) { if (t >= .8 && !grey) { grey = true; pic.classList.add('s2grey'); tun.classList.add('on'); if (t < 5) st2sfx(api, 'heartbeat', .55, true, true); }
+        if (t >= 3.3 && !seen) { seen = true; oc.classList.add('on'); glow.classList.add('on'); s2Push(cam, '93% 45%', 1.18); } }
+      if (seen && im.complete && im.naturalWidth) { amp += (ampTo - amp) * Math.min(1, dt * 3); x.clearRect(0, 0, 420, 222); var s = now / 1000;
+        for (var y = 0; y < 222; y += 2) x.drawImage(im, 0, y, 420, 2, amp * (Math.sin(y * .09 + s * 5) * 3 + Math.sin(y * .23 - s * 3.1) * 1.5), y + amp * Math.sin(s * 2 + y * .05), 420, 2); } };
+    w.s2focus = function (a) { w.s2focused = true; ampTo = 0; oc.classList.add('focus'); glow.classList.add('focus'); pic.classList.remove('s2grey'); tun.classList.remove('on'); w.s2.to = 0;
+      a.sched(function () { if (WH === w) { ampTo = 1.6; oc.classList.remove('focus'); } }, 2600); }; }
+  function s2React(kind, a) { var w = WH; if (!w || !w.W.s2) return;
+    if (kind === 's2signdown') s2SignDown(w, a);
+    else if (kind === 's2nest') { w.s2.to = .6; s2Frame(w.s2cam, .79, .68, 2.1, 1.6); w.pose = 'end'; wholePlace(); a.sched(function () { if (WH === w && w.s2shard) w.s2shard.classList.add('on'); }, 1400); }   // in close on the nest: something glints in the ash
+    else if (kind === 's2shard') { if (w.s2shard) w.s2shard.classList.add('took'); a.sched(function () { st2sfx(a, 'chime', .3, true, true); }, 950); }   // into his pocket
+    else if (kind === 's2focus' && w.s2focus) w.s2focus(a); }
+
+  WHOLE['3.5'].ns = { vid: 'story2-whole-3_5-ns', safe: .97, done: 3.0, moveAt: 2.0, cFrom: 0, sfx: [[1.1, 'water', .45]],   /* the new pool camera (plates P2, P2 end): the dragon is a shadow under the water, so the press is on the bubbles in front of Joe's face */
+    at: { idle: { joe: [.2, .29, .27, .42], clive: [.10, .01, .14, .56], waterDragon: [.44, .49, .16, .14] }, end: { joe: [.21, .30, .27, .46], clive: [.09, .055, .165, .53], waterDragon: [.51, .32, .18, .42] } } };
+  if (NS_LOOK && WHOLE_ON) {
+    Object.keys(NS3).concat(['3.5']).forEach(function (id) { NS_SHOT[id] = NS_SHOT[id] || {}; });   // (every line of the painted oasis gets the painted portraits)
+    SHOTS['3.5'].ints[0].hint = 'Tap the bubbles';
+    SHOTS['3.9'].linger = 10000;   // (the narration holds while the take-off plays out: the leap is 5 s into the take, Clive's wave after it)
+    SHOTS['5.1'].linger = 9800; SHOTS['5.5'].linger = 11500;
+    SHOTS['4.1'].linger = 16000; SHOTS['4.2'].linger = 7500;   // st2-30: (the ride holds one pass of the wind rings; the reveal holds until the castle is out)   // st2-29: (the same for the landing, Joe reaching the door at 9 s, and for the transformation)
+  }
   function wholeFit() { var w = WH, st = w && w.box && w.box.parentNode; if (!w || !st) return; var sr = st.getBoundingClientRect(), W = sr.width, H = sr.height, s = Math.min(Math.max(W / 16, H / 9), W / (16 * (w.W.safe || .96))), pw = 16 * s, ph = 9 * s, bars = ph < H - 2, m = bars ? 'linear-gradient(to bottom,transparent 0,#000 5%,#000 95%,transparent 100%)' : '';
-    w.pane.style.cssText = 'position:absolute;left:' + ((W - pw) / 2).toFixed(1) + 'px;top:' + ((H - ph) / 2).toFixed(1) + 'px;width:' + pw.toFixed(1) + 'px;height:' + ph.toFixed(1) + 'px;overflow:hidden;' + (m ? '-webkit-mask-image:' + m + ';mask-image:' + m + ';' : '');
+    w.pane.style.cssText = 'position:absolute;left:' + ((W - pw) / 2).toFixed(1) + 'px;top:' + ((H - ph) / 2).toFixed(1) + 'px;width:' + pw.toFixed(1) + 'px;height:' + ph.toFixed(1) + 'px;overflow:hidden;';
+    /* st2-31: the soft top and bottom edges on a tall window are a gradient of the box's own black laid over the picture, not a mask on it (a mask made the browser
+       draw every video frame a second time, off screen) */
+    if (!w.edge) { w.edge = document.createElement('i'); w.edge.style.cssText = 'position:absolute;inset:0;z-index:20;pointer-events:none;background:linear-gradient(to bottom,#04060b 0,rgba(4,6,11,0) 5%,rgba(4,6,11,0) 95%,#04060b 100%);'; }
+    if (m) { if (w.edge.parentNode !== w.pane) w.pane.appendChild(w.edge); } else if (w.edge.parentNode) w.edge.remove();
     w.rect = { l: sr.left + (W - pw) / 2, t: sr.top + (H - ph) / 2, w: pw, h: ph }; }
-  function wholePlace() { var w = WH; if (!w || !w.rect) return; var B = w.W.at && w.W.at[w.pose], L = api.layers(), r = w.rect; if (!B) return;
+  function wholePlace() { var w = WH; if (!w || !w.rect) return; var B = w.W.at && w.W.at[w.pose], L = api.layers(), r = w.rect; if (!B) return; w.placed = w.pose;
     Object.keys(B).forEach(function (k) { var rec = L[k], el = rec && rec.el; if (!el || !el.isConnected) return; var P = el.offsetParent || el.parentNode; if (!P || !P.getBoundingClientRect) return;
       var pr = P.getBoundingClientRect(), kk = P.offsetWidth ? pr.width / P.offsetWidth : 1, q = B[k], S = el.style, set = function (n, v) { S.setProperty(n, v, 'important'); };
       set('left', ((r.l + q[0] * r.w - pr.left) / kk).toFixed(1) + 'px'); set('top', ((r.t + q[1] * r.h - pr.top) / kk).toFixed(1) + 'px'); set('width', (q[2] * r.w / kk).toFixed(1) + 'px'); set('height', (q[3] * r.h / kk).toFixed(1) + 'px');
       set('right', 'auto'); set('bottom', 'auto'); set('margin', '0'); set('translate', 'none'); set('scale', 'none'); set('rotate', 'none'); set('transform', 'none'); set('animation', 'none'); set('transition', 'none'); set('aspect-ratio', 'auto');
-      el._whole = true; if (w.moved.indexOf(el) < 0) w.moved.push(el); }); }
+      el._whole = true; if (w.W.over && w.W.over.indexOf(k) >= 0) el.classList.add('st2keep'); if (w.moved.indexOf(el) < 0) w.moved.push(el); }); }
   /* st2-27q · the snow over a held painting: soft pale flakes, drifting down; it fades out while the action take (which has its own snow) plays, and stops under a pause */
+  /* st2-31 · performance (Joe, 3 Nov: too laggy on an older Intel Mac): the particles were a fresh radial gradient per flake per frame (420 of them);
+     now one soft sprite each, drawn once and stamped with drawImage; the canvases stop at 1.5x pixels (1x in the lite level) and the lite level has half the flakes */
+  var SPR = {}; function sprite(k, stops) { if (SPR[k]) return SPR[k]; var c = document.createElement('canvas'); c.width = c.height = 64; var g = c.getContext('2d'), r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    stops.forEach(function (q) { r.addColorStop(q[0], q[1]); }); g.fillStyle = r; g.fillRect(0, 0, 64, 64); return (SPR[k] = c); }
+  function jjq() { var Q = window.jjQuality; return Q ? Q.level : ((window.jjLite && window.jjLite.on) ? 1 : 3); }   /* st2-44: the site's picture level, 0 Ultra lite .. 3 Full power (site-footer f-1107a) */
+  function jjqm(a) { return a[jjq()]; }
+  function pxr() { return Math.min(jjqm([1, 1, 1.25, 1.5]), window.devicePixelRatio || 1); }
   function wholeSnow(w) { var cv = document.createElement('canvas'); cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;opacity:0;transition:opacity .6s ease;'; w.pane.appendChild(cv); w.snow = cv;
-    var x = cv.getContext('2d'), F = [], N = 90, t0 = 0; for (var i = 0; i < N; i++) { var near = Math.random() < .18; F.push({ x: Math.random(), y: Math.random(), r: near ? .0026 + Math.random() * .0018 : .0009 + Math.random() * .0012, v: near ? .085 + Math.random() * .04 : .04 + Math.random() * .035, ph: Math.random() * 6.28, sw: .004 + Math.random() * .008, a: near ? .75 : .45 + Math.random() * .4 }); }
+    var wind = w.W.snow === 'wind'; if (wind) cv.style.zIndex = 10;   // st2-30: 'wind' (the ride): the flakes stream past from the right, the near ones drawn long, in front of the riders
+    var x = cv.getContext('2d'), F = [], N = Math.round((wind ? 300 : 420) * jjqm([.3, .5, .75, 1])), t0 = 0, fs = sprite('snow', [[0, 'rgba(244,248,255,1)'], [.45, 'rgba(226,236,255,.55)'], [1, 'rgba(210,225,255,0)']]); for (var i = 0; i < N; i++) { var near = Math.random() < .26; F.push({ x: Math.random(), y: Math.random(), r: near ? .0036 + Math.random() * .003 : .0012 + Math.random() * .0016, v: near ? .11 + Math.random() * .05 : .05 + Math.random() * .04, ph: Math.random() * 6.28, sw: .004 + Math.random() * .01, a: near ? .85 : .5 + Math.random() * .4 }); }   /* st2-28h · Joe: 'very snowy' (90 flakes were a dusting), and over the take too: Dreamina's own snow barely falls */
+    var cap = document.getElementById('jjst-cap'); if (cap) { if (!cap.querySelector('.jjst-capsnow')) { var cs = document.createElement('img'); cs.className = 'jjst-capsnow'; cs.alt = ''; cs.src = api.F('banner-snow'); cap.appendChild(cs); void cs.offsetWidth; } cap.classList.add('snowy'); w.capSnow = cap; }   // the cap of snow on the dialogue box, as on Part One's mountains
+    if (!document.getElementById('jjst2-snowcss')) { var st = document.createElement('style'); st.id = 'jjst2-snowcss'; st.textContent = '#jjst .jjst2-bub.box::after{content:"";position:absolute;left:-1%;width:102%;top:-7px;aspect-ratio:1954/92;background:url("' + api.F('banner-snow') + '") center top/100% auto no-repeat;pointer-events:none;z-index:2;opacity:0;transition:opacity 3s ease;}#jjst.st2snow .jjst2-bub.box::after{opacity:1;}'; document.head.appendChild(st); }
+    var jw = document.getElementById('jjst'); if (jw) jw.classList.add('st2snow');   // (Storytime 2's box is its own bubble over #jjst-cap, so the cap goes on that too)
     var step = function (now) { if (WH !== w) return; w.snowRaf = requestAnimationFrame(step); var dt = t0 ? Math.min(.05, (now - t0) / 1000) : 0; t0 = now; if (api.paused && api.paused()) return;
-      var W = cv.clientWidth, H = cv.clientHeight, d = Math.min(2, window.devicePixelRatio || 1); if (!W || !H) return; if (cv.width !== Math.round(W * d)) { cv.width = Math.round(W * d); cv.height = Math.round(H * d); }
-      cv.style.opacity = w.state === 'action' ? '0' : '1'; x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, H);
-      F.forEach(function (f) { f.y += f.v * dt; f.ph += dt * 1.3; if (f.y > 1.03) { f.y = -.03; f.x = Math.random(); } var px = (f.x + Math.sin(f.ph) * f.sw) * W, py = f.y * H, r = Math.max(.6, f.r * W);
-        var g = x.createRadialGradient(px, py, 0, px, py, r * 2.2); g.addColorStop(0, 'rgba(244,248,255,' + f.a + ')'); g.addColorStop(.45, 'rgba(226,236,255,' + (f.a * .55).toFixed(2) + ')'); g.addColorStop(1, 'rgba(210,225,255,0)'); x.fillStyle = g; x.beginPath(); x.arc(px, py, r * 2.2, 0, 6.2832); x.fill(); }); };
+      var W = cv.clientWidth, H = cv.clientHeight, d = pxr(); if (!W || !H) return; if (cv.width !== Math.round(W * d)) { cv.width = Math.round(W * d); cv.height = Math.round(H * d); }
+      cv.style.opacity = '1'; x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, H);
+      F.forEach(function (f) { if (wind) { f.x -= f.v * 3.4 * dt; f.y += f.v * .45 * dt; if (f.x < -.04 || f.y > 1.04) { f.x = 1.04; f.y = Math.random() * 1.08 - .04; } } else { f.y += f.v * dt; if (f.y > 1.03) { f.y = -.03; f.x = Math.random(); } } f.ph += dt * 1.3; var px = (f.x + Math.sin(f.ph) * f.sw) * W, py = f.y * H, r = Math.max(.6, f.r * W);
+        var R2 = r * 2.2, sx = wind ? 1 + f.v * 16 : 1; x.globalAlpha = f.a; x.drawImage(fs, px - R2 * sx, py - R2, R2 * 2 * sx, R2 * 2); }); x.globalAlpha = 1; };
     w.snowRaf = requestAnimationFrame(step); }
-  function wholeOff() { var w = WH; if (!w) return; WH = null; clearInterval(w.iv); if (w.snowRaf) cancelAnimationFrame(w.snowRaf); window.removeEventListener('resize', w.onRs); var jw = document.getElementById('jjst'); if (jw) jw.classList.remove('st2whole');
-    w.moved.forEach(function (el) { el._whole = false; WHOLE_PROPS.forEach(function (n) { el.style.removeProperty(n); }); });   // the layers go back to the engine (the next shot lays them out afresh)
-    w.box.style.opacity = '0'; setTimeout(function () { [w.a, w.b, w.c].forEach(function (v) { try { v.pause(); v.removeAttribute('src'); v.load(); } catch (x) {} }); if (w.box.parentNode) w.box.remove(); }, 480); }
-  function wholeVid(w, sfx, loop, poster) { var v = document.createElement('video'); v.muted = true; v.loop = !!loop; v.playsInline = true; v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
-    if (poster) v.poster = w.base + w.small + '-poster.webp' + api.AV; v.src = w.base + '-' + sfx + w.small + '.mp4' + api.AV; v.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;object-fit:fill;opacity:0;z-index:1;'; w.pane.appendChild(v); return v; }
+  /* st2-28j · the swirling sky (Joe, 3 Nov: 'can we also do the swirly sky here?'), as the demo's Scenes 1 and 2: the take is drawn again on a canvas over the
+     videos, through a flow map round its painted spirals (sky.s: x, y, radius, direction, four of them); a mask (story2-sky-<sky.m>.png, white = sky, made by
+     storytime-2/sky-swirl/make-mask.py) keeps the hills, the trees and the figures still and is the canvas's alpha, so below the sky the video itself shows.
+     It draws whichever video is in front, and its clock stops while the story is paused. ?sky=0 turns it off. */
+  var SKY_K = 3, SKY_FS = 'precision mediump float;varying vec2 uv;uniform sampler2D tex,tx2,msk;uniform float t,k,mx;uniform vec4 S[4];' +
+    'vec2 spin(vec2 q,vec4 s){vec2 d=q-s.xy;d.y*=.5625;float r=length(d);float f=smoothstep(s.z,s.z*.15,r);return s.w*f*vec2(-d.y,d.x)/max(r,.02)*.5;}' +
+    'void main(){float m=texture2D(msk,uv).r;vec2 fl=(spin(uv,S[0])+spin(uv,S[1])+spin(uv,S[2])+spin(uv,S[3])+vec2(.12,-.04))*m*k*.035;' +
+    'float P=5.;float a=fract(t/P),b=fract(t/P+.5);vec2 ua=uv-fl*a,ub=uv-fl*b;vec3 c=mix(mix(texture2D(tx2,ua).rgb,texture2D(tex,ua).rgb,mx),mix(texture2D(tx2,ub).rgb,texture2D(tex,ub).rgb,mx),.5+.5*cos(6.2832*a));gl_FragColor=vec4(c*m,m);}'   /* st2-28k (Joe: 'not too smooth'): a 5 s cycle (was 3.2) and a cosine hand-over between its two phases, so the turn never pulses */,
+    SKY_VS = 'attribute vec2 p;varying vec2 uv;void main(){uv=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}';
+  function wholeSky(w) { var K = w.W.sky, cv = document.createElement('canvas'); cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none;'; w.pane.appendChild(br(cv));
+    var gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true }); if (!gl) { cv.remove(); return; } w.sky = { cv: cv, gl: gl };
+    var sh = function (type, x) { var o = gl.createShader(type); gl.shaderSource(o, x); gl.compileShader(o); return o; }, pr = gl.createProgram();
+    gl.attachShader(pr, sh(gl.VERTEX_SHADER, SKY_VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, SKY_FS)); gl.linkProgram(pr); gl.useProgram(pr);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    var loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    var tx = function (unit) { var o = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, o); [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(function (q) { gl.texParameteri(gl.TEXTURE_2D, q, gl.CLAMP_TO_EDGE); }); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); return o; };
+    var T = [tx(0), tx(2)]; tx(1); gl.uniform1i(gl.getUniformLocation(pr, 'tex'), 0); gl.uniform1i(gl.getUniformLocation(pr, 'tx2'), 2); gl.uniform1i(gl.getUniformLocation(pr, 'msk'), 1); gl.uniform4fv(gl.getUniformLocation(pr, 'S'), K.s); gl.uniform1f(gl.getUniformLocation(pr, 'k'), SKY_K);
+    var uT = gl.getUniformLocation(pr, 't'), uM = gl.getUniformLocation(pr, 'mx'), mask = new Image(), maskIn = false, cur = null, fresh = true, fadeAt = -1, live = function () { return !!w.box.parentNode; };
+    mask.crossOrigin = 'anonymous'; mask.src = api.GB + 'story2-sky-' + K.m + '.png' + api.AV;
+    var bind = function () { gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, T[0]); gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, T[1]); gl.activeTexture(gl.TEXTURE0); };
+    var front = function () { var v = [w.c, w.b, w.a].filter(function (x) { return x && x.style.opacity === '1' && x.readyState >= 2; }).sort(function (x, y) { return (+y.style.zIndex || 0) - (+x.style.zIndex || 0); }); return v[0] || null; };   // the video actually on top (st2-28l: not the state: the take comes up only once it has a frame)
+    var step = function (now) { if (!live()) { var lc = gl.getExtension('WEBGL_lose_context'); if (lc) lc.loseContext(); return; } w.skyRaf = requestAnimationFrame(step); var t = skyClock(now);   // (it goes on turning while its shot dissolves into the next: one clock for every shot, so the swirl never jumps)
+      var lk = jjqm([.25, .34, .42, .5]), src = front(), W = Math.round(cv.offsetWidth * lk), H = Math.round(cv.offsetHeight * lk);   // st2-31: drawn at half size and stretched (a painted swirl loses nothing; a quarter of the pixels to shade)
+      if (!W) return; if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; gl.viewport(0, 0, W, H); }
+      if (!maskIn) { if (!mask.complete || !mask.naturalWidth) return; gl.activeTexture(gl.TEXTURE1); gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, gl.LUMINANCE, gl.UNSIGNED_BYTE, mask); gl.activeTexture(gl.TEXTURE0); maskIn = true; }
+      if (src && src !== cur) { if (cur) { T.reverse(); bind(); fadeAt = now; } cur = src; fresh = true;   // a new video in front: its sky dissolves in over the last one's, as the picture does
+        if (src.requestVideoFrameCallback && !src._sky) { src._sky = 1; (function tick() { src.requestVideoFrameCallback(function () { if (cur === src) fresh = true; if (live()) tick(); }); })(); } }
+      if (!cur) return;
+      if (fresh || !cur.requestVideoFrameCallback) { gl.activeTexture(gl.TEXTURE0); try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cur); } catch (x) { return; } fresh = false; }
+      gl.uniform1f(uM, fadeAt < 0 ? 1 : Math.min(1, (now - fadeAt) / 600)); gl.uniform1f(uT, t); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); };
+    w.skyRaf = requestAnimationFrame(step); }
+  /* st2-28l · Ember's embers (Joe: 'can you add like ember flares like we do the snow'): sparks rising off the lava over the take, glowing (drawn additively), swaying
+     and flickering as they fade near the top; now and then a brighter flare that climbs faster. Stops while the story is paused. */
+  function wholeEmbers(w) { var cv = document.createElement('canvas'); cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;opacity:0;transition:opacity .8s ease;'; w.pane.appendChild(cv);
+    var x = cv.getContext('2d'), E = [], N = Math.round(120 * jjqm([.3, .5, .75, 1])), t0 = 0, es = sprite('ember', [[0, 'rgba(255,250,215,1)'], [.22, 'rgba(255,190,90,.85)'], [.55, 'rgba(255,110,30,.35)'], [1, 'rgba(255,70,10,0)']]), mk = function (e, fresh) { var fl = Math.random() < .12; e.x = Math.random(); e.y = fresh ? Math.random() * 1.1 : 1.04 + Math.random() * .06; e.fl = fl;
+      e.r = fl ? .0045 + Math.random() * .0035 : .0018 + Math.random() * .0024; e.v = fl ? .16 + Math.random() * .1 : .05 + Math.random() * .07; e.ph = Math.random() * 6.28; e.sw = .004 + Math.random() * .014; e.tw = 4 + Math.random() * 7; e.top = .1 + Math.random() * .45; return e; };
+    for (var i = 0; i < N; i++) E.push(mk({}, true));
+    var step = function (now) { if (WH !== w) return; w.emRaf = requestAnimationFrame(step); var dt = t0 ? Math.min(.05, (now - t0) / 1000) : 0; t0 = now; if (api.paused && api.paused()) return;
+      var W = cv.clientWidth, H = cv.clientHeight, d = pxr(); if (!W || !H) return; if (cv.width !== Math.round(W * d)) { cv.width = Math.round(W * d); cv.height = Math.round(H * d); }
+      cv.style.opacity = '1'; x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, H); x.globalCompositeOperation = 'lighter';
+      E.forEach(function (e) { e.y -= e.v * dt; e.ph += dt; if (e.y < e.top) mk(e); var life = Math.min(1, (1.04 - e.y) / .12) * Math.min(1, (e.y - e.top) / .14), fk = .65 + .35 * Math.sin(e.ph * e.tw), a = Math.max(0, life * fk * (e.fl ? 1 : .8));
+        var px = (e.x + Math.sin(e.ph * 1.3) * e.sw) * W, py = e.y * H, r = Math.max(.7, e.r * W) * 3.2; x.globalAlpha = a; x.drawImage(es, px - r, py - r, r * 2, r * 2);
+        x.globalAlpha = 1; x.globalCompositeOperation = 'source-over'; x.fillStyle = 'rgba(255,252,230,' + (a * .9).toFixed(3) + ')'; x.beginPath(); x.arc(px, py, r / 3.2 * .55, 0, 6.2832); x.fill(); x.globalCompositeOperation = 'lighter'; }); };   // (a white-hot core drawn plainly, so a spark still shows over the bright lava)
+    w.emRaf = requestAnimationFrame(step); }
+  /* st2-29 · 5.6, the orb: Mabel's price paid, a purple orb of light comes down into the middle of the picture, glowing and breathing, a few motes of light round it */
+  function wholeOrb(w) { var O = w.W.orb, e = document.createElement('div'); e.className = 'st2orb'; e.style.cssText = 'left:' + (O[0] * 100) + '%;top:' + (O[1] * 100) + '%;width:' + (O[2] * 100) + '%;';
+    e.innerHTML = '<i></i><b></b>' + '<s></s>'.repeat(7); w.pane.appendChild(e); [w.a, w.b, w.c].forEach(function (v) { if (v) { v.style.transition = (v.style.transition ? v.style.transition + ',' : '') + 'filter 1.4s ease'; requestAnimationFrame(function () { v.style.filter = 'blur(6px) brightness(.5) saturate(.85)'; }); } });   // (the garden behind goes soft and dim: the orb is the shot)
+    [].forEach.call(e.querySelectorAll('s'), function (m, i) { m.style.cssText = '--a:' + (i * 51) + 'deg;--r:' + (58 + (i % 3) * 9) + '%;animation-delay:' + (-i * .6).toFixed(1) + 's;'; });
+    if (!document.getElementById('jjst2-orb-css')) { var c = document.createElement('style'); c.id = 'jjst2-orb-css';
+      c.textContent = '#jjst2-whole .st2orb{position:absolute;aspect-ratio:1;translate:-50% -50%;z-index:6;pointer-events:none;animation:st2OrbIn 1.6s cubic-bezier(.2,.8,.3,1) both,st2OrbBob 3.4s ease-in-out 1.6s infinite;}' +
+        '#jjst2-whole .st2orb i{position:absolute;inset:-75%;border-radius:50%;mix-blend-mode:screen;background:radial-gradient(circle closest-side,rgba(235,200,255,.95) 0,rgba(190,120,255,.7) 30%,rgba(150,80,255,.3) 55%,rgba(120,60,220,0) 100%);animation:st2OrbGlow 2.6s ease-in-out infinite;}' +
+        '#jjst2-whole .st2orb b{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle closest-side at 38% 32%,#fff 0,#f4e2ff 12%,#cf9bff 34%,#9a4ff5 62%,#5a1aa8 88%,#3a0f78 100%);filter:blur(.5px);}' +
+        '#jjst2-whole .st2orb s{position:absolute;left:50%;top:50%;width:5%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff 0,rgba(230,200,255,.8) 40%,rgba(200,150,255,0) 100%);animation:st2OrbMote 4.2s linear infinite;}' +
+        '@keyframes st2OrbIn{from{opacity:0;translate:-50% -95%;scale:.3}to{opacity:1;translate:-50% -50%;scale:1}}@keyframes st2OrbBob{0%,100%{translate:-50% -50%}50%{translate:-50% -54%}}' +
+        '@keyframes st2OrbGlow{0%,100%{opacity:.75;scale:.94}50%{opacity:1;scale:1.06}}@keyframes st2OrbMote{from{transform:translate(-50%,-50%) rotate(var(--a)) translateX(var(--r)) rotate(calc(-1 * var(--a)));opacity:0}20%{opacity:1}80%{opacity:.8}to{transform:translate(-50%,-50%) rotate(calc(var(--a) + 160deg)) translateX(var(--r));opacity:0}}' +
+        '#jjst.jjst-paused #jjst2-whole .st2orb,#jjst.jjst-paused #jjst2-whole .st2orb *{animation-play-state:paused;}'; document.head.appendChild(c); } }
+  /* st2-29 · 5.7, the egg: each press draws a crack across it (a jagged dark line with light glowing through), the third one is the pop (the take) */
+  function wholeCrack(w, n) { var B = w.W.at && w.W.at.idle && w.W.at.idle.egg, svg = w.crk; if (!B) return;
+    if (n > 2) { if (svg) { svg.style.transition = 'opacity .35s ease'; svg.style.opacity = '0'; } return; }   // (the pop: the cracks go into the light)
+    if (!svg) { svg = w.crk = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none');
+      svg.style.cssText = 'position:absolute;left:' + (B[0] * 100) + '%;top:' + (B[1] * 100) + '%;width:' + (B[2] * 100) + '%;height:' + (B[3] * 100) + '%;z-index:6;pointer-events:none;overflow:visible;'; w.pane.appendChild(svg); }
+    var y0 = n === 1 ? 40 : 58, pts = [], x = 14 + Math.random() * 6; pts.push([x, y0 + (Math.random() - .5) * 6]); while (x < 84) { x += 7 + Math.random() * 7; pts.push([Math.min(86, x), y0 + (pts.length % 2 ? -1 : 1) * (5 + Math.random() * 6)]); }
+    var d = 'M' + pts.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L'), glow = pick() === 'fire' ? 'rgba(255,190,90,.95)' : 'rgba(225,245,255,.95)';
+    [[glow, 3.2, 'blur(1.2px)'], ['#3a2616', 1.3, '']].forEach(function (s) { var p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', d); p.setAttribute('fill', 'none'); p.setAttribute('stroke', s[0]); p.setAttribute('stroke-width', s[1]); p.setAttribute('stroke-linejoin', 'round'); p.setAttribute('stroke-linecap', 'round'); p.setAttribute('vector-effect', 'non-scaling-stroke');
+      p.style.strokeWidth = (s[1] * .12) + 'cqw'; if (s[2]) p.style.filter = s[2]; svg.appendChild(p); var L = p.getTotalLength ? p.getTotalLength() : 100; p.style.strokeDasharray = L; p.style.strokeDashoffset = L; p.animate([{ strokeDashoffset: L }, { strokeDashoffset: 0 }], { duration: 260, easing: 'ease-out', fill: 'forwards' }); });
+    svg.animate([{ translate: '0 0' }, { translate: '-1.5% 0' }, { translate: '1.5% 0' }, { translate: '0 0' }], { duration: 260 }); }
+  /* st2-30 · 4.1, the ride: Joe on his dragon (S4-1's two wing beats, keyed, crossfaded on the beat) over the sky loop. He follows the pointer up and down, gently;
+     three wind rings drift past at the near cloud bank's speed: fly through one for a sparkle and a coin (each ring's coin once per visitor). No way to fail */
+  var RING_AT = [2, 5.5, 9], RING_Y = [.36, .6, .44], RING_CYC = 16;
+  function wholeRide(w) { var R = w.W.ride, e = document.createElement('div'), sm = w.small ? '-s' : ''; e.className = 'st2rd'; w.pane.appendChild(e); w.ride = e;
+    e.innerHTML = '<div class="st2rd-r"><b>' + ['up', 'down'].map(function (k) { return '<img alt="" decoding="async" src="' + api.GB + 'story2-ride-ns-' + k + sm + '.webp' + api.AV + '">'; }).join('') + '</b></div>';
+    var rd = e.firstChild, rb = rd.firstChild, ims = rd.querySelectorAll('img'), y = R.y, ty = R.y, t0 = 0, T = 0, wing = -1, rings = {}, got = {}, kt = 0;
+    try { got = JSON.parse(localStorage.getItem('jj-st2-rings') || '{}') || {}; } catch (x) {}
+    rd.style.left = (R.x * 100) + '%'; rd.style.width = (R.size * 100) + '%';
+    var mv = function (ev) { if (WH !== w || !w.rect || (api.paused && api.paused())) return; ty = Math.max(.26, Math.min(.68, (ev.clientY - w.rect.t) / w.rect.h)); };   // (nothing moves while paused)
+    document.addEventListener('pointermove', mv, { passive: true }); document.addEventListener('pointerdown', mv, { passive: true });
+    w.offRide = function () { document.removeEventListener('pointermove', mv); document.removeEventListener('pointerdown', mv); };
+    if (!document.getElementById('jjst2-ride-css')) { var c = document.createElement('style'); c.id = 'jjst2-ride-css';
+      c.textContent = '#jjst2-whole .st2rd{position:absolute;inset:0;pointer-events:none;}#jjst2-whole .st2rd-r{position:absolute;top:50%;aspect-ratio:1200/876;translate:-50% -50%;z-index:8;}#jjst2-whole .st2rd-r b{position:absolute;inset:0;}' +
+        '#jjst2-whole .st2rd-r img{position:absolute;inset:0;width:100%;height:100%;transition:opacity .13s linear;}' +
+        '#jjst2-whole .st2ring{position:absolute;width:4.6%;height:25%;translate:-50% -50%;border-radius:50%;border:.42vw solid rgba(255,234,160,.95);box-shadow:0 0 1.1vw .2vw rgba(255,206,100,.85),inset 0 0 .9vw rgba(255,240,190,.75);filter:blur(.5px);opacity:0;transition:opacity .6s ease,border-color .3s ease,box-shadow .3s ease;}#jjst2-whole .st2ring.on{opacity:1;}' +
+        '#jjst2-whole .st2ring.bk{clip-path:inset(-60% -60% -60% 50%);z-index:7;}#jjst2-whole .st2ring.fr{clip-path:inset(-60% 50% -60% -60%);z-index:9;}' +   /* (two halves: the far one behind the riders, the near one in front, so they fly through it) */
+        '#jjst2-whole .st2ring.hit{transition:opacity .9s ease .25s,scale .9s ease,border-color .3s ease,box-shadow .3s ease;opacity:0;scale:1.35;border-color:#fff;box-shadow:0 0 2vw .6vw rgba(255,230,150,1),inset 0 0 1.4vw #fff;}'; document.head.appendChild(c); }
+    var hit = function (i, rg) { rg.els.forEach(function (q) { q.classList.add('hit'); }); rg.hit = true; var st = api.pane ? api.pane() : api.stage(), r0 = st && st.getBoundingClientRect(); if (!r0 || !w.rect) return;
+      var cx = w.rect.l + rg.x * w.rect.w, cy = w.rect.t + rg.y * w.rect.h; burst(cx - r0.left, cy - r0.top, 'spark'); st2sfx(api, 'chime', .28, false, true);
+      if (!got[i]) { got[i] = 1; try { localStorage.setItem('jj-st2-rings', JSON.stringify(got)); } catch (x) {} if (window.jjScore && window.jjScore.credit) window.jjScore.credit(1, 'Wind ring', cx, cy); } };
+    var step = function (now) { if (WH !== w) return; w.rideRaf = requestAnimationFrame(step); var dt = t0 ? Math.min(.05, (now - t0) / 1000) : 0; t0 = now; if (api.paused && api.paused()) return; T += dt;
+      if ((kt += dt) > 1) { kt = 0; var L = api.layers(); ['ring1', 'ring2', 'ring3', 'ride'].forEach(function (k) { var r = L[k]; if (r && r.el) r.el.style.pointerEvents = 'none'; }); }   // (the layered shot's own rings sit unseen under the take: they take no press)
+      y += (ty - y) * Math.min(1, dt * 2.4); var bob = Math.sin(T * 2.1) * .012, w2 = (T % .95) / .95 > .5 ? 1 : 0;
+      rd.style.top = ((y + bob) * 100).toFixed(2) + '%'; rb.style.rotate = Math.max(-9, Math.min(9, (y - ty) * 40)).toFixed(2) + 'deg';   // (nose up as he climbs)
+      if (w2 !== wing) { wing = w2; ims[0].style.opacity = wing ? '0' : '1'; ims[1].style.opacity = wing ? '1' : '0'; }
+      var cyc = Math.floor(T / RING_CYC), tc = T - cyc * RING_CYC, hx = R.x + R.size * .12;
+      RING_AT.forEach(function (at, i) { var id = cyc + ':' + i, rg = rings[id], age = tc - at; if (age < 0) return; var x = 1.06 - age * R.speed;
+        if (!rg) { if (x < -.06) return; rg = rings[id] = { y: RING_Y[i], x: x, els: ['bk', 'fr'].map(function (k) { var q = document.createElement('i'); q.className = 'st2ring ' + k; e.appendChild(q); return q; }) }; requestAnimationFrame(function () { rg.els.forEach(function (q) { q.classList.add('on'); }); }); }
+        var px = rg.x, top = ((rg.y + Math.sin(T * 1.3 + i) * .01) * 100).toFixed(2) + '%'; rg.x = x; rg.els.forEach(function (q) { q.style.left = (x * 100).toFixed(2) + '%'; q.style.top = top; });
+        if (!rg.hit && px > hx && x <= hx && Math.abs(rg.y - y) < .09) hit(i, rg);
+        if (x < -.08) { rg.els.forEach(function (q) { q.remove(); }); delete rings[id]; } }); };
+    w.rideRaf = requestAnimationFrame(step); }
+  /* st2-30 · the scene picker (Joe, 3 Nov: 'a scene picker with every scene ... so i can jump back and forth'): a preview tool, only with ?scenes=1 (visitors never
+     see it). A 'Scenes' pill bottom left opens a glass strip: a tab per scene, a picture per shot (its take's poster, or its number), the shot on screen ringed.
+     A press goes to the shot's first line as Prev / Next do (api.jump), and the strip closes. It hides under the sound question and the loader (Click to begin stays on top) */
+  function scenePicker(beats) { var scenes = [], by = {}, heads = {}, frames = {};
+    S.forEach(function (it) { if (it.t === 'scene') heads[it.n] = it.head; if (it.t === 'shot') frames[it.id] = it.frame; });
+    beats.forEach(function (b, i) { var q = b.st2 || {}; if (!q.scene || !q.shot) return; var sc = by[q.scene]; if (!sc) { sc = by[q.scene] = { n: q.scene, shots: [], seen: {} }; scenes.push(sc); } if (sc.seen[q.shot] == null) { sc.seen[q.shot] = i; sc.shots.push({ id: q.shot, i: i }); } });
+    var thumb = function (id, d) { var W = WHOLE[id]; if (!W || d > 3) return null; var N = NS_LOOK && W.ns ? W.ns : W; if (N.same) return thumb(N.same, (d || 0) + 1); var v = typeof N.vid === 'function' ? N.vid() : N.vid; return v ? api.GB + v + '-s-poster.webp' + api.AV : null; };
+    var c = document.createElement('style'); c.id = 'jjst2-pick-css';
+    c.textContent = '#jjst2-pick{position:absolute;left:16px;bottom:16px;z-index:40;font-family:inherit;color:#fff;}#jjst2-pick.off{display:none;}' +
+      '#jjst2-pick .pill,#jjst2-pick .tab{font:inherit;color:#fff;cursor:pointer;background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:8px 16px;font-size:14px;line-height:1;transition:background .2s ease;}' +
+      '#jjst2-pick .pill:hover,#jjst2-pick .tab:hover{background:rgba(255,255,255,.2);}#jjst2-pick .tab.on{background:rgba(255,255,255,.85);color:#111;}' +
+      '#jjst2-pick .pan{position:fixed;left:16px;right:16px;bottom:64px;max-width:1200px;padding:12px;border-radius:18px;background:#080b14;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.5);opacity:0;translate:0 12px;pointer-events:none;transition:opacity .25s ease,translate .25s ease;}' +
+      '#jjst2-pick.open .pan{opacity:1;translate:0 0;pointer-events:auto;}#jjst2-pick .tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;}#jjst2-pick .tab{flex:none;padding:6px 12px;font-size:13px;}' +
+      '#jjst2-pick .head{font-size:13px;opacity:.8;margin:2px 4px 8px;}#jjst2-pick .row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:thin;}' +
+      '#jjst2-pick .sh{flex:none;width:clamp(112px,14vw,176px);cursor:pointer;background:none;border:0;padding:0;color:#fff;font:inherit;text-align:left;}' +
+      '#jjst2-pick .sh i{display:block;aspect-ratio:16/9;border-radius:10px;background:#1a2033 center/cover no-repeat;box-shadow:0 0 0 1px rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:22px;opacity:.92;transition:box-shadow .2s ease,opacity .2s ease;}' +
+      '#jjst2-pick .sh:hover i{opacity:1;box-shadow:0 0 0 2px rgba(255,255,255,.7);}#jjst2-pick .sh.on i{box-shadow:0 0 0 3px #ff5fa2;}#jjst2-pick .sh span{display:block;font-size:12px;margin-top:5px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}@media (min-width:600px){#jjst2-pick .pan{right:104px;}}';
+    document.head.appendChild(c);
+    var root = document.createElement('div'); root.id = 'jjst2-pick'; root.innerHTML = '<div class="pan"><div class="tabs"></div><div class="head"></div><div class="row"></div></div><button class="pill" type="button">Scenes</button>';
+    var pan = root.querySelector('.pan'), tabs = root.querySelector('.tabs'), head = root.querySelector('.head'), row = root.querySelector('.row'), cur = null;
+    var here = function () { var cid = api && api.comp && String(api.comp() || '').slice(3), b = beats[api && api.scene ? api.scene() : -1]; return (cid && SHOTS[cid] && cid) || (b && b.st2 && b.st2.shot); };   // (the shot on screen; a mid-shot line's own shot otherwise)
+    var show = function (sc) { cur = sc; [].forEach.call(tabs.children, function (t) { t.classList.toggle('on', t._sc === sc); }); head.textContent = heads[sc.n] || ''; row.innerHTML = ''; var h = here();
+      sc.shots.forEach(function (q) { var b = document.createElement('button'), u = thumb(q.id); b.type = 'button'; b.className = 'sh' + (q.id === h ? ' on' : ''); b.innerHTML = '<i></i><span></span>';
+        if (u) b.firstChild.style.backgroundImage = 'url("' + u + '")'; else b.firstChild.textContent = q.id; b.lastChild.textContent = q.id + (frames[q.id] ? ' · ' + frames[q.id].split(' — ')[0].toLowerCase().replace(/^./, function (m) { return m.toUpperCase(); }) : '');
+        b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); root.classList.remove('open'); if (api && api.jump) api.jump(q.i); }); row.appendChild(b); }); };
+    scenes.forEach(function (sc) { var t = document.createElement('button'); t.type = 'button'; t.className = 'tab'; t.textContent = 'Scene ' + sc.n; t._sc = sc; t.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); show(sc); }); tabs.appendChild(t); });
+    root.querySelector('.pill').addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); var op = !root.classList.contains('open'); if (op) { var h = here(); show(scenes.filter(function (sc) { return sc.seen[h] != null; })[0] || cur || scenes[0]); } root.classList.toggle('open', op); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') root.classList.remove('open'); });
+    var iv = setInterval(function () { var st = api && api.stage && api.stage(); if (!st) return; if (root.parentNode !== st) st.appendChild(root);
+      var so = document.getElementById('jjst-sndov'), ld = document.getElementById('jjst-loader'), hide = !api.comp() || (so && so.classList.contains('on')) || (ld && !ld.classList.contains('hide') && ld.offsetParent); root.classList.toggle('off', !!hide); if (hide) root.classList.remove('open'); }, 300); }
+  var SKY_T = 0, SKY_AT = 0; function skyClock(now) { if (now !== SKY_AT) { var dt = SKY_AT ? Math.min(.05, (now - SKY_AT) / 1000) : 0; SKY_AT = now; if (!(api.paused && api.paused())) SKY_T += dt; } return SKY_T; }
+  function wholeOff(ms) { var w = WH; if (!w) return; WH = null; ms = ms || 350; clearInterval(w.iv); clearTimeout(w.autoT); if (w.snowRaf) cancelAnimationFrame(w.snowRaf); if (w.rideRaf) cancelAnimationFrame(w.rideRaf); if (w.offRide) w.offRide(); if (w.emRaf) cancelAnimationFrame(w.emRaf); if (w.capSnow) w.capSnow.classList.remove('snowy'); var sj = document.getElementById('jjst'); if (sj) sj.classList.remove('st2snow'); window.removeEventListener('resize', w.onRs); var jw = document.getElementById('jjst'); if (jw) jw.classList.remove('st2whole');
+    w.moved.forEach(function (el) { el._whole = false; el.classList.remove('st2keep'); WHOLE_PROPS.forEach(function (n) { el.style.removeProperty(n); }); });   // the layers go back to the engine (the next shot lays them out afresh)
+    w.box.style.transition = 'opacity ' + ms + 'ms ease'; w.box.style.opacity = '0'; setTimeout(function () { [w.a, w.b, w.c, w.k].forEach(function (v) { if (v) try { v.pause(); v.removeAttribute('src'); v.load(); } catch (x) {} }); if (w.box.parentNode) w.box.remove(); }, ms + 130); }   // (st2-28l: a join dissolves slower: two takes never end and begin on quite the same frame)
+  /* st2-39 (Joe, 5 Nov: 'make sure background animation is always happening, just makes the user know its not frozen'): every painted shot
+     breathes: the pictures in it drift on one slow push and pull (a 52 s cycle, 2 to 4.5 per cent), on one clock across shots so a dissolve never pops,
+     and a few motes float over it (wholeMotes): dust indoors, grey ash in the gloom and the wasteland, golden pollen in the sun, mist by the oasis, wind streaks in the sky */
+  var BR_P = 52; function br(el) { if (!el) return el; el.classList.add('st2br'); el.style.animationDelay = (-(Date.now() / 1000 % BR_P)).toFixed(2) + 's'; return el; }
+  function brCss() { if (document.getElementById('jjst2-br-css')) return; var c = document.createElement('style'); c.id = 'jjst2-br-css';
+    c.textContent = '#jjst2-whole .st2br{animation:st2Breathe ' + (BR_P / 2) + 's ease-in-out infinite alternate;transform-origin:50% 50%;}' +
+      '@keyframes st2Breathe{from{transform:scale(1.02) translate(0,0)}to{transform:scale(1.045) translate(-.5%,-.35%)}}' +
+      '#jjst.jjst-paused #jjst2-whole .st2br{animation-play-state:paused;}@media (prefers-reduced-motion:reduce){#jjst2-whole .st2br{animation:none;transform:scale(1.02);}}'; document.head.appendChild(c); }
+  function motesFor(id) { id = String(id); return /^1\./.test(id) ? 'ash' : id === '5B.2' ? 'wind' : id === '5B.1' || /^5\.[5-9]/.test(id) ? 'pollen' : /^5\.3[b-e]$/.test(id) ? 'dust' : /^5/.test(id) ? 'ash' : /^[34]\./.test(id) ? 'spray' : 'dust'; }
+  var MOTE = { dust: { n: 46, rgb: '255,236,200', r: [.0015, .0036], vx: [-.006, .006], vy: [-.006, .003], a: .65, add: true },
+    ash: { n: 52, rgb: '210,205,216', r: [.0018, .0042], vx: [-.012, .004], vy: [.018, .04], a: .62 },
+    pollen: { n: 40, rgb: '255,228,150', r: [.001, .0026], vx: [-.006, .008], vy: [-.026, -.01], a: .7, add: true },
+    spray: { n: 34, rgb: '225,242,255', r: [.0012, .0028], vx: [-.005, .005], vy: [-.012, -.002], a: .55, add: true },
+    wind: { n: 26, rgb: '255,255,255', r: [.0008, .0016], vx: [-.9, -.5], vy: [-.01, .01], a: .3, streak: true },
+    glint: { n: 70, rgb: '235,250,255', r: [.0014, .0036], vx: [.004, .014], vy: [-.0015, .0015], a: .85, add: true, tw: 3, box: [.3, .6, 1, .97] } };   // st2-42 (Joe: the pools 'look still on first entry'): light glinting and drifting on the water
+  function wholeMotes(w, kind) { var K = MOTE[kind]; if (!K) return; var cv = document.createElement('canvas'); cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;opacity:0;transition:opacity 1.2s ease;'; w.pane.appendChild(cv);
+    var x = cv.getContext('2d'), M = [], N = Math.round(K.n * jjqm([.5, 1, 1, 1])), t0 = 0, sp = sprite('mote-' + kind, [[0, 'rgba(' + K.rgb + ',1)'], [.4, 'rgba(' + K.rgb + ',.5)'], [1, 'rgba(' + K.rgb + ',0)']]),
+      rr = function (q) { return q[0] + Math.random() * (q[1] - q[0]); }, BX = K.box || [0, 0, 1, 1], mk = function (m, fresh) { m.x = BX[0] + Math.random() * (BX[2] - BX[0]); m.y = BX[1] + Math.random() * (BX[3] - BX[1]); if (K.box) { if (!fresh) m.x = BX[0]; m.r = rr(K.r); m.vx = rr(K.vx); m.vy = rr(K.vy); m.ph = Math.random() * 6.28; m.tw = (K.tw || 1) * (.6 + Math.random() * 1.6); m.sw = .002 + Math.random() * .006; return m; } if (!fresh) { if (K.vy[0] > 0) m.y = -.03; else if (K.vy[1] < 0) m.y = 1.03; if (K.streak) m.x = 1.05; }
+        m.r = rr(K.r); m.vx = rr(K.vx); m.vy = rr(K.vy); m.ph = Math.random() * 6.28; m.tw = .6 + Math.random() * 1.6; m.sw = .002 + Math.random() * .008; return m; };
+    for (var i = 0; i < N; i++) M.push(mk({}, true));
+    var step = function (now) { if (WH !== w) return; w.moRaf = requestAnimationFrame(step); var dt = t0 ? Math.min(.05, (now - t0) / 1000) : 0; t0 = now; if (api.paused && api.paused()) return;
+      var W = cv.clientWidth, H = cv.clientHeight, d = pxr(); if (!W || !H) return; if (cv.width !== Math.round(W * d)) { cv.width = Math.round(W * d); cv.height = Math.round(H * d); }
+      cv.style.opacity = '1'; x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, W, H); x.globalCompositeOperation = K.add ? 'lighter' : 'source-over';
+      M.forEach(function (m) { m.ph += dt; m.x += m.vx * dt; m.y += m.vy * dt * 16 / 9; if (m.x < BX[0] - .06 || m.x > BX[2] + .02 || m.y < BX[1] - .05 || m.y > BX[3] + .05) mk(m);
+        var a = K.a * (.55 + .45 * Math.sin(m.ph * m.tw)) * (K.box ? Math.max(0, Math.min(1, (m.x - BX[0]) / .06, (BX[2] - m.x) / .06, (m.y - BX[1]) / .04, (BX[3] - m.y) / .04)) : 1), px = (m.x + Math.sin(m.ph * .7) * m.sw) * W, py = m.y * H, r = Math.max(.8, m.r * W) * 3;
+        if (K.streak) { x.globalAlpha = a; x.strokeStyle = 'rgba(' + K.rgb + ',1)'; x.lineWidth = Math.max(1, m.r * W); x.lineCap = 'round'; x.beginPath(); x.moveTo(px, py); x.lineTo(px + .06 * W, py); x.stroke(); return; }
+        x.globalAlpha = Math.max(0, a); x.drawImage(sp, px - r, py - r, r * 2, r * 2); }); x.globalAlpha = 1; };
+    w.moRaf = requestAnimationFrame(step); }
+  function wholeVid(w, sfx, loop, poster, none) { var v = document.createElement('video'); v.muted = true; v.loop = !!loop; v.playsInline = true; v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+    if (w.W.sky) v.crossOrigin = 'anonymous';   // (drawn into WebGL: the CDN sends Access-Control-Allow-Origin)
+    if (poster) v.poster = w.base + w.small + '-poster.webp' + api.AV; if (!none) v.src = w.base + '-' + sfx + w.small + '.mp4' + api.AV; v.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;object-fit:fill;opacity:0;z-index:1;'; w.pane.appendChild(v); return br(v); }
   function wholeRun(v) { if (api.paused && api.paused()) return; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
-  function wholeIdle(w) { w.state = 'idle'; w.pose = 'idle'; [w.b, w.c].forEach(function (v) { try { v.pause(); } catch (x) {} v.style.transition = 'none'; v.style.opacity = '0'; v.style.zIndex = 1; });
+  function wholeIdle(w) { w.state = 'idle'; w.pose = 'idle'; wholeCarryOff(w); [w.b, w.c].forEach(function (v) { try { v.pause(); } catch (x) {} v.style.transition = 'none'; v.style.opacity = '0'; v.style.zIndex = 1; });
     w.a.style.transition = 'none'; w.a.style.opacity = '1'; w.a.style.zIndex = 2; wholeRun(w.a); wholePlace(); }
-  function wholeAfter(w) { w.state = 'end'; w.pose = 'end'; try { w.c.currentTime = w.W.cFrom || 0; } catch (x) {} wholeRun(w.c);
-    var up = function () { if (WH !== w || w.state !== 'end') return; w.c.style.transition = 'none'; w.c.style.zIndex = 4; w.c.style.opacity = '1'; setTimeout(function () { if (WH !== w || w.state !== 'end') return; [w.a, w.b].forEach(function (v) { try { v.pause(); } catch (x) {} v.style.transition = 'none'; v.style.opacity = '0'; v.style.zIndex = 1; }); }, 120); };
-    if (w.c.readyState >= 2 && (api.paused && api.paused())) up(); else { w.c.addEventListener('playing', up, { once: true }); setTimeout(up, 500); } wholePlace(); }
-  function wholeGo(id) { var W = WHOLE_ON && WHOLE[id]; if (!W) { wholeOff(); return; } var NS = W.ns && /[?&]look=ns\b/.test(location.search); if (NS) { W = Object.assign({}, W, W.ns, { look: false }); }   // st2-27q
-    if (WH && WH.id === id) { wholeIdle(WH); return; }                 // back onto the same shot: it waits again
-    wholeOff(); var ly = document.getElementById('jjst-layers'); if (!ly) return;
+  function wholeAfter(w) { w.state = 'end'; w.pose = 'end'; wholeCarryOff(w); try { w.c.currentTime = w.W.cFrom || 0; } catch (x) {} wholeRun(w.c);
+    var up = function () { if (WH !== w || w.state !== 'end') return; w.c.style.transition = 'opacity .8s ease'; w.c.style.zIndex = 4; w.c.style.opacity = '1'; setTimeout(function () { if (WH !== w || w.state !== 'end') return; [w.a, w.b].forEach(function (v) { try { v.pause(); } catch (x) {} v.style.transition = 'none'; v.style.opacity = '0'; v.style.zIndex = 1; }); }, 900); };   // st2-28i: a short dissolve, as the press has (the after is now a Dreamina idle loop, close to the take's last frame but not that frame)
+    if (w.c.readyState >= 2 && (api.paused && api.paused())) up(); else { w.c.addEventListener('playing', up, { once: true }); wholeFrameIn(w.c, function () { setTimeout(up, 120); }); } wholePlace(); }   // st2-28k: never before the after-loop has a frame (the big idle loops were not in yet after 500 ms: a black flash; the take holds its last frame meanwhile)
+  function wholeGo(id, jumping) { var W = WHOLE_ON && (!WHOLE_ONLY || WHOLE_ONLY.indexOf(id) >= 0) && WHOLE[id]; if (!W) { wholeOff(); return; } var NS = W.ns && /[?&]look=ns\b/.test(location.search); if (NS) { W = Object.assign({}, W, W.ns, { look: false }); } if (typeof W.vid === 'function') W = Object.assign({}, W, { vid: W.vid() });   // st2-27q
+    if (W.same) { if (!(WH && WH.id === W.same)) { wholeGo(W.same); if (jumping) wholeEnd(W.same); } return; }   // st2-28f: a later step of the same take (not up yet: it starts now; reached by a jump: the take, ended)
+    if (!W.vid) { wholeOff(); return; }
+    if (WH && WH.id === id) { if (jumping) { wholeIdle(WH); wholeAuto(WH); } return; }   // back onto the same shot by a jump: it waits again (st2-28i: the next line of the same shot leaves the take alone: the dragon tapped during the opening line was sent back to her wait by Clive's line)
+    if (W.join && WH && WH.state === 'action' && !WH.W.still && WH.b.duration && WH.b.currentTime < WH.b.duration - .15) { var ow = WH;   // st2-28f: a joined take waits for the last one's action to play out (Next pressed while Ember wakes: no jump to her end)
+      if (!ow.wantNext) ow.b.addEventListener('ended', function () { if (ow.wantNext && WH === ow && api.comp() === 's2_' + ow.wantNext) wholeGo(ow.wantNext); }, { once: true }); ow.wantNext = id; return; }
+    var had = !!WH, loopT = W.sameLoop && WH && WH.state === 'end' ? WH.c.currentTime : 0; wholeOff(W.join && had ? 900 : 350); var ly = document.getElementById('jjst-layers'); if (!ly) return;
     var w = WH = { id: id, W: W, state: 'idle', pose: 'idle', moved: [], rect: null, base: api.GB + W.vid + (W.look && /[?&]look=c[1-3]?\b/.test(location.search) ? '-pc' + ((/[?&]look=c([1-3])\b/.exec(location.search) || [])[1] || '') : ''),   /* st2-27f: ?look=c → the 'pencil and crayon' look test (grade/pencil.py): the ice cliffs and the pools; st2-27p: ?look=c1 (lightest, STRENGTH .35) ?look=c3 (.45) and ?look=c2 (.6) to compare (Joe, 16 Oct: 'less this style but still this direction') */ small: ((window.jjLite && window.jjLite.on) || innerWidth < 900) ? '-s' : '' };
     w.box = document.createElement('div'); w.box.id = 'jjst2-whole'; w.box.style.cssText = 'position:absolute;inset:0;z-index:3;background:#04060b;opacity:0;transition:opacity .35s ease;pointer-events:none;overflow:hidden;';
-    w.pane = document.createElement('div'); w.box.appendChild(w.pane); w.a = wholeVid(w, 'a', true, true); w.b = wholeVid(w, 'b', false); w.c = wholeVid(w, 'c', true); if (W.snow) wholeSnow(w);
+    w.pane = document.createElement('div'); w.box.appendChild(w.pane); w.a = wholeVid(w, 'a', true, true); w.b = wholeVid(w, 'b', false, false, W.still); w.c = wholeVid(w, 'c', true, false, W.still);
+    if (W.carry) { var cb = W.carry[0], fe = .03, pc = function (q) { return (q * 100).toFixed(1) + '%'; }, cm = 'linear-gradient(to right,transparent ' + pc(cb[0]) + ',#000 ' + pc(cb[0] + fe) + ',#000 ' + pc(cb[2] - fe) + ',transparent ' + pc(cb[2]) + '),linear-gradient(to bottom,transparent ' + pc(cb[1]) + ',#000 ' + pc(cb[1] + fe) + ',#000 ' + pc(cb[3] - fe) + ',transparent ' + pc(cb[3]) + ')';
+      w.k = wholeVid(w, 'a', true); w.k.style.zIndex = 4; w.k.style.cssText += '-webkit-mask-image:' + cm + ';-webkit-mask-composite:source-in;mask-image:' + cm + ';mask-composite:intersect;'; }   // (carry: the box [x0, y0, x1, y1] of the wait loop kept over the take until carry[1] s, feathered)
+    if (W.talk) w.tk = Object.keys(W.talk).map(function (who) { var v = document.createElement('video'); v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+      v.src = api.GB + W.talk[who] + w.small + '.mp4' + api.AV; v._who = who; v.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;object-fit:fill;opacity:0;z-index:6;transition:opacity .3s ease;'; w.pane.appendChild(v); return br(v); });   /* st2-37: the talk loops, one per speaker */
+    if (W.frames) w.fr = W.frames.map(function (k) { var im = document.createElement('img'); im.alt = ''; im.decoding = 'async'; im.src = w.base + '-' + k + w.small + '.webp' + api.AV; im._k = k;   // (3.8: the pictures that change with the lines, over the wait)
+      im.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;object-fit:fill;opacity:0;z-index:5;transition:opacity .28s ease;'; w.pane.appendChild(im); return br(im); }); if (W.snow) wholeSnow(w); if (W.ride) wholeRide(w); if (W.embers) wholeEmbers(w); if (W.orb) wholeOrb(w); if (W.poses) wholePoses(w); brCss(); if (!W.snow && !W.embers && !W.ride && !W.noMotes) wholeMotes(w, W.motes || motesFor(id)); if (W.sky && !/[?&]sky=0\b/.test(location.search)) wholeSky(w);   /* st2-42 (Joe, 5 Nov: 'why is the background not moving'): the sky turns in the lite level too (drawn smaller there): the lite level is easily on for a whole visit, and without the swirl the picture looked frozen */
+    if (W.s2) s2Go(w);   // st2-47 · Scene 2's extras over its pictures
     w.b.addEventListener('ended', function () { if (WH === w && w.state === 'action') wholeAfter(w); });
     if (!document.getElementById('jjst2-whole-css')) { var wc = document.createElement('style'); wc.id = 'jjst2-whole-css';   /* st2-27e: under the video the layered shot is still built (its lines, its press, its anchors) but not DRAWN: its pictures go clear, its clips and the flyers pause, so the browser only pays for the one video */
-      wc.textContent = '#jjst.st2whole #jjst-bgwrap,#jjst.st2whole .st2fly,#jjst.st2whole .st2smoke,#jjst.st2whole .st2puffs,#jjst.st2whole #jjst2-atmo,#jjst.st2whole .jjst-aura{visibility:hidden!important;}#jjst.st2whole #jjst-layers>*{opacity:0!important;}'; document.head.appendChild(wc); }
+      wc.textContent = '#jjst.st2whole #jjst-bgwrap,#jjst.st2whole .st2fly,#jjst.st2whole .st2smoke,#jjst.st2whole .st2puffs,#jjst.st2whole #jjst2-atmo,#jjst.st2whole .jjst-aura{visibility:hidden!important;}#jjst.st2whole #jjst-layers>*:not(:has(.st2keep)){opacity:0!important;}#jjst.st2whole #jjst-layers>:has(.st2keep) .jjst-layer:not(.st2keep){opacity:0!important;}#jjst.st2whole #jjst-layers{z-index:4;}'; document.head.appendChild(wc); }   /* (st2-28f: the layers sit in the camera's planes: a plane holding a kept layer stays, its other layers go) */
     var jw = document.getElementById('jjst'); if (jw) jw.classList.add('st2whole');
     ly.parentNode.insertBefore(w.box, ly.nextSibling); wholeFit(); w.onRs = function () { wholeFit(); wholePlace(); }; window.addEventListener('resize', w.onRs);
-    w.iv = setInterval(function () { if (WH !== w) return; [].forEach.call(document.querySelectorAll('#jjst-layers video,#jjst-bgwrap video,#jjst .st2fly video'), function (v) { if (!v.paused) { try { v.pause(); } catch (x) {} } }); if (w.state === 'action' && w.pose !== 'end' && w.b.currentTime >= (W.moveAt || 1e9)) w.pose = 'end'; wholePlace();
-      if (!(api.paused && api.paused())) { var cur = w.state === 'idle' ? w.a : w.state === 'end' ? w.c : null; if (cur && cur.paused && cur.readyState >= 2) wholeRun(cur); } }, 250);   // (the layers are kept on the figures; a clip born under a pause starts with the resume)
-    wholeIdle(w); setTimeout(function () { if (WH === w) w.box.style.opacity = '1'; }, 120); }
-  function wholePlay(id) { var w = WH; if (!w || w.id !== id || w.state !== 'idle') return 0; w.state = 'action'; try { w.b.currentTime = 0; } catch (x) {}   // the press: a short dissolve from the wait into the action
-    w.b.style.zIndex = 3; w.b.style.transition = 'opacity .3s ease'; wholeRun(w.b); requestAnimationFrame(function () { w.b.style.opacity = '1'; });
-    setTimeout(function () { if (WH === w && w.state !== 'idle') { try { w.a.pause(); } catch (x) {} w.a.style.opacity = '0'; } }, 460); return Math.round(w.W.done * 1000); }
-  function wholeEnd(id) { var w = WH; if (!w || w.id !== id || w.state === 'end') return; wholeAfter(w); }   // a jump onto a line AFTER the press: the after-loop
+    w.iv = setInterval(function () { if (WH !== w) return; [].forEach.call(document.querySelectorAll('#jjst-layers video,#jjst-bgwrap video,#jjst .st2fly video'), function (v) { if (!v.paused) { try { v.pause(); } catch (x) {} } }); if (w.state === 'action' && w.pose !== 'end' && w.b.currentTime >= (W.moveAt || 1e9)) w.pose = 'end';
+      if (w.k && w.state === 'action' && w.k.style.opacity === '1') { if (w.b.currentTime >= W.carry[1]) wholeCarryOff(w, true); else if (w.k.paused !== w.b.paused) { if (w.b.paused) w.k.pause(); else wholeRun(w.k); } }   // (the carried wait leaves as the take's Joe starts to move; it pauses and plays with the take) wholePlace();
+      if (!(api.paused && api.paused())) { var cur = w.state === 'idle' ? w.a : w.state === 'end' ? w.c : null; if (cur && cur.paused && cur.readyState >= 2) wholeRun(cur); }
+      var B0 = w.W.at && w.W.at[w.pose], L0 = api.layers(); if (B0 && (w.placed !== w.pose || Object.keys(B0).some(function (k) { var r0 = L0[k]; return r0 && r0.el && r0.el.isConnected && !r0.el._whole; }))) wholePlace(); }, 250);   // st2-29: a layer built after the take came up (5.7's egg: its press missed the painted egg) or the pose moved on: placed again   // (the layers are kept on the figures; a clip born under a pause starts with the resume)
+    if (W.join && had) { w.box.style.transition = 'none'; w.box.style.opacity = '1'; }
+    /* (sameLoop: this wait is the last shot's after-loop, so it carries on from the same frame) */   // (on the frame the last take ended on: it is there at once, under the old one as that goes)
+    wholeIdle(w); if (loopT) { try { w.a.currentTime = loopT; } catch (x) {} } wholeAuto(w); setTimeout(function () { if (WH === w) w.box.style.opacity = '1'; }, 120); }
+  function wholeAuto(w) { clearTimeout(w.autoT); if (w.W.auto == null) return; var go = function () { if (WH !== w || w.state !== 'idle') return; var ld = document.getElementById('jjst-loader'); if ((api.paused && api.paused()) || document.querySelector('#jjst-sndov.on') || (ld && !ld.classList.contains('hide') && ld.offsetParent)) { w.autoT = setTimeout(go, 200); return; }   // (not while paused, nor under the loader or the sound question: a start straight onto the shot)
+      if (wholePlay(w.id)) (w.W.sfx || []).forEach(function (q) { setTimeout(function () { if (WH === w) st2sfx(api, q[1], q[2], false, true); }, q[0] * 1000); }); };
+    w.autoT = setTimeout(go, w.W.auto); }
+  /* st2-40 · Scene 1's talk: Grik's pose cut-outs (bobbing), the framing per line, the memory of the fire, the castle in the haze */
+  var S1CAM = { wide: [.5, .5, 1.07], grik: [.58, .44, 1.45], joe: [.40, .47, 1.4], east: [.86, .2, 1.55], full: [.5, .5, 1] };
+  function wholePoses(w) { var P = w.W.poses, box = br(document.createElement('div')), bob = document.createElement('div'); box.className += ' st2poses'; bob.className = 'st2bob'; box.appendChild(bob); w.pane.appendChild(box); w.ps = { box: box, bob: bob, im: {} };
+    Object.keys(P).forEach(function (k) { var q = P[k], im = document.createElement('img'); im.alt = ''; im.decoding = 'async'; im.src = api.GB + 'story2-s1-grik-' + k + '.webp' + api.AV; im.style.cssText = 'left:' + (q[0] * 100) + '%;top:' + (q[1] * 100) + '%;width:' + (q[2] * 100) + '%;'; bob.appendChild(im); w.ps.im[k] = im; });
+    var cs = document.createElement('img'); cs.alt = ''; cs.className = 'st2castle'; cs.src = api.GB + 'story2-s1-castle.webp' + api.AV; box.appendChild(cs); w.ps.castle = cs;
+    if (!document.getElementById('jjst2-poses-css')) { var c = document.createElement('style'); c.id = 'jjst2-poses-css';
+      c.textContent = '#jjst2-whole .st2poses{position:absolute;inset:0;z-index:7;pointer-events:none;transition:opacity .3s ease;}#jjst2-whole .st2bob{position:absolute;inset:0;animation:st2Bob 3.2s ease-in-out infinite;}' +
+        '#jjst2-whole .st2bob img{position:absolute;opacity:0;transition:opacity .35s ease;}#jjst2-whole .st2bob img.on{opacity:1;}' +
+        '#jjst2-whole .st2castle{position:absolute;left:82%;top:3%;width:16%;opacity:0;filter:blur(1px) saturate(1.2);transition:opacity 1.6s ease;}#jjst2-whole .st2castle.on{opacity:.8;}' +
+        '@keyframes st2Bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-.35%)}}' +
+        '#jjst2-mem{position:absolute;inset:0;z-index:9;pointer-events:none;opacity:0;transition:opacity .6s ease;background:radial-gradient(ellipse at 50% 50%,rgba(20,10,4,.55),rgba(4,3,2,.9));}#jjst2-mem.on{opacity:1;}' +
+        '#jjst2-mem video{position:absolute;left:10%;top:6%;width:80%;height:88%;object-fit:cover;-webkit-mask-image:radial-gradient(ellipse closest-side,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse closest-side,#000 62%,transparent 100%);filter:sepia(.25);}' +
+        '#jjst.jjst-paused #jjst2-whole .st2bob{animation-play-state:paused;}'; document.head.appendChild(c); }
+    wholePose(w, 'plate'); }
+  function wholePose(w, k) { if (!w.ps) return; Object.keys(w.ps.im).forEach(function (n) { w.ps.im[n].classList.toggle('on', n === k); }); }
+  function wholeCam(w, n, secs) { var v = S1CAM[n] || S1CAM.full, z = v[2], cl = function (q) { return Math.max(-(z - 1) / 2, Math.min((z - 1) / 2, q)); }, tx = cl(-z * (v[0] - .5)) * 100, ty = cl(-z * (v[1] - .5)) * 100;
+    [].forEach.call(w.pane.querySelectorAll('.st2br'), function (e) { e.style.transition = (e.style.transition ? e.style.transition.replace(/,?\s*(translate|scale) [^,]*/g, '') + ',' : '') + 'translate ' + (secs || 1.3) + 's cubic-bezier(.45,0,.25,1),scale ' + (secs || 1.3) + 's cubic-bezier(.45,0,.25,1)'; e.style.translate = tx.toFixed(2) + '% ' + ty.toFixed(2) + '%'; e.style.scale = z; }); }
+  function wholeMem(w) { var m = document.createElement('div'); m.id = 'jjst2-mem'; var v = document.createElement('video'); v.muted = true; v.playsInline = true; v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.src = api.GB + 'story2-s1-memory.mp4' + api.AV; m.appendChild(v); w.box.appendChild(m);
+    var go = function () { m.classList.add('on'); wholeRun(v); }; if (v.readyState >= 2) go(); else v.addEventListener('loadeddata', go, { once: true }); st2sfx(api, 'memory', .5, false, true);
+    v.addEventListener('ended', function () { m.classList.remove('on'); setTimeout(function () { m.remove(); }, 700); }); }
+  function wholeBeat(id, cfg, it) { var w = WH; if (!w || w.id !== id) return; var joe = it.who === 'JOE';
+    if (w.ps) { w.ps.box.style.opacity = joe ? '0' : '1'; wholePose(w, cfg && cfg.pose || 'plate'); if (cfg && cfg.then) setTimeout(function () { if (WH === w) wholePose(w, cfg.then[0]); }, cfg.then[1]);
+      w.ps.castle.classList.remove('on'); if (cfg && cfg.castle) setTimeout(function () { if (WH === w) w.ps.castle.classList.add('on'); }, cfg.castle); }
+    if (cfg && cfg.cam) wholeCam(w, cfg.cam); if (/^A great fire/.test(it.text || '')) wholeMem(w); }
+  /* st2-42 · line effects on a painted take: 'gloom' = a grey cloud rolls over the picture and it dims (the island's gloom, 4.2) */
+  function wholeFx(id, k) { var w = WH; if (!w || w.id !== id) return;
+    if (k === 'gloom') { var g = document.createElement('i'); g.style.cssText = 'position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0;transition:opacity 4s ease;background:linear-gradient(to bottom,rgba(52,56,72,.82) 0,rgba(44,48,62,.55) 38%,rgba(30,32,42,.35) 100%);'; w.pane.appendChild(g);
+      requestAnimationFrame(function () { g.style.opacity = '1'; [].forEach.call(w.pane.querySelectorAll('video'), function (v) { v.style.transition = (v.style.transition ? v.style.transition + ',' : '') + 'filter 4s ease'; v.style.filter = 'brightness(.7) saturate(.5)'; }); });
+      wholeMotes(w, 'ash'); } }
+  function wholeTalk(id, who) { var w = WH; if (!w || w.id !== id || !w.tk) return; w.tk.forEach(function (v) { if (v._who === who) { if (v.style.opacity !== '1') { try { v.currentTime = 0; } catch (x) {} wholeRun(v); } v.style.opacity = '1'; } else if (v.style.opacity === '1') { v.style.opacity = '0'; setTimeout(function () { if (v.style.opacity === '0') try { v.pause(); } catch (x) {} }, 350); } }); }   /* st2-37: the speaker's loop up (from its start), the others down; an act or narration: the rest picture */
+  function wholeFrame(id, k) { var w = WH; if (!w || w.id !== id || !w.fr) return; w.fr.forEach(function (im) { im.style.opacity = im._k === k ? '1' : '0'; }); }
+  function wholeCues(beats) { if (!(NS_LOOK && WHOLE_ON)) return;   /* (the painted oasis: goAt and cues hang on the beats, after the shot's own start) */
+    var on = function (b, f) { var po = b.onStart; b.onStart = function (a, jumping) { if (po) po(a, jumping); setTimeout(function () { f(jumping); }, 30); }; };
+    Object.keys(NS3).forEach(function (id) { var W = NS3[id], mine = beats.filter(function (b) { return b.comp === 's2_' + id; }), cur = W.frames && W.frames[0];
+      mine.forEach(function (b) { var it = b.it || {};
+        if (W.goAt && (it.text || '').indexOf(W.goAt) === 0) on(b, function (jumping) { var w = WH; if (!w || w.id !== id) return; if (jumping) { wholeEnd(id); return; }
+          if (wholePlay(id)) (W.sfx || []).forEach(function (q) { setTimeout(function () { if (WH === w) st2sfx(api, q[1], q[2], false, true); }, q[0] * 1000); }); });
+        if (W.fxAt) W.fxAt.forEach(function (q) { if ((it.text || '').indexOf(q[0]) === 0) on(b, function () { wholeFx(id, q[1]); }); });
+        if (W.talk) (function (who) { on(b, function () { wholeTalk(id, who); }); })(it.t === 'say' && W.talk[it.who] && !(W.talkOff || []).some(function (q) { return (it.text || '').indexOf(q) === 0; }) ? it.who : null);
+        if (W.beats && (it.t === 'say' || it.t === 'act')) (function (it2) { on(b, function () { wholeBeat(id, (W.beats.filter(function (q) { return (it2.text || '').indexOf(q[0]) === 0; })[0] || [])[1], it2); }); })(it);   // (matched as the line plays: a reply's words are set by the pick)
+        if (W.cues) { W.cues.forEach(function (c) { if (c[2] === 'hold' ? it.t === 'act' : c[0] && (it.text || '').indexOf(c[0]) === 0) cur = c[1]; }); (function (k) { on(b, function () { wholeFrame(id, k); }); })(cur); } }); }); }
+  function wholePlay(id) { var w = WH; if (!w || w.id !== id || w.state !== 'idle' || w.W.still) return 0; w.state = 'action'; try { w.b.currentTime = 0; } catch (x) {}   // the press: a short dissolve from the wait into the action
+    w.b.style.zIndex = 3; w.b.style.transition = 'opacity .6s ease'; wholeRun(w.b);   // (st2-28l: .6 s, was .3: the wait loop is seldom on the take's first frame)
+    var k = w.k, n = k ? 2 : 1; if (k) { k.style.transition = 'none'; try { k.currentTime = (w.a.currentTime + .05) % (w.a.duration || 1e9); } catch (x) {} wholeRun(k); var kIn = function () { if (!--n) show(); }; if (k.seeking) k.addEventListener('seeked', function () { wholeFrameIn(k, kIn); }, { once: true }); else wholeFrameIn(k, kIn); }   // (on the wait's own frame: no jump in his pose)
+    var show = function () { if (WH !== w || w.state === 'idle') return; if (k) k.style.opacity = '1'; w.b.style.opacity = '1';   // st2-28k: the action comes up once it has a frame (a joined take pressed at once, 3.2b, was black until its first frame)
+      setTimeout(function () { if (WH === w && w.state !== 'idle') { try { w.a.pause(); } catch (x) {} w.a.style.opacity = '0'; } }, 760); }; wholeFrameIn(w.b, function () { if (!--n) show(); }); return Math.round(w.W.done * 1000); }
+  function wholeCarryOff(w, fade) { var k = w.k; if (!k || k.style.opacity === '0') return; k.style.transition = fade ? 'opacity .8s ease' : 'none'; k.style.opacity = '0'; setTimeout(function () { if (k.style.opacity === '0') try { k.pause(); } catch (x) {} }, fade ? 850 : 0); }
+  function wholeFrameIn(v, fn) { var done = false, go = function () { if (done) return; done = true; requestAnimationFrame(fn); }; if (v.readyState >= 2) go(); else { v.addEventListener('loadeddata', go, { once: true }); v.addEventListener('playing', go, { once: true }); } }   // (fn on the first frame the video can show)
+  function wholeEnd(id) { var w = WH; if (!w || w.id !== id || w.state === 'end' || w.W.still) return; wholeAfter(w); }   // a jump onto a line AFTER the press: the after-loop
   function onComp(name, jumping) {                            // the engine is about to build this shot: the pan is set first, so its figures are born in place
-    var id = String(name).slice(3), sh = SHOTS[id], jj = api.stage(); if (!jj) return; wholeGo(id); var sameSet = !!(sh && sh.set && lastSet === sh.set), cutNow = !!(sh && (sh.dip || sh.cut)) || afterCut;
+    var id = String(name).slice(3), sh = SHOTS[id], jj = api.stage(); if (!jj) return; wholeGo(id, jumping); var sameSet = !!(sh && sh.set && lastSet === sh.set), cutNow = !!(sh && (sh.dip || sh.cut)) || afterCut;
     handover(api, name, jumping, sameSet, cutNow); if (actNow && !actNow.carry) actOff(true); if (actNow) actNow.carry = false;
     if (softNeed) { softNeed = null; needOff(true); } exploreOff(); soundComp(id, sh, jumping); leadOff(); seqT.forEach(api.unsched); seqT = []; signOff(); builtId = id; [].forEach.call(jj.querySelectorAll('.st2black,.st2smoke,.st2puffs,.st2jet,.st2lids,.st2entr'), function (o) { o.remove(); });
     setTimeout(function () { handoverDone(api, name); if (api.comp() !== name) return; if (sh && sh.rate) Object.keys(sh.rate).forEach(function (k) { var rr = api.layers()[k]; if (rr && rr.el && 'playbackRate' in rr.el) { try { rr.el.playbackRate = sh.rate[k]; } catch (e) {} } });   /* st2-20: a clip played a touch faster (2.1's walk) */ if (sh && sh.frost) frostGo(api, id, sh.frost, jumping); flyGo(api); if (sh && sh.takeoff) takeoffGo(api, id); blinkGo(api, id); if (sh && sh.set === 'hl') spurtGo(api, id); if (sh && sh.enter && !jumping && entered !== id) { entered = id; enterGo(api, id, sh.enter); } else if (!sh || !sh.enter) entered = null; }, 0);   // (once this shot's layers are in: the hand-overs finish, the frost dragon's cut, the flyers)
@@ -1303,7 +1900,16 @@
   var DRAW_AT = 1.75;                                          // the sword-draw frame: story2-joe-sword-draw's frame 42 of 24 fps (the blade clear of the scabbard, swinging up)
   var D31 = 19.72;                                             // 3.1's start → that frame, in a run nobody touches (the pan 16 + the hold 1.5, then the dip and the clip: measured)
   var LIFT_AT = 1.04, LIFT_LEAD = 1.5 + LIFT_AT;               // the take-off: 1.5 s after Joe is on the saddle (3.9r's takeoff.at) the pair start to crouch; measured on the mount, the crouch is at its lowest 1.04 s later (the spring: LIFT_AT) and they pass their standing height, rising, at 1.41 s
-  var MUSIC = { wasteland: { f: 'music-wasteland', full: .117 }, oasis: { f: 'music-oasis', full: .093 } };
+  var MUSIC = { wasteland: { f: 'music-wasteland', full: .117 }, oasis: { f: 'music-oasis', full: .093 }, flight: { f: 'music-flight', full: .057, start: 71.1 }, castle: { f: 'music-castle', full: .12, start: 0 } };
+  /* st2-32 · Joe's two Pixabay tracks (4 Nov), levels matched to the oasis FULL section by the same loudness measure (flight -10 dB → .057, castle -17 dB → .12).
+     FLIGHT (122 bpm, 4-bar phrases of 7.87 s from 0.26): C = its loudest body 71.1–102.6 (four phrases, loops), a breakdown to 130.09, a two-bar pickup, the big
+     DROP on 132.06, the finale to 163.54 (four phrases, loops), its ending. 3.9r keeps the oasis finale (the take-off); 4.1 cuts to C on a downbeat as the
+     oasis fades over 1.5 s; 4.2 puts the pickup under the clouds and the drop 1.5 s in as they open; 5.5 (the transformation) builds through the end of the
+     breakdown and lands the drop on the burst of light (7 s in). CASTLE (144.6 s, even all through, fades from ~140): Scene 5 up to the goodbye plays it
+     through a low-pass at 1.5 kHz, a little quieter (old, muffled, mysterious); from 5.6 it opens up (warm and bright), from its start. */
+  var RIDE_HINT = (function () { try { return matchMedia('(pointer: coarse)').matches ? 'Drag up and down to steer through the rings' : 'Move your mouse up and down to steer through the rings'; } catch (e) { return 'Move your mouse up and down to steer through the rings'; } })();   /* st2-32 (Joe: not clear you steer the ride) */
+  function hintOf(t) { var p = String(t).split(':'); if (p[0] !== 'Optional') return p[0]; if (/wind rings/.test(t)) return RIDE_HINT; var h = (p[1] || '').trim().replace(/\.$/, ''); return h.charAt(0).toUpperCase() + h.slice(1); }   /* 'Optional: tap the dust sheet: …' → 'Tap the dust sheet' (only the ride's line is the mouse hint) */
+  var FL = { c: 71.1, cEnd: 102.6, drop: 132.06, fEnd: 163.54 }, REVEAL_AT = 1.5, TRANS_AT = 6.25, CASTLE_TAIL = 139.0, CASTLE_DIM = 1500;
   /* st2-25 · E (Joe): the oasis music is ONE SLOW ARC through Scene 3, not a jump. The intro comes in under the mirage in 2.4; the LIFT (25.28) is on 3.1's first frame at
      full level; from there the track just plays on (its loop region is still 25.28 to 123.6 and back). Its LEVEL is the story: full across the reveal, down to its
      quietest as Joe draws his sword, then 'slowly, slowly louder through each scene, quieter at the beginning of Ember, louder as he goes to pet her, and then it's
@@ -1311,7 +1917,7 @@
      holds); the Ember steps and the touch are set by the presses themselves (onFx). Every change eases over ~2.8 s (the draw: 1.2 s). Nothing ducks the music in
      3.2 to 3.6, and its playback rate is NEVER changed (that was the pitch bend on the draw). */
   var MUS_SHOT = { '3.1': ['A', 1, 400], '3.2': ['A', 1, 700], '3.2b': ['A', .25, 2800], '3.3': ['A', .26, 2800], '3.4': ['A', .32, 2800], '3.5': ['A', .44, 2800], '3.6': ['A', 0, 2800],
-    '3.6b': ['A', 0, 2800], '3.6t': ['A', .8, 1500], '3.6c': ['A', .8, 1500], '3.6d': ['A', .8, 2800], '3.7': ['A', .8, 2800], '3.8': ['A', .8, 2800], '3.9': ['A', .8, 2500], '3.9r': ['finale', MUS_MOUNT, 400], '4.1': ['F', 1.15, 2800], '4.2': ['F', 1.15, 2800] };
+    '3.6b': ['A', 0, 2800], '3.6t': ['A', .8, 1500], '3.6c': ['A', .8, 1500], '3.6d': ['A', .8, 2800], '3.7': ['A', .8, 2800], '3.8': ['A', .8, 2800], '3.9': ['A', .8, 2500], '3.9r': ['finale', MUS_MOUNT, 400] };
   /* st2-26q (Joe, 8 Oct): 'the music should start again as he steps towards Ember, and then continue to play, just get extra loud when Joe gets on the dragon'. So: it fades
      right out as the lava fields come up (the lava and the fire lead there, and through the flashback); his FIRST step toward her brings it back in from the track's full
      body (a 1.2 s fade in), louder with each step to the touch (EMBER_STEPS); from the touch it simply plays on at that level through the huzzah, the ledge, the two-shot and
@@ -1329,7 +1935,7 @@
     if (cyc) o.sprite = { cyc: [0, Math.round(cyc * 1000), true] };   // a bed: a looping sprite of its exact length
     var h = sndH[name] = new Howl(o); h._jjCat = cat || 'sfx'; if (cyc) h._jjBed = true;
     window.jjAudio = window.jjAudio || { sounds: [], muted: false, volume: 1.0 }; window.jjAudio.sounds.push(h); return h; }
-  function st2sfx(a, name, vol, force) { if (!a || a.paused()) return; if (name === 'puff' && !force) { var n = performance.now(); if (n - puffAt0 < 1800) return; puffAt0 = n; }   // (puffs come in flurries: one soft sound at most every 1.8 s)
+  function st2sfx(a, name, vol, force, take) { if (!a || a.paused()) return; if (WH && !take) return;   // st2-28l (Joe: 'random sounds ... dragons appearing ... too loud'): under a painted take the hidden cartoon layer's puffs, roar and Clive's entrance went on sounding: only the take's own sounds now if (name === 'puff' && !force) { var n = performance.now(); if (n - puffAt0 < 1800) return; puffAt0 = n; }   // (puffs come in flurries: one soft sound at most every 1.8 s)
     var h = sndGet('sfx-' + name); if (!h) return; vol = vol == null ? .3 : vol; if (/^3\.[456]/.test(String(sndShot)) && /^(ice|water|fire-spurt|puff)$/.test(name)) vol *= 1.585;   /* st2-25 · E3: in the three dragon shots the frost stream, the squirt, the fire spurt and the puffs are 4 dB up */
     try { var id = h.play(); h.volume(vol * ST2_GAIN, id); } catch (e) {} }
   function sndOn() { if (!sndIv) { sndLast = 0; sndIv = setInterval(sndTick, 50); } }
@@ -1347,13 +1953,14 @@
      first frame if nobody touches anything (D24); 3.1's first frame puts the lift there whatever happened (musIntro) */
   function mirage() { mirT = null; if (sndShot !== '2.4') return; var W = MUSIC.wasteland, O = MUSIC.oasis; W.want = false; W.envMs = 2500; O.want = true; O.envMs = 2500; sndGet(O.f, false, 'music');
     if (O.id == null && O.startAt == null) { O.startAt = Math.max(0, OAS.lift - D24); O.xinMs = 300; O.xin = 0; O.env = 0; } O.lv = O.lvT = 1; O.mode = 'intro'; mlog('mirage', { oasisFrom: +(OAS.lift - D24).toFixed(2), wasteland: musPos(W) == null ? null : +musPos(W).toFixed(2) }); sndOn(); }
-  function musicPlan(id, jumping) { var scn = SHOT_SCENE[id] || SHOT_SCENE[String(id).replace(/[a-z]+$/, '')], n = scn && scn.n, name = n === '1' || n === '2' ? 'wasteland' : MUS_SHOT[id] ? 'oasis' : null;
+  function musicPlan(id, jumping) { var scn = SHOT_SCENE[id] || SHOT_SCENE[String(id).replace(/[a-z]+$/, '')], n = scn && scn.n, name = n === '1' || n === '2' ? 'wasteland' : MUS_SHOT[id] ? 'oasis' : trackFor(id);
     if (mirT != null) { api.unsched(mirT); mirT = null; }
     if (id === '2.4' && MUSIC.oasis.want && MUSIC.oasis.mode === 'intro' && !jumping) name = 'oasis';   // (the cut at the end of 2.4 rebuilds nothing; a later state of the same shot: the mirage has already been sighted)
     Object.keys(MUSIC).forEach(function (k) { var W = MUSIC[k]; W.want = k === name; W.envMs = null; if (!W.want && api && api.paused() && W.id != null) musDrop(W, 0); });
-    cancelAnimationFrame(drawRaf); sndOn(); if (n === '2') sndGet(MUSIC.oasis.f, false, 'music');   // (the oasis track is fetched through Scene 2)
+    cancelAnimationFrame(drawRaf); sndOn(); if (n === '2') sndGet(MUSIC.oasis.f, false, 'music'); if (n === '3') sndGet(MUSIC.flight.f, false, 'music'); if (n === '4') sndGet(MUSIC.castle.f, false, 'music');   /* st2-32: the next scene's track is fetched a scene ahead */   // (the oasis track is fetched through Scene 2)
     if (id === '2.4' && name === 'wasteland') mirT = api.sched(mirage, 2300);
     if (!name) return;
+    if (name === 'flight' || name === 'castle') { trackPlan(name, String(id)); return; }
     var M = MUSIC[name], q = MUS_SHOT[id] || ['loop', 1, 700], live = M.id != null || M.startAt != null; sndGet(M.f, false, 'music');
     if (name === 'oasis' && id === '2.4') return;
     if (!live || M.lv == null) M.lv = q[1]; M.lvT = q[1]; M.lvRate = Math.max(.00002, Math.abs(q[1] - M.lv) / (q[2] || 700));
@@ -1364,6 +1971,23 @@
       if (id === '3.2') { M.drawn = false; drawWatch(api, id); } }
     else if (q[0] === 'finale') { musSeek(M, OAS.entry - LIFT_LEAD, 200); M.mode = 'finale'; mlog('mount', { to: +(OAS.entry - LIFT_LEAD).toFixed(3) }); }
     else if (q[0] === 'F') { if (!(live && (was === 'finale' || was === 'F'))) { musSeek(M, OAS.full, 220); M.mode = 'F'; } } }
+  function trackFor(id) { id = String(id); return /^4\./.test(id) || id === '5.5' ? 'flight' : /^5\.\d|^5B\./.test(id) ? 'castle' : null; }   /* st2-35: the castle track plays on, bright, through the way home (5B) */
+  function trackPlan(name, id) { var M = MUSIC[name], live = M.id != null || M.startAt != null, lv = function (to, ms) { if (M.lv == null || !live) M.lv = to; M.lvT = to; M.lvRate = Math.max(.00002, Math.abs(to - M.lv) / (ms || 1500)); };
+    sndGet(M.f, false, 'music'); M.envMs = 1500; MUSIC.oasis.envMs = 1500;
+    if (name === 'flight') { var md = id === '4.1' ? 'C' : id === '4.2' ? 'R' : 'T';
+      if (!(live && M.mode === md)) { if (live) musDrop(M, 900); M.startAt = md === 'C' ? FL.c : FL.drop - (md === 'R' ? REVEAL_AT : TRANS_AT); M.xinMs = md === 'C' ? 120 : 600; M.xin = 0; M.env = md === 'C' ? 1 : (M.env || 0); musStart(M); }
+      M.mode = md; lv(1, 400); if (md === 'T') MUSIC.castle.envMs = 1500; mlog('flight', { shot: id, mode: md, from: M.startAt }); sndOn(); return; }
+    var bright = /^5\.[6-9]|^5B\./.test(id); M.lpT = bright ? 20000 : CASTLE_DIM; if (M.lpHz == null || !live) M.lpHz = M.lpT; M.lpMs = 2500;
+    if (!live) { M.startAt = 0; M.xinMs = bright ? 1500 : 3000; M.xin = 0; M.env = M.env || 0; } M.mode = bright ? 'bright' : 'dim'; lv(bright ? 1 : .8, 1500); M.envMs = 3000; mlog('castle', { shot: id, mode: M.mode }); sndOn(); }
+  /* the castle's low-pass: one BiquadFilter spliced in after the playing sound's own gain (Howler's Web Audio path); its cut-off glides on a log scale */
+  function musFilt(M, dt) { if (M.lpT == null || M.id == null || !window.Howler || !Howler.ctx || !Howler.masterGain) return; var h = sndH[M.f], q = h && h._soundById && h._soundById(M.id); if (!q || !q._node) return;
+    M.lpHz = Math.exp(Math.log(M.lpHz || M.lpT) + (Math.log(M.lpT) - Math.log(M.lpHz || M.lpT)) * Math.min(1, dt / (M.lpMs || 2500) * 3));
+    /* (Joe: 'it's auto playing music even if on mute'): the filter must hand on to where the sound was going: the site's mixer gives every sound its group's
+       gain (n._jjG: Music, Sound effects, Voices: mute and the moon's levels live there), so the filter feeds that, and is re-joined whenever the mixer moves it */
+    try { var n = q._node, to = n._jjG || Howler.masterGain;
+      if (!q._jjLp) { q._jjLp = Howler.ctx.createBiquadFilter(); q._jjLp.type = 'lowpass'; q._jjLp.Q.value = .5; q._jjLpTo = null; }
+      if (q._jjLpTo !== to || q._jjLpG !== n._jjG) { try { n.disconnect(); } catch (e1) {} try { q._jjLp.disconnect(); } catch (e2) {} n.connect(q._jjLp); q._jjLp.connect(to); q._jjLpTo = to; q._jjLpG = n._jjG; }
+      q._jjLp.frequency.setTargetAtTime(Math.min(20000, M.lpHz), Howler.ctx.currentTime, .03); } catch (e) {} }
   /* the sword-draw frame of 3.2 (watched on the clip's own clock): the music is eased DOWN to its quietest over 1.2 s. Nothing else: no jump, no change of speed */
   function drawWatch(a, id) { cancelAnimationFrame(drawRaf); var M = MUSIC.oasis, loop = function () { if (a.comp() !== 's2_' + id || M.drawn || !M.want) return; drawRaf = requestAnimationFrame(loop); if (a.paused()) return;
       var r = a.layers().joe, v = r && r.el; if (!v || v.tagName !== 'VIDEO' || !/sword-draw/.test(String(v.currentSrc || v.src || '')) || !(v.currentTime > 0)) return;
@@ -1385,16 +2009,18 @@
       M.env = c01((M.env || 0) + (M.want ? 1 : -1) * dt / (M.envMs || 2000));                                  // a 2 s fade either way: the two tracks cross at the hand-over
       if (!M.want && M.env <= 0) { if (M.id != null) { try { h.stop(M.id); } catch (e) {} M.id = null; } M.startAt = null; M.mode = null; M.lv = null; return; }
       if (M.id != null) { var q = h._soundById && h._soundById(M.id); if (!q || q._ended) M.id = null; }
-      if (M.id == null) { if (!M.want) return; any = true; if (M.startAt == null) { M.startAt = k === 'wasteland' ? 0 : M.mode === 'F' || M.mode === 'finale' ? OAS.full : OAS.lift; if (M.mode === 'finale') M.mode = 'F'; M.xinMs = 200; M.xin = 0; } if (!musStart(M)) return; }
+      if (M.id == null) { if (!M.want) return; any = true; if (M.startAt == null) { M.startAt = M.start != null ? (M.mode === 'R' || M.mode === 'T' ? FL.drop : M.start) : k === 'wasteland' ? 0 : M.mode === 'F' || M.mode === 'finale' ? OAS.full : OAS.lift; if (M.mode === 'finale') M.mode = 'F'; M.xinMs = 200; M.xin = 0; } if (!musStart(M)) return; }
       any = true; M.xin = Math.min(1, (M.xin == null ? 1 : M.xin) + dt / (M.xinMs || 200));
       if (M.lv !== M.lvT) { var stp = (M.lvRate || .001) * dt; M.lv = M.lv < M.lvT ? Math.min(M.lvT, M.lv + stp) : Math.max(M.lvT, M.lv - stp); }
       var p = musPos(M);
       if (p != null) { if (k === 'wasteland') { if (p >= WASTE_TAIL) { musDrop(M, 2500); M.startAt = 0; M.xinMs = 60; M.xin = 0; musStart(M); mlog('wasteland-loop', { from: +p.toFixed(2) }); } }
+        else if (k === 'flight') { if (M.mode === 'C' && p >= FL.cEnd) { mlog('loop-C', { from: +p.toFixed(2) }); musSeek(M, FL.c, 200); } else if (M.mode !== 'C' && p >= FL.fEnd) { mlog('loop-finale', { from: +p.toFixed(2) }); musSeek(M, FL.drop, 200); } }
+        else if (k === 'castle') { if (p >= CASTLE_TAIL) { musDrop(M, 2000); M.startAt = 0; M.xinMs = 60; M.xin = 0; musStart(M); mlog('castle-loop', { from: +p.toFixed(2) }); } }
         else if (M.mode === 'intro') { if (p >= OAS.lift) M.mode = 'A'; }
         else if (M.mode === 'A') { if (p >= OAS.stop) { mlog('loop-A', { from: +p.toFixed(2) }); musSeek(M, OAS.lift, 200); } }
         else if (M.mode === 'finale') { if (p >= OAS.ring) { mlog('finale-out', { from: +p.toFixed(2) }); musSeek(M, OAS.full, 250, 2600); M.mode = 'F'; } }
         else if (M.mode === 'F') { if (p >= OAS.stop) { mlog('loop-F', { from: +p.toFixed(2) }); musSeek(M, OAS.full, 200); } } }
-      if (M.id != null) { try { h.volume(M.full * M.lv * M.env * M.xin * musDuckV, M.id); } catch (e) {} } });
+      if (M.id != null) { try { h.volume(M.full * M.lv * M.env * M.xin * musDuckV, M.id); } catch (e) {} musFilt(M, dt); } });
     sndFades = sndFades.filter(function (f) { f.left -= dt; if (f.left <= 0) { try { f.h.stop(f.id); } catch (e) {} return false; } var kf = f.left / f.ms; try { f.h.volume(f.v0 * kf * kf, f.id); } catch (e) {} any = true; return true; });
     Object.keys(AMB).forEach(function (k) { var B = AMB[k]; if (!B.want && B.id == null) return; var h = sndGet(B.f, false, 'sfx', B.cyc); if (!h) { B.id = null; return; }
       if (B.id != null) { var q = h._soundById && h._soundById(B.id); if (!q || q._ended) B.id = null; }
@@ -1458,7 +2084,7 @@
       seqT.push(a.sched(tick, 1800 + Math.random() * 3600 + i * 430)); }); }
   /* the big dragons calm down: each angry still's calm one fades in on top (on its own measured box: feet on the same line, head the same size), then the angry one is dropped */
   function calmGo(a, id, now) { var sh = SHOTS[id] || {}; if (a.comp() !== 's2_' + id) return; (sh.layers || []).forEach(function (l) { if (!l.drag) return; var c = {}, k; for (k in l) c[k] = l[k]; var g = drGeo(l.drag, 'calm'); c.pos = g.pos; c.src = g.src;
-      layerSwap(a, l.key, g.src, layerDef('3', id, c).css, ['st2angry', 'st2breathe'], now ? 0 : 170); }); }
+      layerSwap(a, l.key, nsSrc(id, g.src), layerDef('3', id, c).css, ['st2angry', 'st2breathe'], now ? 0 : 170); }); }
   /* a jet from a mouth to a target: water (an arc of droplets, a splash where it lands) or frost (a straight, glittering stream). p0 / p1 are stage points. */
   function jet(a, kind, p0, p1, ms) { var st = (a.pane ? a.pane() : a.stage()); if (!st) return; var host = document.createElement('div'); host.className = 'st2jet ' + kind; st.appendChild(host);
     var water = kind === 'water', n = water ? 44 : 40, dist = Math.sqrt((p1[0] - p0[0]) * (p1[0] - p0[0]) + (p1[1] - p0[1]) * (p1[1] - p0[1])), lift = water ? dist * .26 : dist * .13, fly = water ? 520 : 460, W = st.clientWidth, H = st.clientHeight;
@@ -1685,9 +2311,9 @@
       if (typeof l.art === 'string') b.src = l.art;           // a depth layer cut from the board
       else if (l.vid) { var g = clipGeo(l), cs = CLIPS[l.vid];   // a keyed clip: its frame is placed so the figure inside it stands on the layer's pos
         var shz = ((SHOTS[id] || {}).cam || {}).z || 1, up = g.w * 1440 * (1 + (shz - 1) * (l.d != null ? l.d : set.depth || 1)) / cs.w, hi = STILLS[l.vid];
-        if (hi && (up > UPSCALE || shz >= CLOSE_Z)) { b.src = hi[0]; b.ar = l.pos[3]; b.cls = 'st2ph st2breathe'; if (l.flip) b.css += ';--flip:-1'; if (l.css) b.css += ';' + l.css; return b; }   // the still, on the figure's own box (the clip's figure sits on the same box: no jump at the shot change)
+        if (hi && (up > UPSCALE || shz >= CLOSE_Z || nsSrc(id, hi[0]) !== hi[0])) { b.src = nsSrc(id, hi[0]); b.ar = l.pos[3]; b.cls = 'st2ph st2breathe'; if (l.flip) b.css += ';--flip:-1'; if (l.css) b.css += ';' + l.css; return b; }   // the still, on the figure's own box (the clip's figure sits on the same box: no jump at the shot change)
         b.css = onBoard(g.cx, g.by, g.w, l.k != null ? l.k : set.km) + ';z-index:' + z + ';aspect-ratio:' + cs.w + '/' + cs.h + (l.flip ? ';--flip:-1' : '') + (l.hide ? ';visibility:hidden' : ''); b.vid = l.vid; b.ar = cs.w / cs.h; b.cls += ' st2clip'; if (l.hold) { b.hold = true; b.now = true; } if (cs.rest || /\bst2wait\b/.test(l.cls || '')) b.idle = true; }   // rest: it waits on its first frame; restClip plays it one pass at a time
-      else if (l.src) b.src = l.src;                          // real art (or a Part One pose standing in)
+      else if (l.src) b.src = nsSrc(id, l.src);               // real art (or a Part One pose standing in)
       else if (l.hot) b.src = hotSvg(l.pos[3]);
       else if (l.glow) b.src = glowSvg(l.glow, l.pos[3]);
       else { b.src = figure(l.label + (l.pick ? ' (' + PICK[pick()].name + ')' : ''), l.pick ? PICK[pick()].tint : l.tint, l.ar, l.kind, l.pos[2] * 100); if (l.pick) pickLayers.push({ d: b, l: l }); }
@@ -1702,7 +2328,7 @@
     var d = { key: l.key, css: css, cls: 'st2ph' + (l.tap ? ' prop' : '') };
     if (l.vid) { var cv = CLIPS[l.vid]; d.vid = l.vid; d.ar = cv.w / cv.h; d.css += ';aspect-ratio:' + cv.w + '/' + cv.h + (l.flip ? ';transform:scaleX(-1)' : ''); }   // a keyed clip that is in (the box's width is the clip's)
     else if (l.pickSrc) { var setP = function () { d.src = l.pickSrc[pick()]; }; setP(); d.cls += ' idle'; pickLayers.push({ d: d, l: l, art: setP }); }   // real art that depends on the egg picked (the babies)
-    else if (l.src) { d.src = l.src; d.cls += ' ' + (l.cls || 'idle'); if (l.flip) d.css += ';--flip:-1'; }
+    else if (l.src) { d.src = nsSrc(id, l.src); d.cls += ' ' + (l.cls || 'idle'); if (l.flip) d.css += ';--flip:-1'; }
     else if (l.art) { var f = fileOf(sceneN, l.name), setArt = function () { var fn = f + (l.pick ? '-' + pick() : ''); if (l.kind === 'clip') { d.vid = fn; d.ar = l.ar; } else d.src = fn; }; setArt(); if (l.pick) pickLayers.push({ d: d, l: l, art: setArt }); }   // real art: story2-<scene>-<name>[-frost|-ember]
     else { d.src = figure(l.label + (l.pick ? ' (' + PICK[pick()].name + ')' : ''), l.pick ? PICK[pick()].tint : l.tint, l.ar, l.kind, l.box[2]); if (l.pick) pickLayers.push({ d: d, l: l }); }
     if (l.tap) { d.tap = 'x:' + id + ':' + l.key; d.aura = { glow: 'rgba(255,214,120,.6)' }; }
@@ -1914,7 +2540,22 @@
     '.jjst2-bub.alien .tx{font-family:' + FONT.replace(',sans-serif', '') + ",'Apple Symbols','Segoe UI Symbol','Noto Sans Symbols 2','Noto Sans Symbols',sans-serif;letter-spacing:.14em;color:#8dffb0;font-size:clamp(19px,1.7cqw,26px);text-shadow:0 0 10px rgba(80,220,120,.4);}" +   // Grik's own tongue: glyphs, typed very fast
     '.jjst2-bub.sub{width:min(60cqw,760px);}.jjst2-bub.sub .tail,.jjst2-bub.dock .tail,.jjst2-bub.notail .tail{display:none;}' +
     '.jjst2-bub.dock{left:4cqw!important;right:4cqw;top:auto!important;bottom:7cqh;width:auto;}' +
+    /* st2-28 · ?ui=2 (Joe, 31 Oct: 'match the conversational ui from the rest of storytime'): a spoken line is the dialogue box itself, in the narration box's place and size,
+       the speaker's portrait and name on its edge, the box in their colour (as Part One's box and the painted scenes); thoughts stay small bubbles */
+    '#jjst.ui2 .jjst2-bub.box.dock{left:50%!important;right:auto;top:auto!important;bottom:8px;translate:-50% 0;width:min(66cqw,1000px);max-width:none;--fs:clamp(46px,4.6cqw,76px);}' +
+    '#jjst.ui2 .jjst2-bub.box .pn{position:relative;box-sizing:border-box;min-height:var(--boxh,0px);padding:clamp(18px,1.7cqw,26px) clamp(76px,6.6cqw,110px) 12px calc(14px + var(--fs) + 12px);border:0;border-radius:16px;background:color-mix(in srgb,#f3e2ba 84%,var(--who));box-shadow:0 0 0 4px var(--who),0 0 0 6px rgba(0,0,0,.55),0 0 30px color-mix(in srgb,var(--who) 40%,transparent);color:#3a2a12;-webkit-backdrop-filter:none;backdrop-filter:none;}' +
+    '#jjst.ui2 .jjst2-bub.box .pn::before{content:"";position:absolute;left:14px;top:0;translate:0 -50%;width:var(--fs);aspect-ratio:1;z-index:3;border-radius:50%;border:4px solid var(--who);background:#e9d6a8 var(--face,none) center/cover no-repeat;box-shadow:0 2px 6px rgba(0,0,0,.25);}' +
+    '#jjst.ui2 .jjst2-bub.box .who{position:absolute;z-index:3;top:0;left:calc(14px + var(--fs) - 4px);translate:0 -50%;margin:0;padding:4px 14px 5px;border-radius:999px;background:var(--who);color:#fff;font-size:clamp(13px,1.1cqw,19px);line-height:1.2;white-space:nowrap;box-shadow:0 0 0 2px rgba(0,0,0,.35),0 3px 8px rgba(0,0,0,.35);}' +
+    '#jjst.ui2 .jjst2-bub.box .who b{color:#fff;}#jjst.ui2 .jjst2-bub.box .who i{color:rgba(255,255,255,.78);margin-left:.45em;}' +
+    '#jjst.ui2 .jjst2-bub.box .tx{font-size:clamp(15px,1.6cqw,27px);line-height:1.26;color:#3a2a12;}' +
+    '#jjst.ui2 .jjst2-bub.box .nxl{--ac:color-mix(in srgb,var(--who) 65%,#000);--ul:var(--who);color:var(--ac);}' +
+    '#jjst.ui2:has(.jjst2-bub.box.on) #jjst-cap,#jjst.ui2.st2capold #jjst-cap{opacity:0!important;transition:opacity .2s;}' +
+      '#jjst.ui2.st2capaway #jjst-cap{opacity:0!important;translate:0 18px;pointer-events:none;transition:opacity .9s ease,translate .9s ease;}' +   /* st2-31 · capAway (fades and sinks, rule: fade every move) */
     /* the choice */
+    '#jjst2-reply{position:absolute;left:50%;bottom:calc(var(--jjbox,22cqh) + 26px);translate:-50% 0;z-index:13;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;width:min(92cqw,720px);opacity:0;transition:opacity .35s ease;font-family:' + FONT + ';}' +
+    '#jjst2-reply.on{opacity:1;}#jjst2-reply button{position:relative;overflow:hidden;font:inherit;font-size:clamp(14px,1.6cqw,18px);color:#fff;background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:11px 22px;cursor:pointer;}' +
+    '#jjst2-reply button::before{content:"";position:absolute;inset:0;background:rgba(255,255,255,.5);transform:translateX(-101%);transition:transform .35s ease;}#jjst2-reply button span{position:relative;}' +
+    '#jjst2-reply button:hover::before{transform:translateX(0);}#jjst2-reply button:active,#jjst2-reply button.pick{background:#ff00f5;border-color:#ff00f5;}' +
     '#jjst2-choice{position:absolute;inset:0;z-index:13;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3.2cqh;background:radial-gradient(ellipse at 50% 46%,rgba(0,0,0,.38),rgba(0,0,0,.72) 70%);opacity:0;transition:opacity .4s ease;font-family:' + FONT + ';color:#fff;}#jjst2-choice.on{opacity:1;}' +
     '#jjst2-choice h3{margin:0;font:inherit;font-size:clamp(24px,2.6cqw,40px);text-shadow:0 2px 14px rgba(0,0,0,.6);}' +
     '#jjst2-choice .cards{display:flex;gap:min(4cqw,56px);}' +
@@ -1984,7 +2625,7 @@
     if (actNow && actNow.key === 'clive' && actNow.base === el && actNow.v.tagName === 'VIDEO' && el.tagName === 'IMG') { var cur = el._pose || ''; poseSwap(a, 'clive', pose, 0); if ((el._pose || '') !== cur) actOff(false); else return; }   /* st2-25 · D7: his sigh is still running and the next line asks for another pose: the still takes the new pose unseen (under the clip) and comes in over it; the same pose again: the sigh simply finishes */
     var go = function () { poseSwap(a, 'clive', pose); if (!fx || !CFX[fx]) return; a.sched(function () { var r2 = a.layers().clive, e = r2 && r2.el; if (!e || !e.isConnected) return; e.style.transition = 'rotate .55s ease, scale .55s ease'; e.style.rotate = CFX[fx][0]; e.style.scale = CFX[fx][1]; e._cfx = fx; }, 330); };
     if (el._cfx) { el.style.transition = 'rotate .22s ease, scale .22s ease'; el.style.rotate = ''; el.style.scale = ''; el._cfx = null; poseProbe(a, 'clive', pose); a.sched(go, 240); } else go(); }
-  var POSE_LINES = [['That’s what they say on TV', 'think'], ['I hope you see it now', 'think'], ['A wizard, aye', 'think'], ['Elnor the Enchanted, they call him', 'think'], ['You’ll need some wings', 'think', '*laughs*', 'present']];
+  var POSE_LINES = [['That’s what they say on TV', 'think'], ['I hope you see it now', 'think'], ['A wizard, aye', 'think'], ['Mabel the Magnificent, they call her', 'think'], ['You’ll need some wings', 'think', '*laughs*', 'present']];
 
   /* ---- a figure that talks: its clip over its still, only while its bubble types ---- */
   function talkCss(l, sh) { var K = TALK[l.src], f = l.flip ? -1 : 1, W = K.w * K.sc, H = K.h * K.sc;
@@ -2045,6 +2686,20 @@
     for (var i = 1; i <= text.length; i++) { var ch = text.charAt(i - 1), t = sp; if (ch === '…') t = el; else if (ch === '.') { if (text.charAt(i) === '.') t = sp; else if (text.charAt(i - 2) === '.') t = el; else t = dot; } else if (ch === '!' || ch === '?') t = dot; d += t; }
     return d; }
   function narK(text) { var d = narDur(text); return d > TYPE_MAX ? TYPE_MAX / d : 1; }
+  /* st2-45 · VOICES (Joe, 10 Nov: placeholder audio for every line; behind ?vo=1 until the real takes land). Every narration and speech line has an id (voIds: its
+     shot and its place in the shot, the same rule as storytime-2/tools/make-vo.js) and a file story2-vo-<id>.mp3; VO_MS (written by make-vo.js) holds each
+     file's length, so a line with a voice stays up until its voice has finished. One voice at a time: a new beat stops the last one; Space pauses it with the tale. */
+  var VO = /[?&]vo=1\b/.test(location.search), VO_MS = /*VO_MS*/{"1_1-01":10838,"1_1-02":3084,"1_2-01":3036,"1_3-01":2526,"1_3-02":2897,"1_3-03-r0":2061,"1_3-03-r1":1736,"1_3-04-r0":3965,"1_3-04-r1":2340,"1_3-05":4197,"1_3-06":4290,"1_3-07":2015,"1_3-08":2433,"1_3-09":4244,"1_3-10":2248,"1_3-11":3872,"1_4-01":2433,"1_4-02":3501}/*/VO_MS*/, voCur = null;
+  function voIds() { var shot = 'x', k = 0; S.forEach(function (it) { if (it.t === 'shot') { shot = it.id; k = 0; return; } if (it.t !== 'nar' && it.t !== 'say') return; k++; it.vo = shot.replace(/\./g, '_') + '-' + (k < 10 ? '0' : '') + k; }); }
+  function voKey(d) { return d && d.vo ? d.vo + (d.reply != null ? '-r' + REPLY : '') : null; }
+  function voStop() { var c = voCur; voCur = null; if (!c) return; cancelAnimationFrame(c.raf); try { c.h.fade(c.h.volume(c.sid), 0, 140, c.sid); setTimeout(function () { try { c.h.stop(c.sid); } catch (e) {} }, 170); } catch (e) {} }
+  function voPre(id) { if (VO && id && VO_MS[id]) sndGet('vo-' + id, false, 'voice'); }
+  function voGo(a, id) { if (!VO || !id || !VO_MS[id]) return 0; if (voCur && voCur.id === id) return voCur.end; voStop();
+    var h = sndGet('vo-' + id, false, 'voice'); if (!h) return 0; var c = voCur = { id: id, h: h, sid: h.play(), end: performance.now() + VO_MS[id], paused: false, pt: 0 };
+    var loop = function () { if (voCur !== c) return; c.raf = requestAnimationFrame(loop); var p = a.paused();
+      if (p && !c.paused) { c.paused = true; c.pt = performance.now(); try { h.pause(c.sid); } catch (e) {} } else if (!p && c.paused) { c.paused = false; c.end += performance.now() - c.pt; try { h.play(c.sid); } catch (e) {} } };
+    loop(); return c.end; }
+  function voLeft() { return voCur ? Math.max(0, voCur.end - performance.now()) : 0; }
   /* st2-20 · A BUBBLE'S PLACE IS DECIDED ONCE (Joe: 2.3's thought started over his head, then jumped to the side). It used to be re-placed on every frame, so it
      opened wherever its speaker was while the camera was still travelling from the last shot, then followed him and changed side when the room over his head ran
      out. Now it is measured ONE time, just before it appears, for the shot's FINAL framing: every camera move in flight (the board's pan and the rig's plates, all
@@ -2063,10 +2718,19 @@
     leadOff();
     var b = document.createElement('div'); b.className = 'jjst2-bub' + (thought ? ' thought' : '') + (spoken ? ' sub' : '') + (auto ? ' auto' : '') + (alien ? ' alien' : '') + (small ? ' small' : '') + (lead || small ? ' nonext' : ''); b.setAttribute('role', 'button'); b.setAttribute('tabindex', '0'); b.setAttribute('data-cursor', 'hover');
     var tag = p && p.length <= 22 && !thought && !spoken && !alien && !/off screen|behind the door/.test(p) ? p : '';   // only a short acting note shows as a tag (‘annoyed’, ‘calling back’)
-    b.innerHTML = '<i class="tail"></i><div class="pn"><div class="who"><b></b><i></i></div><div class="txw"><span class="tx"></span>' + (lead || small ? '' : '<i class="nsp"></i>') + '</div>' + (lead || small ? '' : '<i class="pgl"><b></b></i><button type="button" class="nxl" data-cursor="hover" aria-label="Next">Next<svg viewBox="0 0 7 12" fill="none" aria-hidden="true"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><i class="ul"></i></button>') + '</div>';   // st2-27g: the tail (first, above) is beside the panel, not in it (a backdrop blur inside the panel's own blur sees only the panel: the tail came out darker), and before it, so its blur sees the scene, not the dark panel
+    var UIX = !!(a.ui2 && a.ui2());   /* st2-28b · ?ui=2: the painted scenes' bubble and Next (storytime.js s147 styles them) */
+    b.innerHTML = '<i class="tail"></i><div class="pn"><div class="who"><b></b><i></i></div><div class="txw"><span class="tx"></span>' + (lead || small ? '' : '<i class="nsp"></i>') + '</div>' + (lead || small ? '' : (UIX ? '<button type="button" class="nxl ui" data-cursor="hover" aria-label="Next"><i class="pgl"><b></b></i>Next<svg class="arw" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1h10L6 7z"/></svg></button>' : '<i class="pgl"><b></b></i><button type="button" class="nxl" data-cursor="hover" aria-label="Next">Next<svg viewBox="0 0 7 12" fill="none" aria-hidden="true"><path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><i class="ul"></i></button>')) + '</div>';   // st2-27g: the tail (first, above) is beside the panel, not in it (a backdrop blur inside the panel's own blur sees only the panel: the tail came out darker), and before it, so its blur sees the scene, not the dark panel
     b.querySelector('.who b').textContent = c.name; b.querySelector('.who i').textContent = tag ? sentence(tag) : (thought ? 'Thinking' : '');
     st.appendChild(b); if (d.text.length > BUB && window.console) console.warn('[st2] bubble over ' + BUB + ' chars:', d.text);
     var tx = b.querySelector('.tx'), i = 0, typing = true, tw = null, autoT = null, docked = false, last = '', MODES = ['dock', 'off-left', 'off-right', 'below', 'notail'];
+    var BOX = !!(a.ui2 && a.ui2()) && !thought && !small;   /* st2-28 · ?ui=2: the line is the dialogue box (its speaker's colour, portrait and name), docked where the narration box sits, as tall as it */
+    var FACE = ST2_FACE[c.name] ? a.F('face-' + c.name.toLowerCase() + (c.name === 'Mabel' && /^5\.[5-9]|^5B/.test(shotId) ? '-after' : '') + ((WH && WH.id === shotId && WH.W && WH.W.snow || NS_LOOK && NS_SHOT[shotId]) && ST2_FACE[c.name] === 2 ? '-painted' : '')) : '';   /* (a painted take: the painted portrait) */
+    if (UIX && !BOX) { var bf = document.createElement('span'); bf.className = 'jjui-bf'; if (FACE) bf.style.backgroundImage = 'url("' + FACE + '")'; b.style.setProperty('--wc', ST2_WHO[c.name] || '#6b4a1e');
+      var wb = b.querySelector('.who b'); wb.parentNode.insertBefore(bf, wb); if (thought) wb.textContent = c.name + ', thinking'; else if (tag) wb.textContent = c.name + ', ' + tag.toLowerCase(); }
+    if (BOX) { docked = true; b.classList.add('box'); b.style.setProperty('--who', ST2_WHO[c.name] || '#6b4a1e'); if (FACE) b.style.setProperty('--face', 'url("' + FACE + '")');
+      var capB = a.cap(); if (capB && capB.offsetHeight) b.style.setProperty('--boxh', capB.offsetHeight + 'px');
+      var jw2 = document.getElementById('jjst'), ct = document.getElementById('jjst-cap-text'); if (jw2 && ct) { jw2.classList.add('st2capold'); ct._st2old = (ct.textContent || '').trim();   // st2-28k: the narration under the box is now an old line: when the box goes (a take after Clive's line) it stays hidden until the next narration starts typing
+        if (!ct._st2mo) { ct._st2mo = new MutationObserver(function () { var t = (ct.textContent || '').trim(); if (t && ct._st2old.indexOf(t) !== 0) jw2.classList.remove('st2capold'); }); ct._st2mo.observe(ct, { childList: true, characterData: true, subtree: true }); } } }
     /* st2-17 (Joe: a bubble shifted part-way through typing, when its text wrapped onto a second line): the whole line is in the bubble from the first character, the part
        still to come unseen, so the panel has its final size and place and every word is already where it will end up; Next and the progress line hold their space too */
     tx.innerHTML = '<span></span><span style="visibility:hidden" aria-hidden="true"></span>'; var tyEl = tx.firstChild, trEl = tx.lastChild, typed = function (n) { tyEl.textContent = d.text.slice(0, n); trEl.textContent = d.text.slice(n); }; typed(0);
@@ -2076,7 +2740,8 @@
       MODES.forEach(function (m) { b.classList.toggle(m, m === mode); });
       b.style.left = mode === 'dock' ? '' : Math.round(x) + 'px'; b.style.top = mode === 'dock' ? '' : Math.round(y) + 'px';
       if (tX != null) b.style.setProperty('--tx', Math.round(tX) + 'px'); if (tY != null) b.style.setProperty('--ty', Math.round(tY) + 'px'); };
-    var place = function () { if (!b.isConnected) return; if (docked) { put('dock', 0, 0); return; }
+    var place = function () { if (!b.isConnected) return; if (BOX) { var cb = a.cap(); if (cb && cb.offsetHeight) b.style.setProperty('--boxh', cb.offsetHeight + 'px'); }   /* (the box keeps the narration box's height at every size) */
+      if (docked) { put('dock', 0, 0); return; }
       var sr = st.getBoundingClientRect(), W = sr.width, H = sr.height, bw = b.offsetWidth, bh = b.offsetHeight, rec = c.key && a.layers()[c.key], side = (sh.off && sh.off[d.who]) || 'right', ph = phone();
       var cap = a.cap(), cr = cap ? cap.getBoundingClientRect() : null, capTop = cr && cr.height ? cr.top - sr.top : H * .72, ctl = ph && document.getElementById('jjst-ctl'), topMin = ctl && ctl.offsetHeight ? ctl.getBoundingClientRect().bottom - sr.top + 10 : H < 430 ? navBottom(sr, H) + 6 : 74, gap = thought ? 52 : 26;   // capTop: the dimmed banner's top — the bubble keeps above it
       var low = function (cx0) { var yb = capTop - bh - 10, bx = (W - bw) / 2; if (yb < H * .54) { docked = true; put('dock', 0, 0); return; }   // a phone: straight above the dimmed banner (both show), its tail up to the speaker; no room for both = the dock, over the banner
@@ -2099,9 +2764,9 @@
     /* st2-14 · once the line is typed: a LEAD line hands on to its prompt at once (the bubble stays up: leadKeep); a small aside holds ~3s; every other line fills its
        progress line over its read (at least 3.5s; d.min: at least that) — then a state 1 / 3 line moves on by itself, and a state 2 / 4 line stays, its line and its
        Next pulsing gently, until Next is pressed */
-    var ended = false, armed = false, selfGo = false, arm = function () { if (armed) return; armed = true; if (d.actAfter) playAct(a, d.actAfter, shotId);   /* (st2-25 · D7: a clip that follows the line: Clive's sigh) */
-      var hold = Math.max(moreMin, d.hold != null ? d.hold : readHold(d.text.length));   // st2-20: by reading time (d.hold: a line with its own, Grik's alien one)
-      if (lead) { autoT = a.sched(function () { ended = true; done(); }, LEAD_MS); return; }   /* st2-21: a line that leads into a required action: its prompt comes 500 ms after the last character (the reading-time hold is only for lines that advance or glow) */
+    var voOn = false, ended = false, armed = false, selfGo = false, arm = function () { if (armed) return; armed = true; if (d.actAfter) playAct(a, d.actAfter, shotId);   /* (st2-25 · D7: a clip that follows the line: Clive's sigh) */
+      var hold = Math.max(moreMin, d.hold != null ? d.hold : readHold(d.text.length), voOn ? voLeft() + 500 : 0);   /* st2-45: …and never before its voice has finished */   // st2-20: by reading time (d.hold: a line with its own, Grik's alien one)
+      if (lead) { autoT = a.sched(function () { ended = true; done(); }, Math.max(LEAD_MS, voOn ? voLeft() + 200 : 0)); return; }   /* st2-21: a line that leads into a required action: its prompt comes 500 ms after the last character (the reading-time hold is only for lines that advance or glow) */
       holdEnd = performance.now() + hold; autoT = a.sched(function () { if (waits && !selfGo) b.classList.add('ready'); else done(); }, hold);
       var pg = b.querySelector('.pgl b'); if (pg && pg.animate) pgA = pg.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: hold, easing: 'linear', fill: 'forwards' }); };
     var moreMin = 0, holdEnd = 0, pgA = null, more = function (ms, go) { if (lead || (waits && !go)) return; var turn = waits && go && !selfGo; if (turn) { selfGo = true; b.classList.remove('ready'); }   /* st2-25 · D3: go = a line that waits for Next is told to move on by itself, ms from now (the signpost pressed under Joe's thought: the sign gets its read time, then both leave) */ if (!armed) { moreMin = Math.max(moreMin, ms); return; }   // (an auto line asked to stay: at least ms from now)
@@ -2118,13 +2783,13 @@
     var fin = function () { a.unsched(tw); a.unsched(midT); midT = null; typing = false; part2 = true; i = d.text.length; typed(i); b.classList.add('done'); arm(); };
     var press = function (e) { if (e) { e.preventDefault(); e.stopPropagation(); } if (a.paused()) return; if (typing) fin(); else if (!lead) done(); };   // (a lead line has no Next: its action moves the story on; the transport still does)
     b.addEventListener('click', press); b.addEventListener('keydown', function (e) { if (e.key === 'Enter') press(e); });
-    var rp = function () { docked = false; last = ''; size(); settled(a, place); }; window.addEventListener('resize', rp);
+    var rp = function () { docked = BOX; last = ''; size(); settled(a, place); }; window.addEventListener('resize', rp);
     var raf = 0, follow = function () { raf = requestAnimationFrame(follow); if (a.paused()) { mouth(false); return; }   // (st2-20: it no longer re-places the bubble: see settled)
       if (c.key && alien) mouth(b.classList.contains('on')); };   // (st2-14, Joe: his talking clip for as long as the alien bubble is up; every other line is the calm still)   // (st2-10, Joe: the talking clip only for the alien line; every other line is the calm still, floating)   // the camera moves under it: it stays on its speaker (and under a pause the speaker is the calm still)
     if (c.key && !offKey) panTo(a, shotId, c.key);
     var showT = a.sched(function () { requestAnimationFrame(function () { requestAnimationFrame(function () { var n = 0, show = function () { var rc = c.key && a.layers()[c.key], el = rc && rc.el;
           if ((actsDue || (compName && builtWait(a, compName)) || (el && el.tagName === 'IMG' && !(el.complete && el.naturalWidth))) && ++n < 45) { showT = a.sched(show, 40); return; }   /* (st2-25: up to 1.8 s, was 0.6) */   // (its speaker's picture has not arrived yet: a moment, so it is measured as it will be)
-          last = ''; size(); settled(a, place); b.classList.add('on'); tw = a.sched(step, 330); follow(); }; show(); }); }); }, Math.max(0, darkUntil - performance.now()) + (d.wait || 0));   // (after a dip to black: once the picture is back; d.wait: something else happens first)
+          last = ''; size(); settled(a, place); b.classList.add('on'); voOn = !!voGo(a, voKey(d)); tw = a.sched(step, 330); follow(); }; show(); }); }); }, Math.max(0, darkUntil - performance.now()) + (d.wait || 0));   // (after a dip to black: once the picture is back; d.wait: something else happens first)
     var gone = function () { if (sayMore === more) sayMore = null; mouth(false); cancelAnimationFrame(raf); window.removeEventListener('resize', rp); b.classList.remove('on'); setTimeout(function () { if (b.parentNode) b.remove(); }, 300); };
     a.onLeave(function () { a.unsched(showT); a.unsched(tw); a.unsched(midT); a.unsched(autoT); if (lead && ended) { leadKeep = gone; return; } gone(); });   // (a lead line that handed on to its prompt stays up until the prompt is answered: leadOff)
   }; }
@@ -2132,6 +2797,17 @@
   /* ---- a choice: two big cards; the story waits. It opens when its beat comes (after Clive's last line) or at once when an egg in the nest is pressed (skipTo) ---- */
   var skipTo = null, leadKeep = null;
   function leadOff() { var g = leadKeep; leadKeep = null; if (g) g(); }
+  /* st2-40 · the reply (Scene 1, Joe 30 Oct: 'make the choice count'): two answers for Joe over the box, in the classic glass; the pick sets the words of the
+     next two lines (Joe's reply and Grik's answer to it). Nothing answers while paused (rule 2). */
+  var REPLY = 0;
+  function runReply(d) { return function (a, done) {
+    var st = a.stage(), w = document.createElement('div'); w.id = 'jjst2-reply';
+    w.innerHTML = d.options.map(function (o, i) { return '<button type="button" data-i="' + i + '" data-cursor="hover"><span>' + o[0] + '</span></button>'; }).join('');
+    st.appendChild(w); requestAnimationFrame(function () { w.classList.add('on'); });
+    var picked = false; w.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('button'); e.stopPropagation(); if (!b || picked || a.paused()) return; picked = true;
+      REPLY = +b.getAttribute('data-i'); (d.next || []).forEach(function (q) { q.text = d.options[REPLY][q.reply]; }); b.classList.add('pick'); a.sched(function () { done(); }, 350); });
+    a.onLeave(function () { w.classList.remove('on'); setTimeout(function () { if (w.parentNode) w.remove(); }, 420); });
+  }; }
   function runChoice(d) { return function (a, done) {
     var st = a.stage(), w = document.createElement('div'); w.id = 'jjst2-choice'; skipTo = null;
     w.innerHTML = '<h3>Pick your egg</h3><div class="cards">' + ['frost', 'fire'].map(function (k) { var p = PICK[k];
@@ -2207,10 +2883,12 @@
     if (cfg.walk) { var wr = a.layers()[cfg.walk.key], we = wr && wr.el; if (we) { we.style.transition = 'none'; we.style.marginLeft = 'calc(' + (((cfg.need || 1) - 1) * cfg.walk.by).toFixed(4) + ' * ' + DCALC + ')'; } } }
   function runHold(shotId, ms, need) { return function (a, done) { var t = null, off = null, autoT = null;
     if (need) { var cfg = need.cfg || {}, had = Math.min(taps[shotId + ':' + need.key] || 0, need.need || 1);
+      var early = had >= (need.need || 1) && WH && WH.id === shotId && WH.state === 'idle' && !WH.W.still;   // st2-28i: pressed before its line, while the take still waits: the take plays now (it was skipped, and the line after it came on the wait)
+      if (early) had = 0;
       if (had >= (need.need || 1)) t = a.sched(done, 500);
       else { var self = function () { if (waiting && waiting.shot === shotId) { waiting.n = waiting.need - 1; onFx(shotId + ':' + need.key, need.key, null, a); } };   // nobody pressed: it happens by itself (the portal sputters, Joe reaches out…)
         var kick = function () { a.unsched(autoT); if (cfg.auto) autoT = a.sched(self, cfg.wait || NEED_WAIT); };   // st2-27i (Joe, 15 Oct: 'does it autoplay with the interaction? it shouldn't'): a required press waits for the visitor; only a press marked auto: true still happens by itself
-        waiting = { shot: shotId, key: need.key, need: need.need || 1, n: had, done: done, kick: kick }; panTo(a, shotId, need.key); needOn(a, need.key, need.hint, /^(nope|light)$/.test(cfg.react || '') ? 'portal' : ''); kick();
+        waiting = { shot: shotId, key: need.key, need: need.need || 1, n: had, done: done, kick: kick }; panTo(a, shotId, need.key); needOn(a, need.key, need.hint, /^(nope|light)$/.test(cfg.react || '') ? 'portal' : ''); kick(); if (cfg.s2on) s2React(cfg.s2on, a); if (early) t = a.sched(self, 900);
         if (cfg.hold) { var rec = a.layers()[need.key], el = rec && rec.el, ht = null;   // press and hold = all the presses at once
           var dn = function () { clearTimeout(ht); ht = setTimeout(function () { if (!a.paused()) self(); }, cfg.hold); }, up = function () { clearTimeout(ht); };
           if (el) { el.addEventListener('pointerdown', dn); el.addEventListener('pointerup', up); el.addEventListener('pointerleave', up); off = function () { clearTimeout(ht); el.removeEventListener('pointerdown', dn); el.removeEventListener('pointerup', up); el.removeEventListener('pointerleave', up); }; } } } }
@@ -2231,6 +2909,10 @@
   function onFx(name, key, e, a) { var m = name.split(':'), shotId = m[0], k = m[1], sh = SHOTS[shotId]; if (!sh || (e && a.paused())) return;   // st2-14 · rule 2: nothing answers a press while paused
     var cfg = (sh.ints || []).filter(function (x) { return x.key === k; })[0] || (sh.ints || [])[0] || { react: 'tap' }, rec = a.layers()[k], el = rec && rec.el, id = shotId + ':' + k;
     taps[id] = (taps[id] || 0) + 1;
+    if (WH && WH.id === shotId) { var ws = (a.pane ? a.pane() : a.stage()), wr0 = ws && ws.getBoundingClientRect(), fx = WH.W.tapFx && WH.W.tapFx[k];   /* st2-32 (Joe: 'it says tap the vials but nothing happens'): the vials and staffs sit still in the picture the whole shot, and the landing is on its end frame only a moment, so a press answers at any point of the take */   // st2-29: a press on a painted take (its things are painted into the picture)
+      if (fx && wr0 && el) { var wb = el.getBoundingClientRect(); burst((e ? e.clientX : wb.left + wb.width / 2) - wr0.left, (e ? e.clientY : wb.top + wb.height / 2) - wr0.top, fx);  if (fx && e) st2sfx(a, k === 'vial' ? 'puff' : 'chime', .25, true, true); }
+      if (WH.W.cracks && k === 'egg' && WH.state === 'idle') wholeCrack(WH, taps[id]);
+      if (WH.W.tapPlay === k && WH.state === 'idle' && wholePlay(shotId)) (WH.W.sfx || []).forEach(function (q) { a.sched(function () { st2sfx(a, q[1], q[2], false, true); }, q[0] * 1000); }); }   /* st2-34: the sneeze, early, on a tap of his nose */
     var ld = (sh.layers || []).filter(function (x) { return x.key === k; })[0], stg = (a.pane ? a.pane() : a.stage()), sr0 = stg ? stg.getBoundingClientRect() : null;
     if (cfg.react === 'choose') { if (a.comp() === 's2_' + shotId && !document.getElementById('jjst2-choice')) { skipTo = shotId; a.next(); } return; }   // an egg in the nest: the choice opens now
     if (ld && ld.hot && sr0 && el) { var hb = el.getBoundingClientRect(); burst((e ? e.clientX : hb.left + hb.width / 2) - sr0.left, (e ? e.clientY : hb.top + hb.height * .6) - sr0.top, 'spark'); }   // nothing of its own to wiggle (it is painted into the land): a spark where it was pressed (or at its heart, when it goes off by itself)
@@ -2247,11 +2929,12 @@
     if (cfg.react === 'wave' && sr0) { for (var q = 0; q < 3; q++) burst(sr0.width * (.12 + Math.random() * .76), sr0.height * (.6 + Math.random() * .1), 'ash'); pill(['A low growl...', 'The growls get louder...', 'Smoke curls up from below...'][Math.min(2, taps[id] - 1)], 2400); return; }   // the dragons answer the sword: growls (sound to come) and smoke rising below
     if (cfg.walk) { var wr = a.layers()[cfg.walk.key], we = wr && wr.el, n = Math.min(taps[id], cfg.need || 1); if (waiting && waiting.shot === shotId && !e) n = cfg.need || 1; if (we && n < (cfg.need || 1)) { var stepGo = function () { var r2 = a.layers()[cfg.walk.key], w2 = r2 && r2.el; if (!w2 || a.comp() !== 's2_' + shotId) return; w2.style.transition = 'margin-left .5s ease'; w2.style.marginLeft = 'calc(' + (n * cfg.walk.by).toFixed(4) + ' * ' + DCALC + ')'; };
         if (cfg.walk.face && (we._face || '') !== cfg.walk.face) { joeFace(a, cfg.walk.face, false, ['st2shake', 'st2still']); setTimeout(stepGo, 230); } else stepGo(); } }   // each press a step closer (a real move; st2-15: on the first one he takes the approaching pose, in place, then steps); the last one is the reach itself (the swap below)
+    if (/^s2/.test(cfg.react || '') && waiting && waiting.shot === shotId && waiting.key === k) s2React(cfg.react, a);   // st2-47
     if (waiting && waiting.shot === shotId && waiting.key === k) { waiting.n++;
       if (shotId === '3.6b' && MUSIC.oasis.want) { var en = Math.min(waiting.n, waiting.need); if (en === 1 && !(MUSIC.oasis.lv > .05)) { try { musSeek(MUSIC.oasis, OAS.full, 1200); MUSIC.oasis.mode = 'A'; } catch (e2) {} }   /* st2-26q: the first step: the music comes back in, from its full body */ musLv(EMBER_STEPS[en - 1], en >= waiting.need ? 1500 : 1200, en >= waiting.need ? 'Ember: the touch' : 'Ember: step ' + en); }   /* st2-25 · E: louder with each step toward her, loudest at the touch */
       if (waiting.n >= waiting.need) { var w = waiting; waiting = null; pillOff(); needOff(); leadOff();
         var wv = wholePlay(shotId), jm = wv ? 0 : jetGo(), showAt = cfg.jet && cfg.jet.kind === 'frost' ? 380 : 0;   /* st2-27a: the whole-scene video (when it is up) IS the frost and the statue: the drawn jet and the sparkles are skipped */
-        if (wv && WH && WH.W.sfx) WH.W.sfx.forEach(function (q) { a.sched(function () { st2sfx(a, q[1], q[2]); }, q[0] * 1000); });
+        if (wv && WH && WH.W.sfx) WH.W.sfx.forEach(function (q) { a.sched(function () { st2sfx(a, q[1], q[2], false, true); }, q[0] * 1000); });
         if (cfg.show && wv) { var srw = a.layers()[cfg.show]; if (srw && srw.el) srw.el.style.visibility = 'visible'; }
         if (cfg.show && !wv) a.sched(function () { var sr = a.layers()[cfg.show]; if (sr && sr.el) { sr.el.style.visibility = 'visible';
             if (sr.el.animate) sr.el.animate(cfg.grow ? [{ scale: '.12', opacity: 0, transformOrigin: '50% 100%' }, { scale: '.6', opacity: 1, offset: .35, transformOrigin: '50% 100%' }, { scale: '1.05', opacity: 1, offset: .8, transformOrigin: '50% 100%' }, { scale: '1', opacity: 1, transformOrigin: '50% 100%' }] : [{ opacity: 0 }, { opacity: 1 }], { duration: cfg.grow ? 1250 : 160, easing: 'ease-out' });
@@ -2300,19 +2983,19 @@
   /* ---- the beats: the screenplay, in order, as the engine's scenes ---- */
   function playSfx(a, list) { (list || []).forEach(function (x) { var m = x.split('@'), n = m[0], dl = +m[1] || 0, go = function () { if (n.indexOf('sfx:') === 0) a.sfx(n.slice(4), .35); else a.oneShot(n.slice(4), .3); }; if (dl) a.sched(go, dl); else go(); }); }
   function buildBeats() {
-    var beats = [], sc = null, sh = null, comp = null, sceneNar = false, sayN = 0, shotNeeds = [], shotList = [], leadBefore = false, pending = [], shotBeats = 0, intIdx = 0, last = null, credits = null, HINTS = {}, cs = null, ci = 0, joeNow = null;
+    var beats = [], curIt = null, sc = null, sh = null, comp = null, sceneNar = false, sayN = 0, shotNeeds = [], shotList = [], leadBefore = false, pending = [], shotBeats = 0, intIdx = 0, last = null, credits = null, HINTS = {}, cs = null, ci = 0, joeNow = null;
     var faceOf = function (cid) { var q = ((SHOTS[cid] || {}).layers || []).filter(function (l) { return l.key === 'joe' && l.face; })[0]; return q ? q.face : null; };
     var joeSet = function (it, o) { if (o && o.comp) { comp = 's2_' + o.comp; joeNow = faceOf(o.comp); (function (cid) { pending.push(function (a, jumping) { shotExtras(a, cid, jumping); }); })(o.comp); } if (o && o.joe) joeNow = o.joe; if (joeNow && faceOf(comp.slice(3))) (function (f) { pending.push(function (a, jumping) { joeFace(a, f, jumping); }); })(joeNow); };   // Joe's expression from this beat on (set at every beat, so a Prev / Next lands on the right one)
     var fxRun = { smallHuzzah: function (a, id) { if (HUZZAH_HANDS) { var hr = a.layers().joe; if (hr && hr.el) hr.el._thaw = true; playAct(a, 'hands', id); return; }   /* the hands-only clip, on the cheer's own box */
         var jl = JX('happier-stance', SHOTS[id].layers.filter(function (l) { return l.key === 'joe'; })[0].pos[0] + (JCLIPS['tav-joe-huzzah'][4] - (466 + 830) / 2) * JH / 688, { by: GY }), im = standIn(a, 'joe', jl, id);   /* the stand-in: his happy stance comes in over the frozen cheer (same feet, same size), then two small hops */
         if (im && im.animate) a.sched(function () { im.animate([{ translate: '0 0' }, { translate: '0 -3.5%', offset: .2 }, { translate: '0 0', offset: .42 }, { translate: '0 -2.4%', offset: .62 }, { translate: '0 0', offset: .84 }, { translate: '0 0' }], { duration: 1100, easing: 'ease-out', composite: 'add' }); }, 380); } };
-    S.forEach(function (it) { if (it.t === 'shot') { cs = it.id; ci = 0; } else if (it.t === 'int' && cs) { var c0 = ((SHOTS[cs] || {}).ints || [])[ci++]; if (c0 && !c0.need) (HINTS[cs] = HINTS[cs] || []).push(it.text.split(':')[0].replace(/^Optional$/, 'Fly through the wind rings')); } });
+    S.forEach(function (it) { if (it.t === 'shot') { cs = it.id; ci = 0; } else if (it.t === 'int' && cs) { var c0 = ((SHOTS[cs] || {}).ints || [])[ci++]; if (c0 && !c0.need) (HINTS[cs] = HINTS[cs] || []).push(hintOf(it.text)); } });
     /* st2-25 · A4 (the back audit: Prev into 3.8 left Clive and Joe in the shot's opening poses on every line, and the bubbles off to the right). A shot that lands under
        a dip to black (3.2, 3.8, 3.9) is only BUILT at the swap, ~0.4 s after the step: a beat's own acts (Joe's face, Clive's pose, the press results) ran at the step,
        on figures that were not there yet, and were lost. Reached by Prev / Next, they now wait for the shot to be built (builtWait). */
     var flush = function (b) { var acts = pending; pending = []; b.onStart = function (a, jumping) { soundLive(); var tok = ++startTok, go = function () { actsDue = false; acts.forEach(function (f) { f(a, jumping); }); }; actsDue = false;
         if (jumping && builtWait(a, b.comp)) { actsDue = true; var n = 0, w = function () { if (tok !== startTok) return; if (!builtWait(a, b.comp) || ++n > 50) { a.sched(function () { if (tok === startTok) go(); }, 20); return; } a.sched(w, 40); }; w(); } else go(); }; };   /* (st2-20: every beat: the tale is running, so the sound plan is live — a ?scene= start in the middle of a shot too) */
-    var push = function (b) { b.comp = comp; b.st2 = { scene: sc && sc.n, shot: sh && sh.id }; if (b.text == null) b.text = '';
+    var push = function (b) { b.it = curIt; b.comp = comp; b.st2 = { scene: sc && sc.n, shot: sh && sh.id }; if (b.text == null) b.text = '';
       shotNeeds.forEach(function (q) { pending.unshift(function (a, jumping) { if (jumping) needDone(a, q.id, q.cfg); }); });   /* (first: the beat's own face and poses come after it) */   /* st2-25 · A4: a later line of a shot with a required press, reached by Prev / Next: the press's result is there */
       if (sh && shotBeats > 0 && (SHOTS[sh.id] || {}).exit) (function (X) { pending.push(function (a, jumping) { if (!jumping) return; [X.key, X.still].forEach(function (k) { var r = a.layers()[k]; if (r && r.el) { r.el.style.transition = 'none'; r.el.style.opacity = '0'; r.el.style.visibility = 'hidden'; r.el._gone = true; } }); }); })(SHOTS[sh.id].exit);   // (a Prev / Next into a later line of a shot whose figure has left by then: he is not there)
       if (sh) (function (id, k) { pending.push(function (a, jumping) { musArc(id, k, jumping); }); })(sh.id, shotBeats);   /* st2-25 · E: the music's level at this beat (MUS_ARC) */
@@ -2321,7 +3004,7 @@
     var closeShot = function () { if (!sh) return; var cfg = SHOTS[sh.id] || {};
       if (!shotBeats) push({ run: runHold(sh.id, cfg.hold || 4000), banner: keep() });                                  // a shot with no words still gets its moment
       if (pending.length && last) { var acts = pending; pending = []; var prev = last.onEnd; last.onEnd = function (a) { if (prev) prev(a); acts.forEach(function (f) { f(a); }); }; } };
-    S.forEach(function (it) {
+    S.forEach(function (it) { curIt = it; if (it.o && it.o.ns && !S2P) return;   // st2-47: a beat only the painted Scene 2 has
       if (credits) { if (it.t === 'act') credits.push(it.text); return; }
       if (it.t === 'shot' || it.t === 'nar' || it.t === 'act' || it.t === 'choice' || it.t === 'cut') leadBefore = false;
       if (it.t === 'scene') { closeShot(); sc = it; sh = null; sceneNar = false; }
@@ -2335,6 +3018,7 @@
         (function (id) { pending.push(function (a) { panHome(a, id); }); })(sh.id);   // (a narrow screen: back to the shot's own framing for the narration)
         joeSet(it, it.o);
         var nb = push({ text: it.text, read: 0, linger: shn.pan ? Math.max(narHold(it.text.length), shn.pan + (shn.panHold || 0) - narDur(it.text) * narK(it.text)) : shn.linger || narHold(it.text.length), typeK: narK(it.text) });   /* st2-20: its hold by reading time, its typing never over 2.5s (a shot that is one pan: the line lasts as long as the pan and its closing hold) */ if (it.o.triggers) nb.triggers = it.o.triggers; else if (shn.narTrig) nb.triggers = shn.narTrig;
+        if (VO && VO_MS[it.vo]) nb.linger = Math.max(nb.linger, VO_MS[it.vo] - narDur(it.text) * narK(it.text) + 450);   /* st2-45: a voiced line stays until its voice ends */
         if (shn.explore) nb.onEnd = function (a) { exploreLeave(a); }; }   // (the shot is leaving: its press areas stop answering)
       else if (it.t === 'act' && it.o && it.o.hold) { joeSet(it, it.o);   // st2-14: a beat with no words (Grik's confused pause, Joe's blank look, his small huzzah)
         if (((SHOTS[comp.slice(3)] || {}).layers || []).some(function (l) { return l.key === 'clive' && l.poseSet; })) (function (pz, fx) { pending.push(function (a) { clivePose(a, pz, fx); }); })(it.o.clive || 'side', it.o.cfx);
@@ -2343,13 +3027,15 @@
       else if (it.t === 'say') { var stp = (SHOTS[sh.id] || {}).steps; if (stp && stp[sayN] != null) comp = 's2_' + stp[sayN]; sayN++;   // (a shot's steps: this line starts with a change of pose)
         joeSet(it, it);
         var thoughtL = /thought/.test(it.paren || ''); it.st = it.st || (thoughtL ? (it.auto ? 3 : 4) : (it.auto ? 1 : 2)); it.auto = (it.st === 1 || it.st === 3) && !it.lead;   // the line's state (see say)
+        if (VO && (VO_MS[it.vo] || VO_MS[it.vo + '-r0']) && !it.lead) it.auto = true;   /* st2-46 (Joe, 10 Nov: 'griks talking should autoplay'): a voiced line moves on by itself once its voice has finished */
         var shS = SHOTS[comp.slice(3)] || {}, hasCs = (shS.layers || []).some(function (l) { return l.key === 'clive' && l.poseSet; });
         if (hasCs) { var pl = it.who === 'CLIVE' ? (POSE_LINES.filter(function (q) { return it.text.indexOf(q[0]) === 0; })[0] || [0, 'present']) : [0, 'side']; if (it.clive) pl = [0, it.clive]; if (pl[2]) it.poseAt = [pl[2], pl[3]];
           (function (pose, fx) { pending.push(function (a) { clivePose(a, pose, fx); }); })(pl[1], it.cfx); }
         if (it.act && !it.split) (function (act, id) { pending.push(function (a) { playAct(a, act, id); }); })(it.act, sh.id);   // a one-shot clip that goes with the line
         leadBefore = !!it.lead; push({ run: runSay(it, sh.id, comp), banner: (it.auto || it.lead || it.small || thoughtL) ? keep() : dim() }); }   // only a bubble that waits for Next dims the narration banner
       else if (it.t === 'choice') { var cb = push({ run: runChoice(it), block: true }); }
-      else if (it.t === 'int') { var cfg = ((SHOTS[sh.id] || {}).ints || [])[intIdx++], hint = it.text.split(':')[0].replace(/^Optional$/, 'Fly through the wind rings').replace(/\.$/, '');
+      else if (it.t === 'reply') { it.next = S.slice(S.indexOf(it) + 1).filter(function (q) { return q.t === 'say' && q.reply != null; }).slice(0, 2); push({ run: runReply(it), block: true, banner: keep() }); }   // st2-40
+      else if (it.t === 'int') { var cfg = ((SHOTS[sh.id] || {}).ints || [])[intIdx++], hint = hintOf(it.text).replace(/\.$/, '');
         if (cfg && cfg.need) { joeSet(it, cfg.aim ? { joe: cfg.aim } : null); if (((SHOTS[comp.slice(3)] || {}).layers || []).some(function (l) { return l.key === 'clive' && l.poseSet; })) pending.push(function (a) { poseSwap(a, 'clive', 'side'); });   // (Clive listens while a prompt waits)
           (function (id, key) { pending.push(function (a, jumping) { if (jumping) taps[id + ':' + key] = 0; });   /* st2-25 · A4: jumped back onto the press: it waits again */
             shotList.forEach(function (b0) { var po = b0.onStart; b0.onStart = function (a, jumping) { if (jumping) taps[id + ':' + key] = 0; if (po) po(a, jumping); }; }); })(sh.id, cfg.key);   /* (…or onto any earlier line of its shot: the press is still to come) */
@@ -2367,8 +3053,16 @@
 
   window.jjStory.register(function (engine) {
     api = engine; css(); buildComps(); buildRigs(); window.addEventListener('resize', onResize);
-    var beats = buildBeats();
-    window.jjStory2 = { build: 'st2-27p', whole: function () { return WH; }, snd: sndState, blink: function (k) { return blinkOne(api, k); }, pick: pick, setPick: setPick, beats: beats, SHOTS: SHOTS, SETS: SETS, RIGS: RIGS, S: S, CAST: CAST };
-    return { scenes: beats, comps: COMPS, rigs: RIGS, book: BOOK2, bookMusic: bookMusic, leave: function () { exploreOff(); soundOff(); }, comp: onComp, noblur: function (name) { var sh = SHOTS[String(name).slice(3)] || {}; return !!(sh.live || sh.noblur); }, fx: onFx, title: 'The Tale of Trogdor & Joe the Righteous · Storytime 2', msg1: 'The tale continues through the portal', msg2: 'Hint: the bubbles wait for you. Press Next' };
+    voIds(); var beats = buildBeats(); wholeCues(beats);
+    if (VO) beats.forEach(function (b, bi) { var po = b.onStart; b.onStart = function (a, jumping) { var mine = b.it && (b.it.t === 'nar' || b.it.t === 'say') ? voKey(b.it) : null;   /* st2-45 */
+        if (!voCur || voCur.id !== mine) voStop(); if (b.it && b.it.t === 'nar') voGo(a, mine);
+        for (var j = bi + 1; j < Math.min(beats.length, bi + 4); j++) voPre(voKey(beats[j].it));
+        if (po) return po.apply(this, arguments); }; });
+    var capAwayT = null; beats.forEach(function (b) { var po = b.onStart, cfg = SHOTS[(b.st2 || {}).shot] || {}; b.onStart = function (a, jumping) { var jw = document.getElementById('jjst'); if (jw) jw.classList.remove('st2capaway'); if (capAwayT) a.unsched(capAwayT); capAwayT = null;   // st2-31: a shot's capAway: its narration box fades out once read, back with the next line
+        if (cfg.capAway && b.it && b.it.t === 'nar') capAwayT = a.sched(function () { capAwayT = null; if (jw && a.comp() === b.comp) jw.classList.add('st2capaway'); }, cfg.capAway); if (po) return po.apply(this, arguments); }; });
+    beats.forEach(function (b) { if (!b.it || b.it.t !== 'nar') return; var po = b.onStart; b.onStart = function (a, jumping) { var jw = document.getElementById('jjst'); if (jw) jw.classList.remove('st2capold'); if (po) return po.apply(this, arguments); }; });   // st2-28k: a narration line (Prev back onto the same one too) shows its box again
+    if (/[?&]scenes=1\b/.test(location.search) || (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !/[?&](flow=1|scenes=0)\b/.test(location.search))) scenePicker(beats);   // st2-30: the preview's scene picker (on by itself in the local preview; inside the demo's one-flow page that page has its own)
+    window.jjStory2 = { build: 'st2-47', vo: function () { return { on: VO, cur: voCur && voCur.id, n: Object.keys(VO_MS).length }; }, whole: function () { return WH; }, snd: sndState, blink: function (k) { return blinkOne(api, k); }, pick: pick, setPick: setPick, beats: beats, SHOTS: SHOTS, SETS: SETS, RIGS: RIGS, S: S, CAST: CAST };
+    return { scenes: beats, comps: COMPS, rigs: RIGS, book: BOOK2, bookMusic: bookMusic, leave: function () { voStop(); exploreOff(); soundOff(); }, comp: onComp, noblur: function (name) { var sh = SHOTS[String(name).slice(3)] || {}; return !!(sh.live || sh.noblur); }, fx: onFx, title: 'The Tale of Trogdor & Joe the Righteous · Storytime 2', msg1: 'The tale continues through the portal', msg2: 'Hint: the bubbles wait for you. Press Next' };
   });
 })();
